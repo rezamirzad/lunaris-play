@@ -2,12 +2,8 @@
   "name": "lunaris-play-root",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "frontend"
-  ],
   "scripts": {
-    "build": "cd frontend && npx convex codegen && npx next build",
-    "install": "npm install convex && cd frontend && npm install"
+    "build": "cd frontend && npx convex codegen && npx next build"
   },
   "dependencies": {
     "convex": "latest"
