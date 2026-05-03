@@ -21,11 +21,15 @@ export const handleAction = mutation({
     const room = await ctx.db.get(player.roomId);
     if (!room) throw new Error("Room not found");
 
+    // Prevent moves if the game is already over
+    if (room.status === "FINISHED") {
+      throw new Error("Game is already finished!");
+    }
+
     let { eggs = 0, chicks = 0 } = player.state || {};
     let logPayload: any = null;
     const cards = args.cards;
 
-    // 1. DEFINE MOVE TYPES
     const isFox = cards.length === 1 && cards[0] === "FOX";
     const isLay =
       cards.length === 3 &&
@@ -36,11 +40,9 @@ export const handleAction = mutation({
       cards.length === 2 &&
       cards.filter((c) => c === "CHICKEN").length === 2 &&
       eggs > 0;
-    // Permissive Discard: Any single card that isn't a Fox attack (or an explicit DISCARD action)
     const isDiscard =
       (cards.length === 1 && !isFox) || args.actionType === "DISCARD";
 
-    // 2. EXECUTE LOGIC
     if (args.actionType === "DEFEND") {
       const attack = room.gameBoard.pendingAttack;
       if (!attack) throw new Error("No pending attack");
@@ -144,19 +146,34 @@ async function finishTurn(
 ) {
   const newHand = player.gameHand.filter((_, i) => !indices.includes(i));
   while (newHand.length < 4) newHand.push(getRandomCard());
+
+  // 1. Check if this move resulted in a win (3 chicks)
+  const isWinner = chicks >= 3;
+  const newStatus = isWinner ? "FINISHED" : room.status;
+
   const history = [log, ...(room.gameBoard?.history || [])].slice(0, 5);
+
+  // 2. Update player hand and state
   await ctx.db.patch(player._id, {
     gameHand: newHand,
     state: { ...player.state, eggs, chicks },
   });
+
+  // 3. Update room (advance turn and handle win status)
   await ctx.db.patch(room._id, {
-    currentTurnIndex: (room.currentTurnIndex + 1) % room.turnOrder.length,
+    status: newStatus,
+    // Only advance turn if game is not over
+    currentTurnIndex: isWinner
+      ? room.currentTurnIndex
+      : (room.currentTurnIndex + 1) % room.turnOrder.length,
     gameBoard: {
       ...room.gameBoard,
       history,
+      winner: isWinner ? player.name : room.gameBoard?.winner, // Save the winner name
       lastWarning: null,
       pendingAttack: null,
     },
   });
-  return { success: true };
+
+  return { success: true, won: isWinner };
 }

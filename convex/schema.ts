@@ -20,13 +20,13 @@ export default defineSchema({
 
   rooms: defineTable({
     roomCode: v.string(),
-    status: v.string(), // "LOBBY" | "PLAYING" | "FINISHED"
+    status: v.string(), // "LOBBY", "PLAYING", "FINISHED"
     currentGame: v.string(),
     currentTurnIndex: v.number(),
     turnOrder: v.array(v.id("players")),
     gameBoard: v.object({
       history: v.optional(v.array(v.any())),
-      lastWarning: v.optional(v.union(v.any(), v.null())),
+      lastWarning: v.any(),
       pendingAttack: v.optional(
         v.union(
           v.null(),
@@ -38,8 +38,11 @@ export default defineSchema({
           }),
         ),
       ),
+
+      winner: v.optional(v.string()),
+      winnerId: v.optional(v.id("players")),
     }),
-  }).index("by_roomCode", ["roomCode"]), // <--- FIXED: Added the missing index here
+  }).index("by_roomCode", ["roomCode"]),
 
   players: defineTable({
     roomId: v.id("rooms"),

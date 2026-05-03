@@ -28,7 +28,10 @@ export const getOngoingRooms = query({
   handler: async (ctx) => {
     const rooms = await ctx.db.query("rooms").order("desc").collect();
 
-    return rooms;
+    return rooms.map((room) => ({
+      ...room,
+      isJoinable: room.status !== "FINISHED" && room.status !== "CANCELLED",
+    }));
   },
 });
 
