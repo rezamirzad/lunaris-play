@@ -1,6 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import * as piouPiouGame from "./games/pioupiou";
+//import * as piouPiouGame from "./games/pioupiou";
 
 /**
  * Standard Fisher-Yates Shuffle
@@ -124,16 +124,6 @@ export const startGame = mutation({
     });
 
     if (room.currentGame?.toLowerCase() === "pioupiou") {
-      for (const player of players) {
-        const initialHand = Array.from({ length: 4 }, () =>
-          piouPiouGame.getRandomCard(),
-        );
-
-        await ctx.db.patch(player._id, {
-          gameHand: initialHand,
-          state: { eggs: 0, chicks: 0 },
-        });
-      }
     }
   },
 });
