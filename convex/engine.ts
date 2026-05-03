@@ -26,11 +26,9 @@ export const listGames = query({
 export const getOngoingRooms = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db
-      .query("rooms")
-      .filter((q) => q.neq(q.field("status"), "FINISHED"))
-      .order("desc")
-      .take(5);
+    const rooms = await ctx.db.query("rooms").order("desc").take(10);
+
+    return rooms.filter((room) => room.status !== "FINISHED");
   },
 });
 
