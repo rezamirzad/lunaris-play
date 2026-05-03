@@ -106,19 +106,42 @@ export default function Home() {
             <h2 className="text-xs font-black tracking-widest text-zinc-500 uppercase">
               {t.ongoingGames}
             </h2>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {rooms.map((room: any) => (
                 <div
                   key={room.roomCode}
-                  onClick={() => setCode(room.roomCode)}
-                  className="group bg-zinc-900/50 border border-zinc-800 p-4 rounded-xl flex justify-between items-center cursor-pointer hover:border-teal-500/50"
+                  className="bg-zinc-900/50 border border-zinc-800 p-4 rounded-xl flex items-center justify-between group"
                 >
-                  <span className="text-white group-hover:text-teal-500 font-black tracking-widest">
-                    {room.roomCode}
-                  </span>
-                  <span className="text-[10px] text-teal-500 font-black uppercase tracking-widest">
-                    JOIN
-                  </span>
+                  <div className="flex flex-col">
+                    <span className="text-white font-black tracking-widest">
+                      {room.roomCode}
+                    </span>
+                    <span className="text-[9px] text-zinc-500 font-bold uppercase">
+                      {room.currentGame}
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    {/* JOIN AS PLAYER */}
+                    <button
+                      onClick={() => {
+                        setCode(room.roomCode);
+                        // Focus name input if empty
+                        if (!name) document.querySelector("input")?.focus();
+                      }}
+                      className="text-[10px] bg-zinc-800 hover:bg-teal-500 hover:text-black px-3 py-1.5 rounded-lg font-black uppercase tracking-widest transition-colors"
+                    >
+                      Player
+                    </button>
+                    {/* JOIN AS BOARD */}
+                    <button
+                      onClick={() =>
+                        router.push(`/room/${room.roomCode}?view=board`)
+                      }
+                      className="text-[10px] bg-teal-500/10 text-teal-500 border border-teal-500/20 hover:bg-teal-500 hover:text-black px-3 py-1.5 rounded-lg font-black uppercase tracking-widest transition-colors"
+                    >
+                      Board
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

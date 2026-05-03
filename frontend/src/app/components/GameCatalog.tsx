@@ -28,7 +28,7 @@ export default function GameCatalog({
   lang: Language;
   onHost: (slug: string) => void;
 }) {
-  const games = useQuery(api.engine.listGames);
+  const games = useQuery((api as any).engine.listGames);
   const t = translations[lang];
 
   const isRTL = lang === "fa";

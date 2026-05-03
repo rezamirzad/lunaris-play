@@ -1,5 +1,5 @@
 "use client";
-import { PIU_PIU_DECK_SPEC } from "./constants";
+import { PIOU_PIOU_DECK_SPEC } from "./constants";
 
 interface CardProps {
   type: string;
@@ -8,10 +8,8 @@ interface CardProps {
 }
 
 export default function Card({ type, selected, onClick }: CardProps) {
-  // Access the constants from your deck spec file
-  const config = (PIU_PIU_DECK_SPEC as any)[type];
+  const config = (PIOU_PIOU_DECK_SPEC as any)[type];
 
-  // Colors based on card type for quick visual recognition
   const getTypeColor = () => {
     switch (type) {
       case "FOX":
@@ -32,16 +30,19 @@ export default function Card({ type, selected, onClick }: CardProps) {
   return (
     <div
       onClick={onClick}
-      className={`relative w-full aspect-[2/3] rounded-3xl border-[6px] transition-all duration-200 overflow-hidden flex flex-col items-center justify-between p-4 shadow-xl select-none ${
+      /* FIX: Changed w-full to a fixed responsive width (w-24 for mobile, w-32 for tablet)
+         Reduced padding and border thickness for better fit on small screens
+      */
+      className={`relative w-24 sm:w-28 md:w-32 aspect-[2/3] rounded-2xl border-[4px] transition-all duration-200 overflow-hidden flex flex-col items-center justify-between p-2 sm:p-3 shadow-lg select-none ${
         selected
-          ? "border-teal-500 -translate-y-6 scale-105 shadow-teal-500/30"
+          ? "border-teal-500 -translate-y-4 scale-105 shadow-teal-500/30"
           : `border-zinc-900 ${getTypeColor()} active:scale-95`
       }`}
     >
-      {/* Type Label */}
+      {/* Type Label - smaller text for smaller card */}
       <div
-        className={`text-[10px] font-black uppercase tracking-widest ${
-          selected ? "text-teal-600" : "text-zinc-300"
+        className={`text-[8px] sm:text-[10px] font-black uppercase tracking-widest ${
+          selected ? "text-teal-600" : "text-zinc-400"
         }`}
       >
         {type}
@@ -51,15 +52,14 @@ export default function Card({ type, selected, onClick }: CardProps) {
       <img
         src={config.img}
         alt={type}
-        className={`w-4/5 h-4/5 object-contain transition-transform ${selected ? "scale-110" : ""}`}
+        className={`w-full h-3/5 object-contain transition-transform ${selected ? "scale-110" : ""}`}
       />
 
       {/* Bottom Detail */}
       <div
-        className={`w-3 h-3 rounded-full ${selected ? "bg-teal-500" : "bg-zinc-200"}`}
+        className={`w-2 h-2 rounded-full ${selected ? "bg-teal-500" : "bg-zinc-200"}`}
       />
 
-      {/* Selection Overlay */}
       {selected && (
         <div className="absolute inset-0 bg-teal-500/5 pointer-events-none" />
       )}
