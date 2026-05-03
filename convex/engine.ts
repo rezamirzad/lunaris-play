@@ -26,8 +26,9 @@ export const listGames = query({
 export const getOngoingRooms = query({
   args: {},
   handler: async (ctx) => {
-    console.log("Safe query is running");
-    return []; // Return a hardcoded empty array
+    const rooms = await ctx.db.query("rooms").order("desc").collect();
+
+    return rooms.filter((room) => room.status !== "FINISHED");
   },
 });
 
