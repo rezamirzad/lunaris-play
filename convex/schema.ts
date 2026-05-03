@@ -45,7 +45,10 @@ export default defineSchema({
     roomId: v.id("rooms"),
     name: v.string(),
     gameHand: v.array(v.string()),
-    state: v.any(),
+    state: v.object({
+      eggs: v.number(),
+      chicks: v.number(),
+    }),
     isReady: v.boolean(),
   }).index("by_room", ["roomId"]),
 });
