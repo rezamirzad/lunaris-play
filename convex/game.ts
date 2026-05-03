@@ -46,3 +46,22 @@ export const playAction = mutation({
     }
   },
 });
+
+export const getRoomState = query({
+  args: { roomCode: v.string() },
+  handler: async (ctx, args) => {
+    const room = await ctx.db
+      .query("rooms")
+      .withIndex("by_roomCode", (q) => q.eq("roomCode", args.roomCode))
+      .unique();
+
+    if (!room) return null;
+
+    const players = await ctx.db
+      .query("players")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .collect();
+
+    return { ...room, players };
+  },
+});
