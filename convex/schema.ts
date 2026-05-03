@@ -1,14 +1,28 @@
-// convex/schema.ts
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  games: defineTable({
+    slug: v.string(),
+    title: v.string(),
+    title_fr: v.optional(v.string()),
+    title_de: v.optional(v.string()),
+    title_fa: v.optional(v.string()),
+    description: v.string(),
+    description_fr: v.optional(v.string()),
+    description_de: v.optional(v.string()),
+    description_fa: v.optional(v.string()),
+    thumbnail: v.string(),
+    minPlayers: v.number(),
+    suggestedMax: v.number(),
+    absoluteMax: v.number(),
+  }).index("by_slug", ["slug"]),
+
   rooms: defineTable({
     roomCode: v.string(),
-    hostId: v.optional(v.id("players")),
-    status: v.string(), // "LOBBY", "PLAYING", "GAME_OVER"
+    status: v.string(),
     currentGame: v.optional(v.string()),
-    gameBoard: v.any(), // Changed from gameBoardState to gameBoard
+    gameBoard: v.any(),
     turnOrder: v.array(v.id("players")),
     currentTurnIndex: v.number(),
   }).index("by_roomCode", ["roomCode"]),
@@ -17,17 +31,7 @@ export default defineSchema({
     roomId: v.id("rooms"),
     name: v.string(),
     score: v.number(),
-    gameHand: v.any(), // Changed from gameHandState to gameHand
+    gameHand: v.any(),
     isReady: v.boolean(),
   }).index("by_room", ["roomId"]),
-
-  games: defineTable({
-    slug: v.string(),
-    title: v.string(),
-    description: v.string(),
-    thumbnail: v.string(),
-    minPlayers: v.number(),
-    suggestedMax: v.number(), // The "Best with" number (e.g., 5)
-    absoluteMax: v.number(), // The hard limit (e.g., 8)
-  }).index("by_slug", ["slug"]),
 });
