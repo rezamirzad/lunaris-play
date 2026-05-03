@@ -30,7 +30,11 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
   if (!room) return <div className="min-h-screen bg-black" />;
 
   if (searchParams.get("view") === "board") {
-    const warning = room.gameBoard?.lastWarning;
+    // --- NEW: GLOBAL WINNING SOON ALERT LOGIC ---
+    // Look for any player on the board who is close to winning
+    const potentialWinner = room.players?.find(
+      (p: any) => p.state?.chicks === 2 && p.state?.eggs >= 1,
+    );
 
     return (
       <main
@@ -73,7 +77,6 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
               </div>
 
               <div className="space-y-6 max-h-[50vh] overflow-hidden relative">
-                {/* Added ?. and ?? [] to guarantee an array */}
                 {(room.gameBoard?.history ?? []).length > 0 ? (
                   room.gameBoard?.history?.map((entry: any, i: number) => (
                     <div
@@ -120,15 +123,30 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                 const isTurn =
                   room.turnOrder?.[room.currentTurnIndex] === p._id;
                 const pState = p.state || {};
+
+                // --- LOGIC: CHECK IF THIS SPECIFIC PLAYER IS WINNING SOON ---
+                const isWinningSoon = pState.chicks === 2 && pState.eggs >= 1;
+
                 return (
                   <div
                     key={p._id}
-                    className={`p-8 rounded-[2.5rem] border-2 transition-all duration-500 flex justify-between items-center ${
+                    className={`relative p-8 rounded-[2.5rem] border-2 transition-all duration-500 flex justify-between items-center ${
                       isTurn
                         ? "bg-zinc-900 border-teal-500 shadow-[0_0_40px_rgba(20,184,166,0.1)] scale-[1.02]"
                         : "bg-zinc-900/20 border-zinc-800 opacity-60"
                     }`}
                   >
+                    {/* --- WINNING SOON MINI-ALERT --- */}
+                    {isWinningSoon && (
+                      <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-400 border-2 border-black px-3 py-1 rounded-full shadow-[2px_2px_0_0_#000] animate-bounce z-10">
+                        <p className="text-[10px] text-black font-black uppercase whitespace-nowrap">
+                          {lang === "fa"
+                            ? "⚠️ در آستانه پیروزی"
+                            : "⚠️ WINNING SOON"}
+                        </p>
+                      </div>
+                    )}
+
                     <div className="space-y-1">
                       <p className="text-xs font-black text-teal-500 tracking-widest uppercase">
                         {isTurn ? t.activeTurn : ""}
@@ -148,7 +166,9 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                       <div className="w-px h-10 bg-zinc-800" />
                       <div className="text-center">
                         <span className="text-3xl block">🐣</span>
-                        <span className="text-2xl font-black text-white">
+                        <span
+                          className={`text-2xl font-black ${isWinningSoon ? "text-yellow-400" : "text-white"}`}
+                        >
                           {pState.chicks || 0}
                         </span>
                       </div>
@@ -159,19 +179,6 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
             </div>
           </div>
         </div>
-
-        {/* DYNAMIC WARNING OVERLAY */}
-        {room.gameBoard?.lastWarning && (
-          <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-50 bg-red-600 text-white px-8 py-3 rounded-full font-black uppercase italic tracking-widest animate-bounce shadow-2xl">
-            ⚠️{" "}
-            {formatLog(
-              translations[lang][
-                room.gameBoard.lastWarning.key as keyof TranslationSet
-              ] as string,
-              room.gameBoard.lastWarning.data || {},
-            )}
-          </div>
-        )}
       </main>
     );
   }

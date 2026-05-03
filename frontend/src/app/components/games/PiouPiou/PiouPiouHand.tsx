@@ -27,6 +27,11 @@ export default function PiouPiouHand({
   const pending = room.gameBoard?.pendingAttack;
   const isBeingAttacked = pending?.victimId === player._id;
 
+  // --- NEW: WINNING SOON LOGIC ---
+  const chicks = player.state?.chicks || 0;
+  const eggs = player.state?.eggs || 0;
+  const isWinningSoon = chicks === 2 && eggs >= 1;
+
   const selectedCards = selectedIndices.map((i) => player.gameHand[i]);
   const isFoxSelected =
     selectedCards.length === 1 && selectedCards[0] === "FOX";
@@ -69,6 +74,20 @@ export default function PiouPiouHand({
       className={`flex flex-col min-h-screen bg-black text-white font-black ${lang === "fa" ? "font-serif" : ""}`}
       dir={lang === "fa" ? "rtl" : "ltr"}
     >
+      {/* --- FEATURE: WINNING SOON ALERT --- */}
+      {isWinningSoon && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[110] w-[90%] max-w-sm pointer-events-none">
+          <div className="bg-yellow-400 border-4 border-black p-4 rounded-2xl shadow-[6px_6px_0_0_#000] animate-bounce text-center">
+            <p className="text-black font-black text-lg leading-tight uppercase italic">
+              {lang === "fa" ? "یک قدم تا پیروزی!" : "NEARLY HATCHED!"}
+            </p>
+            <p className="text-black/70 font-bold text-[10px] uppercase">
+              {lang === "fa" ? "جوجه سوم در راه است" : "ONE MORE EGG TO WIN"}
+            </p>
+          </div>
+        </div>
+      )}
+
       {isBeingAttacked && (
         <div className="fixed inset-0 z-[100] bg-red-600 p-10 flex flex-col items-center justify-center text-center animate-in fade-in">
           <h2 className="text-6xl italic mb-4 uppercase tracking-tighter">
