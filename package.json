@@ -6,6 +6,7 @@
     "build": "cd frontend && npx convex codegen && npx next build"
   },
   "dependencies": {
-    "convex": "latest"
+    "convex": "latest",
+    "next": "14.2.5"
   }
 }
