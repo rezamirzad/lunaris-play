@@ -107,43 +107,63 @@ export default function Home() {
               {t.ongoingGames}
             </h2>
             <div className="space-y-3">
-              {rooms.map((room: any) => (
-                <div
-                  key={room.roomCode}
-                  className="bg-zinc-900/50 border border-zinc-800 p-4 rounded-xl flex items-center justify-between group"
-                >
-                  <div className="flex flex-col">
-                    <span className="text-white font-black tracking-widest">
-                      {room.roomCode}
-                    </span>
-                    <span className="text-[9px] text-zinc-500 font-bold uppercase">
-                      {room.currentGame}
-                    </span>
+              {rooms.map((room: any) => {
+                // 1. Determine if the game is finished
+                const isFinished = room.status === "FINISHED";
+
+                return (
+                  <div
+                    key={room.roomCode}
+                    className={`bg-zinc-900/50 border border-zinc-800 p-4 rounded-xl flex items-center justify-between group ${isFinished ? "opacity-70" : ""}`}
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-white font-black tracking-widest flex items-center gap-2">
+                        {room.roomCode}
+                        {/* 2. Show a Trophy icon if finished */}
+                        {isFinished && (
+                          <span className="text-[10px] text-yellow-500">
+                            🏆
+                          </span>
+                        )}
+                      </span>
+                      <span className="text-[9px] text-zinc-500 font-bold uppercase">
+                        {room.currentGame}{" "}
+                        {isFinished &&
+                          `(WINNER: ${room.gameBoard?.winner || "???"})`}
+                      </span>
+                    </div>
+
+                    <div className="flex gap-2">
+                      {/* JOIN AS PLAYER (Disabled if Finished) */}
+                      <button
+                        disabled={isFinished}
+                        onClick={() => {
+                          if (isFinished) return;
+                          setCode(room.roomCode);
+                          if (!name) document.querySelector("input")?.focus();
+                        }}
+                        className={`text-[10px] px-3 py-1.5 rounded-lg font-black uppercase tracking-widest transition-colors ${
+                          isFinished
+                            ? "bg-zinc-800 text-zinc-600 cursor-not-allowed"
+                            : "bg-zinc-800 hover:bg-teal-500 hover:text-black"
+                        }`}
+                      >
+                        {isFinished ? "Ended" : "Player"}
+                      </button>
+
+                      {/* JOIN AS BOARD (Always allowed so people can see the final board) */}
+                      <button
+                        onClick={() =>
+                          router.push(`/room/${room.roomCode}?view=board`)
+                        }
+                        className="text-[10px] bg-teal-500/10 text-teal-500 border border-teal-500/20 hover:bg-teal-500 hover:text-black px-3 py-1.5 rounded-lg font-black uppercase tracking-widest transition-colors"
+                      >
+                        Board
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    {/* JOIN AS PLAYER */}
-                    <button
-                      onClick={() => {
-                        setCode(room.roomCode);
-                        // Focus name input if empty
-                        if (!name) document.querySelector("input")?.focus();
-                      }}
-                      className="text-[10px] bg-zinc-800 hover:bg-teal-500 hover:text-black px-3 py-1.5 rounded-lg font-black uppercase tracking-widest transition-colors"
-                    >
-                      Player
-                    </button>
-                    {/* JOIN AS BOARD */}
-                    <button
-                      onClick={() =>
-                        router.push(`/room/${room.roomCode}?view=board`)
-                      }
-                      className="text-[10px] bg-teal-500/10 text-teal-500 border border-teal-500/20 hover:bg-teal-500 hover:text-black px-3 py-1.5 rounded-lg font-black uppercase tracking-widest transition-colors"
-                    >
-                      Board
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         </div>

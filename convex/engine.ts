@@ -28,7 +28,7 @@ export const getOngoingRooms = query({
   handler: async (ctx) => {
     const rooms = await ctx.db.query("rooms").order("desc").collect();
 
-    return rooms.filter((room) => room.status !== "FINISHED");
+    return rooms;
   },
 });
 
