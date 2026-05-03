@@ -1,0 +1,12 @@
+{
+  "name": "lunaris-play-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd frontend && npm install && npx convex codegen && next build",
+    "install": "cd frontend && npm install"
+  },
+  "dependencies": {
+    "next": "latest"
+  }
+}
