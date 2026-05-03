@@ -8,8 +8,6 @@ import { Language, translations } from "@/lib/translations";
 export default function GameCatalog({ lang }: { lang: Language }) {
   const games = useQuery(api.engine.listGames);
   const router = useRouter();
-
-  // Get UI translations for labels
   const t = translations[lang];
 
   const handleHost = (gameSlug: string) => {
@@ -25,9 +23,8 @@ export default function GameCatalog({ lang }: { lang: Language }) {
     );
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-left">
       {games.map((game) => {
-        // DB Localization Logic
         const displayTitle = (game as any)[`title_${lang}`] || game.title;
         const displayDescription =
           (game as any)[`description_${lang}`] || game.description;
@@ -56,18 +53,15 @@ export default function GameCatalog({ lang }: { lang: Language }) {
 
             <div className="mt-8 flex items-center justify-between">
               <div className="flex flex-col">
-                {/* Translated Capacity Label */}
                 <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1">
                   {t.capacityLabel}
                 </span>
-                {/* Translated Player Count string */}
                 <span className="text-xs font-bold text-teal-500 uppercase italic tracking-tighter">
                   {game.minPlayers} — {game.suggestedMax} {t.players}
                 </span>
               </div>
 
               <div className="bg-zinc-800 px-3 py-1.5 rounded-full border border-zinc-700">
-                {/* Translated Max Label */}
                 <span className="text-[10px] text-zinc-100 font-black uppercase tracking-widest">
                   {t.maxLabel} {game.absoluteMax}
                 </span>

@@ -43,10 +43,7 @@ export default function Home() {
   if (!mounted) return null;
 
   return (
-    <main
-      dir={t.dir}
-      className="min-h-screen bg-black text-white flex flex-col lg:flex-row items-center justify-center p-8 lg:p-24 gap-16 lg:gap-32 transition-all duration-500"
-    >
+    <main className="min-h-screen bg-black text-white flex flex-col lg:flex-row items-center justify-center p-8 lg:p-24 gap-16 lg:gap-32 transition-all duration-500">
       <div className="w-full max-w-sm space-y-10">
         {/* Language Picker */}
         <div className="flex gap-2 justify-center lg:justify-start bg-zinc-900/50 p-1.5 rounded-2xl border border-zinc-800 w-fit">
@@ -69,9 +66,7 @@ export default function Home() {
           <h1 className="text-7xl font-black italic uppercase tracking-tighter leading-none">
             {t.title}
           </h1>
-          <div
-            className={`flex items-center gap-2 ${t.dir === "rtl" ? "flex-row-reverse" : ""}`}
-          >
+          <div className={`flex items-center gap-2`}>
             <span className="h-1 w-8 bg-teal-500"></span>
             <p className="text-teal-500 font-black uppercase tracking-[0.3em] text-[10px]">
               {t.subtitle}
@@ -111,9 +106,7 @@ export default function Home() {
       </div>
 
       <div className="flex-1 w-full max-w-3xl">
-        <div
-          className={`mb-8 flex items-end justify-between border-b border-zinc-900 pb-4 ${t.dir === "rtl" ? "flex-row-reverse" : ""}`}
-        >
+        <div className="mb-8 flex items-end justify-between border-b border-zinc-900 pb-4">
           <h2 className="text-[11px] font-black uppercase text-zinc-400 tracking-[0.5em]">
             {t.arcade}
           </h2>

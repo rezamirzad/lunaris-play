@@ -7,11 +7,10 @@ export interface TranslationSet {
   roomPlaceholder: string;
   enterLobby: string;
   arcade: string;
-  capacityLabel: string; // New
-  maxLabel: string; // New
+  capacityLabel: string;
+  maxLabel: string;
   players: string;
   footer: string;
-  dir: "ltr" | "rtl";
 }
 
 export const translations: Record<Language, TranslationSet> = {
@@ -26,7 +25,6 @@ export const translations: Record<Language, TranslationSet> = {
     maxLabel: "MAX",
     players: "PLAYERS",
     footer: "Connect your phone to play. Select a game to host.",
-    dir: "ltr",
   },
   fr: {
     title: "LUNARIS",
@@ -39,7 +37,6 @@ export const translations: Record<Language, TranslationSet> = {
     maxLabel: "MAX",
     players: "JOUEURS",
     footer: "Connectez votre téléphone. Choisissez un jeu pour héberger.",
-    dir: "ltr",
   },
   de: {
     title: "LUNARIS",
@@ -52,7 +49,6 @@ export const translations: Record<Language, TranslationSet> = {
     maxLabel: "MAX",
     players: "SPIELER",
     footer: "Verbinde dein Handy. Wähle ein Spiel zum Hosten.",
-    dir: "ltr",
   },
   fa: {
     title: "لوناریس",
@@ -65,6 +61,5 @@ export const translations: Record<Language, TranslationSet> = {
     maxLabel: "حداکثر",
     players: "بازیکن",
     footer: "برای بازی گوشی خود را وصل کنید. یک بازی انتخاب کنید.",
-    dir: "rtl",
   },
 };
