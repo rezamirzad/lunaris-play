@@ -7,59 +7,94 @@ export interface TranslationSet {
   roomPlaceholder: string;
   enterLobby: string;
   arcade: string;
+  ongoingGames: string;
+  howToPlay: string;
+  step1: string;
+  step2: string;
+  step3: string;
   capacityLabel: string;
   maxLabel: string;
   players: string;
   footer: string;
+  noOngoing: string;
+  host: string; // <--- ADDED THIS
 }
 
 export const translations: Record<Language, TranslationSet> = {
   en: {
     title: "LUNARIS",
-    subtitle: "MOBILE CONTROLLER",
+    subtitle: "ARCADE HUB",
     namePlaceholder: "YOUR NAME",
     roomPlaceholder: "ROOM CODE",
-    enterLobby: "ENTER LOBBY",
-    arcade: "THE ARCADE",
+    enterLobby: "JOIN ROOM",
+    arcade: "AVAILABLE GAMES",
+    ongoingGames: "ONGOING SESSIONS",
+    howToPlay: "HOW TO PLAY",
+    step1: "1. Open this page on your TV or Laptop to HOST.",
+    step2: "2. Scan the QR code or enter the code on your PHONE.",
+    step3: "3. Use your phone as the controller to play!",
     capacityLabel: "CAPACITY",
     maxLabel: "MAX",
     players: "PLAYERS",
-    footer: "Connect your phone to play. Select a game to host.",
+    footer: "Lunaris League v1.0.4",
+    noOngoing: "No public games active. Start one!",
+    host: "HOST GAME", // <--- ADDED THIS
   },
   fr: {
     title: "LUNARIS",
-    subtitle: "CONTRÔLEUR MOBILE",
+    subtitle: "CENTRE ARCADE",
     namePlaceholder: "VOTRE NOM",
-    roomPlaceholder: "CODE DE LA SALLE",
-    enterLobby: "ENTRER DANS LE SALON",
-    arcade: "L'ARCADE",
+    roomPlaceholder: "CODE SALLE",
+    enterLobby: "REJOINDRE",
+    arcade: "JEUX DISPONIBLES",
+    ongoingGames: "SESSIONS EN COURS",
+    howToPlay: "COMMENT JOUER",
+    step1: "1. Ouvrez cette page sur TV/PC pour HÉBERGER.",
+    step2: "2. Scannez le QR ou entrez le code sur MOBILE.",
+    step3: "3. Jouez en utilisant votre mobile comme manette !",
     capacityLabel: "CAPACITÉ",
     maxLabel: "MAX",
     players: "JOUEURS",
-    footer: "Connectez votre téléphone. Choisissez un jeu pour héberger.",
+    footer: "Lunaris League v1.0.4",
+    noOngoing: "Aucune partie en cours. Lancez-en une !",
+    host: "HÉBERGER", // <--- ADDED THIS
   },
   de: {
     title: "LUNARIS",
-    subtitle: "MOBILE STEUERUNG",
+    subtitle: "ARCADE-ZENTRUM",
     namePlaceholder: "DEIN NAME",
     roomPlaceholder: "RAUMCODE",
-    enterLobby: "LOBBY BETRETEN",
-    arcade: "DIE ARKADE",
+    enterLobby: "BEITRETEN",
+    arcade: "VERFÜGBARE SPIELE",
+    ongoingGames: "AKTIVE SPIELE",
+    howToPlay: "SO WIRD GESPIELT",
+    step1: "1. Seite auf TV/Laptop zum HOSTEN öffnen.",
+    step2: "2. Code auf dem HANDY eingeben.",
+    step3: "3. Handy als Controller zum Spielen nutzen!",
     capacityLabel: "KAPAZITÄT",
     maxLabel: "MAX",
     players: "SPIELER",
-    footer: "Verbinde dein Handy. Wähle ein Spiel zum Hosten.",
+    footer: "Lunaris League v1.0.4",
+    noOngoing: "Keine aktiven Spiele. Starte eins!",
+    host: "HOSTEN", // <--- ADDED THIS
   },
   fa: {
     title: "لوناریس",
-    subtitle: "کنترلر موبایل",
+    subtitle: "مرکز بازی",
     namePlaceholder: "نام شما",
     roomPlaceholder: "کد اتاق",
-    enterLobby: "ورود به لابی",
-    arcade: "آرکید بازی",
+    enterLobby: "ورود به اتاق",
+    arcade: "بازی‌های موجود",
+    ongoingGames: "بازی‌های در جریان",
+    howToPlay: "راهنمای بازی",
+    step1: "۱. این صفحه را در تلویزیون یا لپ‌تاپ باز کنید.",
+    step2: "۲. کد اتاق را در گوشی خود وارد کنید.",
+    step3: "۳. از گوشی به عنوان دسته بازی استفاده کنید!",
     capacityLabel: "ظرفیت",
     maxLabel: "حداکثر",
     players: "بازیکن",
-    footer: "برای بازی گوشی خود را وصل کنید. یک بازی انتخاب کنید.",
+    footer: "لوناریس لیگ نسخه ۱.۰.۴",
+    noOngoing: "بازی فعالی وجود ندارد. یکی شروع کنید!",
+    host: "ایجاد بازی", // <--- ADDED THIS
   },
 };

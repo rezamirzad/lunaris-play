@@ -1,70 +1,126 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { api } from "@convex/api";
-import { useRouter } from "next/navigation";
+import { api } from "../../../convex/_generated/api";
 import { Language, translations } from "@/lib/translations";
 
-export default function GameCatalog({ lang }: { lang: Language }) {
+interface Game {
+  _id: string;
+  slug: string;
+  title: string; // English title from your DB
+  title_fr?: string;
+  title_de?: string;
+  title_fa?: string;
+  description: string; // THIS is the English field in your DB
+  description_fr: string;
+  description_de?: string;
+  description_fa?: string;
+  thumbnail?: string;
+  minPlayers: number;
+  suggestedMax: number;
+  absoluteMax: number;
+}
+
+export default function GameCatalog({
+  lang,
+  onHost,
+}: {
+  lang: Language;
+  onHost: (slug: string) => void;
+}) {
   const games = useQuery(api.engine.listGames);
-  const router = useRouter();
   const t = translations[lang];
 
-  const handleHost = (gameSlug: string) => {
-    const newCode = Math.random().toString(36).substring(2, 6).toUpperCase();
-    router.push(`/room/${newCode}?view=board&game=${gameSlug}`);
-  };
+  const isRTL = lang === "fa";
 
-  if (games === undefined)
+  if (!games)
     return (
-      <div className="text-teal-500 animate-pulse font-black text-xs tracking-[0.3em]">
-        INITIALIZING ARCADE...
+      <div className="grid grid-cols-1 gap-10 opacity-20">
+        {[1, 2].map((i) => (
+          <div
+            key={i}
+            className="h-[400px] bg-zinc-900 rounded-[3.5rem] animate-pulse"
+          />
+        ))}
       </div>
     );
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-left">
-      {games.map((game) => {
-        const displayTitle = (game as any)[`title_${lang}`] || game.title;
+    <div
+      className={`grid grid-cols-1 gap-12 ${isRTL ? "text-right" : "text-left"}`}
+      dir={isRTL ? "rtl" : "ltr"}
+    >
+      {games.map((game: Game) => {
+        // Logic to pick the right title/description based on language
+        const displayTitle =
+          lang === "fr"
+            ? game.title_fr || game.title
+            : lang === "fa"
+              ? game.title_fa || game.title
+              : lang === "de"
+                ? game.title_de || game.title
+                : game.title;
+
         const displayDescription =
-          (game as any)[`description_${lang}`] || game.description;
+          lang === "fr"
+            ? game.description_fr || game.description
+            : lang === "fa"
+              ? game.description_fa || game.description
+              : lang === "de"
+                ? game.description_de || game.description
+                : game.description;
 
         return (
           <div
-            key={game.slug}
-            onClick={() => handleHost(game.slug)}
-            className="group bg-zinc-900/40 border border-zinc-800 p-6 rounded-[2.5rem] cursor-pointer hover:border-teal-400 hover:bg-zinc-900 transition-all duration-300 active:scale-95"
+            key={game._id}
+            className="group relative overflow-hidden bg-zinc-900 rounded-[3.5rem] border border-zinc-800 hover:border-teal-500 transition-all duration-500 cursor-pointer flex flex-col lg:flex-row shadow-2xl"
+            onClick={() => onHost(game.slug)}
           >
-            <div className="w-full aspect-square mb-6 overflow-hidden rounded-[2rem] bg-black border border-zinc-800 flex items-center justify-center p-6 shadow-inner">
+            {/* THUMBNAIL */}
+            <div className="w-full lg:w-[45%] h-72 lg:h-auto relative overflow-hidden bg-zinc-800">
               <img
-                src={game.thumbnail}
+                src={game.thumbnail || "/assets/placeholder-game.png"}
                 alt={displayTitle}
-                className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-500"
+                className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-1000"
+              />
+              <div
+                className={`absolute inset-0 hidden lg:block bg-gradient-to-${isRTL ? "l" : "r"} from-zinc-900 via-transparent to-transparent opacity-60`}
               />
             </div>
 
-            <h3 className="text-2xl font-black uppercase text-white group-hover:text-teal-400 transition-colors tracking-tight">
-              {displayTitle}
-            </h3>
+            {/* CONTENT */}
+            <div className="flex-1 p-12 flex flex-col justify-between bg-zinc-900">
+              <div className="space-y-6">
+                <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
+                  <h3
+                    className={`text-6xl font-black italic uppercase tracking-tighter text-white ${isRTL ? "font-serif" : ""}`}
+                  >
+                    {displayTitle}
+                  </h3>
 
-            <p className="text-zinc-300 text-sm mt-3 line-clamp-3 leading-relaxed font-medium">
-              {displayDescription}
-            </p>
+                  <div
+                    className={`flex flex-col ${isRTL ? "items-start" : "items-end"}`}
+                  >
+                    <span className="text-teal-400 font-black text-3xl whitespace-nowrap">
+                      {game.minPlayers}-{game.suggestedMax} {t.players}
+                    </span>
+                    <span className="text-zinc-600 font-bold text-sm uppercase tracking-[0.2em] mt-1">
+                      {isRTL ? "حداکثر" : "Max"}: {game.absoluteMax}
+                    </span>
+                  </div>
+                </div>
 
-            <div className="mt-8 flex items-center justify-between">
-              <div className="flex flex-col">
-                <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1">
-                  {t.capacityLabel}
-                </span>
-                <span className="text-xs font-bold text-teal-500 uppercase italic tracking-tighter">
-                  {game.minPlayers} — {game.suggestedMax} {t.players}
-                </span>
+                <p className="text-zinc-400 text-xl leading-relaxed max-w-3xl font-medium">
+                  {displayDescription}
+                </p>
               </div>
 
-              <div className="bg-zinc-800 px-3 py-1.5 rounded-full border border-zinc-700">
-                <span className="text-[10px] text-zinc-100 font-black uppercase tracking-widest">
-                  {t.maxLabel} {game.absoluteMax}
-                </span>
+              <div
+                className={`mt-10 flex ${isRTL ? "justify-start" : "justify-end"}`}
+              >
+                <button className="bg-white text-black px-14 py-5 rounded-[2rem] font-black text-2xl uppercase tracking-widest transition-all hover:bg-teal-500 active:scale-95">
+                  {t.host}
+                </button>
               </div>
             </div>
           </div>

@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useMutation } from "convex/react";
-import { api } from "@convex/api";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import GameCatalog from "./components/GameCatalog";
 import { translations, Language } from "@/lib/translations";
 
@@ -15,8 +15,9 @@ export default function Home() {
   const [isJoining, setIsJoining] = useState(false);
 
   const router = useRouter();
+  const createRoom = useMutation(api.engine.createRoom);
   const join = useMutation(api.engine.joinRoom);
-
+  const rooms = useQuery(api.engine.getOngoingRooms) || [];
   const t = translations[lang];
 
   useEffect(() => {
@@ -25,7 +26,13 @@ export default function Home() {
     if (savedName) setName(savedName);
   }, []);
 
-  const handleJoin = async (e: React.FormEvent) => {
+  const handleHost = async (gameSlug: string) => {
+    const newCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+    await createRoom({ roomCode: newCode, gameSlug: gameSlug });
+    router.push(`/room/${newCode}?view=board&game=${gameSlug}`);
+  };
+
+  const handleFormJoin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !code) return;
     setIsJoining(true);
@@ -35,7 +42,7 @@ export default function Home() {
       localStorage.setItem("playerName", name.trim());
       router.push(`/room/${upperCode}?view=hand`);
     } catch (err) {
-      console.error("Join failed:", err);
+      console.error(err);
       setIsJoining(false);
     }
   };
@@ -43,77 +50,87 @@ export default function Home() {
   if (!mounted) return null;
 
   return (
-    <main className="min-h-screen bg-black text-white flex flex-col lg:flex-row items-center justify-center p-8 lg:p-24 gap-16 lg:gap-32 transition-all duration-500">
-      <div className="w-full max-w-sm space-y-10">
-        {/* Language Picker */}
-        <div className="flex gap-2 justify-center lg:justify-start bg-zinc-900/50 p-1.5 rounded-2xl border border-zinc-800 w-fit">
+    <main className="min-h-screen bg-black text-white p-6 lg:p-12 space-y-12 max-w-7xl mx-auto">
+      <header className="flex justify-between items-center">
+        <div>
+          <h1 className="text-6xl font-black italic tracking-tighter">
+            {t.title}
+          </h1>
+          <p className="text-teal-500 font-bold tracking-[0.4em] text-[10px] uppercase">
+            {t.subtitle}
+          </p>
+        </div>
+        <div className="flex gap-2 bg-zinc-900/50 p-1 rounded-xl border border-zinc-800">
           {(Object.keys(translations) as Language[]).map((l) => (
             <button
               key={l}
-              onClick={() => setLang(l)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase transition-all ${
-                lang === l
-                  ? "bg-white text-black"
-                  : "text-zinc-500 hover:text-zinc-300"
-              }`}
+              onClick={() => setLang(l as Language)}
+              className={`px-4 py-1.5 rounded-lg text-[10px] font-black transition-all ${lang === l ? "bg-white text-black" : "text-zinc-500"}`}
             >
-              {l}
+              {l.toUpperCase()}
             </button>
           ))}
         </div>
+      </header>
 
-        <header className="space-y-2">
-          <h1 className="text-7xl font-black italic uppercase tracking-tighter leading-none">
-            {t.title}
-          </h1>
-          <div className={`flex items-center gap-2`}>
-            <span className="h-1 w-8 bg-teal-500"></span>
-            <p className="text-teal-500 font-black uppercase tracking-[0.3em] text-[10px]">
-              {t.subtitle}
-            </p>
-          </div>
-        </header>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div className="lg:col-span-4 space-y-8">
+          <section className="bg-zinc-900/30 border border-zinc-800 p-8 rounded-[2rem] space-y-6">
+            <h2 className="text-xs font-black tracking-widest text-zinc-500 uppercase">
+              {t.enterLobby}
+            </h2>
+            <form onSubmit={handleFormJoin} className="space-y-4">
+              <input
+                placeholder={t.namePlaceholder}
+                className="w-full bg-black/40 p-4 rounded-xl border border-zinc-800 focus:border-teal-500 font-bold"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <input
+                placeholder={t.roomPlaceholder}
+                className="w-full bg-black/40 p-4 rounded-xl border border-zinc-800 focus:border-teal-500 text-center text-xl font-black"
+                value={code}
+                onChange={(e) => setCode(e.target.value.toUpperCase())}
+                maxLength={4}
+              />
+              <button
+                disabled={isJoining}
+                className="w-full py-4 bg-teal-500 text-black font-black rounded-xl uppercase tracking-widest disabled:opacity-50"
+              >
+                {isJoining ? "..." : t.enterLobby}
+              </button>
+            </form>
+          </section>
 
-        <form onSubmit={handleJoin} className="space-y-4">
-          <input
-            type="text"
-            placeholder={t.namePlaceholder}
-            className="w-full bg-zinc-900/50 p-5 rounded-2xl border border-zinc-800 focus:border-teal-400 focus:outline-none transition-all font-bold placeholder:text-zinc-700 text-start"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder={t.roomPlaceholder}
-            maxLength={4}
-            className="w-full bg-zinc-900/50 p-5 rounded-2xl border border-zinc-800 focus:border-teal-400 focus:outline-none transition-all text-center text-2xl font-black tracking-[0.2em] placeholder:text-zinc-700"
-            value={code}
-            onChange={(e) => setCode(e.target.value.toUpperCase())}
-          />
-          <button
-            disabled={isJoining}
-            className="w-full py-5 bg-white text-black rounded-2xl font-black uppercase tracking-widest hover:bg-teal-500 transition-all disabled:opacity-50"
-          >
-            {isJoining ? "..." : t.enterLobby}
-          </button>
-        </form>
-
-        <footer className="pt-8 border-t border-zinc-900">
-          <p className="text-zinc-500 text-[10px] leading-relaxed uppercase font-bold tracking-tight">
-            {t.footer}
-          </p>
-        </footer>
-      </div>
-
-      <div className="flex-1 w-full max-w-3xl">
-        <div className="mb-8 flex items-end justify-between border-b border-zinc-900 pb-4">
-          <h2 className="text-[11px] font-black uppercase text-zinc-400 tracking-[0.5em]">
-            {t.arcade}
-          </h2>
+          <section className="space-y-4">
+            <h2 className="text-xs font-black tracking-widest text-zinc-500 uppercase">
+              {t.ongoingGames}
+            </h2>
+            <div className="space-y-2">
+              {rooms.map((room: any) => (
+                <div
+                  key={room.roomCode}
+                  onClick={() => setCode(room.roomCode)}
+                  className="group bg-zinc-900/50 border border-zinc-800 p-4 rounded-xl flex justify-between items-center cursor-pointer hover:border-teal-500/50"
+                >
+                  <span className="text-white group-hover:text-teal-500 font-black tracking-widest">
+                    {room.roomCode}
+                  </span>
+                  <span className="text-[10px] text-teal-500 font-black uppercase tracking-widest">
+                    JOIN
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
 
-        {/* CRITICAL: Passing lang prop here */}
-        <GameCatalog lang={lang} />
+        <div className="lg:col-span-8 space-y-8">
+          <h2 className="text-xs font-black tracking-[0.4em] text-zinc-400 uppercase border-b border-zinc-900 pb-4">
+            {t.arcade}
+          </h2>
+          <GameCatalog lang={lang} onHost={handleHost} />
+        </div>
       </div>
     </main>
   );
