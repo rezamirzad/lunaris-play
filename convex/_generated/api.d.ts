@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as engine from "../engine.js";
 import type * as game from "../game.js";
 
 import type {
@@ -17,6 +18,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  engine: typeof engine;
   game: typeof game;
 }>;
 
