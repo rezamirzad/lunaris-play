@@ -26,8 +26,15 @@ export interface TranslationSet {
   hintHatch: string;
   eggs: string;
   chicks: string;
-  // FOX NEW KEYS
   targetPlayer: string;
+  // ACTION BUTTON KEYS
+  discard: string;
+  invalidCombo: string;
+  attack: string;
+  waiting: string;
+  defend: string;
+  accept: string;
+  // LOG KEYS
   LOG_LAY_EGG: string;
   LOG_HATCH: string;
   LOG_DISCARD: string;
@@ -64,6 +71,12 @@ export const translations: Record<Language, TranslationSet> = {
     eggs: "EGGS",
     chicks: "CHICKS",
     targetPlayer: "SELECT VICTIM 🦊",
+    discard: "DISCARD",
+    invalidCombo: "INVALID COMBO",
+    attack: "ATTACK",
+    waiting: "WAITING...",
+    defend: "DEFEND",
+    accept: "GIVE EGG",
     LOG_LAY_EGG: "{player} laid an egg! 🥚",
     LOG_HATCH: "{player} hatched a chick! 🐣",
     LOG_DISCARD: "{player} discarded a {card}. ♻️",
@@ -98,6 +111,12 @@ export const translations: Record<Language, TranslationSet> = {
     eggs: "OEUFS",
     chicks: "POUSSINS",
     targetPlayer: "CHOISIR UNE CIBLE 🦊",
+    discard: "DÉFAUSSER",
+    invalidCombo: "COUP INVALIDE",
+    attack: "ATTAQUER",
+    waiting: "ATTENTE...",
+    defend: "DÉFENDRE",
+    accept: "DONNER OEUF",
     LOG_LAY_EGG: "{player} a pondu un œuf ! 🥚",
     LOG_HATCH: "{player} a fait éclore un poussin ! 🐣",
     LOG_DISCARD: "{player} a défaussé un {card}. ♻️",
@@ -132,6 +151,12 @@ export const translations: Record<Language, TranslationSet> = {
     eggs: "EIER",
     chicks: "KÜKEN",
     targetPlayer: "OPFER WÄHLEN 🦊",
+    discard: "ABWERFEN",
+    invalidCombo: "UNGÜLTIG",
+    attack: "ANGREIFEN",
+    waiting: "WARTEN...",
+    defend: "VERTEIDIGEN",
+    accept: "EI GEBEN",
     LOG_LAY_EGG: "{player} hat ein Ei gelegt! 🥚",
     LOG_HATCH: "{player} hat ein Küken ausgebrütet! 🐣",
     LOG_DISCARD: "{player} hat ein {card} abgeworfen. ♻️",
@@ -166,6 +191,12 @@ export const translations: Record<Language, TranslationSet> = {
     eggs: "تخم",
     chicks: "جوجه",
     targetPlayer: "انتخاب هدف 🦊",
+    discard: "حذف کارت",
+    invalidCombo: "حرکت نامعتبر",
+    attack: "حمله",
+    waiting: "در انتظار...",
+    defend: "دفاع",
+    accept: "تسلیم تخم",
     LOG_LAY_EGG: "{player} یک تخم گذاشت! 🥚",
     LOG_HATCH: "{player} یک جوجه به دنیا آورد! 🐣",
     LOG_DISCARD: "{player} کارت {card} را دور انداخت. ♻️",

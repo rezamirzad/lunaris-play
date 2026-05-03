@@ -43,12 +43,9 @@ export default function ComboHints({ hand, eggs, lang }: ComboHintsProps) {
           </span>
         </div>
 
-        {/* New Discard Hint */}
         <div className="flex items-center gap-2 px-3 py-2 rounded-2xl border border-zinc-800/50 bg-zinc-800/20 text-zinc-500 opacity-80">
           <span>♻️</span>
-          <span className="text-[10px] font-black uppercase">
-            {lang === "fa" ? "حذف کارت" : "Discard"}
-          </span>
+          <span className="text-[10px] font-black uppercase">{t.discard}</span>
         </div>
       </div>
     </div>

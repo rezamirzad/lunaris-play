@@ -44,21 +44,24 @@ export default function PiouPiouHand({
     setTargetId(null);
   };
 
-  // Helper to determine button text based on selection
-  const getButtonText = () => {
+  const getButtonLabel = () => {
     if (!isMyTurn) return "...";
-    if (pending) return "WAITING";
-    if (selectedIndices.length === 0) return t.arcade.split(" ")[0]; // fallback like "GAMES"
+    if (pending) return t.waiting;
+    if (selectedIndices.length === 0) return t.startMatch;
 
-    if (isFoxSelected) return "ATTACK";
+    if (isFoxSelected) return t.attack;
 
-    // Using translation keys from your translations.ts
-    if (selectedIndices.length === 1)
-      return lang === "fa" ? "حذف کارت" : "DISCARD";
-    if (selectedIndices.length === 2) return t.hintHatch;
-    if (selectedIndices.length === 3) return t.hintLayEgg;
+    const hasRooster = selectedCards.includes("ROOSTER");
+    const hasChicken = selectedCards.includes("CHICKEN");
+    const hasNest = selectedCards.includes("NEST");
+    const chickenCount = selectedCards.filter((c) => c === "CHICKEN").length;
 
-    return t.startMatch;
+    if (selectedIndices.length === 3 && hasRooster && hasChicken && hasNest)
+      return t.hintLayEgg;
+    if (selectedIndices.length === 2 && chickenCount === 2) return t.hintHatch;
+    if (selectedIndices.length === 1) return t.discard;
+
+    return t.invalidCombo;
   };
 
   return (
@@ -66,14 +69,13 @@ export default function PiouPiouHand({
       className={`flex flex-col min-h-screen bg-black text-white font-black ${lang === "fa" ? "font-serif" : ""}`}
       dir={lang === "fa" ? "rtl" : "ltr"}
     >
-      {/* FOX ATTACK OVERLAY */}
       {isBeingAttacked && (
         <div className="fixed inset-0 z-[100] bg-red-600 p-10 flex flex-col items-center justify-center text-center animate-in fade-in">
           <h2 className="text-6xl italic mb-4 uppercase tracking-tighter">
-            Fox Attack!
+            {t.attack}!
           </h2>
           <p className="mb-10 opacity-70 uppercase tracking-widest text-xs">
-            Someone wants your egg. Defend or Accept?
+            {t.targetPlayer}
           </p>
           <div className="grid grid-cols-1 gap-4 w-full max-w-sm">
             <button
@@ -87,22 +89,21 @@ export default function PiouPiouHand({
               }}
               className="py-6 bg-white text-black rounded-2xl font-black uppercase shadow-xl active:scale-95 transition-all"
             >
-              Defend (2 🐓)
+              {t.defend} (2 🐓)
             </button>
             <button
               onClick={() => handleAction("ACCEPT", [])}
               className="py-6 bg-black/40 border border-white/20 rounded-2xl font-black uppercase active:scale-95 transition-all"
             >
-              Give Egg 🥚
+              {t.accept} 🥚
             </button>
           </div>
         </div>
       )}
 
-      {/* HEADER */}
       <div className="p-4 flex justify-between items-center bg-zinc-900/50 border-b border-zinc-800">
         <div className="text-[10px] uppercase text-zinc-500 tracking-widest">
-          {isMyTurn ? t.activeTurn : "WAITING"}
+          {isMyTurn ? t.activeTurn : t.waiting}
         </div>
         <div className="flex gap-1 bg-black p-1 rounded-xl border border-zinc-800">
           {(["en", "fr", "de", "fa"] as Language[]).map((l) => (
@@ -118,7 +119,6 @@ export default function PiouPiouHand({
       </div>
 
       <div className="p-6 space-y-6 flex-1 flex flex-col">
-        {/* STATS */}
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-[2.5rem] text-center">
             <p className="text-[9px] text-zinc-600 font-black mb-1 uppercase tracking-widest">
@@ -138,7 +138,6 @@ export default function PiouPiouHand({
           </div>
         </div>
 
-        {/* TARGETING UI */}
         {isFoxSelected && isMyTurn && (
           <div className="bg-zinc-900 p-6 rounded-[2rem] border border-zinc-800 animate-in slide-in-from-top-2">
             <p className="text-[10px] text-zinc-500 mb-4 uppercase font-black tracking-widest">
@@ -162,7 +161,7 @@ export default function PiouPiouHand({
                 onClick={() => handleAction("DISCARD")}
                 className="px-4 py-2 rounded-xl border border-zinc-800 text-zinc-500 text-[10px] font-black uppercase ml-auto"
               >
-                Just Discard
+                {t.discard}
               </button>
             </div>
           </div>
@@ -174,7 +173,6 @@ export default function PiouPiouHand({
           lang={lang}
         />
 
-        {/* CARDS */}
         <div className="flex-1 flex items-center justify-center gap-3">
           {player.gameHand.map((type: string, i: number) => (
             <div
@@ -199,7 +197,6 @@ export default function PiouPiouHand({
         </div>
       </div>
 
-      {/* FOOTER ACTION */}
       <div className="p-8 pb-12">
         <button
           onClick={() =>
@@ -209,11 +206,12 @@ export default function PiouPiouHand({
             !isMyTurn ||
             selectedIndices.length === 0 ||
             (isFoxSelected && !targetId) ||
-            !!pending
+            !!pending ||
+            (selectedIndices.length > 1 && getButtonLabel() === t.invalidCombo)
           }
-          className={`w-full py-8 rounded-[2rem] text-3xl font-black uppercase transition-all ${isMyTurn && selectedIndices.length > 0 && (!isFoxSelected || targetId) ? "bg-white text-black shadow-2xl active:scale-95" : "bg-zinc-900 text-zinc-800 opacity-50"}`}
+          className={`w-full py-8 rounded-[2rem] text-3xl font-black uppercase transition-all ${isMyTurn && selectedIndices.length > 0 && getButtonLabel() !== t.invalidCombo && (!isFoxSelected || targetId) ? "bg-white text-black shadow-2xl active:scale-95" : "bg-zinc-900 text-zinc-800 opacity-50"}`}
         >
-          {getButtonText()}
+          {getButtonLabel()}
         </button>
       </div>
     </div>
