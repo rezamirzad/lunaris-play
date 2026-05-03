@@ -12,26 +12,40 @@ export default defineSchema({
     description_fr: v.optional(v.string()),
     description_de: v.optional(v.string()),
     description_fa: v.optional(v.string()),
-    thumbnail: v.string(),
+    thumbnail: v.optional(v.string()),
     minPlayers: v.number(),
     suggestedMax: v.number(),
     absoluteMax: v.number(),
-  }).index("by_slug", ["slug"]),
+  }),
 
   rooms: defineTable({
     roomCode: v.string(),
-    status: v.string(),
-    currentGame: v.optional(v.string()),
-    gameBoard: v.any(),
-    turnOrder: v.array(v.id("players")),
+    status: v.string(), // "LOBBY" | "PLAYING" | "FINISHED"
+    currentGame: v.string(),
     currentTurnIndex: v.number(),
-  }).index("by_roomCode", ["roomCode"]),
+    turnOrder: v.array(v.id("players")),
+    gameBoard: v.object({
+      history: v.optional(v.array(v.any())),
+      lastWarning: v.optional(v.union(v.any(), v.null())),
+      pendingAttack: v.optional(
+        v.union(
+          v.null(),
+          v.object({
+            attackerId: v.id("players"),
+            victimId: v.id("players"),
+            card: v.string(),
+            indices: v.array(v.number()),
+          }),
+        ),
+      ),
+    }),
+  }).index("by_roomCode", ["roomCode"]), // <--- FIXED: Added the missing index here
 
   players: defineTable({
     roomId: v.id("rooms"),
     name: v.string(),
-    score: v.number(),
-    gameHand: v.any(),
+    gameHand: v.array(v.string()),
+    state: v.any(),
     isReady: v.boolean(),
   }).index("by_room", ["roomId"]),
 });

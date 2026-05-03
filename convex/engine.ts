@@ -1,5 +1,20 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import * as piouPiouGame from "./games/pioupiou";
+
+/**
+ * Standard Fisher-Yates Shuffle
+ */
+const shuffle = <T>(array: T[]) => {
+  const newArray = [...array];
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  }
+  return newArray;
+};
+
+// --- QUERIES ---
 
 export const listGames = query({
   args: {},
@@ -8,85 +23,119 @@ export const listGames = query({
   },
 });
 
-// Step 1: Standardized Join
-export const joinRoom = mutation({
-  args: { roomCode: v.string(), playerName: v.string() },
+export const getOngoingRooms = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db
+      .query("rooms")
+      .filter((q) => q.neq(q.field("status"), "FINISHED"))
+      .order("desc")
+      .take(5);
+  },
+});
+
+export const getRoomState = query({
+  args: { roomCode: v.string() },
   handler: async (ctx, args) => {
-    let room = await ctx.db
+    const room = await ctx.db
       .query("rooms")
       .withIndex("by_roomCode", (q) => q.eq("roomCode", args.roomCode))
       .unique();
 
-    if (!room) {
-      const roomId = await ctx.db.insert("rooms", {
-        roomCode: args.roomCode,
-        status: "LOBBY",
-        gameBoard: {}, // Fixed: changed from gameBoardState to gameBoard
-        turnOrder: [],
-        currentTurnIndex: 0,
-      });
-      room = await ctx.db.get(roomId);
-    }
+    if (!room) return null;
 
-    const playerId = await ctx.db.insert("players", {
-      roomId: room!._id,
-      name: args.playerName,
-      score: 0,
-      gameHand: {}, // Fixed: changed from gameHandState to gameHand
-      isReady: false,
-    });
+    const players = await ctx.db
+      .query("players")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .collect();
 
-    return { roomId: room!._id, playerId };
+    return { ...room, players };
   },
 });
 
-export const toggleReady = mutation({
-  args: { playerId: v.id("players") },
+// --- MUTATIONS ---
+
+export const createRoom = mutation({
+  args: { roomCode: v.string(), gameSlug: v.string() },
   handler: async (ctx, args) => {
-    const player = await ctx.db.get(args.playerId);
-    if (!player) return;
-    await ctx.db.patch(args.playerId, { isReady: !player.isReady });
+    return await ctx.db.insert("rooms", {
+      roomCode: args.roomCode,
+      status: "LOBBY",
+      currentGame: args.gameSlug,
+      currentTurnIndex: 0,
+      turnOrder: [],
+      gameBoard: {
+        history: [],
+        lastWarning: null,
+        pendingAttack: null,
+      },
+    });
+  },
+});
+
+export const joinRoom = mutation({
+  args: { roomCode: v.string(), playerName: v.string() },
+  handler: async (ctx, args) => {
+    const room = await ctx.db
+      .query("rooms")
+      .withIndex("by_roomCode", (q) => q.eq("roomCode", args.roomCode))
+      .unique();
+
+    if (!room) throw new Error("Room not found");
+
+    const existingPlayer = await ctx.db
+      .query("players")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .filter((q) => q.eq(q.field("name"), args.playerName))
+      .unique();
+
+    if (existingPlayer) {
+      return { roomId: room._id, playerId: existingPlayer._id };
+    }
+
+    return await ctx.db.insert("players", {
+      roomId: room._id,
+      name: args.playerName,
+      gameHand: [],
+      state: { eggs: 0, chicks: 0 },
+      isReady: false,
+    });
   },
 });
 
 export const startGame = mutation({
-  args: { roomId: v.id("rooms"), gameType: v.string() },
-  handler: async (ctx, args) => {
-    const players = await ctx.db
-      .query("players")
-      .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
-      .collect();
-
-    // Basic validation: ensure everyone is ready
-    const allReady = players.every((p) => p.isReady);
-    if (!allReady) return { success: false, error: "Not everyone is ready!" };
-
-    await ctx.db.patch(args.roomId, {
-      status: "PLAYING",
-      currentGame: args.gameType,
-      // Initialize generic game board state
-      gameBoard: { startTime: Date.now() },
-    });
-
-    // Initialize individual player hands for Piu Piu
-    for (const player of players) {
-      await ctx.db.patch(player._id, {
-        gameHand: { eggs: 0, chicks: 0, cards: ["lay", "hatch", "fox"] },
-      });
-    }
-
-    return { success: true };
-  },
-});
-
-// Step 2: Standardized Turn Advancement
-export const nextTurn = mutation({
   args: { roomId: v.id("rooms") },
   handler: async (ctx, args) => {
     const room = await ctx.db.get(args.roomId);
     if (!room) return;
 
-    const nextIndex = (room.currentTurnIndex + 1) % room.turnOrder.length;
-    await ctx.db.patch(args.roomId, { currentTurnIndex: nextIndex });
+    const players = await ctx.db
+      .query("players")
+      .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
+      .collect();
+
+    if (players.length === 0) return;
+
+    const playerIds = players.map((p) => p._id);
+    const randomizedOrder = shuffle(playerIds);
+
+    await ctx.db.patch(args.roomId, {
+      status: "PLAYING",
+      turnOrder: randomizedOrder,
+      currentTurnIndex: 0,
+    });
+
+    if (room.currentGame?.toLowerCase() === "pioupiou") {
+      for (const player of players) {
+        const initialHand = Array.from({ length: 4 }, () =>
+          piouPiouGame.getRandomCard(),
+        );
+
+        await ctx.db.patch(player._id, {
+          gameHand: initialHand,
+          state: { eggs: 0, chicks: 0 },
+        });
+      }
+    }
   },
 });
