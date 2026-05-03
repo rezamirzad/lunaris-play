@@ -2,7 +2,7 @@
 
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../../../../../convex/_generated/api";
+import { api } from "convex/_generated/api";
 import PiouPiouHand from "../../components/games/PiouPiou/PiouPiouHand";
 import {
   translations,

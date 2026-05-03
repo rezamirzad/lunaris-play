@@ -13,10 +13,9 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    // REMOVE the "types": ["node"] line if it exists here
     "paths": {
       "@/*": ["./src/*"],
-      "@convex/*": ["../convex/_generated/*"]
+      "convex/*": ["../convex/*"]
     },
     "plugins": [
       {
@@ -24,6 +23,12 @@
       }
     ]
   },
-  "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "../convex/_generated/api.d.ts"
+  ],
   "exclude": ["node_modules"]
 }

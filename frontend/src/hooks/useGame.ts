@@ -1,6 +1,6 @@
 // frontend/src/hooks/useGame.ts
 import { useQuery } from "convex/react";
-import { api } from "@convex/api";
+import { api } from "convex/_generated/api";
 
 export function useGame(roomCode: string) {
   const gameState = useQuery(api.game.getRoomState, { roomCode });
