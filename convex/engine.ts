@@ -135,17 +135,19 @@ export const joinRoom = mutation({
       return { roomId: room._id, playerId: existingPlayer._id };
     }
 
-    // FEATURE: Handle Join-In-Progress logic
+    // FEATURE: Deal placeholders for Dixit in Lobby, or real cards in Playing
     let initialHand: string[] = [];
     const gameSlug = room.currentGame?.toLowerCase();
 
-    // Deal cards immediately if the game is already playing
-    if (room.status === "PLAYING") {
+    if (room.status === "LOBBY" && gameSlug === "dixit") {
+      initialHand = ["BACK", "BACK", "BACK", "BACK", "BACK", "BACK"];
+    } else if (room.status === "PLAYING") {
       if (gameSlug === "pioupiou") {
         initialHand = Array.from({ length: 4 }, () =>
           piouPiouGame.getRandomCard(),
         );
       } else if (gameSlug === "dixit") {
+        // Simple random deal for mid-game joiner
         initialHand = Array.from({ length: 6 }, () =>
           dixitGame.getRandomDixitCard(),
         );
@@ -160,7 +162,6 @@ export const joinRoom = mutation({
       isReady: false,
     });
 
-    // If game is active, update turn rotation and history to include new player
     if (room.status === "PLAYING") {
       const newTurnOrder = [...(room.turnOrder || []), playerId];
       const newHistory = [
@@ -205,16 +206,23 @@ export const startGame = mutation({
       currentTurnIndex: 0,
       gameBoard: {
         ...room.gameBoard,
-        phase: gameSlug === "dixit" ? "CLUE" : undefined,
+        phase: gameSlug === "dixit" ? "CLUE" : "SUBMITTING", // Initial phase set
         submittedCards: [],
         votes: [],
         history: [],
       },
     });
 
-    for (const player of players) {
+    // DIXIT UNIQUE DEAL LOGIC
+    let dixitPool: number[] = [];
+    if (gameSlug === "dixit") {
+      dixitPool = shuffle(Array.from({ length: 45 }, (_, i) => i + 1));
+    }
+
+    for (let i = 0; i < players.length; i++) {
+      const player = players[i];
       let initialHand: string[] = [];
-      let initialState: any = {};
+      let initialState: any = { score: 0 };
 
       if (gameSlug === "pioupiou") {
         initialHand = Array.from({ length: 4 }, () =>
@@ -222,10 +230,8 @@ export const startGame = mutation({
         );
         initialState = { eggs: 0, chicks: 0, score: 0 };
       } else if (gameSlug === "dixit") {
-        initialHand = Array.from({ length: 6 }, () =>
-          dixitGame.getRandomDixitCard(),
-        );
-        initialState = { eggs: 0, chicks: 0, score: 0 };
+        // Take 6 unique cards from the pool
+        initialHand = dixitPool.splice(0, 6).map((n) => `dixit_${n}`);
       }
 
       await ctx.db.patch(player._id, {

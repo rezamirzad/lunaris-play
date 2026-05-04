@@ -293,7 +293,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                           {isWinner
                             ? t.champion
                             : isTurn && !isGameOver
-                              ? t.yourTurn
+                              ? t.activeTurn
                               : ""}
                         </p>
                         <h3 className="text-4xl font-black italic uppercase tracking-normal truncate max-w-[180px] pr-4">
