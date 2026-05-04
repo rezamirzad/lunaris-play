@@ -6,6 +6,7 @@ import { useMemo } from "react";
 import { api } from "../../../../convex/_generated/api";
 import DixitHand from "../../components/games/Dixit/DixitHand";
 import DixitCard from "../../components/games/Dixit/DixitCard";
+import PiouPiouHand from "../../components/games/PiouPiou/PiouPiouHand";
 import {
   translations,
   Language,
@@ -48,12 +49,9 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
     if (!room?.gameBoard?.submittedCards) return [];
     const cards = [...room.gameBoard.submittedCards];
     const seed = `${room._id}${room.gameBoard.currentClue || ""}`;
-
-    return cards.sort((a, b) => {
-      const hashA = hashString(a.cardId + seed);
-      const hashB = hashString(b.cardId + seed);
-      return hashA - hashB;
-    });
+    return cards.sort(
+      (a, b) => hashString(a.cardId + seed) - hashString(b.cardId + seed),
+    );
   }, [
     room?._id,
     room?.gameBoard?.submittedCards,
@@ -74,13 +72,13 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
       </div>
     );
 
-  const { gameBoard = {} } = room;
   const isBoardView = searchParams.get("view") === "board";
+  const isPiouPiou = room.currentGame === "pioupiou";
+  const { gameBoard = {} } = room;
 
   if (isBoardView) {
     const isLobby = room.status === "LOBBY";
     const isPlaying = room.status === "PLAYING";
-    const isGameOver = room.status === "FINISHED";
     const phase = gameBoard.phase;
     const storytellerId = room.turnOrder?.[room.currentTurnIndex];
     const nextStoryteller = room.players.find(
@@ -97,7 +95,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
               {params.roomId}
             </h1>
             <p className="text-zinc-500 font-bold tracking-[0.4em] text-[10px] uppercase">
-              {t.dixit_title} • {t.title}
+              {isPiouPiou ? t.pioupiou_title : t.dixit_title} • {t.title}
             </p>
           </div>
           <div className="flex items-center gap-6">
@@ -109,19 +107,21 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                 {t.startMatch}
               </button>
             )}
-            {phase === "RESULTS" && !isGameOver && (
-              <button
-                onClick={() =>
-                  triggerAction({
-                    playerId: storytellerId,
-                    actionType: "NEXT_ROUND",
-                  })
-                }
-                className="bg-white text-black px-8 py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-teal-500 transition-all animate-pulse"
-              >
-                {t.startMatch}
-              </button>
-            )}
+            {!isPiouPiou &&
+              phase === "RESULTS" &&
+              room.status !== "FINISHED" && (
+                <button
+                  onClick={() =>
+                    triggerAction({
+                      playerId: storytellerId,
+                      actionType: "NEXT_ROUND",
+                    })
+                  }
+                  className="bg-white text-black px-8 py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-teal-500 transition-all"
+                >
+                  {t.startMatch}
+                </button>
+              )}
             <div className="flex gap-2 bg-zinc-900/50 p-1 rounded-xl border border-zinc-800">
               {(["en", "fr", "de", "fa"] as Language[]).map((l) => (
                 <button
@@ -138,8 +138,9 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
 
         {isPlaying && (
           <div className="space-y-12 animate-in fade-in duration-1000">
-            <section className="bg-zinc-900/50 border border-zinc-800 p-10 rounded-[3rem] text-center space-y-4">
-              <div className="space-y-1">
+            {/* --- DIXIT SPECIFIC TOP BANNER --- */}
+            {!isPiouPiou && (
+              <section className="bg-zinc-900/50 border border-zinc-800 p-10 rounded-[3rem] text-center space-y-4">
                 <p className="text-xs font-black tracking-[0.5em] text-teal-500 uppercase">
                   {phase === "RESULTS"
                     ? t.results
@@ -150,112 +151,83 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                 <h2 className="text-7xl font-black italic uppercase tracking-tighter">
                   {gameBoard.currentClue ? `"${gameBoard.currentClue}"` : "..."}
                 </h2>
-                {phase === "RESULTS" && (
+                {phase === "RESULTS" && nextStoryteller && (
                   <p className="text-zinc-400 font-black uppercase text-sm tracking-widest pt-2">
                     {t.waiting}{" "}
-                    <span className="text-white">{nextStoryteller?.name}</span>
+                    <span className="text-white">{nextStoryteller.name}</span>
                   </p>
                 )}
-              </div>
+              </section>
+            )}
 
-              {(phase === "SUBMITTING" || phase === "VOTING") && (
-                <div className="flex flex-wrap justify-center gap-2 pt-4 border-t border-white/5">
-                  {room.players.map((p: any) => {
-                    const isST = storytellerId === p._id;
-                    const hasSub = (gameBoard.submittedCards || []).some(
-                      (s: any) => s.playerId === p._id,
+            {/* --- DIXIT SPECIFIC CARD GALLERY --- */}
+            {!isPiouPiou && (
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 justify-items-center items-start w-full px-4">
+                {shuffledCards.map((submission: any, i: number) => {
+                  const voters = (gameBoard.votes || [])
+                    .filter((v: any) => v.cardId === submission.cardId)
+                    .map(
+                      (v: any) =>
+                        room.players.find((p: any) => p._id === v.voterId)
+                          ?.name,
                     );
-                    const hasVoted = (gameBoard.votes || []).some(
-                      (v: any) => v.voterId === p._id,
-                    );
-                    const isReady =
-                      phase === "SUBMITTING"
-                        ? isST || hasSub
-                        : isST || hasVoted;
-                    return (
-                      <div
-                        key={p._id}
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${isST ? "bg-teal-500/20 border-teal-500 text-teal-400" : isReady ? "bg-white border-white text-black" : "bg-zinc-900 border-zinc-800 text-zinc-500 opacity-40"}`}
-                      >
-                        <span className="text-[9px] font-black uppercase tracking-tight">
-                          {isST ? `⚡ ${p.name}` : p.name}
-                        </span>
-                        {!isST && (
-                          <span className="text-[9px] font-black">
-                            {isReady ? "✓" : "..."}
+                  const isSTCard = submission.playerId === storytellerId;
+                  const owner = room.players.find(
+                    (p: any) => p._id === submission.playerId,
+                  );
+                  const roundPoints =
+                    gameBoard.roundResults?.pointsEarned?.[
+                      submission.playerId
+                    ] || 0;
+                  return (
+                    <div
+                      key={submission.cardId + i}
+                      className="flex flex-col items-center gap-4 w-full max-w-[200px]"
+                    >
+                      <div className="h-6 flex items-center">
+                        {phase === "RESULTS" && (
+                          <span
+                            className={`text-[10px] font-black uppercase tracking-widest text-center ${isSTCard ? "text-teal-500" : "text-zinc-500"}`}
+                          >
+                            {isSTCard ? t.storyteller : owner?.name}
                           </span>
                         )}
                       </div>
-                    );
-                  })}
-                </div>
-              )}
-            </section>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 justify-items-center items-start w-full px-4">
-              {shuffledCards.map((submission: any, i: number) => {
-                const voters = (gameBoard.votes || [])
-                  .filter((v: any) => v.cardId === submission.cardId)
-                  .map(
-                    (v: any) =>
-                      room.players.find((p: any) => p._id === v.voterId)?.name,
-                  );
-                const isSTCard = submission.playerId === storytellerId;
-                const owner = room.players.find(
-                  (p: any) => p._id === submission.playerId,
-                );
-                const roundPoints =
-                  gameBoard.roundResults?.pointsEarned?.[submission.playerId] ||
-                  0;
-                const showImage = phase === "VOTING" || phase === "RESULTS";
-
-                return (
-                  <div
-                    key={submission.cardId + i}
-                    className="flex flex-col items-center gap-4 w-full max-w-[200px]"
-                  >
-                    <div className="h-6 flex items-center">
+                      <div
+                        className={`relative w-full aspect-[2/3] transition-all duration-700 ${phase === "RESULTS" && isSTCard ? "ring-4 ring-teal-500 ring-offset-4 ring-offset-black rounded-2xl scale-105" : ""}`}
+                      >
+                        <DixitCard
+                          cardId={submission.cardId}
+                          isRevealed={phase === "VOTING" || phase === "RESULTS"}
+                        />
+                      </div>
                       {phase === "RESULTS" && (
-                        <span
-                          className={`text-[10px] font-black uppercase tracking-widest text-center ${isSTCard ? "text-teal-500" : "text-zinc-500"}`}
-                        >
-                          {isSTCard ? t.storyteller : owner?.name}
-                        </span>
+                        <div className="w-full flex flex-col gap-2 items-center animate-in slide-in-from-bottom-2 duration-500">
+                          <div className="flex gap-1 flex-wrap justify-center">
+                            {voters.map((vName: string, idx: number) => (
+                              <span
+                                key={idx}
+                                className="bg-white text-black text-[8px] px-2 py-0.5 rounded font-black uppercase"
+                              >
+                                {vName}
+                              </span>
+                            ))}
+                          </div>
+                          <span className="text-xs font-black text-teal-400">
+                            +{isFA ? toPersianDigits(roundPoints) : roundPoints}{" "}
+                            PTS
+                          </span>
+                        </div>
                       )}
                     </div>
-                    <div
-                      className={`relative w-full aspect-[2/3] transition-all duration-700 ${phase === "RESULTS" && isSTCard ? "ring-4 ring-teal-500 ring-offset-4 ring-offset-black rounded-2xl scale-105" : ""}`}
-                    >
-                      <DixitCard
-                        cardId={submission.cardId}
-                        isRevealed={showImage}
-                      />
-                    </div>
-                    {phase === "RESULTS" && (
-                      <div className="w-full flex flex-col gap-2 items-center animate-in slide-in-from-bottom-2 duration-500">
-                        <div className="flex gap-1 flex-wrap justify-center">
-                          {voters.map((vName: string, idx: number) => (
-                            <span
-                              key={idx}
-                              className="bg-white text-black text-[8px] px-2 py-0.5 rounded font-black uppercase shadow-sm"
-                            >
-                              {vName}
-                            </span>
-                          ))}
-                        </div>
-                        <span className="text-xs font-black text-teal-400">
-                          +{isFA ? toPersianDigits(roundPoints) : roundPoints}{" "}
-                          PTS
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 
+        {/* --- COMMON LAYOUT: ACTIVITY & PLAYERS --- */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           <div className="lg:col-span-4 space-y-8">
             <section className="bg-zinc-900/30 border border-zinc-800 p-8 rounded-[2rem] space-y-6">
@@ -280,43 +252,79 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
               </div>
             </section>
           </div>
+
           <div className="lg:col-span-8 space-y-8">
             <h2 className="text-xs font-black tracking-[0.4em] text-zinc-400 uppercase">
               {t.players}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {room.players.map((p: any) => {
-                const isTurn = storytellerId === p._id;
+                const isTurn = storytellerId === p._id && !isPiouPiou;
+                const isPiouTurn =
+                  room.turnOrder?.[room.currentTurnIndex] === p._id &&
+                  isPiouPiou;
                 const pState = p.state || {};
                 const earned =
                   gameBoard.roundResults?.pointsEarned?.[p._id] || 0;
+
                 return (
                   <div
                     key={p._id}
-                    className={`relative p-8 rounded-[2.5rem] border-2 transition-all ${isTurn && !isGameOver ? "bg-zinc-900 border-teal-500 scale-[1.02]" : "bg-zinc-900/20 border-zinc-800 opacity-60"}`}
+                    className={`relative p-8 rounded-[2.5rem] border-2 transition-all ${(isTurn || isPiouTurn) && room.status !== "FINISHED" ? "bg-zinc-900 border-teal-500 scale-[1.02]" : "bg-zinc-900/20 border-zinc-800 opacity-60"}`}
                   >
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="text-xs font-black text-teal-500 tracking-widest uppercase">
-                          {isTurn && !isGameOver ? t.activeTurn : ""}
+                          {(isTurn || isPiouTurn) && room.status !== "FINISHED"
+                            ? t.activeTurn
+                            : ""}
                         </p>
                         <h3 className="text-4xl font-black italic uppercase truncate max-w-[180px]">
                           {p.name}
                         </h3>
                       </div>
                       <div className="text-right">
-                        <span className="text-[10px] block font-black text-zinc-500 tracking-widest">
-                          {t.dixit_score}
-                        </span>
-                        <span className="text-3xl font-black text-teal-500">
-                          {isFA
-                            ? toPersianDigits(pState.score || 0)
-                            : pState.score || 0}
-                        </span>
-                        {phase === "RESULTS" && earned > 0 && (
-                          <span className="text-xs font-black block text-teal-400 animate-bounce mt-1">
-                            +{isFA ? toPersianDigits(earned) : earned}
-                          </span>
+                        {isPiouPiou ? (
+                          <div className="flex gap-4" dir="ltr">
+                            <div className="text-center">
+                              <span className="text-[10px] block font-black text-zinc-500">
+                                {t.eggs}
+                              </span>
+                              <span className="text-3xl font-black text-white">
+                                {isFA
+                                  ? toPersianDigits(pState.eggs || 0)
+                                  : pState.eggs || 0}
+                              </span>
+                            </div>
+                            <div className="text-center">
+                              <span className="text-[10px] block font-black text-teal-500">
+                                {t.chicks}
+                              </span>
+                              <span className="text-3xl font-black text-teal-500">
+                                {isFA
+                                  ? toPersianDigits(pState.chicks || 0)
+                                  : pState.chicks || 0}
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <span className="text-[10px] block font-black text-zinc-500 tracking-widest">
+                              {t.dixit_score}
+                            </span>
+                            <span className="text-3xl font-black text-teal-500">
+                              {isFA
+                                ? toPersianDigits(pState.score || 0)
+                                : pState.score || 0}
+                            </span>
+                            {!isPiouPiou &&
+                              phase === "RESULTS" &&
+                              earned > 0 && (
+                                <span className="text-xs font-black block text-teal-400 animate-bounce mt-1">
+                                  +{isFA ? toPersianDigits(earned) : earned}
+                                </span>
+                              )}
+                          </>
                         )}
                       </div>
                     </div>
@@ -327,8 +335,8 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
           </div>
         </div>
 
-        {/* LEGEND PLACED AT THE BOTTOM */}
-        {phase === "RESULTS" && (
+        {/* --- DIXIT LEGEND --- */}
+        {!isPiouPiou && phase === "RESULTS" && (
           <footer className="flex flex-wrap justify-center gap-12 py-8 opacity-40 hover:opacity-100 transition-opacity border-t border-white/5">
             <div className="flex items-center gap-3">
               <div className="w-2 h-2 rounded-full bg-teal-500" />
@@ -338,7 +346,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
             </div>
             <div className="flex items-center gap-3">
               <div className="px-2 py-0.5 rounded bg-white text-black text-[8px] font-black uppercase">
-                NAME
+                {t.namePlaceholder}
               </div>
               <span className="text-[9px] font-black uppercase text-zinc-400 tracking-[0.2em]">
                 {t.dixit_who_voted}
@@ -372,5 +380,10 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
         </button>
       </div>
     );
-  return <DixitHand room={room} player={currentPlayer} initialLang={lang} />;
+
+  return isPiouPiou ? (
+    <PiouPiouHand room={room} player={currentPlayer} initialLang={lang} />
+  ) : (
+    <DixitHand room={room} player={currentPlayer} initialLang={lang} />
+  );
 }
