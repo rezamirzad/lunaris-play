@@ -4,6 +4,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import PiouPiouHand from "../../components/games/PiouPiou/PiouPiouHand";
+import PiouPiouCard from "../../components/games/PiouPiou/PiouPiouCard";
 import DixitHand from "../../components/games/Dixit/DixitHand";
 import DixitCard from "../../components/games/Dixit/DixitCard";
 import {
@@ -11,6 +12,7 @@ import {
   Language,
   formatLog,
   TranslationSet,
+  toPersianDigits,
 } from "@/lib/translations";
 
 export default function RoomPage({ params }: { params: { roomId: string } }) {
@@ -23,7 +25,11 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
   const room = useQuery((api as any).engine.getRoomState, {
     roomCode: params.roomId,
   });
-  const startMatch = useMutation((api as any).engine.startGame);
+
+  const games = useQuery((api as any).engine.listGames);
+
+  const triggerAction = useMutation((api as any).games.dixit.handleAction);
+  const startGame = useMutation((api as any).engine.startGame);
 
   const setLanguage = (newLang: Language) => {
     const p = new URLSearchParams(searchParams);
@@ -31,22 +37,36 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
     router.replace(`${pathname}?${p.toString()}`);
   };
 
-  if (!room) return <div className="min-h-screen bg-black" />;
+  if (room === undefined || games === undefined)
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center text-teal-500 font-black animate-pulse">
+        LOADING...
+      </div>
+    );
 
-  // Destructure with fallbacks for type safety
+  if (!room)
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center text-white font-black">
+        ROOM NOT FOUND
+      </div>
+    );
+
+  const currentGameMeta = games.find((g: any) => g.slug === room.currentGame);
+  const minPlayers = currentGameMeta?.minPlayers || 3;
+
   const { gameBoard = {} } = room;
+  const isBoardView = searchParams.get("view") === "board";
 
-  if (searchParams.get("view") === "board") {
+  if (isBoardView) {
+    const isLobby = room.status === "LOBBY";
     const isGameOver = room.status === "FINISHED";
     const winnerName = gameBoard.winner;
     const isDixit = room.currentGame?.toLowerCase() === "dixit";
     const phase = gameBoard.phase;
+    const storytellerId = room.turnOrder?.[room.currentTurnIndex];
 
     return (
-      <main
-        className={`min-h-screen bg-black text-white p-6 lg:p-12 space-y-12 max-w-7xl mx-auto ${lang === "fa" ? "font-serif" : ""}`}
-        dir={lang === "fa" ? "rtl" : "ltr"}
-      >
+      <main className="min-h-screen bg-black text-white p-6 lg:p-12 space-y-12 max-w-7xl mx-auto">
         <header className="flex justify-between items-center">
           <div>
             <h1 className="text-6xl font-black italic tracking-tighter text-teal-500 uppercase">
@@ -56,49 +76,118 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
               {isDixit ? t.dixit_title : t.pioupiou_title} • {t.title}
             </p>
           </div>
-          <div className="flex gap-2 bg-zinc-900/50 p-1 rounded-xl border border-zinc-800">
-            {(["en", "fr", "de", "fa"] as Language[]).map((l) => (
+          <div className="flex items-center gap-6">
+            {isLobby &&
+              (room.players.length >= minPlayers ||
+                room.players.length >= 2) && (
+                <button
+                  onClick={() => startGame({ roomId: room._id })}
+                  className="bg-teal-500 text-black px-8 py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-white transition-all animate-pulse"
+                >
+                  {t.startMatch}
+                </button>
+              )}
+
+            {isDixit && phase === "RESULTS" && !isGameOver && (
               <button
-                key={l}
-                onClick={() => setLanguage(l as Language)}
-                className={`px-4 py-1.5 rounded-lg text-[10px] font-black transition-all ${lang === l ? "bg-white text-black" : "text-zinc-500 hover:text-white"}`}
+                onClick={() =>
+                  triggerAction({
+                    playerId: storytellerId,
+                    actionType: "NEXT_ROUND",
+                  })
+                }
+                className="bg-white text-black px-8 py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-teal-500 transition-all animate-pulse"
               >
-                {l.toUpperCase()}
+                {t.startMatch}
               </button>
-            ))}
+            )}
+
+            <div className="flex gap-2 bg-zinc-900/50 p-1 rounded-xl border border-zinc-800">
+              {(["en", "fr", "de", "fa"] as Language[]).map((l) => (
+                <button
+                  key={l}
+                  onClick={() => setLanguage(l as Language)}
+                  className={`px-4 py-1.5 rounded-lg text-[10px] font-black transition-all ${lang === l ? "bg-white text-black" : "text-zinc-500 hover:text-white"}`}
+                >
+                  {l.toUpperCase()}
+                </button>
+              ))}
+            </div>
           </div>
         </header>
 
+        {isLobby && (
+          <div className="space-y-12 animate-in fade-in duration-1000">
+            <section className="bg-zinc-900/50 border border-zinc-800 p-20 rounded-[3rem] text-center space-y-4">
+              <p className="text-xs font-black tracking-[0.5em] text-teal-500 uppercase">
+                {t.lobby}
+              </p>
+              <h2 className="text-5xl font-black italic uppercase tracking-tighter">
+                {t.waitingPlayers} (
+                {lang === "fa"
+                  ? toPersianDigits(room.players.length)
+                  : room.players.length}{" "}
+                / {lang === "fa" ? toPersianDigits(minPlayers) : minPlayers})
+              </h2>
+              <p className="text-zinc-500 font-bold uppercase text-xs tracking-widest">
+                {formatLog(t.minPlayersRequired, { count: minPlayers }, lang)}{" "}
+                {t.testingNote}
+              </p>
+            </section>
+          </div>
+        )}
+
         {isDixit && room.status === "PLAYING" && (
           <div className="space-y-12 animate-in fade-in duration-1000">
-            <section className="bg-zinc-900/50 border border-zinc-800 p-12 rounded-[3rem] text-center space-y-6">
+            <section className="bg-zinc-900/50 border border-zinc-800 p-12 rounded-[3rem] text-center space-y-4">
               <p className="text-xs font-black tracking-[0.5em] text-teal-500 uppercase">
-                {phase === "CLUE" ? t.waiting : t.activeTurn}
+                {phase === "RESULTS"
+                  ? "ROUND OVER"
+                  : phase === "CLUE"
+                    ? t.waiting
+                    : t.activeTurn}
               </p>
               <h2 className="text-7xl font-black italic uppercase tracking-tighter">
                 {gameBoard.currentClue ? `"${gameBoard.currentClue}"` : "..."}
               </h2>
-              <div className="w-12 h-1 bg-teal-500 mx-auto rounded-full" />
             </section>
-
-            <div className="flex flex-wrap justify-center gap-6">
+            <div className="flex flex-wrap justify-center gap-8">
               {(gameBoard.submittedCards || []).map(
                 (submission: any, i: number) => {
-                  const votesForCard = (gameBoard.votes || []).filter(
+                  const votes = (gameBoard.votes || []).filter(
                     (v: any) => v.cardId === submission.cardId,
-                  ).length;
+                  );
+                  const isStorytellerCard =
+                    submission.playerId === storytellerId;
                   const owner = room.players.find(
                     (p: any) => p._id === submission.playerId,
                   );
-
                   return (
-                    <DixitCard
-                      key={i}
-                      cardId={submission.cardId}
-                      isRevealed={phase === "VOTING" || isGameOver}
-                      ownerName={isGameOver ? owner?.name : undefined}
-                      votes={isGameOver ? votesForCard : 0}
-                    />
+                    <div key={i} className="flex flex-col items-center gap-4">
+                      <DixitCard
+                        cardId={submission.cardId}
+                        isRevealed={
+                          phase === "VOTING" ||
+                          phase === "RESULTS" ||
+                          isGameOver
+                        }
+                        votes={phase === "RESULTS" ? votes.length : 0}
+                        ownerName={
+                          phase === "RESULTS" || isGameOver
+                            ? owner?.name
+                            : undefined
+                        }
+                      />
+                      {phase === "RESULTS" && (
+                        <div
+                          className={`px-4 py-2 rounded-xl border-2 transition-all ${isStorytellerCard ? "bg-teal-500 border-black text-black" : "bg-zinc-900 border-zinc-800 text-zinc-500"}`}
+                        >
+                          <span className="text-[10px] font-black uppercase tracking-tighter">
+                            {isStorytellerCard ? "STORYTELLER" : "DECOY"}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   );
                 },
               )}
@@ -115,7 +204,6 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                   {t.matchActivity}
                 </h2>
               </div>
-
               <div className="space-y-6 max-h-[50vh] overflow-hidden relative">
                 {(gameBoard.history ?? []).length > 0 ? (
                   gameBoard.history?.map((entry: any, i: number) => (
@@ -129,6 +217,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                             entry.key as keyof TranslationSet
                           ] as string,
                           entry.data || {},
+                          lang,
                         )}
                       </p>
                     </div>
@@ -141,23 +230,21 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
               </div>
             </section>
           </div>
-
           <div className="lg:col-span-8 space-y-8">
             <div className="flex justify-between items-end border-b border-zinc-900 pb-4">
               <h2 className="text-xs font-black tracking-[0.4em] text-zinc-400 uppercase">
                 {t.players}
               </h2>
-
               {isGameOver && (
                 <div className="animate-in fade-in slide-in-from-right duration-500">
-                  <div className="bg-teal-500 text-black px-4 py-1 rounded-full flex items-center gap-2 shadow-[4px_4px_0_0_#000] border-2 border-black">
+                  <div className="bg-teal-500 text-black px-4 py-1 rounded-full border-2 border-black flex items-center gap-2 shadow-[4px_4px_0_0_#000]">
                     <span className="text-sm">🏆</span>
-                    <span className="text-[10px] font-black uppercase tracking-widest">
+                    <span className="text-[10px] font-black uppercase">
                       {t.gameOver}: {winnerName}
                     </span>
                     <button
                       onClick={() => router.push("/")}
-                      className="ml-2 bg-black text-white px-2 py-0.5 rounded-md text-[8px] font-black hover:bg-zinc-800 transition-colors"
+                      className="ml-2 bg-black text-white px-2 py-0.5 rounded-md text-[8px] font-black uppercase"
                     >
                       {t.exit}
                     </button>
@@ -165,7 +252,6 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                 </div>
               )}
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {room.players.map((p: any) => {
                 const isTurn =
@@ -173,16 +259,13 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                 const pState = p.state || {};
                 const isWinner = winnerName === p.name && isGameOver;
 
+                const isWinningSoon =
+                  (pState.chicks || 0) === 2 && (pState.eggs || 0) >= 1;
+
                 return (
                   <div
                     key={p._id}
-                    className={`relative p-8 rounded-[2.5rem] border-2 transition-all duration-500 ${
-                      isWinner
-                        ? "bg-teal-500/10 border-teal-500 shadow-[0_0_40px_rgba(20,184,166,0.2)]"
-                        : isTurn && !isGameOver
-                          ? "bg-zinc-900 border-teal-500 scale-[1.02]"
-                          : "bg-zinc-900/20 border-zinc-800 opacity-60"
-                    }`}
+                    className={`relative p-8 rounded-[2.5rem] border-2 transition-all duration-500 ${isWinner ? "bg-teal-500/10 border-teal-500 shadow-[0_0_40px_rgba(20,184,166,0.2)]" : isTurn && !isGameOver ? "bg-zinc-900 border-teal-500 scale-[1.02] shadow-[0_0_40px_rgba(20,184,166,0.2)]" : "bg-zinc-900/20 border-zinc-800 opacity-60"}`}
                   >
                     {isWinner && (
                       <div className="absolute -top-4 left-6 bg-teal-500 text-black px-4 py-1 rounded-full border-2 border-black shadow-[2px_2px_0_0_#000] z-20 flex items-center gap-2">
@@ -193,16 +276,27 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                       </div>
                     )}
 
+                    {!isGameOver && isWinningSoon && (
+                      <div
+                        className="absolute -top-3 right-6 bg-yellow-400 text-black px-3 py-0.5 rounded-full border-2 border-black z-20 animate-bounce"
+                        dir={lang === "fa" ? "rtl" : "ltr"}
+                      >
+                        <span className="text-[8px] font-black uppercase italic tracking-tighter">
+                          {t.nearlyWinning}
+                        </span>
+                      </div>
+                    )}
+
                     <div className="flex justify-between items-start mb-6">
                       <div className="space-y-1">
                         <p className="text-xs font-black text-teal-500 tracking-widest uppercase">
                           {isWinner
                             ? t.champion
                             : isTurn && !isGameOver
-                              ? t.activeTurn
+                              ? t.yourTurn
                               : ""}
                         </p>
-                        <h3 className="text-4xl font-black italic uppercase tracking-tighter truncate max-w-[180px]">
+                        <h3 className="text-4xl font-black italic uppercase tracking-normal truncate max-w-[180px] pr-4">
                           {p.name}
                         </h3>
                       </div>
@@ -212,13 +306,17 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                             <div className="text-center">
                               <span className="text-2xl block">🥚</span>
                               <span className="text-sm font-black text-zinc-500">
-                                {pState.eggs || 0}
+                                {lang === "fa"
+                                  ? toPersianDigits(pState.eggs || 0)
+                                  : pState.eggs || 0}
                               </span>
                             </div>
                             <div className="text-center">
                               <span className="text-2xl block">🐣</span>
                               <span className="text-xl font-black">
-                                {pState.chicks || 0}
+                                {lang === "fa"
+                                  ? toPersianDigits(pState.chicks || 0)
+                                  : pState.chicks || 0}
                               </span>
                             </div>
                           </>
@@ -228,12 +326,35 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                               {t.dixit_score}
                             </span>
                             <span className="text-3xl font-black text-teal-500">
-                              {pState.score || 0}
+                              {lang === "fa"
+                                ? toPersianDigits(pState.score || 0)
+                                : pState.score || 0}
                             </span>
                           </div>
                         )}
                       </div>
                     </div>
+                    {isGameOver && p.gameHand && p.gameHand.length > 0 && (
+                      <div className="mt-6 pt-6 border-t border-zinc-800/50">
+                        <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4">
+                          {t.finalHand}
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {p.gameHand.map((card: any, idx: number) => (
+                            <div
+                              key={idx}
+                              className="scale-50 origin-top-left -mr-16 -mb-20"
+                            >
+                              {!isDixit ? (
+                                <PiouPiouCard type={card} />
+                              ) : (
+                                <DixitCard cardId={card} isRevealed={true} />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -247,8 +368,20 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
   const storedName =
     typeof window !== "undefined" ? localStorage.getItem("playerName") : "";
   const currentPlayer = room.players.find((p: any) => p.name === storedName);
-
-  if (!currentPlayer) return null;
+  if (!currentPlayer)
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white p-8 text-center">
+        <p className="mb-4 font-black italic uppercase tracking-tighter text-2xl">
+          {t.exit}
+        </p>
+        <button
+          onClick={() => router.push("/")}
+          className="bg-teal-500 text-black px-8 py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-white transition-all"
+        >
+          {t.exit}
+        </button>
+      </div>
+    );
 
   return room.currentGame?.toLowerCase() === "dixit" ? (
     <DixitHand room={room} player={currentPlayer} initialLang={lang} />

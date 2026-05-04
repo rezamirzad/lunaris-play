@@ -3,7 +3,7 @@ import { mutation } from "../_generated/server";
 import { Doc } from "../_generated/dataModel";
 
 /**
- * Generates a random Dixit card ID (placeholder until art is ready).
+ * Generates a random Dixit card ID.
  */
 export const getRandomDixitCard = () => {
   return `dixit_${Math.floor(Math.random() * 100)}`;
@@ -12,7 +12,7 @@ export const getRandomDixitCard = () => {
 export const handleAction = mutation({
   args: {
     playerId: v.id("players"),
-    actionType: v.string(), // "SUBMIT_CLUE", "SUBMIT_CARD", "SUBMIT_VOTE"
+    actionType: v.string(), // "SUBMIT_CLUE", "SUBMIT_CARD", "SUBMIT_VOTE", "NEXT_ROUND"
     cardId: v.optional(v.string()),
     clue: v.optional(v.string()),
   },
@@ -31,6 +31,8 @@ export const handleAction = mutation({
     // PHASE: CLUE (Storyteller submits card and text)
     if (args.actionType === "SUBMIT_CLUE") {
       if (board.phase !== "CLUE") throw new Error("INVALID_PHASE");
+      const storytellerId = room.turnOrder[room.currentTurnIndex];
+      if (args.playerId !== storytellerId) throw new Error("NOT_YOUR_TURN");
 
       const newHand = player.gameHand.filter((c) => c !== args.cardId);
       await ctx.db.patch(player._id, { gameHand: newHand });
@@ -45,9 +47,14 @@ export const handleAction = mutation({
       });
     }
 
-    // PHASE: SUBMITTING (Mimics submit cards that match clue)
+    // PHASE: SUBMITTING (Others submit cards)
     if (args.actionType === "SUBMIT_CARD") {
       if (board.phase !== "SUBMITTING") throw new Error("INVALID_PHASE");
+
+      const alreadySubmitted = board.submittedCards?.some(
+        (s) => s.playerId === args.playerId,
+      );
+      if (alreadySubmitted) throw new Error("ALREADY_SUBMITTED");
 
       const newSubmitted = [
         ...(board.submittedCards || []),
@@ -67,9 +74,12 @@ export const handleAction = mutation({
       });
     }
 
-    // PHASE: VOTING (Players pick which card belongs to Storyteller)
+    // PHASE: VOTING
     if (args.actionType === "SUBMIT_VOTE") {
       if (board.phase !== "VOTING") throw new Error("INVALID_PHASE");
+      const storytellerId = room.turnOrder[room.currentTurnIndex];
+      if (args.playerId === storytellerId)
+        throw new Error("STORYTELLER_CANNOT_VOTE");
 
       const newVotes = [
         ...(board.votes || []),
@@ -78,12 +88,32 @@ export const handleAction = mutation({
       const allPlayersVoted = newVotes.length === players.length - 1;
 
       if (allPlayersVoted) {
-        return await calculateScores(ctx, room, players, newVotes);
+        await calculateScores(ctx, room, players, newVotes);
       } else {
         await ctx.db.patch(room._id, {
           gameBoard: { ...board, votes: newVotes },
         });
       }
+    }
+
+    // TRANSITION: NEXT ROUND
+    if (args.actionType === "NEXT_ROUND") {
+      if (board.phase !== "RESULTS") throw new Error("INVALID_PHASE");
+
+      const winner = players.find((p) => (p.state.score || 0) >= 30);
+
+      await ctx.db.patch(room._id, {
+        status: winner ? "FINISHED" : "PLAYING",
+        currentTurnIndex: (room.currentTurnIndex + 1) % room.turnOrder.length,
+        gameBoard: {
+          ...board,
+          phase: "CLUE",
+          submittedCards: [],
+          votes: [],
+          currentClue: "",
+          winner: winner?.name,
+        },
+      });
     }
 
     return { success: true };
@@ -115,16 +145,18 @@ async function calculateScores(
     } else {
       if (isStoryteller) scoreGain = 3;
       if (
-        votes.find((v) => v.voterId === p._id && v.cardId === storytellerCard)
+        votes.find(
+          (v: any) => v.voterId === p._id && v.cardId === storytellerCard,
+        )
       )
         scoreGain = 3;
     }
 
     if (!isStoryteller) {
       const myCard = board.submittedCards!.find(
-        (c) => c.playerId === p._id,
+        (c: any) => c.playerId === p._id,
       )!.cardId;
-      const votesForMe = votes.filter((v) => v.cardId === myCard).length;
+      const votesForMe = votes.filter((v: any) => v.cardId === myCard).length;
       scoreGain += votesForMe;
     }
 
@@ -134,19 +166,11 @@ async function calculateScores(
     });
   }
 
-  // Win condition: 30 points
-  const winner = players.find((p) => (p.state.score || 0) >= 30);
-
   await ctx.db.patch(room._id, {
-    status: winner ? "FINISHED" : "PLAYING",
-    currentTurnIndex: (room.currentTurnIndex + 1) % room.turnOrder.length,
     gameBoard: {
       ...board,
-      phase: "CLUE",
-      submittedCards: [],
-      votes: [],
-      currentClue: "",
-      winner: winner?.name,
+      votes: votes,
+      phase: "RESULTS",
     },
   });
 }

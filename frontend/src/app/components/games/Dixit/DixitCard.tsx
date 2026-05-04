@@ -2,82 +2,79 @@
 
 interface DixitCardProps {
   cardId: string;
-  selected?: boolean;
-  onClick?: () => void;
   isRevealed?: boolean;
-  ownerName?: string;
-  votes?: number;
+  selectable?: boolean;
+  selected?: boolean;
   disabled?: boolean;
+  onClick?: () => void;
+  votes?: number; // New: Show how many players picked this
+  ownerName?: string; // New: Show who submitted this card
 }
 
 export default function DixitCard({
   cardId,
-  selected,
-  onClick,
-  isRevealed = true,
-  ownerName,
-  votes = 0,
+  isRevealed = false,
+  selectable = false,
+  selected = false,
   disabled = false,
+  onClick,
+  votes = 0,
+  ownerName,
 }: DixitCardProps) {
-  const getCardStyle = () => {
-    if (!isRevealed) return "bg-zinc-950 border-zinc-800";
-    if (selected) return "border-teal-500 bg-white";
-    return "border-zinc-900 bg-zinc-50";
-  };
-
   return (
     <div
       onClick={!disabled ? onClick : undefined}
-      className={`relative w-24 sm:w-28 md:w-32 aspect-[2/3] rounded-2xl border-[4px] transition-all duration-300 overflow-hidden flex flex-col items-center justify-between p-2 shadow-lg select-none cursor-pointer ${getCardStyle()} ${
-        selected
-          ? "-translate-y-4 scale-105 shadow-teal-500/30"
-          : "active:scale-95"
-      } ${disabled ? "opacity-40 cursor-not-allowed" : ""}`}
+      className={`
+        relative aspect-[2/3] w-40 sm:w-48 rounded-2xl overflow-hidden transition-all duration-500
+        ${selectable && !disabled ? "cursor-pointer hover:scale-105 active:scale-95" : ""}
+        ${selected ? "ring-4 ring-teal-500 scale-105 shadow-[0_0_20px_rgba(20,184,166,0.5)]" : "shadow-xl"}
+        ${disabled ? "opacity-50 grayscale cursor-not-allowed" : ""}
+        ${!isRevealed ? "bg-zinc-800" : "bg-zinc-900"}
+      `}
     >
-      <div
-        className={`text-[8px] sm:text-[10px] font-black uppercase tracking-widest ${
-          selected ? "text-teal-600" : "text-zinc-400"
-        }`}
-      >
-        {isRevealed ? `CARD ${cardId}` : "???"}
-      </div>
-
-      <div className="w-full h-3/5 flex items-center justify-center relative">
-        {isRevealed ? (
-          <div className="text-4xl sm:text-5xl transition-transform group-hover:scale-110">
-            🖼️
+      {isRevealed ? (
+        <>
+          {/* Card Art (Placeholder for now) */}
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-zinc-800 to-black">
+            <span className="text-4xl">🎨</span>
+            <span className="absolute bottom-2 text-[10px] font-black text-zinc-600 uppercase tracking-widest">
+              {cardId}
+            </span>
           </div>
-        ) : (
-          <div className="w-8 h-8 rounded-full border-2 border-teal-500/20 flex items-center justify-center">
-            <div className="w-4 h-4 rounded-full bg-teal-500 animate-pulse" />
+
+          {/* Reveal Overlay (Owner Name) */}
+          {ownerName && (
+            <div className="absolute top-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-2 text-center border-b border-white/10 animate-in slide-in-from-top duration-500">
+              <p className="text-[10px] font-black uppercase text-teal-400 truncate">
+                {ownerName}
+              </p>
+            </div>
+          )}
+
+          {/* Vote Counter */}
+          {votes > 0 && (
+            <div className="absolute bottom-3 right-3 flex gap-1 animate-in zoom-in duration-300">
+              {Array.from({ length: votes }).map((_, i) => (
+                <div
+                  key={i}
+                  className="w-3 h-3 rounded-full bg-teal-500 border-2 border-black shadow-lg"
+                />
+              ))}
+            </div>
+          )}
+        </>
+      ) : (
+        /* Card Back */
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900 border-4 border-zinc-800">
+          <div className="w-16 h-16 rounded-full border-4 border-zinc-800 flex items-center justify-center">
+            <span className="text-2xl font-black italic text-zinc-800">L</span>
           </div>
-        )}
-
-        {votes > 0 && (
-          <div className="absolute -top-2 -right-2 bg-teal-500 text-black w-6 h-6 rounded-full flex items-center justify-center font-black text-xs shadow-lg border-2 border-black">
-            {votes}
+          <div className="mt-4 flex gap-1">
+            <div className="w-1 h-1 rounded-full bg-zinc-800" />
+            <div className="w-1 h-1 rounded-full bg-zinc-800" />
+            <div className="w-1 h-1 rounded-full bg-zinc-800" />
           </div>
-        )}
-      </div>
-
-      <div className="w-full flex flex-col items-center gap-1">
-        {ownerName ? (
-          <p className="text-[8px] font-bold text-zinc-500 uppercase truncate w-full text-center">
-            {ownerName}
-          </p>
-        ) : (
-          <div
-            className={`w-2 h-2 rounded-full ${selected ? "bg-teal-500" : "bg-zinc-200"}`}
-          />
-        )}
-      </div>
-
-      {selected && (
-        <div className="absolute inset-0 bg-teal-500/5 pointer-events-none" />
-      )}
-
-      {!isRevealed && (
-        <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#2dd4bf_1px,transparent_1px)] [background-size:10px_10px]" />
+        </div>
       )}
     </div>
   );

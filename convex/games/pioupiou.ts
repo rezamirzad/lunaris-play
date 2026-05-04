@@ -21,7 +21,6 @@ export const handleAction = mutation({
     const room = await ctx.db.get(player.roomId);
     if (!room) throw new Error("Room not found");
 
-    // Prevent moves if the game is already over
     if (room.status === "FINISHED") {
       throw new Error("Game is already finished!");
     }
@@ -43,15 +42,21 @@ export const handleAction = mutation({
     const isDiscard =
       (cards.length === 1 && !isFox) || args.actionType === "DISCARD";
 
+    // --- 1. DEFEND LOGIC (Victim blocks Fox) ---
     if (args.actionType === "DEFEND") {
       const attack = room.gameBoard.pendingAttack;
       if (!attack) throw new Error("No pending attack");
+
       const attacker = await ctx.db.get(attack.attackerId);
       logPayload = {
         key: "LOG_FOX_BLOCKED",
-        data: { player: attacker!.name, target: player.name },
+        data: { target: player.name }, // Victim name
       };
+
+      // Attacker loses their Fox (refill them)
       await refillPlayer(ctx, attack.attackerId, attacker!, attack.indices);
+
+      // Victim loses their 2 Roosters and turn ends
       return await finishTurn(
         ctx,
         room,
@@ -63,25 +68,40 @@ export const handleAction = mutation({
       );
     }
 
+    // --- 2. ACCEPT LOGIC (Victim gives egg) ---
     if (args.actionType === "ACCEPT") {
       const attack = room.gameBoard.pendingAttack;
       if (!attack) throw new Error("No pending attack");
+
       const attacker = await ctx.db.get(attack.attackerId);
+
+      // Transfer Egg: Attacker +1
       const attackerEggs = (attacker!.state?.eggs || 0) + 1;
       await ctx.db.patch(attacker!._id, {
         state: { ...attacker!.state, eggs: attackerEggs },
       });
-      eggs--;
+
+      // Transfer Egg: Victim -1
+      eggs = Math.max(0, eggs - 1);
+
       logPayload = {
         key: "LOG_FOX_SUCCESS",
         data: { player: attacker!.name, target: player.name },
       };
+
+      // Attacker loses their Fox (refill them)
       await refillPlayer(ctx, attack.attackerId, attacker!, attack.indices);
+
+      // Victim didn't play cards, but turn ends and egg count updated
       return await finishTurn(ctx, room, player, [], logPayload, eggs, chicks);
     }
 
+    // --- 3. ATTACK INITIATION (Active player plays Fox) ---
     if (isFox && args.actionType !== "DISCARD") {
       if (!args.targetPlayerId) throw new Error("Target required");
+
+      // We don't call finishTurn yet! We wait for the victim to Defend or Accept.
+      // We just move the game into a "Pending Attack" state.
       await ctx.db.patch(room._id, {
         gameBoard: {
           ...room.gameBoard,
@@ -96,6 +116,7 @@ export const handleAction = mutation({
       return { success: true };
     }
 
+    // --- 4. STANDARD MOVES (Lay, Hatch, Discard) ---
     if (isLay) {
       eggs++;
       logPayload = { key: "LOG_LAY_EGG", data: { player: player.name } };
@@ -144,34 +165,31 @@ async function finishTurn(
   eggs: number,
   chicks: number,
 ) {
+  // Filter out played cards and refill
   const newHand = player.gameHand.filter((_, i) => !indices.includes(i));
   while (newHand.length < 4) newHand.push(getRandomCard());
 
-  // 1. Check if this move resulted in a win (3 chicks)
   const isWinner = chicks >= 3;
   const newStatus = isWinner ? "FINISHED" : room.status;
+  const history = [log, ...(room.gameBoard?.history || [])].slice(0, 8);
 
-  const history = [log, ...(room.gameBoard?.history || [])].slice(0, 5);
-
-  // 2. Update player hand and state
+  // Update the player who just finished their action (the Victim in Fox cases)
   await ctx.db.patch(player._id, {
     gameHand: newHand,
     state: { ...player.state, eggs, chicks },
   });
 
-  // 3. Update room (advance turn and handle win status)
+  // Advance turn and clear pending attack
   await ctx.db.patch(room._id, {
     status: newStatus,
-    // Only advance turn if game is not over
     currentTurnIndex: isWinner
       ? room.currentTurnIndex
       : (room.currentTurnIndex + 1) % room.turnOrder.length,
     gameBoard: {
       ...room.gameBoard,
       history,
-      winner: isWinner ? player.name : room.gameBoard?.winner, // Save the winner name
-      lastWarning: null,
-      pendingAttack: null,
+      winner: isWinner ? player.name : room.gameBoard?.winner,
+      pendingAttack: null, // Critical: Clear the fox state
     },
   });
 

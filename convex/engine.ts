@@ -39,9 +39,12 @@ export const getOngoingRooms = query({
 export const getRoomState = query({
   args: { roomCode: v.string() },
   handler: async (ctx, args) => {
+    // Force search to be uppercase to match created rooms
     const room = await ctx.db
       .query("rooms")
-      .withIndex("by_roomCode", (q) => q.eq("roomCode", args.roomCode))
+      .withIndex("by_roomCode", (q) =>
+        q.eq("roomCode", args.roomCode.toUpperCase()),
+      )
       .unique();
 
     if (!room) return null;
@@ -57,9 +60,6 @@ export const getRoomState = query({
 
 // --- MUTATIONS ---
 
-/**
- * Seeds the games table. Run: npx convex run engine:seedGames
- */
 export const seedGames = mutation({
   args: {},
   handler: async (ctx) => {
@@ -94,7 +94,8 @@ export const createRoom = mutation({
   args: { roomCode: v.string(), gameSlug: v.string() },
   handler: async (ctx, args) => {
     return await ctx.db.insert("rooms", {
-      roomCode: args.roomCode,
+      // Force room code to uppercase upon creation
+      roomCode: args.roomCode.toUpperCase(),
       status: "LOBBY",
       currentGame: args.gameSlug,
       currentTurnIndex: 0,
@@ -103,7 +104,6 @@ export const createRoom = mutation({
         history: [],
         lastWarning: null,
         pendingAttack: null,
-        // Initialize these to avoid "undefined" errors on the TV Board
         submittedCards: [],
         votes: [],
         phase: args.gameSlug.toLowerCase() === "dixit" ? "CLUE" : undefined,
@@ -115,9 +115,12 @@ export const createRoom = mutation({
 export const joinRoom = mutation({
   args: { roomCode: v.string(), playerName: v.string() },
   handler: async (ctx, args) => {
+    // Force room code to uppercase for the lookup
     const room = await ctx.db
       .query("rooms")
-      .withIndex("by_roomCode", (q) => q.eq("roomCode", args.roomCode))
+      .withIndex("by_roomCode", (q) =>
+        q.eq("roomCode", args.roomCode.toUpperCase()),
+      )
       .unique();
 
     if (!room) throw new Error("Room not found");
@@ -132,14 +135,49 @@ export const joinRoom = mutation({
       return { roomId: room._id, playerId: existingPlayer._id };
     }
 
-    return await ctx.db.insert("players", {
+    // FEATURE: Handle Join-In-Progress logic
+    let initialHand: string[] = [];
+    const gameSlug = room.currentGame?.toLowerCase();
+
+    // Deal cards immediately if the game is already playing
+    if (room.status === "PLAYING") {
+      if (gameSlug === "pioupiou") {
+        initialHand = Array.from({ length: 4 }, () =>
+          piouPiouGame.getRandomCard(),
+        );
+      } else if (gameSlug === "dixit") {
+        initialHand = Array.from({ length: 6 }, () =>
+          dixitGame.getRandomDixitCard(),
+        );
+      }
+    }
+
+    const playerId = await ctx.db.insert("players", {
       roomId: room._id,
       name: args.playerName,
-      gameHand: [],
-      // Initialize with full schema to satisfy TypeScript
+      gameHand: initialHand,
       state: { eggs: 0, chicks: 0, score: 0 },
       isReady: false,
     });
+
+    // If game is active, update turn rotation and history to include new player
+    if (room.status === "PLAYING") {
+      const newTurnOrder = [...(room.turnOrder || []), playerId];
+      const newHistory = [
+        { key: "LOG_JOINED", data: { player: args.playerName } },
+        ...(room.gameBoard?.history || []),
+      ].slice(0, 8);
+
+      await ctx.db.patch(room._id, {
+        turnOrder: newTurnOrder,
+        gameBoard: {
+          ...room.gameBoard,
+          history: newHistory,
+        },
+      });
+    }
+
+    return { roomId: room._id, playerId };
   },
 });
 
@@ -161,7 +199,6 @@ export const startGame = mutation({
 
     const gameSlug = room.currentGame?.toLowerCase();
 
-    // Patch the room with initialized arrays
     await ctx.db.patch(args.roomId, {
       status: "PLAYING",
       turnOrder: randomizedOrder,
@@ -171,7 +208,7 @@ export const startGame = mutation({
         phase: gameSlug === "dixit" ? "CLUE" : undefined,
         submittedCards: [],
         votes: [],
-        history: [], // Reset history for the new match
+        history: [],
       },
     });
 

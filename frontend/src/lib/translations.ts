@@ -24,6 +24,7 @@ export interface TranslationSet {
   availableMoves: string;
   hintLayEgg: string;
   hintHatch: string;
+  hintSteal: string;
   eggs: string;
   chicks: string;
   targetPlayer: string;
@@ -32,6 +33,7 @@ export interface TranslationSet {
   attack: string;
   waiting: string;
   defend: string;
+  noRoosters: string;
   accept: string;
   gameOver: string;
   winner: string;
@@ -39,7 +41,6 @@ export interface TranslationSet {
   champion: string;
   exit: string;
   lobby: string;
-  // DIXIT KEYS
   dixit_title: string;
   dixit_desc: string;
   pioupiou_title: string;
@@ -52,13 +53,20 @@ export interface TranslationSet {
   dixit_wait_storyteller: string;
   dixit_wait_others: string;
   dixit_guess_card: string;
-  // LOG KEYS
   LOG_LAY_EGG: string;
   LOG_HATCH: string;
   LOG_DISCARD: string;
   LOG_INVALID: string;
   LOG_FOX_SUCCESS: string;
   LOG_FOX_BLOCKED: string;
+  finalHand: string;
+  waitingPlayers: string;
+  minPlayersRequired: string;
+  testingNote: string;
+  action: string;
+  nearlyWinning: string;
+  noEggsToSteal: string;
+  yourTurn: string;
 }
 
 export const translations: Record<Language, TranslationSet> = {
@@ -86,6 +94,7 @@ export const translations: Record<Language, TranslationSet> = {
     availableMoves: "AVAILABLE MOVES",
     hintLayEgg: "LAY EGG",
     hintHatch: "HATCH",
+    hintSteal: "STEAL EGG",
     eggs: "EGGS",
     chicks: "CHICKS",
     targetPlayer: "SELECT VICTIM 🦊",
@@ -94,6 +103,7 @@ export const translations: Record<Language, TranslationSet> = {
     attack: "ATTACK",
     waiting: "WAITING...",
     defend: "DEFEND",
+    noRoosters: "No Roosters to defend!",
     accept: "GIVE EGG",
     gameOver: "GAME OVER",
     winner: "WINNER",
@@ -119,6 +129,14 @@ export const translations: Record<Language, TranslationSet> = {
     LOG_INVALID: "Invalid combination! 🚫",
     LOG_FOX_SUCCESS: "{player} stole an egg from {target}! 🦊",
     LOG_FOX_BLOCKED: "{target} blocked the fox with 2 Roosters! 🐓🐓",
+    finalHand: "Final Hand",
+    waitingPlayers: "Waiting for Players",
+    minPlayersRequired: "Need at least {count} players to begin",
+    testingNote: "(2 for testing)",
+    action: "ACTION",
+    nearlyWinning: "NEARLY WINNING!",
+    noEggsToSteal: "No eggs to steal!",
+    yourTurn: "YOUR TURN",
   },
   fr: {
     title: "LUNARIS",
@@ -144,6 +162,7 @@ export const translations: Record<Language, TranslationSet> = {
     availableMoves: "MOUVEMENTS POSSIBLES",
     hintLayEgg: "PONDRE",
     hintHatch: "ÉCLORE",
+    hintSteal: "VOLER OEUF",
     eggs: "OEUFS",
     chicks: "POUSSINS",
     targetPlayer: "CHOISIR UNE CIBLE 🦊",
@@ -152,6 +171,7 @@ export const translations: Record<Language, TranslationSet> = {
     attack: "ATTAQUER",
     waiting: "ATTENTE...",
     defend: "DÉFENDRE",
+    noRoosters: "Pas de Coqs pour défendre !",
     accept: "DONNER OEUF",
     gameOver: "FIN DE PARTIE",
     winner: "GAGNANT",
@@ -177,6 +197,14 @@ export const translations: Record<Language, TranslationSet> = {
     LOG_INVALID: "Coup invalide ! 🚫",
     LOG_FOX_SUCCESS: "{player} a volé un œuf à {target} ! 🦊",
     LOG_FOX_BLOCKED: "{target} a bloqué le renard avec 2 Coqs ! 🐓🐓",
+    finalHand: "Main Finale",
+    waitingPlayers: "Attente des joueurs",
+    minPlayersRequired: "Il faut au moins {count} joueurs pour commencer",
+    testingNote: "(2 pour le test)",
+    action: "ACTION",
+    nearlyWinning: "PRESQUE GAGNÉ !",
+    noEggsToSteal: "Pas d'oeufs à voler !",
+    yourTurn: "À VOUS DE JOUER",
   },
   de: {
     title: "LUNARIS",
@@ -202,6 +230,7 @@ export const translations: Record<Language, TranslationSet> = {
     availableMoves: "MÖGLICHE ZÜGE",
     hintLayEgg: "EI LEGEN",
     hintHatch: "BRÜTEN",
+    hintSteal: "EI STEHLEN",
     eggs: "EIER",
     chicks: "KÜKEN",
     targetPlayer: "OPFER WÄHLEN 🦊",
@@ -210,6 +239,7 @@ export const translations: Record<Language, TranslationSet> = {
     attack: "ANGREIFEN",
     waiting: "WARTEN...",
     defend: "VERTEIDIGEN",
+    noRoosters: "Keine Hähne zum Verteidigen!",
     accept: "EI GEBEN",
     gameOver: "SPIEL VORBEI",
     winner: "GEWINNER",
@@ -235,6 +265,14 @@ export const translations: Record<Language, TranslationSet> = {
     LOG_INVALID: "Ungültiger Zug! 🚫",
     LOG_FOX_SUCCESS: "{player} hat {target} ein Ei gestohlen! 🦊",
     LOG_FOX_BLOCKED: "{target} hat den Fuchs mit 2 Hähnen abgewehrt! 🐓🐓",
+    finalHand: "Letzte Hand",
+    waitingPlayers: "Warten auf Spieler",
+    minPlayersRequired: "Mindestens {count} Spieler erforderlich",
+    testingNote: "(2 zum Testen)",
+    action: "AKTION",
+    nearlyWinning: "FAST GEWONNEN!",
+    noEggsToSteal: "Keine Eier zu stehlen!",
+    yourTurn: "DU BIST DRAN",
   },
   fa: {
     title: "لوناریس",
@@ -260,6 +298,7 @@ export const translations: Record<Language, TranslationSet> = {
     availableMoves: "حرکت‌های ممکن",
     hintLayEgg: "تخم گذاری",
     hintHatch: "تولد جوجه",
+    hintSteal: "دزدیدن تخم",
     eggs: "تخم",
     chicks: "جوجه",
     targetPlayer: "انتخاب هدف 🦊",
@@ -268,6 +307,7 @@ export const translations: Record<Language, TranslationSet> = {
     attack: "حمله",
     waiting: "در انتظار...",
     defend: "دفاع",
+    noRoosters: "خروسی برای دفاع نداری!",
     accept: "تسلیم تخم",
     gameOver: "پایان بازی",
     winner: "برنده",
@@ -293,14 +333,35 @@ export const translations: Record<Language, TranslationSet> = {
     LOG_INVALID: "حرکت اشتباه! 🚫",
     LOG_FOX_SUCCESS: "{player} یک تخم از {target} دزدید! 🦊",
     LOG_FOX_BLOCKED: "{target} با دو خروس جلو روباه را گرفت! 🐓🐓",
+    finalHand: "دست نهایی",
+    waitingPlayers: "در انتظار بازیکنان",
+    minPlayersRequired: "حداقل {count} بازیکن برای شروع لازم است",
+    testingNote: "(۲ نفر برای تست)",
+    action: "عملیات",
+    nearlyWinning: "یک قدم تا پیروزی!",
+    noEggsToSteal: "تخمی برای دزدیدن نیست!",
+    yourTurn: "نوبت شماست",
   },
 };
 
-export function formatLog(template: string, data: Record<string, string>) {
+export function toPersianDigits(num: string | number): string {
+  const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+  return String(num).replace(/\d/g, (d) => persianDigits[parseInt(d)]);
+}
+
+export function formatLog(
+  template: string,
+  data: Record<string, string | number>,
+  lang?: Language,
+) {
   if (!template) return "";
   let result = template;
   for (const key in data) {
-    result = result.replace(`{${key}}`, data[key]);
+    let value = data[key];
+    if (lang === "fa") {
+      value = toPersianDigits(String(value));
+    }
+    result = result.replace(`{${key}}`, String(value));
   }
   return result;
 }
