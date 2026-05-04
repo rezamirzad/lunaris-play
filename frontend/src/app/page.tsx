@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Language, translations } from "@/lib/translations";
 import GameCatalog from "./components/GameCatalog";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
-export default function Home() {
+// 1. Move the main logic into a sub-component
+function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [lang, setLang] = useState<Language>("en");
@@ -51,7 +52,7 @@ export default function Home() {
       className={`min-h-screen bg-black text-white p-4 sm:p-8 md:p-12 transition-all duration-500 ${isRTL ? "font-serif" : ""}`}
       dir={isRTL ? "rtl" : "ltr"}
     >
-      {/* HEADER SECTION - Constrained to 6xl for a tighter look */}
+      {/* HEADER SECTION */}
       <header className="max-w-6xl mx-auto w-full flex flex-col sm:flex-row justify-between items-center gap-8 mb-12 sm:mb-16 px-2 sm:px-0">
         <div className="text-center sm:text-left w-full sm:w-auto">
           <h1 className="text-5xl sm:text-7xl font-black italic tracking-tighter text-white leading-none uppercase">
@@ -62,7 +63,6 @@ export default function Home() {
           </p>
         </div>
 
-        {/* FLOATING LANGUAGE SELECTOR */}
         <div className="flex bg-zinc-900/80 backdrop-blur-md p-1 rounded-2xl border border-zinc-800 shadow-xl self-center sm:self-center">
           {(["en", "fr", "de", "fa"] as Language[]).map((l) => (
             <button
@@ -82,9 +82,7 @@ export default function Home() {
 
       {/* MAIN CONTENT GRID */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
-        {/* LEFT COLUMN: JOIN & SESSIONS */}
         <div className="lg:col-span-4 space-y-10">
-          {/* JOIN ROOM CARD */}
           <section className="bg-zinc-900/50 border border-zinc-800 p-8 rounded-[2.5rem] shadow-2xl space-y-8">
             <h2 className="text-[10px] font-black tracking-widest text-zinc-500 uppercase">
               {t.enterLobby}
@@ -113,7 +111,6 @@ export default function Home() {
             </div>
           </section>
 
-          {/* ONGOING SESSIONS */}
           <section className="space-y-6">
             <h2 className="text-[10px] font-black tracking-widest text-zinc-600 uppercase px-4">
               {t.ongoingGames}
@@ -156,7 +153,6 @@ export default function Home() {
           </section>
         </div>
 
-        {/* RIGHT COLUMN: CATALOG */}
         <div className="lg:col-span-8 space-y-6">
           <div className="flex justify-between items-end border-b border-zinc-900 pb-4">
             <h2 className="text-[10px] font-black tracking-[0.5em] text-zinc-600 uppercase">
@@ -167,7 +163,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* FOOTER */}
       <footer className="max-w-6xl mx-auto mt-20 pt-8 border-t border-zinc-900 flex flex-col sm:flex-row justify-between items-center gap-4 opacity-20">
         <span className="text-[9px] font-black tracking-[0.4em] uppercase">
           {t.footer}
@@ -179,5 +174,14 @@ export default function Home() {
         </div>
       </footer>
     </main>
+  );
+}
+
+// 2. Wrap the HomeContent in Suspense for the main export
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-black" />}>
+      <HomeContent />
+    </Suspense>
   );
 }
