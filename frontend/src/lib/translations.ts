@@ -41,6 +41,8 @@ export interface TranslationSet {
   champion: string;
   exit: string;
   lobby: string;
+  results: string;
+  storyteller: string;
   dixit_title: string;
   dixit_desc: string;
   pioupiou_title: string;
@@ -53,6 +55,12 @@ export interface TranslationSet {
   dixit_wait_storyteller: string;
   dixit_wait_others: string;
   dixit_guess_card: string;
+  dixit_who_voted: string;
+  dixit_st_bonus: string;
+  dixit_st_fail: string;
+  dixit_found_original: string;
+  dixit_others_fooled: string;
+  dixit_all_or_none: string;
   LOG_LAY_EGG: string;
   LOG_HATCH: string;
   LOG_DISCARD: string;
@@ -111,6 +119,8 @@ export const translations: Record<Language, TranslationSet> = {
     champion: "CHAMPION",
     exit: "EXIT",
     lobby: "LOBBY",
+    results: "ROUND RESULTS",
+    storyteller: "STORYTELLER",
     dixit_title: "Dixit",
     dixit_desc: "A game of imagination and abstract art.",
     pioupiou_title: "Piou Piou",
@@ -123,6 +133,12 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_wait_storyteller: "Wait for Storyteller",
     dixit_wait_others: "Wait for Others",
     dixit_guess_card: "Which is the original?",
+    dixit_who_voted: "GUESSERS",
+    dixit_st_bonus: "SOME GUESSED (STORYTELLER BONUS)",
+    dixit_st_fail: "EVERYONE OR NO ONE GUESSED (0 PTS)",
+    dixit_found_original: "YOU FOUND THE ORIGINAL",
+    dixit_others_fooled: "PLAYER(S) FELL FOR YOUR CARD",
+    dixit_all_or_none: "EVERYONE/NO ONE FOUND THE ORIGINAL",
     LOG_LAY_EGG: "{player} laid an egg! 🥚",
     LOG_HATCH: "{player} hatched a chick! 🐣",
     LOG_DISCARD: "{player} discarded a {card}. ♻️",
@@ -179,6 +195,8 @@ export const translations: Record<Language, TranslationSet> = {
     champion: "CHAMPION",
     exit: "QUITTER",
     lobby: "SALON",
+    results: "RÉSULTATS DU TOUR",
+    storyteller: "CONTEUR",
     dixit_title: "Dixit",
     dixit_desc: "Un jeu d'imagination et d'art.",
     pioupiou_title: "Piou Piou",
@@ -191,6 +209,12 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_wait_storyteller: "Attente du Conteur",
     dixit_wait_others: "Attente des autres",
     dixit_guess_card: "Lequel est l'original ?",
+    dixit_who_voted: "VOTANTS",
+    dixit_st_bonus: "CERTAINS ONT TROUVÉ (BONUS CONTEUR)",
+    dixit_st_fail: "TOUT LE MONDE OU PERSONNE N'A TROUVÉ (0 PTS)",
+    dixit_found_original: "VOUS AVEZ TROUVÉ L'ORIGINAL",
+    dixit_others_fooled: "JOUEUR(S) ONT ÉTÉ PIÉGÉS PAR VOTRE CARTE",
+    dixit_all_or_none: "TOUT LE MONDE/PERSONNE N'A TROUVÉ L'ORIGINAL",
     LOG_LAY_EGG: "{player} a pondu un œuf ! 🥚",
     LOG_HATCH: "{player} a fait éclore un poussin ! 🐣",
     LOG_DISCARD: "{player} a défaussé un {card}. ♻️",
@@ -247,6 +271,8 @@ export const translations: Record<Language, TranslationSet> = {
     champion: "CHAMPION",
     exit: "BEENDEN",
     lobby: "LOBBY",
+    results: "RUNDENERGEBNISSE",
+    storyteller: "ERZÄHLER",
     dixit_title: "Dixit",
     dixit_desc: "Ein Spiel der Fantasie.",
     pioupiou_title: "Piou Piou",
@@ -259,6 +285,12 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_wait_storyteller: "Warten auf Erzähler",
     dixit_wait_others: "Warten auf andere",
     dixit_guess_card: "Welches ist das Original?",
+    dixit_who_voted: "GIPFEL",
+    dixit_st_bonus: "EINIGE HABEN ERRATEN (ERZÄHLER-BONUS)",
+    dixit_st_fail: "ALLE ODER NIEMAND HAT ERRATEN (0 PKT)",
+    dixit_found_original: "DU HAST DAS ORIGINAL GEFUNDEN",
+    dixit_others_fooled: "SPIELER SIND AUF DEINE KARTE REINGEFALLEN",
+    dixit_all_or_none: "ALLE/NIEMAND HAT DAS ORIGINAL GEFUNDEN",
     LOG_LAY_EGG: "{player} hat ein Ei gelegt! 🥚",
     LOG_HATCH: "{player} hat ein Küken ausgebrütet! 🐣",
     LOG_DISCARD: "{player} hat ein {card} abgewerfen. ♻️",
@@ -315,6 +347,8 @@ export const translations: Record<Language, TranslationSet> = {
     champion: "قهرمان",
     exit: "خروج",
     lobby: "لابی",
+    results: "نتایج دور",
+    storyteller: "قصه‌گو",
     dixit_title: "دیکسیت",
     dixit_desc: "بازی تخیل و هنر انتزاعی.",
     pioupiou_title: "پیو پیو",
@@ -327,6 +361,12 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_wait_storyteller: "در انتظار قصه‌گو",
     dixit_wait_others: "در انتظار بقیه",
     dixit_guess_card: "کدام کارت اصلی است؟",
+    dixit_who_voted: "حدس‌زننده‌ها",
+    dixit_st_bonus: "تعدادی حدس زدند (امتیاز قصه‌گو)",
+    dixit_st_fail: "همه یا هیچ‌کس حدس نزد (۰ امتیاز)",
+    dixit_found_original: "کارت اصلی را پیدا کردی",
+    dixit_others_fooled: "بازیکن دیگر فریب کارت تو را خوردند",
+    dixit_all_or_none: "همه یا هیچ‌کس کارت اصلی را پیدا نکرد",
     LOG_LAY_EGG: "{player} یک تخم گذاشت! 🥚",
     LOG_HATCH: "{player} یک جوجه به دنیا آورد! 🐣",
     LOG_DISCARD: "{player} کارت {card} را دور انداخت. ♻️",
@@ -344,11 +384,19 @@ export const translations: Record<Language, TranslationSet> = {
   },
 };
 
+/**
+ * Converts English digits to Persian/Arabic digits for Farsi localization.
+ * Exported to fix Module has no exported member 'toPersianDigits' error.
+ */
 export function toPersianDigits(num: string | number): string {
   const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
   return String(num).replace(/\d/g, (d) => persianDigits[parseInt(d)]);
 }
 
+/**
+ * Replaces placeholders like {player} in translation strings with actual data.
+ * Exported to fix Module has no exported member 'formatLog' error.
+ */
 export function formatLog(
   template: string,
   data: Record<string, string | number>,
@@ -358,6 +406,7 @@ export function formatLog(
   let result = template;
   for (const key in data) {
     let value = data[key];
+    // If the language is Persian, ensure digits in the data are also converted
     if (lang === "fa") {
       value = toPersianDigits(String(value));
     }

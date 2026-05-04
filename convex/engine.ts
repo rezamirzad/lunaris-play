@@ -39,7 +39,6 @@ export const getOngoingRooms = query({
 export const getRoomState = query({
   args: { roomCode: v.string() },
   handler: async (ctx, args) => {
-    // Force search to be uppercase to match created rooms
     const room = await ctx.db
       .query("rooms")
       .withIndex("by_roomCode", (q) =>
@@ -94,7 +93,6 @@ export const createRoom = mutation({
   args: { roomCode: v.string(), gameSlug: v.string() },
   handler: async (ctx, args) => {
     return await ctx.db.insert("rooms", {
-      // Force room code to uppercase upon creation
       roomCode: args.roomCode.toUpperCase(),
       status: "LOBBY",
       currentGame: args.gameSlug,
@@ -115,7 +113,6 @@ export const createRoom = mutation({
 export const joinRoom = mutation({
   args: { roomCode: v.string(), playerName: v.string() },
   handler: async (ctx, args) => {
-    // Force room code to uppercase for the lookup
     const room = await ctx.db
       .query("rooms")
       .withIndex("by_roomCode", (q) =>
@@ -135,7 +132,6 @@ export const joinRoom = mutation({
       return { roomId: room._id, playerId: existingPlayer._id };
     }
 
-    // FEATURE: Deal placeholders for Dixit in Lobby, or real cards in Playing
     let initialHand: string[] = [];
     const gameSlug = room.currentGame?.toLowerCase();
 
@@ -147,10 +143,21 @@ export const joinRoom = mutation({
           piouPiouGame.getRandomCard(),
         );
       } else if (gameSlug === "dixit") {
-        // Simple random deal for mid-game joiner
-        initialHand = Array.from({ length: 6 }, () =>
-          dixitGame.getRandomDixitCard(),
-        );
+        // FIX: Pull from the unique pool stored in the room
+        const pool = room.gameBoard.availableCards || [];
+        if (pool.length >= 6) {
+          initialHand = pool.slice(0, 6);
+          // Update the room to remove the cards we just gave to the new player
+          await ctx.db.patch(room._id, {
+            gameBoard: {
+              ...room.gameBoard,
+              availableCards: pool.slice(6),
+            },
+          });
+        } else {
+          // Fallback: If pool is empty, just give empty hand or handle reshuffle
+          initialHand = [];
+        }
       }
     }
 
@@ -195,34 +202,22 @@ export const startGame = mutation({
 
     if (players.length === 0) return;
 
-    const playerIds = players.map((p) => p._id);
-    const randomizedOrder = shuffle(playerIds);
-
+    const randomizedOrder = shuffle(players.map((p) => p._id));
     const gameSlug = room.currentGame?.toLowerCase();
 
-    await ctx.db.patch(args.roomId, {
-      status: "PLAYING",
-      turnOrder: randomizedOrder,
-      currentTurnIndex: 0,
-      gameBoard: {
-        ...room.gameBoard,
-        phase: gameSlug === "dixit" ? "CLUE" : "SUBMITTING", // Initial phase set
-        submittedCards: [],
-        votes: [],
-        history: [],
-      },
-    });
-
     // DIXIT UNIQUE DEAL LOGIC
-    let dixitPool: number[] = [];
+    let dixitPool: string[] = [];
     if (gameSlug === "dixit") {
-      dixitPool = shuffle(Array.from({ length: 45 }, (_, i) => i + 1));
+      // Create and shuffle deck of 45 cards
+      dixitPool = shuffle(
+        Array.from({ length: 45 }, (_, i) => `dixit_${i + 1}`),
+      );
     }
 
-    for (let i = 0; i < players.length; i++) {
-      const player = players[i];
+    // Deal unique cards to each player and update their state
+    for (const player of players) {
       let initialHand: string[] = [];
-      let initialState: any = { score: 0 };
+      let initialState: any = {};
 
       if (gameSlug === "pioupiou") {
         initialHand = Array.from({ length: 4 }, () =>
@@ -230,8 +225,9 @@ export const startGame = mutation({
         );
         initialState = { eggs: 0, chicks: 0, score: 0 };
       } else if (gameSlug === "dixit") {
-        // Take 6 unique cards from the pool
-        initialHand = dixitPool.splice(0, 6).map((n) => `dixit_${n}`);
+        // Take 6 cards from the pool and remove them
+        initialHand = dixitPool.splice(0, 6);
+        initialState = { score: 0 };
       }
 
       await ctx.db.patch(player._id, {
@@ -239,5 +235,20 @@ export const startGame = mutation({
         state: initialState,
       });
     }
+
+    // Update the room state with the REMAINING deck
+    await ctx.db.patch(args.roomId, {
+      status: "PLAYING",
+      turnOrder: randomizedOrder,
+      currentTurnIndex: 0,
+      gameBoard: {
+        ...room.gameBoard,
+        phase: gameSlug === "dixit" ? "CLUE" : undefined,
+        availableCards: dixitPool, // Store the remaining cards here
+        submittedCards: [],
+        votes: [],
+        history: [],
+      },
+    });
   },
 });

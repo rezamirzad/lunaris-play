@@ -9,7 +9,6 @@ interface DixitCardProps {
   onClick?: () => void;
   votes?: number;
   ownerName?: string;
-  backColor?: string;
   isLobby?: boolean;
 }
 
@@ -22,7 +21,6 @@ export default function DixitCard({
   onClick,
   votes = 0,
   ownerName,
-  backColor = "transparent",
   isLobby = false,
 }: DixitCardProps) {
   const isBack = cardId === "BACK" || !isRevealed;
@@ -38,17 +36,16 @@ export default function DixitCard({
         relative aspect-[2/3] w-full rounded-2xl overflow-hidden transition-all duration-500 border-2
         ${selectable && !disabled ? "cursor-pointer hover:brightness-110 active:scale-95" : ""}
         ${selected ? "border-teal-500 ring-2 ring-teal-500/50 scale-105 z-10 shadow-[0_0_20px_rgba(20,184,166,0.5)]" : "border-zinc-800 shadow-xl"}
-        /* Only apply grayscale/low opacity if it's NOT the lobby and it's truly disabled during play */
+        /* Grayscale only applied during play if disabled, never in lobby */
         ${disabled && !isLobby ? "opacity-30 grayscale cursor-not-allowed" : ""}
-        /* In Lobby, we want full color and original saturation */
         ${isLobby ? "opacity-100 grayscale-0 cursor-default" : ""}
+        bg-zinc-950
       `}
-      style={{ backgroundColor: isBack ? backColor : "#09090b" }}
     >
       <img
         src={imageSrc}
         alt={isBack ? "Card Back" : cardId}
-        className={`absolute inset-0 w-full h-full object-cover pointer-events-none transition-opacity duration-500 ${isBack ? "opacity-100" : "opacity-100"}`}
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
         draggable={false}
       />
 

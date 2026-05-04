@@ -20,33 +20,26 @@ export default defineSchema({
 
   rooms: defineTable({
     roomCode: v.string(),
-    status: v.string(), // "LOBBY", "PLAYING", "FINISHED"
+    status: v.string(),
     currentGame: v.string(),
     currentTurnIndex: v.number(),
     turnOrder: v.array(v.id("players")),
     gameBoard: v.object({
       history: v.optional(v.array(v.any())),
       lastWarning: v.any(),
-      // Generic field for game phases (e.g., "CLUE", "SUBMITTING", "VOTING")
       phase: v.optional(v.string()),
       currentClue: v.optional(v.string()),
-      // Tracks which card ID was submitted by which player ID
+      // FEATURE: Added availableCards to store the shuffled deck
+      availableCards: v.optional(v.array(v.string())),
       submittedCards: v.optional(
-        v.array(
-          v.object({
-            playerId: v.id("players"),
-            cardId: v.string(),
-          }),
-        ),
+        v.array(v.object({ playerId: v.id("players"), cardId: v.string() })),
       ),
-      // Tracks who voted for which card ID
       votes: v.optional(
-        v.array(
-          v.object({
-            voterId: v.id("players"),
-            cardId: v.string(),
-          }),
-        ),
+        v.array(v.object({ voterId: v.id("players"), cardId: v.string() })),
+      ),
+      // FEATURE: Added roundResults for the scoring summary
+      roundResults: v.optional(
+        v.object({ storytellerCard: v.string(), pointsEarned: v.any() }),
       ),
       pendingAttack: v.optional(
         v.union(
@@ -69,10 +62,8 @@ export default defineSchema({
     name: v.string(),
     gameHand: v.array(v.string()),
     state: v.object({
-      // Piou Piou specific
       eggs: v.optional(v.number()),
       chicks: v.optional(v.number()),
-      // Dixit specific (Score)
       score: v.optional(v.number()),
     }),
     isReady: v.boolean(),
