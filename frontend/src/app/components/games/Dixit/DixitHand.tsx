@@ -22,7 +22,11 @@ export default function DixitHand({
   const t = translations[lang];
   const submitAction = useMutation((api as any).games.dixit.handleAction);
 
-  const board = room.gameBoard;
+  const board = room?.gameBoard;
+
+  // Early return if board data isn't initialized yet
+  if (!board) return null;
+
   const isStoryteller = room.turnOrder[room.currentTurnIndex] === player._id;
   const hasSubmitted = board.submittedCards?.some(
     (c: any) => c.playerId === player._id,

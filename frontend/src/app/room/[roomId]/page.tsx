@@ -33,11 +33,14 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
 
   if (!room) return <div className="min-h-screen bg-black" />;
 
+  // Destructure with fallbacks for type safety
+  const { gameBoard = {} } = room;
+
   if (searchParams.get("view") === "board") {
     const isGameOver = room.status === "FINISHED";
-    const winnerName = room.gameBoard?.winner;
+    const winnerName = gameBoard.winner;
     const isDixit = room.currentGame?.toLowerCase() === "dixit";
-    const phase = room.gameBoard?.phase;
+    const phase = gameBoard.phase;
 
     return (
       <main
@@ -73,17 +76,15 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                 {phase === "CLUE" ? t.waiting : t.activeTurn}
               </p>
               <h2 className="text-7xl font-black italic uppercase tracking-tighter">
-                {room.gameBoard.currentClue
-                  ? `"${room.gameBoard.currentClue}"`
-                  : "..."}
+                {gameBoard.currentClue ? `"${gameBoard.currentClue}"` : "..."}
               </h2>
               <div className="w-12 h-1 bg-teal-500 mx-auto rounded-full" />
             </section>
 
             <div className="flex flex-wrap justify-center gap-6">
-              {(room.gameBoard.submittedCards || []).map(
+              {(gameBoard.submittedCards || []).map(
                 (submission: any, i: number) => {
-                  const votesForCard = (room.gameBoard.votes || []).filter(
+                  const votesForCard = (gameBoard.votes || []).filter(
                     (v: any) => v.cardId === submission.cardId,
                   ).length;
                   const owner = room.players.find(
@@ -116,8 +117,8 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
               </div>
 
               <div className="space-y-6 max-h-[50vh] overflow-hidden relative">
-                {(room.gameBoard?.history ?? []).length > 0 ? (
-                  room.gameBoard?.history?.map((entry: any, i: number) => (
+                {(gameBoard.history ?? []).length > 0 ? (
+                  gameBoard.history?.map((entry: any, i: number) => (
                     <div
                       key={i}
                       className={`transition-all duration-700 ${i === 0 ? "opacity-100" : "opacity-30"}`}
