@@ -74,18 +74,18 @@ export const seedGames = mutation({
       description: "pioupiou_desc",
       thumbnail: "/assets/games/pioupiou/box_scan.png",
       minPlayers: 2,
-      suggestedMax: 4,
-      absoluteMax: 5,
+      suggestedMax: 5,
+      absoluteMax: 8,
     });
 
     await ctx.db.insert("games", {
       slug: "dixit",
       title: "dixit_title",
       description: "dixit_desc",
-      thumbnail: "/assets/games/dixit/box_scan.png", // Path for your new asset
+      thumbnail: "/assets/games/dixit/box_scan.jpg",
       minPlayers: 3,
       suggestedMax: 6,
-      absoluteMax: 8,
+      absoluteMax: 12,
     });
   },
 });
@@ -103,6 +103,10 @@ export const createRoom = mutation({
         history: [],
         lastWarning: null,
         pendingAttack: null,
+        // Initialize these to avoid "undefined" errors on the TV Board
+        submittedCards: [],
+        votes: [],
+        phase: args.gameSlug.toLowerCase() === "dixit" ? "CLUE" : undefined,
       },
     });
   },
@@ -132,6 +136,7 @@ export const joinRoom = mutation({
       roomId: room._id,
       name: args.playerName,
       gameHand: [],
+      // Initialize with full schema to satisfy TypeScript
       state: { eggs: 0, chicks: 0, score: 0 },
       isReady: false,
     });
@@ -156,6 +161,7 @@ export const startGame = mutation({
 
     const gameSlug = room.currentGame?.toLowerCase();
 
+    // Patch the room with initialized arrays
     await ctx.db.patch(args.roomId, {
       status: "PLAYING",
       turnOrder: randomizedOrder,
@@ -165,6 +171,7 @@ export const startGame = mutation({
         phase: gameSlug === "dixit" ? "CLUE" : undefined,
         submittedCards: [],
         votes: [],
+        history: [], // Reset history for the new match
       },
     });
 
@@ -176,12 +183,12 @@ export const startGame = mutation({
         initialHand = Array.from({ length: 4 }, () =>
           piouPiouGame.getRandomCard(),
         );
-        initialState = { eggs: 0, chicks: 0 };
+        initialState = { eggs: 0, chicks: 0, score: 0 };
       } else if (gameSlug === "dixit") {
         initialHand = Array.from({ length: 6 }, () =>
           dixitGame.getRandomDixitCard(),
         );
-        initialState = { score: 0 };
+        initialState = { eggs: 0, chicks: 0, score: 0 };
       }
 
       await ctx.db.patch(player._id, {
