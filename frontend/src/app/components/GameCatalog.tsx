@@ -2,19 +2,13 @@
 
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { Language, translations } from "@/lib/translations";
+import { Language, translations, TranslationSet } from "@/lib/translations";
 
 interface Game {
   _id: string;
   slug: string;
-  title: string; // English title from your DB
-  title_fr?: string;
-  title_de?: string;
-  title_fa?: string;
-  description: string; // THIS is the English field in your DB
-  description_fr: string;
-  description_de?: string;
-  description_fa?: string;
+  title: string;
+  description: string;
   thumbnail?: string;
   minPlayers: number;
   suggestedMax: number;
@@ -51,24 +45,10 @@ export default function GameCatalog({
       dir={isRTL ? "rtl" : "ltr"}
     >
       {games.map((game: Game) => {
-        // Logic to pick the right title/description based on language
         const displayTitle =
-          lang === "fr"
-            ? game.title_fr || game.title
-            : lang === "fa"
-              ? game.title_fa || game.title
-              : lang === "de"
-                ? game.title_de || game.title
-                : game.title;
-
+          t[game.title as keyof TranslationSet] || game.title;
         const displayDescription =
-          lang === "fr"
-            ? game.description_fr || game.description
-            : lang === "fa"
-              ? game.description_fa || game.description
-              : lang === "de"
-                ? game.description_de || game.description
-                : game.description;
+          t[game.description as keyof TranslationSet] || game.description;
 
         return (
           <div
@@ -76,19 +56,34 @@ export default function GameCatalog({
             className="group relative overflow-hidden bg-zinc-900 rounded-[3.5rem] border border-zinc-800 hover:border-teal-500 transition-all duration-500 cursor-pointer flex flex-col lg:flex-row shadow-2xl"
             onClick={() => onHost(game.slug)}
           >
-            {/* THUMBNAIL */}
-            <div className="w-full lg:w-[45%] h-72 lg:h-auto relative overflow-hidden bg-zinc-800">
-              <img
-                src={game.thumbnail || "/assets/placeholder-game.png"}
-                alt={displayTitle}
-                className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-1000"
-              />
+            {/* THUMBNAIL AREA */}
+            <div className="w-full lg:w-[45%] h-72 lg:h-auto relative overflow-hidden bg-zinc-800 flex items-center justify-center">
+              {game.thumbnail ? (
+                <img
+                  src={game.thumbnail}
+                  alt={displayTitle}
+                  onError={(e) => {
+                    // Fallback if image path is invalid
+                    (e.target as any).style.display = "none";
+                    (e.target as any).parentElement.classList.add(
+                      "bg-zinc-950",
+                    );
+                  }}
+                  className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-1000"
+                />
+              ) : null}
+
+              {/* Fallback Emoji/Icon if image is missing */}
+              <div className="absolute inset-0 flex items-center justify-center text-8xl pointer-events-none opacity-20 group-hover:opacity-40 transition-opacity">
+                {game.slug === "pioupiou" ? "🐣" : "🖼️"}
+              </div>
+
               <div
                 className={`absolute inset-0 hidden lg:block bg-gradient-to-${isRTL ? "l" : "r"} from-zinc-900 via-transparent to-transparent opacity-60`}
               />
             </div>
 
-            {/* CONTENT */}
+            {/* CONTENT AREA */}
             <div className="flex-1 p-12 flex flex-col justify-between bg-zinc-900">
               <div className="space-y-6">
                 <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
@@ -105,7 +100,7 @@ export default function GameCatalog({
                       {game.minPlayers}-{game.suggestedMax} {t.players}
                     </span>
                     <span className="text-zinc-600 font-bold text-sm uppercase tracking-[0.2em] mt-1">
-                      {isRTL ? "حداکثر" : "Max"}: {game.absoluteMax}
+                      {t.maxLabel}: {game.absoluteMax}
                     </span>
                   </div>
                 </div>

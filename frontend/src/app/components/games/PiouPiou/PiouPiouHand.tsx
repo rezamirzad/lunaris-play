@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
-import Card from "./Card";
+import Card from "./PiouPiouCard";
 import ComboHints from "./ComboHints";
 import { translations, Language } from "@/lib/translations";
 

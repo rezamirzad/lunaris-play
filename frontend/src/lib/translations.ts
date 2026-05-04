@@ -33,13 +33,25 @@ export interface TranslationSet {
   waiting: string;
   defend: string;
   accept: string;
-  // NEW KEYS FOR END GAME
   gameOver: string;
   winner: string;
   victory: string;
   champion: string;
   exit: string;
   lobby: string;
+  // DIXIT KEYS
+  dixit_title: string;
+  dixit_desc: string;
+  pioupiou_title: string;
+  pioupiou_desc: string;
+  dixit_score: string;
+  dixit_clue_placeholder: string;
+  dixit_phase_clue: string;
+  dixit_phase_submit: string;
+  dixit_phase_vote: string;
+  dixit_wait_storyteller: string;
+  dixit_wait_others: string;
+  dixit_guess_card: string;
   // LOG KEYS
   LOG_LAY_EGG: string;
   LOG_HATCH: string;
@@ -89,6 +101,18 @@ export const translations: Record<Language, TranslationSet> = {
     champion: "CHAMPION",
     exit: "EXIT",
     lobby: "LOBBY",
+    dixit_title: "Dixit",
+    dixit_desc: "A game of imagination and abstract art.",
+    pioupiou_title: "Piou Piou",
+    pioupiou_desc: "Tactical henhouse card game.",
+    dixit_score: "SCORE",
+    dixit_clue_placeholder: "Your clue...",
+    dixit_phase_clue: "CHOOSE CARD & CLUE",
+    dixit_phase_submit: "MATCH THE CLUE",
+    dixit_phase_vote: "FIND THE TRUTH",
+    dixit_wait_storyteller: "Wait for Storyteller",
+    dixit_wait_others: "Wait for Others",
+    dixit_guess_card: "Which is the original?",
     LOG_LAY_EGG: "{player} laid an egg! 🥚",
     LOG_HATCH: "{player} hatched a chick! 🐣",
     LOG_DISCARD: "{player} discarded a {card}. ♻️",
@@ -135,6 +159,18 @@ export const translations: Record<Language, TranslationSet> = {
     champion: "CHAMPION",
     exit: "QUITTER",
     lobby: "SALON",
+    dixit_title: "Dixit",
+    dixit_desc: "Un jeu d'imagination et d'art.",
+    pioupiou_title: "Piou Piou",
+    pioupiou_desc: "Jeu de cartes tactique.",
+    dixit_score: "SCORE",
+    dixit_clue_placeholder: "Votre indice...",
+    dixit_phase_clue: "CHOISISSEZ IMAGE & INDICE",
+    dixit_phase_submit: "CORRESPONDEZ À L'INDICE",
+    dixit_phase_vote: "TROUVEZ LA VÉRITÉ",
+    dixit_wait_storyteller: "Attente du Conteur",
+    dixit_wait_others: "Attente des autres",
+    dixit_guess_card: "Lequel est l'original ?",
     LOG_LAY_EGG: "{player} a pondu un œuf ! 🥚",
     LOG_HATCH: "{player} a fait éclore un poussin ! 🐣",
     LOG_DISCARD: "{player} a défaussé un {card}. ♻️",
@@ -181,6 +217,18 @@ export const translations: Record<Language, TranslationSet> = {
     champion: "CHAMPION",
     exit: "BEENDEN",
     lobby: "LOBBY",
+    dixit_title: "Dixit",
+    dixit_desc: "Ein Spiel der Fantasie.",
+    pioupiou_title: "Piou Piou",
+    pioupiou_desc: "Taktisches Kartenspiel.",
+    dixit_score: "PUNKTE",
+    dixit_clue_placeholder: "Dein Hinweis...",
+    dixit_phase_clue: "BILD & HINWEIS WÄHLEN",
+    dixit_phase_submit: "ZUM HINWEIS PASSEN",
+    dixit_phase_vote: "FINDE DIE WAHRHEIT",
+    dixit_wait_storyteller: "Warten auf Erzähler",
+    dixit_wait_others: "Warten auf andere",
+    dixit_guess_card: "Welches ist das Original?",
     LOG_LAY_EGG: "{player} hat ein Ei gelegt! 🥚",
     LOG_HATCH: "{player} hat ein Küken ausgebrütet! 🐣",
     LOG_DISCARD: "{player} hat ein {card} abgewerfen. ♻️",
@@ -227,6 +275,18 @@ export const translations: Record<Language, TranslationSet> = {
     champion: "قهرمان",
     exit: "خروج",
     lobby: "لابی",
+    dixit_title: "دیکسیت",
+    dixit_desc: "بازی تخیل و هنر انتزاعی.",
+    pioupiou_title: "پیو پیو",
+    pioupiou_desc: "بازی کارتی استراتژیک.",
+    dixit_score: "امتیاز",
+    dixit_clue_placeholder: "سرنخ شما...",
+    dixit_phase_clue: "تصویر و سرنخ را انتخاب کنید",
+    dixit_phase_submit: "کارت هماهنگ را بگذارید",
+    dixit_phase_vote: "حقیقت را پیدا کنید",
+    dixit_wait_storyteller: "در انتظار قصه‌گو",
+    dixit_wait_others: "در انتظار بقیه",
+    dixit_guess_card: "کدام کارت اصلی است؟",
     LOG_LAY_EGG: "{player} یک تخم گذاشت! 🥚",
     LOG_HATCH: "{player} یک جوجه به دنیا آورد! 🐣",
     LOG_DISCARD: "{player} کارت {card} را دور انداخت. ♻️",

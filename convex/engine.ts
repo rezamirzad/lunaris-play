@@ -1,6 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import * as piouPiouGame from "./games/pioupiou";
+import * as dixitGame from "./games/dixit";
 
 /**
  * Standard Fisher-Yates Shuffle
@@ -56,6 +57,39 @@ export const getRoomState = query({
 
 // --- MUTATIONS ---
 
+/**
+ * Seeds the games table. Run: npx convex run engine:seedGames
+ */
+export const seedGames = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const existing = await ctx.db.query("games").collect();
+    for (const game of existing) {
+      await ctx.db.delete(game._id);
+    }
+
+    await ctx.db.insert("games", {
+      slug: "pioupiou",
+      title: "pioupiou_title",
+      description: "pioupiou_desc",
+      thumbnail: "/assets/games/pioupiou/box_scan.png",
+      minPlayers: 2,
+      suggestedMax: 4,
+      absoluteMax: 5,
+    });
+
+    await ctx.db.insert("games", {
+      slug: "dixit",
+      title: "dixit_title",
+      description: "dixit_desc",
+      thumbnail: "/assets/games/dixit/box_scan.png", // Path for your new asset
+      minPlayers: 3,
+      suggestedMax: 6,
+      absoluteMax: 8,
+    });
+  },
+});
+
 export const createRoom = mutation({
   args: { roomCode: v.string(), gameSlug: v.string() },
   handler: async (ctx, args) => {
@@ -98,7 +132,7 @@ export const joinRoom = mutation({
       roomId: room._id,
       name: args.playerName,
       gameHand: [],
-      state: { eggs: 0, chicks: 0 },
+      state: { eggs: 0, chicks: 0, score: 0 },
       isReady: false,
     });
   },
@@ -120,23 +154,40 @@ export const startGame = mutation({
     const playerIds = players.map((p) => p._id);
     const randomizedOrder = shuffle(playerIds);
 
+    const gameSlug = room.currentGame?.toLowerCase();
+
     await ctx.db.patch(args.roomId, {
       status: "PLAYING",
       turnOrder: randomizedOrder,
       currentTurnIndex: 0,
+      gameBoard: {
+        ...room.gameBoard,
+        phase: gameSlug === "dixit" ? "CLUE" : undefined,
+        submittedCards: [],
+        votes: [],
+      },
     });
 
-    if (room.currentGame?.toLowerCase() === "pioupiou") {
-      for (const player of players) {
-        const initialHand = Array.from({ length: 4 }, () =>
+    for (const player of players) {
+      let initialHand: string[] = [];
+      let initialState: any = {};
+
+      if (gameSlug === "pioupiou") {
+        initialHand = Array.from({ length: 4 }, () =>
           piouPiouGame.getRandomCard(),
         );
-
-        await ctx.db.patch(player._id, {
-          gameHand: initialHand,
-          state: { eggs: 0, chicks: 0 },
-        });
+        initialState = { eggs: 0, chicks: 0 };
+      } else if (gameSlug === "dixit") {
+        initialHand = Array.from({ length: 6 }, () =>
+          dixitGame.getRandomDixitCard(),
+        );
+        initialState = { score: 0 };
       }
+
+      await ctx.db.patch(player._id, {
+        gameHand: initialHand,
+        state: initialState,
+      });
     }
   },
 });

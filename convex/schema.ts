@@ -27,6 +27,27 @@ export default defineSchema({
     gameBoard: v.object({
       history: v.optional(v.array(v.any())),
       lastWarning: v.any(),
+      // Generic field for game phases (e.g., "CLUE", "SUBMITTING", "VOTING")
+      phase: v.optional(v.string()),
+      currentClue: v.optional(v.string()),
+      // Tracks which card ID was submitted by which player ID
+      submittedCards: v.optional(
+        v.array(
+          v.object({
+            playerId: v.id("players"),
+            cardId: v.string(),
+          }),
+        ),
+      ),
+      // Tracks who voted for which card ID
+      votes: v.optional(
+        v.array(
+          v.object({
+            voterId: v.id("players"),
+            cardId: v.string(),
+          }),
+        ),
+      ),
       pendingAttack: v.optional(
         v.union(
           v.null(),
@@ -38,7 +59,6 @@ export default defineSchema({
           }),
         ),
       ),
-
       winner: v.optional(v.string()),
       winnerId: v.optional(v.id("players")),
     }),
@@ -49,8 +69,11 @@ export default defineSchema({
     name: v.string(),
     gameHand: v.array(v.string()),
     state: v.object({
-      eggs: v.number(),
-      chicks: v.number(),
+      // Piou Piou specific
+      eggs: v.optional(v.number()),
+      chicks: v.optional(v.number()),
+      // Dixit specific (Score)
+      score: v.optional(v.number()),
     }),
     isReady: v.boolean(),
   }).index("by_room", ["roomId"]),
