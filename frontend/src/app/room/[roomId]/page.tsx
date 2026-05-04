@@ -79,6 +79,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
   if (isBoardView) {
     const isLobby = room.status === "LOBBY";
     const isPlaying = room.status === "PLAYING";
+    const isGameOver = room.status === "FINISHED";
     const phase = gameBoard.phase;
     const storytellerId = room.turnOrder?.[room.currentTurnIndex];
     const nextStoryteller = room.players.find(
@@ -86,18 +87,31 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
         p._id ===
         room.turnOrder?.[(room.currentTurnIndex + 1) % room.turnOrder.length],
     );
+    const winnerName = gameBoard.winner;
 
     return (
       <main className="min-h-screen bg-black text-white p-6 lg:p-12 space-y-12 max-w-7xl mx-auto">
-        <header className="flex justify-between items-center">
-          <div>
-            <h1 className="text-6xl font-black italic tracking-tighter text-teal-500 uppercase">
-              {params.roomId}
-            </h1>
+        <header className="flex justify-between items-start">
+          <div className="space-y-2">
+            <div className="flex items-center gap-4">
+              <h1 className="text-6xl font-black italic tracking-tighter text-teal-500 uppercase">
+                {params.roomId}
+              </h1>
+              {/* SUBTLE WINNER BADGE - Matches main page style */}
+              {isGameOver && winnerName && (
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-teal-500/10 border border-teal-500/20 rounded-full animate-in zoom-in duration-500">
+                  <span className="text-xs">🏆</span>
+                  <span className="text-[10px] font-black text-teal-500 uppercase tracking-widest">
+                    {winnerName}
+                  </span>
+                </div>
+              )}
+            </div>
             <p className="text-zinc-500 font-bold tracking-[0.4em] text-[10px] uppercase">
               {isPiouPiou ? t.pioupiou_title : t.dixit_title} • {t.title}
             </p>
           </div>
+
           <div className="flex items-center gap-6">
             {isLobby && room.players.length >= 2 && (
               <button
@@ -107,21 +121,19 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                 {t.startMatch}
               </button>
             )}
-            {!isPiouPiou &&
-              phase === "RESULTS" &&
-              room.status !== "FINISHED" && (
-                <button
-                  onClick={() =>
-                    triggerAction({
-                      playerId: storytellerId,
-                      actionType: "NEXT_ROUND",
-                    })
-                  }
-                  className="bg-white text-black px-8 py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-teal-500 transition-all"
-                >
-                  {t.startMatch}
-                </button>
-              )}
+            {!isPiouPiou && phase === "RESULTS" && !isGameOver && (
+              <button
+                onClick={() =>
+                  triggerAction({
+                    playerId: storytellerId,
+                    actionType: "NEXT_ROUND",
+                  })
+                }
+                className="bg-white text-black px-8 py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-teal-500 transition-all"
+              >
+                {t.startMatch}
+              </button>
+            )}
             <div className="flex gap-2 bg-zinc-900/50 p-1 rounded-xl border border-zinc-800">
               {(["en", "fr", "de", "fa"] as Language[]).map((l) => (
                 <button
@@ -138,29 +150,31 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
 
         {isPlaying && (
           <div className="space-y-12 animate-in fade-in duration-1000">
-            {/* --- DIXIT SPECIFIC TOP BANNER --- */}
             {!isPiouPiou && (
               <section className="bg-zinc-900/50 border border-zinc-800 p-10 rounded-[3rem] text-center space-y-4">
-                <p className="text-xs font-black tracking-[0.5em] text-teal-500 uppercase">
-                  {phase === "RESULTS"
-                    ? t.results
-                    : phase === "VOTING"
-                      ? t.dixit_guess_card
-                      : t.activeTurn}
-                </p>
-                <h2 className="text-7xl font-black italic uppercase tracking-tighter">
-                  {gameBoard.currentClue ? `"${gameBoard.currentClue}"` : "..."}
-                </h2>
-                {phase === "RESULTS" && nextStoryteller && (
-                  <p className="text-zinc-400 font-black uppercase text-sm tracking-widest pt-2">
-                    {t.waiting}{" "}
-                    <span className="text-white">{nextStoryteller.name}</span>
+                <div className="space-y-1">
+                  <p className="text-xs font-black tracking-[0.5em] text-teal-500 uppercase">
+                    {phase === "RESULTS"
+                      ? t.results
+                      : phase === "VOTING"
+                        ? t.dixit_guess_card
+                        : t.activeTurn}
                   </p>
-                )}
+                  <h2 className="text-7xl font-black italic uppercase tracking-tighter">
+                    {gameBoard.currentClue
+                      ? `"${gameBoard.currentClue}"`
+                      : "..."}
+                  </h2>
+                  {phase === "RESULTS" && nextStoryteller && !isGameOver && (
+                    <p className="text-zinc-400 font-black uppercase text-sm tracking-widest pt-2">
+                      {t.waiting}{" "}
+                      <span className="text-white">{nextStoryteller.name}</span>
+                    </p>
+                  )}
+                </div>
               </section>
             )}
 
-            {/* --- DIXIT SPECIFIC CARD GALLERY --- */}
             {!isPiouPiou && (
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 justify-items-center items-start w-full px-4">
                 {shuffledCards.map((submission: any, i: number) => {
@@ -227,8 +241,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
           </div>
         )}
 
-        {/* --- COMMON LAYOUT: ACTIVITY & PLAYERS --- */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start pt-4">
           <div className="lg:col-span-4 space-y-8">
             <section className="bg-zinc-900/30 border border-zinc-800 p-8 rounded-[2rem] space-y-6">
               <h2 className="text-xs font-black tracking-widest text-zinc-500 uppercase">
@@ -263,6 +276,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                 const isPiouTurn =
                   room.turnOrder?.[room.currentTurnIndex] === p._id &&
                   isPiouPiou;
+                const isWinner = winnerName === p.name;
                 const pState = p.state || {};
                 const earned =
                   gameBoard.roundResults?.pointsEarned?.[p._id] || 0;
@@ -270,18 +284,33 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                 return (
                   <div
                     key={p._id}
-                    className={`relative p-8 rounded-[2.5rem] border-2 transition-all ${(isTurn || isPiouTurn) && room.status !== "FINISHED" ? "bg-zinc-900 border-teal-500 scale-[1.02]" : "bg-zinc-900/20 border-zinc-800 opacity-60"}`}
+                    className={`relative p-8 rounded-[2.5rem] border-2 transition-all ${
+                      isWinner
+                        ? "bg-teal-500/5 border-teal-500/40 scale-[1.02] shadow-[0_0_40px_rgba(20,184,166,0.1)]"
+                        : (isTurn || isPiouTurn) && !isGameOver
+                          ? "bg-zinc-900 border-teal-500 scale-[1.02]"
+                          : "bg-zinc-900/20 border-zinc-800 opacity-60"
+                    }`}
                   >
                     <div className="flex justify-between items-start">
-                      <div>
-                        <p className="text-xs font-black text-teal-500 tracking-widest uppercase">
-                          {(isTurn || isPiouTurn) && room.status !== "FINISHED"
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-3">
+                          <h3 className="text-4xl font-black italic uppercase truncate max-w-[150px]">
+                            {p.name}
+                          </h3>
+                          {isWinner && (
+                            <div className="flex items-center gap-1.5 px-2 py-1 bg-teal-500 border border-teal-400 rounded-lg shadow-lg shadow-teal-500/20 animate-pulse">
+                              <span className="text-[10px] font-black text-black uppercase tracking-tighter">
+                                {t.victory}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-[10px] font-black text-teal-500 tracking-widest uppercase">
+                          {(isTurn || isPiouTurn) && !isGameOver
                             ? t.activeTurn
                             : ""}
                         </p>
-                        <h3 className="text-4xl font-black italic uppercase truncate max-w-[180px]">
-                          {p.name}
-                        </h3>
                       </div>
                       <div className="text-right">
                         {isPiouPiou ? (
@@ -334,34 +363,6 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
             </div>
           </div>
         </div>
-
-        {/* --- DIXIT LEGEND --- */}
-        {!isPiouPiou && phase === "RESULTS" && (
-          <footer className="flex flex-wrap justify-center gap-12 py-8 opacity-40 hover:opacity-100 transition-opacity border-t border-white/5">
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-teal-500" />
-              <span className="text-[9px] font-black uppercase text-zinc-400 tracking-[0.2em]">
-                {t.storyteller}
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="px-2 py-0.5 rounded bg-white text-black text-[8px] font-black uppercase">
-                {t.namePlaceholder}
-              </div>
-              <span className="text-[9px] font-black uppercase text-zinc-400 tracking-[0.2em]">
-                {t.dixit_who_voted}
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-teal-400 font-black text-[10px]">
-                +3 PTS
-              </span>
-              <span className="text-[9px] font-black uppercase text-zinc-400 tracking-[0.2em]">
-                {t.dixit_score}
-              </span>
-            </div>
-          </footer>
-        )}
       </main>
     );
   }
