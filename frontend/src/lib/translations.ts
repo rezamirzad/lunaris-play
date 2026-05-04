@@ -27,13 +27,19 @@ export interface TranslationSet {
   eggs: string;
   chicks: string;
   targetPlayer: string;
-  // ACTION BUTTON KEYS
   discard: string;
   invalidCombo: string;
   attack: string;
   waiting: string;
   defend: string;
   accept: string;
+  // NEW KEYS FOR END GAME
+  gameOver: string;
+  winner: string;
+  victory: string;
+  champion: string;
+  exit: string;
+  lobby: string;
   // LOG KEYS
   LOG_LAY_EGG: string;
   LOG_HATCH: string;
@@ -77,6 +83,12 @@ export const translations: Record<Language, TranslationSet> = {
     waiting: "WAITING...",
     defend: "DEFEND",
     accept: "GIVE EGG",
+    gameOver: "GAME OVER",
+    winner: "WINNER",
+    victory: "VICTORY!",
+    champion: "CHAMPION",
+    exit: "EXIT",
+    lobby: "LOBBY",
     LOG_LAY_EGG: "{player} laid an egg! 🥚",
     LOG_HATCH: "{player} hatched a chick! 🐣",
     LOG_DISCARD: "{player} discarded a {card}. ♻️",
@@ -117,6 +129,12 @@ export const translations: Record<Language, TranslationSet> = {
     waiting: "ATTENTE...",
     defend: "DÉFENDRE",
     accept: "DONNER OEUF",
+    gameOver: "FIN DE PARTIE",
+    winner: "GAGNANT",
+    victory: "VICTOIRE !",
+    champion: "CHAMPION",
+    exit: "QUITTER",
+    lobby: "SALON",
     LOG_LAY_EGG: "{player} a pondu un œuf ! 🥚",
     LOG_HATCH: "{player} a fait éclore un poussin ! 🐣",
     LOG_DISCARD: "{player} a défaussé un {card}. ♻️",
@@ -157,9 +175,15 @@ export const translations: Record<Language, TranslationSet> = {
     waiting: "WARTEN...",
     defend: "VERTEIDIGEN",
     accept: "EI GEBEN",
+    gameOver: "SPIEL VORBEI",
+    winner: "GEWINNER",
+    victory: "SIEG!",
+    champion: "CHAMPION",
+    exit: "BEENDEN",
+    lobby: "LOBBY",
     LOG_LAY_EGG: "{player} hat ein Ei gelegt! 🥚",
     LOG_HATCH: "{player} hat ein Küken ausgebrütet! 🐣",
-    LOG_DISCARD: "{player} hat ein {card} abgeworfen. ♻️",
+    LOG_DISCARD: "{player} hat ein {card} abgewerfen. ♻️",
     LOG_INVALID: "Ungültiger Zug! 🚫",
     LOG_FOX_SUCCESS: "{player} hat {target} ein Ei gestohlen! 🦊",
     LOG_FOX_BLOCKED: "{target} hat den Fuchs mit 2 Hähnen abgewehrt! 🐓🐓",
@@ -197,6 +221,12 @@ export const translations: Record<Language, TranslationSet> = {
     waiting: "در انتظار...",
     defend: "دفاع",
     accept: "تسلیم تخم",
+    gameOver: "پایان بازی",
+    winner: "برنده",
+    victory: "پیروزی!",
+    champion: "قهرمان",
+    exit: "خروج",
+    lobby: "لابی",
     LOG_LAY_EGG: "{player} یک تخم گذاشت! 🥚",
     LOG_HATCH: "{player} یک جوجه به دنیا آورد! 🐣",
     LOG_DISCARD: "{player} کارت {card} را دور انداخت. ♻️",

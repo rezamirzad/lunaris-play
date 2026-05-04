@@ -39,35 +39,6 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
         className={`min-h-screen bg-black text-white p-6 lg:p-12 space-y-12 max-w-7xl mx-auto ${lang === "fa" ? "font-serif" : ""}`}
         dir={lang === "fa" ? "rtl" : "ltr"}
       >
-        {/* --- FULL SCREEN WINNER POP-UP --- */}
-        {isGameOver && (
-          <div className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in zoom-in duration-500">
-            <div className="bg-zinc-900 border-4 border-teal-500 p-12 rounded-[3rem] shadow-[0_0_100px_rgba(20,184,166,0.4)] text-center max-w-xl w-full relative">
-              <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-teal-500 text-black px-6 py-2 rounded-full font-black uppercase tracking-widest text-sm">
-                {lang === "fa" ? "قهرمان" : "CHAMPION"}
-              </div>
-
-              <span className="text-8xl mb-6 block animate-bounce">🏆</span>
-              <h2 className="text-teal-500 font-black uppercase tracking-[0.4em] mb-2 text-xs">
-                {lang === "fa" ? "پایان بازی" : "MATCH FINISHED"}
-              </h2>
-              <h1 className="text-6xl font-black italic uppercase tracking-tighter text-white mb-8 leading-none">
-                {winnerName} <br />
-                <span className="text-teal-500">
-                  {lang === "fa" ? "برنده شد!" : "WINS!"}
-                </span>
-              </h1>
-
-              <button
-                onClick={() => router.push("/")}
-                className="w-full py-4 bg-white text-black font-black rounded-2xl uppercase tracking-widest hover:bg-teal-500 transition-all active:scale-95 shadow-lg"
-              >
-                {lang === "fa" ? "بازگشت به آرکید" : "EXIT TO ARCADE"}
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* HEADER */}
         <header className="flex justify-between items-center">
           <div>
@@ -82,7 +53,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
             {(["en", "fr", "de", "fa"] as Language[]).map((l) => (
               <button
                 key={l}
-                onClick={() => setLanguage(l)}
+                onClick={() => setLanguage(l as Language)}
                 className={`px-4 py-1.5 rounded-lg text-[10px] font-black transition-all ${lang === l ? "bg-white text-black" : "text-zinc-500 hover:text-white"}`}
               >
                 {l.toUpperCase()}
@@ -126,22 +97,33 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                 )}
               </div>
             </section>
-
-            {room.status === "LOBBY" && (
-              <button
-                onClick={() => startMatch({ roomId: room._id })}
-                className="w-full py-6 bg-white text-black font-black rounded-2xl uppercase tracking-[0.2em] text-xl hover:bg-teal-500 transition-all shadow-xl active:scale-95"
-              >
-                {t.startMatch}
-              </button>
-            )}
           </div>
 
           {/* RIGHT: PLAYER CARDS */}
           <div className="lg:col-span-8 space-y-8">
-            <h2 className="text-xs font-black tracking-[0.4em] text-zinc-400 uppercase border-b border-zinc-900 pb-4">
-              {t.players}
-            </h2>
+            <div className="flex justify-between items-end border-b border-zinc-900 pb-4">
+              <h2 className="text-xs font-black tracking-[0.4em] text-zinc-400 uppercase">
+                {t.players}
+              </h2>
+
+              {/* --- MATCH FINISHED ALERT --- */}
+              {isGameOver && (
+                <div className="animate-in fade-in slide-in-from-right duration-500">
+                  <div className="bg-teal-500 text-black px-4 py-1 rounded-full flex items-center gap-2 shadow-[4px_4px_0_0_#000] border-2 border-black">
+                    <span className="text-sm">🏆</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">
+                      {t.gameOver}, {t.winner}: {winnerName}
+                    </span>
+                    <button
+                      onClick={() => router.push("/")}
+                      className="ml-2 bg-black text-white px-2 py-0.5 rounded-md text-[8px] font-black hover:bg-zinc-800 transition-colors"
+                    >
+                      {t.exit}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {room.players.map((p: any) => {
@@ -149,17 +131,30 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                   room.turnOrder?.[room.currentTurnIndex] === p._id;
                 const pState = p.state || {};
                 const isWinningSoon = pState.chicks === 2 && pState.eggs >= 1;
+                const isWinner = winnerName === p.name && isGameOver;
 
                 return (
                   <div
                     key={p._id}
                     className={`relative p-8 rounded-[2.5rem] border-2 transition-all duration-500 ${
-                      isTurn
-                        ? "bg-zinc-900 border-teal-500 scale-[1.02]"
-                        : "bg-zinc-900/20 border-zinc-800 opacity-60"
+                      isWinner
+                        ? "bg-teal-500/10 border-teal-500 shadow-[0_0_40px_rgba(20,184,166,0.2)]"
+                        : isTurn && !isGameOver
+                          ? "bg-zinc-900 border-teal-500 scale-[1.02]"
+                          : "bg-zinc-900/20 border-zinc-800 opacity-60"
                     }`}
                   >
-                    {isWinningSoon && (
+                    {/* --- WINNER BADGE --- */}
+                    {isWinner && (
+                      <div className="absolute -top-4 left-6 bg-teal-500 text-black px-4 py-1 rounded-full border-2 border-black shadow-[2px_2px_0_0_#000] z-20 flex items-center gap-2">
+                        <span className="text-xs">👑</span>
+                        <span className="text-[10px] font-black uppercase tracking-tighter">
+                          {t.winner}
+                        </span>
+                      </div>
+                    )}
+
+                    {isWinningSoon && !isGameOver && (
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-400 border-2 border-black px-3 py-1 rounded-full shadow-[2px_2px_0_0_#000] animate-bounce z-10">
                         <p className="text-[10px] text-black font-black uppercase whitespace-nowrap">
                           {lang === "fa"
@@ -172,7 +167,11 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                     <div className="flex justify-between items-start mb-6">
                       <div className="space-y-1">
                         <p className="text-xs font-black text-teal-500 tracking-widest uppercase">
-                          {isTurn ? t.activeTurn : ""}
+                          {isWinner
+                            ? t.winner
+                            : isTurn && !isGameOver
+                              ? t.activeTurn
+                              : ""}
                         </p>
                         <h3 className="text-4xl font-black italic uppercase tracking-tighter truncate max-w-[180px]">
                           {p.name}
@@ -188,7 +187,7 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                         <div className="text-center">
                           <span className="text-2xl block">🐣</span>
                           <span
-                            className={`text-xl font-black ${isWinningSoon ? "text-yellow-400" : "text-white"}`}
+                            className={`text-xl font-black ${isWinner ? "text-teal-400" : isWinningSoon ? "text-yellow-400" : "text-white"}`}
                           >
                             {pState.chicks || 0}
                           </span>
@@ -196,12 +195,15 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
                       </div>
                     </div>
 
-                    {/* SHOW PLAYER HAND ON BOARD FOR SPECTATORS */}
                     <div className="flex gap-2 overflow-x-auto no-scrollbar pt-2 border-t border-zinc-800/50">
                       {p.gameHand?.map((cardType: string, idx: number) => (
                         <div
                           key={idx}
-                          className="w-10 h-14 bg-black/40 border border-zinc-800 rounded-lg flex items-center justify-center text-xl shrink-0"
+                          className={`w-10 h-14 border rounded-lg flex items-center justify-center text-xl shrink-0 ${
+                            isWinner
+                              ? "bg-teal-500/20 border-teal-500/40"
+                              : "bg-black/40 border-zinc-800"
+                          }`}
                         >
                           {cardType === "ROOSTER" && "🐓"}
                           {cardType === "CHICKEN" && "🐔"}
@@ -220,11 +222,9 @@ export default function RoomPage({ params }: { params: { roomId: string } }) {
     );
   }
 
-  // --- HAND VIEW LOGIC ---
   const storedName =
     typeof window !== "undefined" ? localStorage.getItem("playerName") : "";
   const currentPlayer = room.players.find((p: any) => p.name === storedName);
-
   return currentPlayer ? (
     <PiouPiouHand room={room} player={currentPlayer} initialLang={lang} />
   ) : null;
