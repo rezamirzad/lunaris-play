@@ -7,13 +7,67 @@ export const getRandomCard = () => {
   return cards[Math.floor(Math.random() * cards.length)];
 };
 
+// Add this to your imports at the top
+// import { v } from "convex/values";
+// import { mutation } from "../_generated/server";
+
+// convex/games/pioupiou.ts
+
+export const startMatch = mutation({
+  args: { roomId: v.id("rooms") },
+  handler: async (ctx, args) => {
+    const room = await ctx.db.get(args.roomId);
+    if (!room) throw new Error("Room not found");
+
+    const players = await ctx.db
+      .query("players")
+      .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
+      .collect();
+
+    if (players.length < 2) throw new Error("At least 2 players required.");
+
+    // 1. Generate Turn Order
+    // We map the database IDs to a static array to lock the sequence
+    const turnOrder = players.map((p) => p._id);
+
+    // 2. Initial Deal: 4 cards per node
+    for (const player of players) {
+      const initialHand = [
+        getRandomCard(),
+        getRandomCard(),
+        getRandomCard(),
+        getRandomCard(),
+      ];
+
+      await ctx.db.patch(player._id, {
+        gameHand: initialHand,
+        state: { eggs: 0, chicks: 0 },
+      });
+    }
+
+    // 3. Initialize Board with Turn Order
+    await ctx.db.patch(args.roomId, {
+      status: "ACTIVE",
+      turnOrder: turnOrder, // CRITICAL: Fixes the "Everyone is waiting" bug
+      currentTurnIndex: 0, // Starts with the first player in the array
+      gameBoard: {
+        ...room.gameBoard,
+        history: [{ key: "LOG_GAME_STARTED", data: { time: Date.now() } }],
+        pendingAttack: null,
+      },
+    });
+
+    return { success: true };
+  },
+});
+
 export const handleAction = mutation({
   args: {
     playerId: v.id("players"),
     indices: v.array(v.number()),
     cards: v.array(v.string()),
     targetPlayerId: v.optional(v.id("players")),
-    actionType: v.optional(v.string()),
+    actionType: v.optional(v.string()), // "PLAY", "ATTACK", "DEFEND", "ACCEPT", "DISCARD"
   },
   handler: async (ctx, args) => {
     const player = await ctx.db.get(args.playerId);
@@ -29,18 +83,27 @@ export const handleAction = mutation({
     let logPayload: any = null;
     const cards = args.cards;
 
-    const isFox = cards.length === 1 && cards[0] === "FOX";
+    // 1. REFINED LOGIC GATES
+    const isFoxCard = cards.length === 1 && cards[0] === "FOX";
+
+    // An attack only happens if it's a FOX AND the action is specifically "ATTACK"
+    const isFoxAttack = isFoxCard && args.actionType === "ATTACK";
+
+    // A discard happens if it's a standard single card OR a Fox with no attack intent
+    const isDiscard =
+      args.actionType === "DISCARD" ||
+      (cards.length === 1 && !isFoxAttack && args.actionType !== "DEFEND");
+
     const isLay =
       cards.length === 3 &&
       cards.includes("ROOSTER") &&
       cards.includes("CHICKEN") &&
       cards.includes("NEST");
+
     const isHatch =
       cards.length === 2 &&
       cards.filter((c) => c === "CHICKEN").length === 2 &&
       eggs > 0;
-    const isDiscard =
-      (cards.length === 1 && !isFox) || args.actionType === "DISCARD";
 
     // --- 1. DEFEND LOGIC (Victim blocks Fox) ---
     if (args.actionType === "DEFEND") {
@@ -97,8 +160,14 @@ export const handleAction = mutation({
     }
 
     // --- 3. ATTACK INITIATION (Active player plays Fox) ---
-    if (isFox && args.actionType !== "DISCARD") {
-      if (!args.targetPlayerId) throw new Error("Target required");
+    if (isFoxAttack) {
+      if (!args.targetPlayerId)
+        throw new Error("Target required for Fox attack");
+
+      const victim = await ctx.db.get(args.targetPlayerId);
+      if (!victim || (victim.state?.eggs || 0) <= 0) {
+        throw new Error("Invalid target: Player has no eggs to steal");
+      }
 
       // We don't call finishTurn yet! We wait for the victim to Defend or Accept.
       // We just move the game into a "Pending Attack" state.

@@ -45,26 +45,6 @@ export const handleAction = mutation({
       }
     }
 
-    if (args.actionType === "ATTACK" && args.targetPlayerId) {
-      const target = await ctx.db.get(args.targetPlayerId);
-      const targetState = target?.state || {};
-      const targetEggs = targetState.eggs || 0;
-
-      if (target && targetEggs > 0) {
-        await ctx.db.patch(room._id, {
-          gameBoard: {
-            ...room.gameBoard,
-            pendingAttack: {
-              attackerId: player._id,
-              victimId: target._id,
-              card: "FOX",
-              indices: args.indices,
-            },
-          },
-        });
-      }
-    }
-
     const isDixit = room.currentGame?.toLowerCase() === "dixit";
     const newHand = player.gameHand.filter((_, i) => !args.indices.includes(i));
 
@@ -76,45 +56,5 @@ export const handleAction = mutation({
     }
 
     await ctx.db.patch(player._id, { gameHand: newHand });
-
-    if (args.actionType !== "ATTACK") {
-      await ctx.db.patch(room._id, {
-        currentTurnIndex: (room.currentTurnIndex + 1) % room.turnOrder.length,
-      });
-    }
-  },
-});
-
-export const resolveAttack = mutation({
-  args: {
-    roomId: v.id("rooms"),
-    accepted: v.boolean(),
-  },
-  handler: async (ctx, args) => {
-    const room = await ctx.db.get(args.roomId);
-    if (!room || !room.gameBoard.pendingAttack) return;
-
-    const { attackerId, victimId } = room.gameBoard.pendingAttack;
-    const victim = await ctx.db.get(victimId);
-    const attacker = await ctx.db.get(attackerId);
-
-    if (args.accepted && victim && attacker) {
-      const vState = victim.state || {};
-      const aState = attacker.state || {};
-      const victimEggs = vState.eggs || 0;
-      const attackerEggs = aState.eggs || 0;
-
-      await ctx.db.patch(victim._id, {
-        state: { ...vState, eggs: Math.max(0, victimEggs - 1) },
-      });
-      await ctx.db.patch(attacker._id, {
-        state: { ...aState, eggs: attackerEggs + 1 },
-      });
-    }
-
-    await ctx.db.patch(room._id, {
-      gameBoard: { ...room.gameBoard, pendingAttack: null },
-      currentTurnIndex: (room.currentTurnIndex + 1) % room.turnOrder.length,
-    });
   },
 });

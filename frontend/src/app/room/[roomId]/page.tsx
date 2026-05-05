@@ -1,390 +1,100 @@
 "use client";
 
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { useQuery, useMutation } from "convex/react";
-import { useMemo } from "react";
-import { api } from "../../../../convex/_generated/api";
-import DixitHand from "../../components/games/Dixit/DixitHand";
-import DixitCard from "../../components/games/Dixit/DixitCard";
-import PiouPiouHand from "../../components/games/PiouPiou/PiouPiouHand";
-import {
-  translations,
-  Language,
-  formatLog,
-  TranslationSet,
-  toPersianDigits,
-} from "@/lib/translations";
+import { useParams, useSearchParams } from "next/navigation";
+import { useQuery } from "convex/react";
+import { useEffect, useState, useMemo } from "react";
+import { api } from "../../../../../convex/_generated/api";
 
-function hashString(str: string) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = (hash << 5) - hash + str.charCodeAt(i);
-    hash |= 0;
-  }
-  return hash;
-}
+import RoomHeader from "../../components/shared/RoomHeader";
+import PiouPiouPlayerView from "../../components/games/PiouPiou/PlayerViewContainer";
+import DixitPlayerView from "../../components/games/Dixit/PlayerViewContainer";
+import PiouPiouBoard from "../../components/games/PiouPiou/PiouPiouContainer";
+import DixitBoard from "../../components/games/Dixit/DixitContainer";
 
-export default function RoomPage({ params }: { params: { roomId: string } }) {
+export default function RoomPage() {
+  const params = useParams();
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-  const lang = (searchParams.get("lang") as Language) || "en";
-  const t = translations[lang];
-  const isFA = lang === "fa";
+  const roomCode = (params.roomId as string).toUpperCase();
+  const isBoardView = searchParams.get("view") === "board";
 
-  const room = useQuery((api as any).engine.getRoomState, {
-    roomCode: params.roomId,
-  });
-  const games = useQuery((api as any).engine.listGames);
-  const triggerAction = useMutation((api as any).games.dixit.handleAction);
-  const startGame = useMutation((api as any).engine.startGame);
+  const room = useQuery(api.engine.getRoomState, { roomCode });
+  const [localName, setLocalName] = useState<string | null>(null);
 
-  const setLanguage = (newLang: Language) => {
-    const p = new URLSearchParams(searchParams);
-    p.set("lang", newLang);
-    router.replace(`${pathname}?${p.toString()}`);
+  useEffect(() => {
+    setLocalName(localStorage.getItem("playerName"));
+  }, []);
+
+  const me = useMemo(() => {
+    if (!room?.players || !localName) return null;
+    return room.players.find((p: any) => p.name === localName);
+  }, [room?.players, localName]);
+
+  if (room === undefined) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-[#000000] text-blue-400 font-mono text-xs animate-pulse">
+        ESTABLISHING_ENCRYPTED_LINK...
+      </div>
+    );
+  }
+
+  if (room === null) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-[#000000] p-6">
+        <div className="border border-red-500/30 bg-red-500/5 p-8 rounded-2xl text-center font-mono">
+          <h2 className="text-red-500 font-black mb-2 uppercase">
+            Invalid_Session
+          </h2>
+          <p className="text-zinc-500 text-xs tracking-widest">
+            Room {roomCode} not found
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const renderContent = () => {
+    const gameType = room.currentGame?.toLowerCase();
+
+    if (isBoardView) {
+      return gameType === "dixit" ? (
+        <DixitBoard roomId={room._id} roomData={room} />
+      ) : (
+        <PiouPiouBoard roomId={room._id} roomData={room} />
+      );
+    }
+
+    if (!me) {
+      return (
+        <div className="flex flex-col items-center justify-center py-32 space-y-4 font-mono">
+          <div className="h-2 w-2 bg-zinc-800 rounded-full animate-ping" />
+          <p className="text-zinc-600 text-[10px] uppercase tracking-[0.4em]">
+            Authenticating_Node...
+          </p>
+        </div>
+      );
+    }
+
+    // Role-Based Logic for Dixit: Active Player = Storyteller
+    const isMyTurn = room.turnOrder[room.currentTurnIndex] === me._id;
+
+    return gameType === "dixit" ? (
+      <DixitPlayerView player={me} roomData={room} isMyTurn={isMyTurn} />
+    ) : (
+      <PiouPiouPlayerView player={me} roomData={room} isMyTurn={isMyTurn} />
+    );
   };
 
-  const shuffledCards = useMemo(() => {
-    if (!room?.gameBoard?.submittedCards) return [];
-    const cards = [...room.gameBoard.submittedCards];
-    const seed = `${room._id}${room.gameBoard.currentClue || ""}`;
-    return cards.sort(
-      (a, b) => hashString(a.cardId + seed) - hashString(b.cardId + seed),
-    );
-  }, [
-    room?._id,
-    room?.gameBoard?.submittedCards,
-    room?.gameBoard?.currentClue,
-  ]);
-
-  if (room === undefined || games === undefined)
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center text-teal-500 font-black animate-pulse uppercase">
-        LOADING...
+  return (
+    <main className="relative min-h-screen bg-[#000000] overflow-hidden font-mono">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-transparent to-transparent pointer-events-none" />
+      <RoomHeader
+        gameTitle={room.currentGame}
+        roomCode={room.roomCode}
+        status={room.status}
+      />
+      <div className="relative z-10 container mx-auto px-4 py-8">
+        {renderContent()}
       </div>
-    );
-
-  if (!room)
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center text-white font-black uppercase">
-        ROOM NOT FOUND
-      </div>
-    );
-
-  const isBoardView = searchParams.get("view") === "board";
-  const isPiouPiou = room.currentGame === "pioupiou";
-  const { gameBoard = {} } = room;
-
-  if (isBoardView) {
-    const isLobby = room.status === "LOBBY";
-    const isPlaying = room.status === "PLAYING";
-    const isGameOver = room.status === "FINISHED";
-    const phase = gameBoard.phase;
-    const storytellerId = room.turnOrder?.[room.currentTurnIndex];
-    const nextStoryteller = room.players.find(
-      (p: any) =>
-        p._id ===
-        room.turnOrder?.[(room.currentTurnIndex + 1) % room.turnOrder.length],
-    );
-    const winnerName = gameBoard.winner;
-
-    return (
-      <main className="min-h-screen bg-black text-white p-6 lg:p-12 space-y-12 max-w-7xl mx-auto">
-        <header className="flex justify-between items-start">
-          <div className="space-y-2">
-            <div className="flex items-center gap-4">
-              <h1 className="text-6xl font-black italic tracking-tighter text-teal-500 uppercase">
-                {params.roomId}
-              </h1>
-              {/* SUBTLE WINNER BADGE - Matches main page style */}
-              {isGameOver && winnerName && (
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-teal-500/10 border border-teal-500/20 rounded-full animate-in zoom-in duration-500">
-                  <span className="text-xs">🏆</span>
-                  <span className="text-[10px] font-black text-teal-500 uppercase tracking-widest">
-                    {winnerName}
-                  </span>
-                </div>
-              )}
-            </div>
-            <p className="text-zinc-500 font-bold tracking-[0.4em] text-[10px] uppercase">
-              {isPiouPiou ? t.pioupiou_title : t.dixit_title} • {t.title}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-6">
-            {isLobby && room.players.length >= 2 && (
-              <button
-                onClick={() => startGame({ roomId: room._id })}
-                className="bg-teal-500 text-black px-8 py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-white transition-all animate-pulse"
-              >
-                {t.startMatch}
-              </button>
-            )}
-            {!isPiouPiou && phase === "RESULTS" && !isGameOver && (
-              <button
-                onClick={() =>
-                  triggerAction({
-                    playerId: storytellerId,
-                    actionType: "NEXT_ROUND",
-                  })
-                }
-                className="bg-white text-black px-8 py-3 rounded-2xl font-black uppercase tracking-widest hover:bg-teal-500 transition-all"
-              >
-                {t.startMatch}
-              </button>
-            )}
-            <div className="flex gap-2 bg-zinc-900/50 p-1 rounded-xl border border-zinc-800">
-              {(["en", "fr", "de", "fa"] as Language[]).map((l) => (
-                <button
-                  key={l}
-                  onClick={() => setLanguage(l)}
-                  className={`px-4 py-1.5 rounded-lg text-[10px] font-black transition-all ${lang === l ? "bg-white text-black" : "text-zinc-500 hover:text-white"}`}
-                >
-                  {l.toUpperCase()}
-                </button>
-              ))}
-            </div>
-          </div>
-        </header>
-
-        {isPlaying && (
-          <div className="space-y-12 animate-in fade-in duration-1000">
-            {!isPiouPiou && (
-              <section className="bg-zinc-900/50 border border-zinc-800 p-10 rounded-[3rem] text-center space-y-4">
-                <div className="space-y-1">
-                  <p className="text-xs font-black tracking-[0.5em] text-teal-500 uppercase">
-                    {phase === "RESULTS"
-                      ? t.results
-                      : phase === "VOTING"
-                        ? t.dixit_guess_card
-                        : t.activeTurn}
-                  </p>
-                  <h2 className="text-7xl font-black italic uppercase tracking-tighter">
-                    {gameBoard.currentClue
-                      ? `"${gameBoard.currentClue}"`
-                      : "..."}
-                  </h2>
-                  {phase === "RESULTS" && nextStoryteller && !isGameOver && (
-                    <p className="text-zinc-400 font-black uppercase text-sm tracking-widest pt-2">
-                      {t.waiting}{" "}
-                      <span className="text-white">{nextStoryteller.name}</span>
-                    </p>
-                  )}
-                </div>
-              </section>
-            )}
-
-            {!isPiouPiou && (
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 justify-items-center items-start w-full px-4">
-                {shuffledCards.map((submission: any, i: number) => {
-                  const voters = (gameBoard.votes || [])
-                    .filter((v: any) => v.cardId === submission.cardId)
-                    .map(
-                      (v: any) =>
-                        room.players.find((p: any) => p._id === v.voterId)
-                          ?.name,
-                    );
-                  const isSTCard = submission.playerId === storytellerId;
-                  const owner = room.players.find(
-                    (p: any) => p._id === submission.playerId,
-                  );
-                  const roundPoints =
-                    gameBoard.roundResults?.pointsEarned?.[
-                      submission.playerId
-                    ] || 0;
-                  return (
-                    <div
-                      key={submission.cardId + i}
-                      className="flex flex-col items-center gap-4 w-full max-w-[200px]"
-                    >
-                      <div className="h-6 flex items-center">
-                        {phase === "RESULTS" && (
-                          <span
-                            className={`text-[10px] font-black uppercase tracking-widest text-center ${isSTCard ? "text-teal-500" : "text-zinc-500"}`}
-                          >
-                            {isSTCard ? t.storyteller : owner?.name}
-                          </span>
-                        )}
-                      </div>
-                      <div
-                        className={`relative w-full aspect-[2/3] transition-all duration-700 ${phase === "RESULTS" && isSTCard ? "ring-4 ring-teal-500 ring-offset-4 ring-offset-black rounded-2xl scale-105" : ""}`}
-                      >
-                        <DixitCard
-                          cardId={submission.cardId}
-                          isRevealed={phase === "VOTING" || phase === "RESULTS"}
-                        />
-                      </div>
-                      {phase === "RESULTS" && (
-                        <div className="w-full flex flex-col gap-2 items-center animate-in slide-in-from-bottom-2 duration-500">
-                          <div className="flex gap-1 flex-wrap justify-center">
-                            {voters.map((vName: string, idx: number) => (
-                              <span
-                                key={idx}
-                                className="bg-white text-black text-[8px] px-2 py-0.5 rounded font-black uppercase"
-                              >
-                                {vName}
-                              </span>
-                            ))}
-                          </div>
-                          <span className="text-xs font-black text-teal-400">
-                            +{isFA ? toPersianDigits(roundPoints) : roundPoints}{" "}
-                            PTS
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start pt-4">
-          <div className="lg:col-span-4 space-y-8">
-            <section className="bg-zinc-900/30 border border-zinc-800 p-8 rounded-[2rem] space-y-6">
-              <h2 className="text-xs font-black tracking-widest text-zinc-500 uppercase">
-                {t.matchActivity}
-              </h2>
-              <div className="space-y-6 max-h-[50vh] overflow-hidden relative">
-                {(gameBoard.history ?? []).map((entry: any, i: number) => (
-                  <p
-                    key={i}
-                    className={`text-lg font-black italic uppercase leading-tight ${i === 0 ? "opacity-100" : "opacity-30"}`}
-                  >
-                    {formatLog(
-                      translations[lang][
-                        entry.key as keyof TranslationSet
-                      ] as string,
-                      entry.data || {},
-                      lang,
-                    )}
-                  </p>
-                ))}
-              </div>
-            </section>
-          </div>
-
-          <div className="lg:col-span-8 space-y-8">
-            <h2 className="text-xs font-black tracking-[0.4em] text-zinc-400 uppercase">
-              {t.players}
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {room.players.map((p: any) => {
-                const isTurn = storytellerId === p._id && !isPiouPiou;
-                const isPiouTurn =
-                  room.turnOrder?.[room.currentTurnIndex] === p._id &&
-                  isPiouPiou;
-                const isWinner = winnerName === p.name;
-                const pState = p.state || {};
-                const earned =
-                  gameBoard.roundResults?.pointsEarned?.[p._id] || 0;
-
-                return (
-                  <div
-                    key={p._id}
-                    className={`relative p-8 rounded-[2.5rem] border-2 transition-all ${
-                      isWinner
-                        ? "bg-teal-500/5 border-teal-500/40 scale-[1.02] shadow-[0_0_40px_rgba(20,184,166,0.1)]"
-                        : (isTurn || isPiouTurn) && !isGameOver
-                          ? "bg-zinc-900 border-teal-500 scale-[1.02]"
-                          : "bg-zinc-900/20 border-zinc-800 opacity-60"
-                    }`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-3">
-                          <h3 className="text-4xl font-black italic uppercase truncate max-w-[150px]">
-                            {p.name}
-                          </h3>
-                          {isWinner && (
-                            <div className="flex items-center gap-1.5 px-2 py-1 bg-teal-500 border border-teal-400 rounded-lg shadow-lg shadow-teal-500/20 animate-pulse">
-                              <span className="text-[10px] font-black text-black uppercase tracking-tighter">
-                                {t.victory}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                        <p className="text-[10px] font-black text-teal-500 tracking-widest uppercase">
-                          {(isTurn || isPiouTurn) && !isGameOver
-                            ? t.activeTurn
-                            : ""}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        {isPiouPiou ? (
-                          <div className="flex gap-4" dir="ltr">
-                            <div className="text-center">
-                              <span className="text-[10px] block font-black text-zinc-500">
-                                {t.eggs}
-                              </span>
-                              <span className="text-3xl font-black text-white">
-                                {isFA
-                                  ? toPersianDigits(pState.eggs || 0)
-                                  : pState.eggs || 0}
-                              </span>
-                            </div>
-                            <div className="text-center">
-                              <span className="text-[10px] block font-black text-teal-500">
-                                {t.chicks}
-                              </span>
-                              <span className="text-3xl font-black text-teal-500">
-                                {isFA
-                                  ? toPersianDigits(pState.chicks || 0)
-                                  : pState.chicks || 0}
-                              </span>
-                            </div>
-                          </div>
-                        ) : (
-                          <>
-                            <span className="text-[10px] block font-black text-zinc-500 tracking-widest">
-                              {t.dixit_score}
-                            </span>
-                            <span className="text-3xl font-black text-teal-500">
-                              {isFA
-                                ? toPersianDigits(pState.score || 0)
-                                : pState.score || 0}
-                            </span>
-                            {!isPiouPiou &&
-                              phase === "RESULTS" &&
-                              earned > 0 && (
-                                <span className="text-xs font-black block text-teal-400 animate-bounce mt-1">
-                                  +{isFA ? toPersianDigits(earned) : earned}
-                                </span>
-                              )}
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </main>
-    );
-  }
-
-  const storedName =
-    typeof window !== "undefined" ? localStorage.getItem("playerName") : "";
-  const currentPlayer = room.players.find((p: any) => p.name === storedName);
-  if (!currentPlayer)
-    return (
-      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 uppercase font-black italic">
-        <button
-          onClick={() => router.push("/")}
-          className="bg-teal-500 text-black px-8 py-3 rounded-2xl font-black"
-        >
-          {t.exit}
-        </button>
-      </div>
-    );
-
-  return isPiouPiou ? (
-    <PiouPiouHand room={room} player={currentPlayer} initialLang={lang} />
-  ) : (
-    <DixitHand room={room} player={currentPlayer} initialLang={lang} />
+    </main>
   );
 }

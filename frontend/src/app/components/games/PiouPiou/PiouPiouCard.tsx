@@ -1,68 +1,67 @@
 "use client";
-import { PIOU_PIOU_DECK_SPEC } from "./constants";
 
-interface CardProps {
-  type: string;
-  selected?: boolean;
-  onClick?: () => void;
+import Image from "next/image";
+
+interface PiouPiouCardProps {
+  cardKey: string;
+  isInteractable: boolean;
+  onSelect?: (cardKey: string) => void;
+  isSelected?: boolean;
 }
 
-export default function Card({ type, selected, onClick }: CardProps) {
-  const config = (PIOU_PIOU_DECK_SPEC as any)[type];
-
-  const getTypeColor = () => {
-    switch (type) {
-      case "FOX":
-        return "bg-red-50";
-      case "ROOSTER":
-        return "bg-emerald-50";
-      case "CHICKEN":
-        return "bg-amber-50";
-      case "NEST":
-        return "bg-orange-50";
-      default:
-        return "bg-white";
-    }
+/**
+ * PiouPiouCard: Minimalist Selection Logic.
+ * Implementation: Locked grid positions with teal border highlights.
+ */
+export default function PiouPiouCard({
+  cardKey,
+  isInteractable,
+  onSelect,
+  isSelected,
+}: PiouPiouCardProps) {
+  const normalizedKey = cardKey.toLowerCase();
+  const assetMap: Record<string, string> = {
+    chicken: "/assets/games/pioupiou/chicken.png",
+    rooster: "/assets/games/pioupiou/rooster.png",
+    fox: "/assets/games/pioupiou/fox.png",
+    nest: "/assets/games/pioupiou/nest.png",
   };
 
-  if (!config) return null;
+  const imageSrc =
+    assetMap[normalizedKey] || "/assets/games/pioupiou/card-back.png";
 
   return (
-    <div
-      onClick={onClick}
-      /* FIX: Changed w-full to a fixed responsive width (w-24 for mobile, w-32 for tablet)
-         Reduced padding and border thickness for better fit on small screens
-      */
-      className={`relative w-24 sm:w-28 md:w-32 aspect-[2/3] rounded-2xl border-[4px] transition-all duration-200 overflow-hidden flex flex-col items-center justify-between p-2 sm:p-3 shadow-lg select-none ${
-        selected
-          ? "border-teal-500 -translate-y-4 scale-105 shadow-teal-500/30"
-          : `border-zinc-900 ${getTypeColor()} active:scale-95`
-      }`}
+    <button
+      disabled={!isInteractable}
+      onClick={() => onSelect?.(cardKey)}
+      className={`relative aspect-[2/3] w-28 md:w-32 rounded-xl border transition-all duration-200 overflow-hidden bg-[#09090b]
+        ${
+          isSelected
+            ? "border-teal-400 shadow-[0_0_15px_rgba(45,212,191,0.4)]"
+            : "border-white/10 hover:border-white/20"
+        }
+        ${!isInteractable && "opacity-50 grayscale cursor-not-allowed"}`}
     >
-      {/* Type Label - smaller text for smaller card */}
-      <div
-        className={`text-[8px] sm:text-[10px] font-black uppercase tracking-widest ${
-          selected ? "text-teal-600" : "text-zinc-400"
-        }`}
-      >
-        {type}
+      {/* Background Gradient matching the software terminal aesthetic */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent z-10" />
+
+      <div className="relative h-full w-full p-2">
+        <Image
+          src={imageSrc}
+          alt={cardKey}
+          fill
+          className="object-contain p-2"
+          sizes="128px"
+          priority={isSelected}
+        />
       </div>
 
-      {/* Main Illustration */}
-      <img
-        src={config.img}
-        alt={type}
-        className={`w-full h-3/5 object-contain transition-transform ${selected ? "scale-110" : ""}`}
-      />
-
-      {/* Bottom Detail */}
-      <div
-        className={`w-2 h-2 rounded-full ${selected ? "bg-teal-500" : "bg-zinc-200"}`}
-      />
-
-      {selected && (
-        <div className="absolute inset-0 bg-teal-500/5 pointer-events-none" />
+      {/* Tiny Selection Indicator: Top-right teal dot for extra clarity */}
+      {isSelected && (
+        <div className="absolute top-2 right-2 z-20">
+          <span className="flex h-2 w-2 rounded-full bg-teal-400 shadow-[0_0_8px_rgba(45,212,191,0.8)]" />
+        </div>
       )}
-    </div>
+    </button>
   );
 }
