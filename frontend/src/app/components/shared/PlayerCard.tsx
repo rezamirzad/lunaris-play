@@ -19,6 +19,7 @@ interface PlayerCardProps {
    * to override default labels without changing layout.
    */
   statusOverride?: string;
+  className?: string;
 }
 
 /**
@@ -35,10 +36,11 @@ export default function PlayerCard({
   isMatchpoint,
   children,
   statusOverride,
+  className = "",
 }: PlayerCardProps) {
   return (
     <div
-      className={`relative p-4 rounded-lg border transition-all duration-500 ${
+      className={`relative p-4 rounded-lg border transition-all duration-500 ${className} ${
         isWinner
           ? "bg-yellow-950/10 border-yellow-500/50 shadow-[0_0_20px_rgba(234,179,8,0.1)] scale-105"
           : isCurrentTurn
@@ -46,7 +48,7 @@ export default function PlayerCard({
             : "bg-zinc-900/50 border-white/10"
       }`}
     >
-      {/* Badge Priority System[cite: 2] */}
+      {/* Badge Priority System*/}
       {isWinner && <WinnerBadge />}
 
       {isMatchpoint && !isWinner && <DangerBadge />}
@@ -57,7 +59,7 @@ export default function PlayerCard({
             {name}
           </h4>
 
-          {/* Status Prioritization Logic[cite: 2] */}
+          {/* Status Prioritization Logic*/}
           {!isGameFinished && (
             <div className="flex items-center gap-1.5">
               {statusOverride ? (
