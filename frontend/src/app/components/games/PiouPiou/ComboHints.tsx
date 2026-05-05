@@ -5,6 +5,7 @@ import { translations, Language } from "@/lib/translations";
 /**
  * ComboHints: Technical Move-Set Detector
  * Logic: Validates hand state against game rules in real-time.
+ * Adheres to LUMZ LTR standards for all localizations.
  */
 export default function ComboHints({
   hand,
@@ -17,9 +18,10 @@ export default function ComboHints({
   lang: Language;
   otherPlayers: any[];
 }) {
-  const t = translations[lang];
+  // Pulling the translation set based on the active session language
+  const t = translations[lang] || translations.en;
 
-  // Logic Mapping
+  // Logic Mapping: Core Henhouse Mechanics
   const hasRooster = hand.includes("ROOSTER");
   const hasChicken = hand.includes("CHICKEN");
   const hasNest = hand.includes("NEST");
@@ -33,21 +35,21 @@ export default function ComboHints({
 
   const moves = [
     {
-      label: t.hintLayEgg,
+      label: t.hintLayEgg, // Localized Label[cite: 2]
       active: canLay,
       icon: "🥚",
       activeClass: "border-white text-white bg-white/5",
       idleClass: "border-white/5 text-zinc-600 opacity-30",
     },
     {
-      label: t.hintHatch,
+      label: t.hintHatch, // Localized Label[cite: 2]
       active: canHatch,
       icon: "🐣",
       activeClass: "border-teal-500/50 text-teal-400 bg-teal-500/5",
       idleClass: "border-white/5 text-zinc-600 opacity-30",
     },
     {
-      label: t.hintSteal,
+      label: t.hintSteal, // Localized Label[cite: 2]
       active: canSteal,
       icon: "🦊",
       activeClass:
@@ -58,8 +60,9 @@ export default function ComboHints({
 
   return (
     <div className="space-y-3 font-mono">
+      {/* Header remains LTR regardless of language set[cite: 2] */}
       <p className="text-[8px] font-black tracking-[0.2em] text-zinc-500 uppercase px-1">
-        {t.availableMoves || "AVAILABLE_PROTOCOLS"}
+        {t.availableMoves}
       </p>
 
       <div className="grid grid-cols-1 gap-2">
@@ -71,6 +74,7 @@ export default function ComboHints({
             }`}
           >
             <div className="flex items-center gap-3">
+              {/* Desaturate icon when move is unavailable to reduce visual noise[cite: 2] */}
               <span className={move.active ? "grayscale-0" : "grayscale"}>
                 {move.icon}
               </span>
@@ -79,9 +83,11 @@ export default function ComboHints({
               </span>
             </div>
 
-            {/* Technical Status Indicator */}
+            {/* Technical Status Indicator: Real-time pulse for active protocols[cite: 2] */}
             <div
-              className={`h-1 w-1 rounded-full ${move.active ? "bg-current animate-pulse" : "bg-zinc-800"}`}
+              className={`h-1 w-1 rounded-full ${
+                move.active ? "bg-current animate-pulse" : "bg-zinc-800"
+              }`}
             />
           </div>
         ))}

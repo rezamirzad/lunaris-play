@@ -75,6 +75,20 @@ export interface TranslationSet {
   nearlyWinning: string;
   noEggsToSteal: string;
   yourTurn: string;
+  chicken: string;
+  rooster: string;
+  fox: string;
+  nest: string;
+  lastEvents: string;
+  noEvents: string;
+  ready: string;
+  hand: string;
+  room: string;
+  statusLive: string;
+  statusArchived: string;
+  statusLobby: string;
+  invalidSession: string;
+  authenticating: string;
 }
 
 export const translations: Record<Language, TranslationSet> = {
@@ -153,6 +167,20 @@ export const translations: Record<Language, TranslationSet> = {
     nearlyWinning: "NEARLY WINNING!",
     noEggsToSteal: "No eggs to steal!",
     yourTurn: "YOUR TURN",
+    chicken: "Chicken",
+    rooster: "Rooster",
+    fox: "Fox",
+    nest: "Nest",
+    lastEvents: "Last 5 events",
+    noEvents: "No events recorded",
+    ready: "Ready",
+    hand: "Hand",
+    room: "Room",
+    statusLive: "Live",
+    statusArchived: "Archived",
+    statusLobby: "Initializing",
+    invalidSession: "Invalid Session",
+    authenticating: "Authenticating Node",
   },
   fr: {
     title: "LUNARIS",
@@ -229,6 +257,20 @@ export const translations: Record<Language, TranslationSet> = {
     nearlyWinning: "PRESQUE GAGNÉ !",
     noEggsToSteal: "Pas d'oeufs à voler !",
     yourTurn: "À VOUS DE JOUER",
+    chicken: "Poussin",
+    rooster: "Coq",
+    fox: "Renard",
+    nest: "Nid",
+    lastEvents: "5 derniers événements",
+    noEvents: "Aucun événement enregistré",
+    ready: "Prêt",
+    hand: "Main",
+    room: "Salle",
+    statusLive: "En Direct",
+    statusArchived: "Archivé",
+    statusLobby: "Initialisation",
+    invalidSession: "Session Invalide",
+    authenticating: "Authentification du Nœud",
   },
   de: {
     title: "LUNARIS",
@@ -305,6 +347,20 @@ export const translations: Record<Language, TranslationSet> = {
     nearlyWinning: "FAST GEWONNEN!",
     noEggsToSteal: "Keine Eier zu stehlen!",
     yourTurn: "DU BIST DRAN",
+    chicken: "Küken",
+    rooster: "Hahn",
+    fox: "Fuchs",
+    nest: "Nest",
+    lastEvents: "Letzte 5 Ereignisse",
+    noEvents: "Keine Ereignisse aufgezeichnet",
+    ready: "Bereit",
+    hand: "Hand",
+    room: "Raum",
+    statusLive: "Live",
+    statusArchived: "Archiviert",
+    statusLobby: "Initialisierung",
+    invalidSession: "Ungültige Sitzung",
+    authenticating: "Authentifizierung des Knotens",
   },
   fa: {
     title: "لوناریس",
@@ -381,6 +437,20 @@ export const translations: Record<Language, TranslationSet> = {
     nearlyWinning: "یک قدم تا پیروزی!",
     noEggsToSteal: "تخمی برای دزدیدن نیست!",
     yourTurn: "نوبت شماست",
+    chicken: "جوجه",
+    rooster: "خروس",
+    fox: "روباه",
+    nest: "لانه",
+    lastEvents: "آخرین گزارش‌ها",
+    noEvents: "گزارشی ثبت نشده",
+    ready: "آماده",
+    hand: "دست",
+    room: "اتاق",
+    statusLive: "در حال بازی",
+    statusArchived: "بایگانی شده",
+    statusLobby: "آماده‌سازی",
+    invalidSession: "نشست نامعتبر",
+    authenticating: "در حال تایید هویت",
   },
 };
 

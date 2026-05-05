@@ -16,11 +16,12 @@ export default function PiouPiouHand({
   player: any;
   initialLang: Language;
 }) {
+  // Lang remains static within the session based on initialLang
   const [lang] = useState<Language>(initialLang);
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
   const [targetId, setTargetId] = useState<string | null>(null);
 
-  const t = translations[lang];
+  const t = translations[lang] || translations.en; // Localized translation set[cite: 2]
   const playAction = useMutation((api as any).games.pioupiou.handleAction);
 
   // --- 1. CORE TURN LOGIC ---
@@ -32,8 +33,8 @@ export default function PiouPiouHand({
 
   // --- 2. UI HELPERS ---
   const getButtonLabel = () => {
-    if (!isMyTurn) return t.waiting;
-    return t.action;
+    if (!isMyTurn) return t.waiting; // Localized: WAITING...[cite: 2]
+    return t.action; // Localized: ACTION[cite: 2]
   };
 
   const handleAction = async (type: string, customIndices?: number[]) => {
@@ -55,11 +56,13 @@ export default function PiouPiouHand({
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-white font-black overflow-hidden relative">
+      {/* Header synchronized with Digital Craftsmanship aesthetics */}
       <div className="p-4 flex justify-between items-center bg-zinc-900/80 border-b border-zinc-800">
         <div
           className={`text-[11px] tracking-widest uppercase ${isMyTurn ? "text-teal-400" : "text-zinc-500"}`}
         >
-          {isMyTurn ? t.activeTurn : t.waiting}
+          {/* Localized Turn Status[cite: 2] */}
+          {isMyTurn ? t.yourTurn : t.waiting}
         </div>
       </div>
 
@@ -97,7 +100,11 @@ export default function PiouPiouHand({
         <button
           disabled={!isMyTurn || selectedIndices.length === 0}
           onClick={() => handleAction("PLAY")}
-          className={`w-full py-7 rounded-[2.5rem] text-3xl font-black uppercase transition-all active:scale-95 ${isMyTurn ? "bg-white text-black shadow-xl" : "bg-zinc-900 text-zinc-700 opacity-40"}`}
+          className={`w-full py-7 rounded-[2.5rem] text-3xl font-black uppercase transition-all active:scale-95 ${
+            isMyTurn
+              ? "bg-white text-black shadow-xl"
+              : "bg-zinc-900 text-zinc-700 opacity-40"
+          }`}
         >
           {getButtonLabel()}
         </button>

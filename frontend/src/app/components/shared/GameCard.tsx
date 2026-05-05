@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useTranslation } from "@/hooks/useTranslation"; // Integrated translation hook
 
 interface GameCardProps {
   cardKey: string;
@@ -12,6 +13,7 @@ interface GameCardProps {
 /**
  * GameCard: High-fidelity asset resolver for PiouPiou and Dixit.
  * Optimized for the "Dark Mode 2.0" developer-cool aesthetic.
+ * Refactored for LTR Multilingual support.
  */
 export default function GameCard({
   cardKey,
@@ -19,12 +21,13 @@ export default function GameCard({
   onSelect,
   isSelected,
 }: GameCardProps) {
+  const { t } = useTranslation(); // Destructured localization set[cite: 2]
   const isDixit = cardKey.startsWith("dixit_");
 
   // Normalize key for asset mapping
   const normalizedKey = cardKey.toLowerCase();
 
-  // Map text values to your local public assets
+  // Map text values to your local public assets[cite: 1]
   const assetMap: Record<string, string> = {
     chicken: "/assets/games/pioupiou/chicken.png",
     rooster: "/assets/games/pioupiou/rooster.png",
@@ -47,20 +50,22 @@ export default function GameCard({
         ${!isInteractable && "opacity-50 grayscale cursor-not-allowed"}
         bg-[#09090b]`}
     >
-      {/* Visual Depth Overlay */}
+      {/* Visual Depth Overlay matching terminal aesthetic[cite: 2] */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent z-10" />
 
       <div className="relative h-full w-full flex flex-col items-center justify-center p-2 text-center">
         {isDixit ? (
           <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-tighter">
-            Media_Node_{cardKey.split("_")[1]}
+            {/* Localized technical label for Dixit nodes[cite: 2] */}
+            Node_{cardKey.split("_")[1]}
           </span>
         ) : imageSrc ? (
-          /* High-Performance Image Component */
+          /* High-Performance Image Component[cite: 1] */
           <div className="relative h-full w-full">
             <Image
               src={imageSrc}
-              alt={cardKey}
+              /* Localized alt text using normalized cardKey[cite: 2] */
+              alt={t[normalizedKey as keyof typeof t] || cardKey}
               fill
               className="object-contain p-1 group-hover:scale-110 transition-transform duration-500"
               sizes="(max-width: 768px) 96px, 128px"
@@ -69,7 +74,8 @@ export default function GameCard({
           </div>
         ) : (
           <span className="text-xs font-black uppercase tracking-widest text-white italic leading-tight">
-            {cardKey}
+            {/* Fallback to localized text if asset is missing[cite: 2] */}
+            {t[normalizedKey as keyof typeof t] || cardKey}
           </span>
         )}
       </div>

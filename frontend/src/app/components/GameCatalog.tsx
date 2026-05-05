@@ -2,7 +2,8 @@
 
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { Language, translations, TranslationSet } from "@/lib/translations";
+import { useTranslation } from "@/hooks/useTranslation"; // Integrated translation hook
+import { toPersianDigits } from "@/lib/translations"; // Numerical localization utility
 
 interface Game {
   _id: string;
@@ -15,17 +16,18 @@ interface Game {
   absoluteMax: number;
 }
 
+/**
+ * GameCatalog: High-performance gallery for game selection.
+ * Enforces LTR "Software Terminal" aesthetic for all Grand Duchy locales.
+ */
 export default function GameCatalog({
-  lang,
   onHost,
 }: {
-  lang: Language;
   onHost: (slug: string) => void;
 }) {
   const games = useQuery((api as any).engine.listGames);
-  const t = translations[lang];
-
-  const isRTL = lang === "fa";
+  const { t, lang } = useTranslation(); // Destructured localization set
+  const isFA = lang === "fa";
 
   if (!games)
     return (
@@ -40,14 +42,13 @@ export default function GameCatalog({
     );
 
   return (
-    <div
-      className={`grid grid-cols-1 gap-6 ${isRTL ? "text-right" : "text-left"}`}
-      dir={isRTL ? "rtl" : "ltr"}
-    >
+    /* Enforced LTR layout to maintain terminal grid alignment */
+    <div className="grid grid-cols-1 gap-6 text-left" dir="ltr">
       {games.map((game: Game) => {
-        const displayTitle = (t as any)[game.title] || game.title;
+        // Safe mapping for localized titles and descriptions[cite: 2]
+        const displayTitle = (t as any)[game.slug] || game.title;
         const displayDescription =
-          (t as any)[game.description] || game.description;
+          (t as any)[`${game.slug}Desc`] || game.description;
 
         return (
           <div
@@ -55,7 +56,7 @@ export default function GameCatalog({
             className="group relative overflow-hidden bg-zinc-900 rounded-[2.5rem] border border-zinc-800 hover:border-teal-500 transition-all duration-500 cursor-pointer flex flex-col lg:flex-row shadow-2xl h-auto lg:h-[280px]"
             onClick={() => onHost(game.slug)}
           >
-            {/* SQUARE THUMBNAIL HOLDER - Fixed to card height */}
+            {/* SQUARE THUMBNAIL HOLDER */}
             <div className="w-full lg:w-[280px] lg:min-w-[280px] aspect-square relative overflow-hidden bg-black/20 flex items-center justify-center p-6">
               {game.thumbnail ? (
                 <img
@@ -66,32 +67,37 @@ export default function GameCatalog({
                     (e.target as any).style.display = "none";
                   }}
                 />
-              ) : null}
-
-              {/* FALLBACK ICON */}
-              <div className="absolute inset-0 flex items-center justify-center text-5xl opacity-10 group-hover:opacity-25 transition-opacity pointer-events-none">
-                {game.slug === "pioupiou" ? "🐣" : "🖼️"}
-              </div>
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center text-5xl opacity-10 group-hover:opacity-25 transition-opacity pointer-events-none">
+                  {game.slug === "pioupiou" ? "🐣" : "🖼️"}
+                </div>
+              )}
             </div>
 
             {/* CONTENT AREA */}
-            <div className="flex-1 p-8 flex flex-col justify-between bg-zinc-900">
+            <div className="flex-1 p-8 flex flex-col justify-between bg-zinc-900 font-mono">
               <div className="space-y-3">
                 <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-2">
-                  <h3
-                    className={`text-4xl font-black italic uppercase tracking-tighter text-white leading-none ${isRTL ? "font-serif" : ""}`}
-                  >
+                  <h3 className="text-4xl font-black italic uppercase tracking-tighter text-white leading-none">
                     {displayTitle}
                   </h3>
 
-                  <div
-                    className={`flex flex-col ${isRTL ? "items-start" : "items-end"}`}
-                  >
+                  <div className="flex flex-col items-end">
                     <span className="text-teal-400 font-black text-xl whitespace-nowrap leading-none">
-                      {game.minPlayers}-{game.suggestedMax} {t.players}
+                      {isFA
+                        ? toPersianDigits(game.minPlayers)
+                        : game.minPlayers}
+                      -
+                      {isFA
+                        ? toPersianDigits(game.suggestedMax)
+                        : game.suggestedMax}{" "}
+                      {t.players}
                     </span>
                     <span className="text-zinc-600 font-bold text-[9px] uppercase tracking-[0.2em] mt-1 whitespace-nowrap">
-                      {t.maxLabel}: {game.absoluteMax}
+                      {t.maxLabel}:{" "}
+                      {isFA
+                        ? toPersianDigits(game.absoluteMax)
+                        : game.absoluteMax}
                     </span>
                   </div>
                 </div>
@@ -101,9 +107,7 @@ export default function GameCatalog({
                 </p>
               </div>
 
-              <div
-                className={`mt-4 flex ${isRTL ? "justify-start" : "justify-end"}`}
-              >
+              <div className="mt-4 flex justify-end">
                 <button className="bg-white text-black px-8 py-3 rounded-xl font-black text-lg uppercase tracking-widest transition-all hover:bg-teal-500 active:scale-95 shadow-lg">
                   {t.host}
                 </button>

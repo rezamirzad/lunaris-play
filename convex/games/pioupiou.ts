@@ -111,6 +111,19 @@ export const handleAction = mutation({
       if (!attack) throw new Error("No pending attack");
 
       const attacker = await ctx.db.get(attack.attackerId);
+
+      const hand = player.gameHand || [];
+      const roosterIndices: number[] = [];
+
+      hand.forEach((card, idx) => {
+        if (card === "ROOSTER" && roosterIndices.length < 2) {
+          roosterIndices.push(idx);
+        }
+      });
+
+      if (roosterIndices.length < 2)
+        throw new Error("Insufficient Roosters to defend");
+
       logPayload = {
         key: "LOG_FOX_BLOCKED",
         data: { target: player.name }, // Victim name

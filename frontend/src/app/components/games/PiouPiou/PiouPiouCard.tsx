@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useTranslation } from "@/hooks/useTranslation"; // Integrated translation hook
 
 interface PiouPiouCardProps {
   cardKey: string;
@@ -12,6 +13,7 @@ interface PiouPiouCardProps {
 /**
  * PiouPiouCard: Minimalist Selection Logic.
  * Implementation: Locked grid positions with teal border highlights.
+ * Refactored for LTR Multilingual Accessibility.
  */
 export default function PiouPiouCard({
   cardKey,
@@ -19,7 +21,9 @@ export default function PiouPiouCard({
   onSelect,
   isSelected,
 }: PiouPiouCardProps) {
+  const { t } = useTranslation(); // Destructured localization set
   const normalizedKey = cardKey.toLowerCase();
+
   const assetMap: Record<string, string> = {
     chicken: "/assets/games/pioupiou/chicken.png",
     rooster: "/assets/games/pioupiou/rooster.png",
@@ -48,7 +52,8 @@ export default function PiouPiouCard({
       <div className="relative h-full w-full p-2">
         <Image
           src={imageSrc}
-          alt={cardKey}
+          /* Localized alt text using cardKey as a translation key */
+          alt={t[normalizedKey as keyof typeof t] || cardKey}
           fill
           className="object-contain p-2"
           sizes="128px"

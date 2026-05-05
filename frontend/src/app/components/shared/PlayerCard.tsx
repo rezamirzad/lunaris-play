@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import WinnerBadge from "./WinnerBadge";
 import DangerBadge from "./DangerBadge";
+import { useTranslation } from "@/hooks/useTranslation"; // Integrated translation hook
 
 interface PlayerCardProps {
   name: string;
@@ -11,13 +12,8 @@ interface PlayerCardProps {
   isGameFinished?: boolean;
   isWinner?: boolean;
   isNearWinning?: boolean;
-  /** NEW: High-stakes indicator for when a player is one move from victory */
   isMatchpoint?: boolean;
   children?: ReactNode;
-  /**
-   * Custom status string (e.g., "STORYTELLER")
-   * to override default labels without changing layout.
-   */
   statusOverride?: string;
   className?: string;
 }
@@ -25,6 +21,7 @@ interface PlayerCardProps {
 /**
  * PlayerCard: Displays participant data with dynamic status prioritization.
  * Logic: Winner > Matchpoint > statusOverride > Active Turn > Ready/Waiting.
+ * Refactored for LTR Multilingual support.
  */
 export default function PlayerCard({
   name,
@@ -38,6 +35,8 @@ export default function PlayerCard({
   statusOverride,
   className = "",
 }: PlayerCardProps) {
+  const { t } = useTranslation(); // Destructured localization set
+
   return (
     <div
       className={`relative p-4 rounded-lg border transition-all duration-500 ${className} ${
@@ -48,7 +47,7 @@ export default function PlayerCard({
             : "bg-zinc-900/50 border-white/10"
       }`}
     >
-      {/* Badge Priority System*/}
+      {/* Badge Priority System */}
       {isWinner && <WinnerBadge />}
 
       {isMatchpoint && !isWinner && <DangerBadge />}
@@ -59,18 +58,22 @@ export default function PlayerCard({
             {name}
           </h4>
 
-          {/* Status Prioritization Logic*/}
+          {/* Status Prioritization Logic with Localization */}
           {!isGameFinished && (
             <div className="flex items-center gap-1.5">
               {statusOverride ? (
                 <span
-                  className={`text-[10px] uppercase tracking-widest font-mono ${isCurrentTurn ? "text-blue-400 animate-pulse" : "text-zinc-500"}`}
+                  className={`text-[10px] uppercase tracking-widest font-mono ${
+                    isCurrentTurn
+                      ? "text-blue-400 animate-pulse"
+                      : "text-zinc-500"
+                  }`}
                 >
                   ● {statusOverride}
                 </span>
               ) : isCurrentTurn ? (
                 <span className="text-[10px] uppercase tracking-widest font-mono text-blue-400 animate-pulse">
-                  ● Active Player
+                  ● {t.activeTurn || "Active Player"}
                 </span>
               ) : (
                 <span
@@ -78,7 +81,9 @@ export default function PlayerCard({
                     isReady ? "text-green-500" : "text-zinc-500"
                   }`}
                 >
-                  {isReady ? "● Ready" : "○ Waiting"}
+                  {isReady
+                    ? `● ${t.ready || "Ready"}`
+                    : `○ ${t.waiting || "Waiting"}`}
                 </span>
               )}
             </div>

@@ -2,6 +2,7 @@
 
 import { useMutation } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
+import { useTranslation } from "@/hooks/useTranslation"; // Integrated translation hook
 
 export default function LobbyStartButton({
   room,
@@ -10,6 +11,8 @@ export default function LobbyStartButton({
   room: any;
   players: any[];
 }) {
+  const { t } = useTranslation(); // Destructured localized translation set
+
   // Temporary 'any' cast to bypass the TypeScript sync lock
   const startMatch = useMutation((api as any).games.pioupiou.startMatch);
 
@@ -35,7 +38,8 @@ export default function LobbyStartButton({
             : "opacity-20 cursor-not-allowed border-white/10 text-zinc-500"
         }`}
       >
-        {canExecute ? "Deal & Start Match" : "Waiting for Players"}
+        {/* Refactored to use localized t.startMatch and t.waitingPlayers[cite: 2] */}
+        {canExecute ? t.startMatch : t.waitingPlayers}
       </button>
     </div>
   );

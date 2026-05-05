@@ -94,8 +94,8 @@ export default function DixitHand({
 
     const reasons = [];
     if (isST) {
-      if (myPoints === 3) reasons.push(t.dixit_st_bonus || "STORYTELLER BONUS");
-      else if (myPoints === 0) reasons.push(t.dixit_st_fail || "0 PTS");
+      if (myPoints === 3) reasons.push(t.dixit_st_bonus);
+      else if (myPoints === 0) reasons.push(t.dixit_st_fail);
     } else {
       if (votedCorrect) reasons.push(`${t.dixit_found_original} (+3)`);
       if (votesForMe > 0)
@@ -137,10 +137,7 @@ export default function DixitHand({
   };
 
   return (
-    <div
-      className="flex flex-col min-h-screen bg-zinc-950 text-white font-black overflow-hidden"
-      dir={isFA ? "rtl" : "ltr"}
-    >
+    <div className="flex flex-col min-h-screen bg-zinc-950 text-white font-black overflow-hidden">
       <div className="w-full max-w-2xl mx-auto flex flex-col min-h-screen p-2 sm:p-6">
         <header className="flex justify-between items-center mb-4 bg-zinc-900/50 p-4 rounded-3xl border border-zinc-800 mt-2">
           <div className="flex flex-col">
@@ -151,17 +148,24 @@ export default function DixitHand({
               {player.name}
             </p>
           </div>
-          <div className="flex gap-1 items-center px-2" dir="ltr">
+
+          {/* Refactored Toggle Strip: Pure LTR Layout */}
+          <div className="flex gap-1 items-center px-2">
             {["EN", "FR", "DE", "FA"].map((l) => (
               <button
                 key={l}
                 onClick={() => setLang(l.toLowerCase() as Language)}
-                className={`px-3 py-1 rounded-lg text-[9px] font-black transition-colors ${lang === l.toLowerCase() ? "bg-white text-black" : "bg-zinc-800 text-zinc-400"}`}
+                className={`px-3 py-1 rounded-lg text-[9px] font-black transition-colors ${
+                  lang === l.toLowerCase()
+                    ? "bg-teal-500 text-black shadow-[0_0_10px_rgba(20,184,166,0.3)]"
+                    : "bg-zinc-800 text-zinc-400"
+                }`}
               >
                 {l}
               </button>
             ))}
           </div>
+
           <div className="flex flex-col items-end">
             <p className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">
               {t.dixit_score}
@@ -169,8 +173,8 @@ export default function DixitHand({
             <p className="text-2xl text-teal-500">
               {isFA
                 ? toPersianDigits(player.state?.score || 0)
-                : player.state?.score || 0}{" "}
-              PTS
+                : player.state?.score || 0}
+              <span className="ml-1 text-xs">{t.dixit_score}</span>
             </p>
           </div>
         </header>
@@ -179,7 +183,8 @@ export default function DixitHand({
           {board?.phase === "RESULTS" ? (
             <div className="animate-in zoom-in duration-500 space-y-2">
               <h2 className="text-teal-500 uppercase text-4xl">
-                +{isFA ? toPersianDigits(roundPoints) : roundPoints} PTS
+                +{isFA ? toPersianDigits(roundPoints) : roundPoints}{" "}
+                {t.dixit_score}
               </h2>
               <div className="flex flex-col gap-1">
                 {pointReasons?.map((reason, idx) => (
@@ -249,7 +254,7 @@ export default function DixitHand({
                 value={clue}
                 onChange={(e) => setClue(e.target.value)}
                 placeholder={t.dixit_clue_placeholder}
-                className="w-full mb-4 p-5 bg-zinc-900 border-2 border-zinc-800 rounded-2xl text-white outline-none focus:border-teal-500"
+                className="w-full mb-4 p-5 bg-zinc-900 border-2 border-zinc-800 rounded-2xl text-white outline-none focus:border-teal-500 text-center"
               />
             )}
             <button

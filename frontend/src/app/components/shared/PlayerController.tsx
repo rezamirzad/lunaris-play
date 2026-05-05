@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import MatchActivity from "./MatchActivity";
+import MatchActivity, { ActivityLog } from "./MatchActivity";
 
 interface PlayerControllerProps {
   player: any;
@@ -10,12 +10,16 @@ interface PlayerControllerProps {
   statsSlot: React.ReactNode;
   actionsSlot: React.ReactNode;
   className?: string;
+  history: ActivityLog[];
+  renderLog: (log: ActivityLog) => React.ReactNode;
 }
 
 export default function PlayerController({
   roomData,
   statsSlot,
   actionsSlot,
+  history,
+  renderLog,
 }: PlayerControllerProps) {
   return (
     <div className="game-container p-6 animate-in fade-in duration-1000">
@@ -28,10 +32,7 @@ export default function PlayerController({
 
         {/* SYSTEM LOGS: Global activity feed */}
         <div className="lg:w-80 space-y-6">
-          <MatchActivity
-            history={roomData.gameBoard?.history || []}
-            gameType={roomData.currentGame?.toLowerCase()}
-          />
+          <MatchActivity history={history} renderLog={renderLog} />
         </div>
       </div>
     </div>

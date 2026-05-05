@@ -8,8 +8,14 @@ import PlayerCard from "../../shared/PlayerCard";
 import PiouPiouPlayerStats from "./PiouPiouPlayerStats";
 import ComboHints from "./ComboHints";
 import PiouPiouHandGrid from "./PiouPiouHandGrid";
+import PiouPiouMatchActivity from "./MatchActivity";
+import { useTranslation } from "@/hooks/useTranslation"; // Integrated translation hook
+import { toPersianDigits } from "@/lib/translations"; // Numerical localization
 
 export default function PiouPiouPlayerView({ player, roomData }: any) {
+  const { t, lang } = useTranslation(); // Destructured localization set
+  const isFA = lang === "fa";
+
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
   const [targetId, setTargetId] = useState<string | null>(null);
 
@@ -112,40 +118,39 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
 
   return (
     <div className="relative min-h-screen bg-black overflow-hidden flex flex-col pt-2 lg:pt-8">
-      {" "}
-      {/* Compressed Top Space[cite: 2] */}
-      {/* --- 🏆 WINNER OVERLAY[cite: 2] --- */}
+      {/* --- 🏆 WINNER OVERLAY --- */}
       {isGameFinished && (
-        <div className="absolute inset-0 z-[200] bg-black/95 backdrop-blur-2xl flex flex-col items-center justify-center p-8 animate-in fade-in zoom-in duration-700">
+        <div className="absolute inset-0 z-[200] bg-black/95 backdrop-blur-2xl flex flex-col items-center justify-center p-8 animate-in fade-in zoom-in duration-700 text-center">
           <div className="relative bg-black rounded-full p-6 border border-white/10 shadow-2xl">
             <span className="text-5xl">🏆</span>
           </div>
-          <h2 className="mt-6 text-4xl font-black italic text-white uppercase tracking-tighter text-center">
-            {amIWinner ? "Victory Achieved" : "Match Concluded"}
+          <h2 className="mt-6 text-4xl font-black italic text-white uppercase tracking-tighter">
+            {amIWinner ? t.victory : t.gameOver}
           </h2>
           <p className="mt-2 font-mono text-[10px] text-zinc-500 uppercase tracking-[0.3em]">
-            {winnerName} has secured the nest
+            {winnerName} {t.victory.toLowerCase()}
           </p>
           <button
             onClick={() =>
-              (window.location.href = `/room/${roomData.roomCode}?lang=en&game=pioupiou&view=board`)
+              (window.location.href = `/room/${roomData.roomCode}?lang=${lang}&game=pioupiou&view=board`)
             }
             className="mt-8 px-8 py-3 bg-white text-black font-black uppercase rounded-xl hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(255,255,255,0.15)]"
           >
-            Return to Board
+            {t.exit}
           </button>
         </div>
       )}
-      {/* --- 🦊 VICTIM DEFENSE OVERLAY[cite: 2] --- */}
+
+      {/* --- 🦊 VICTIM DEFENSE OVERLAY --- */}
       {isVictim && (
         <div className="absolute inset-0 z-50 bg-red-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 animate-in fade-in duration-500">
           <div className="max-w-md w-full text-center space-y-6">
             <div className="space-y-1">
               <h2 className="text-5xl font-black italic text-white uppercase tracking-tighter">
-                Under Attack
+                {t.attack}
               </h2>
               <p className="text-red-400 font-mono text-[10px] uppercase tracking-[0.2em]">
-                {attackerName} is raiding your nest
+                {attackerName} {t.attack.toLowerCase()}
               </p>
             </div>
             <div className="flex flex-col gap-3">
@@ -159,11 +164,11 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
                       : "bg-zinc-900 text-zinc-700 border border-white/5"
                   }`}
                 >
-                  Defend (2 Roosters)
+                  {t.defend}
                 </button>
                 {!canDefend && (
                   <p className="text-[8px] font-mono text-orange-500 uppercase tracking-widest animate-pulse">
-                    Insufficient Roosters
+                    {t.noRoosters}
                   </p>
                 )}
               </div>
@@ -171,20 +176,22 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
                 onClick={() => handleProtocolExecution("ACCEPT")}
                 className="w-full py-4 border border-white/20 text-white font-black uppercase rounded-xl"
               >
-                Surrender Egg
+                {t.accept}
               </button>
             </div>
           </div>
         </div>
       )}
+
       <PlayerController
         player={player}
         roomData={roomData}
         isMyTurn={isMyTurn && !isGameFinished}
-        className="p-2 lg:p-6" // Minimal padding[cite: 2]
+        className="p-2 lg:p-6"
+        history={roomData.gameBoard?.history || []}
+        renderLog={(log) => <PiouPiouMatchActivity log={log} />}
         statsSlot={
           <div className="flex flex-col gap-2 w-full lg:w-fit animate-in slide-in-from-left duration-500">
-            {/* COMPACT HEADER GRID[cite: 2] */}
             <div className="grid grid-cols-2 lg:flex lg:flex-col gap-2">
               <PlayerCard
                 name={player.name}
@@ -194,12 +201,12 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
                 isMatchpoint={isMatchpoint}
                 statusOverride={
                   isGameFinished
-                    ? "GAME OVER"
+                    ? t.gameOver
                     : isVictim
-                      ? "DEFEND!"
+                      ? t.defend.toUpperCase()
                       : undefined
                 }
-                className="h-full p-3" // Reduced internal padding[cite: 2]
+                className="h-full p-3"
               >
                 <PiouPiouPlayerStats state={player.state} />
               </PlayerCard>
@@ -209,12 +216,12 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
                   hand={player.gameHand || []}
                   eggs={player.state?.eggs || 0}
                   otherPlayers={otherPlayers}
-                  lang="en"
+                  lang={lang}
                 />
               </div>
             </div>
 
-            {/* TARGET SELECTION[cite: 2] */}
+            {/* TARGET SELECTION */}
             {isTargetRequired && isMyTurn && !isAttackActive && (
               <div className="flex gap-2 p-2 bg-zinc-900/50 border border-white/5 rounded-xl overflow-x-auto no-scrollbar">
                 {otherPlayers.map((opp: any) => {
@@ -231,14 +238,14 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
                           : "border-white/5 text-zinc-500"
                       }`}
                     >
-                      {opp.name} 🥚{eggCount}
+                      {opp.name} 🥚{isFA ? toPersianDigits(eggCount) : eggCount}
                     </button>
                   );
                 })}
               </div>
             )}
 
-            {/* ACTION STACK[cite: 2] */}
+            {/* ACTION STACK */}
             <div className="space-y-2 mt-1">
               <button
                 disabled={!canExecute}
@@ -250,8 +257,18 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
                 }`}
               >
                 {isTargetRequired && !targetId
-                  ? "CHOOSE TARGET"
-                  : protocol || "SELECT CARDS"}
+                  ? t.targetPlayer
+                  : protocol
+                    ? t[
+                        `hint${protocol
+                          .split("_")
+                          .map(
+                            (word: string) =>
+                              word.charAt(0) + word.slice(1).toLowerCase(),
+                          )
+                          .join("")}` as keyof typeof t
+                      ] || protocol
+                    : t.yourTurn}
               </button>
 
               {protocol === "STEAL_EGG" && isMyTurn && (
@@ -259,14 +276,13 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
                   onClick={() => handleProtocolExecution("PLAY")}
                   className="w-full py-2 bg-zinc-900/50 text-zinc-500 text-[8px] uppercase font-bold rounded-lg border border-white/5"
                 >
-                  Discard Fox Instead
+                  {t.discard} {t.fox}
                 </button>
               )}
             </div>
           </div>
         }
         actionsSlot={
-          /* Aggressive "Lift" to clear dead space[cite: 2] */
           <div className="mt-[-40px] lg:mt-0 pb-2 flex-grow overflow-visible">
             <PiouPiouHandGrid
               hand={player.gameHand || []}

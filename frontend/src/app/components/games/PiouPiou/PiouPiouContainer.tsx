@@ -5,6 +5,8 @@ import PlayerCard from "../../shared/PlayerCard";
 import PiouPiouPlayerStats from "./PiouPiouPlayerStats";
 import StartMatchButton from "./LobbyStartButton";
 import MatchActivity from "../../shared/MatchActivity";
+import PiouPiouMatchActivity from "./MatchActivity";
+import { useTranslation } from "@/hooks/useTranslation"; // Integrated translation hook
 
 interface PiouPiouContainerProps {
   roomId: Id<"rooms">;
@@ -15,6 +17,7 @@ export default function PiouPiouContainer({
   roomId,
   roomData,
 }: PiouPiouContainerProps) {
+  const { t } = useTranslation(); // Destructured localization set
   const isLobby = roomData.status?.toUpperCase() === "LOBBY";
   const isGameEnd =
     roomData.status?.toUpperCase() === "FINISHED" ||
@@ -28,7 +31,8 @@ export default function PiouPiouContainer({
             <div className="flex items-center gap-2 mb-4">
               <div className="h-1.5 w-1.5 bg-orange-500 rounded-full animate-pulse" />
               <h3 className="text-zinc-500 text-xs font-mono uppercase tracking-widest text-orange-400/60">
-                Network_Nodes
+                {/* Localized: Participants/JOUEURS/SPIELER/بازیکن */}
+                {t.players}
               </h3>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -75,16 +79,18 @@ export default function PiouPiouContainer({
           )}
           <MatchActivity
             history={roomData.gameBoard.history || []}
-            gameType="pioupiou"
+            renderLog={(log) => <PiouPiouMatchActivity log={log} />}
           />
-          {/* Status summaries and DB verification logic preserved[cite: 2] */}
+
           <section className="p-6 rounded-[32px] border border-white/5 bg-[#09090b] font-mono text-[10px]">
             <h3 className="text-zinc-500 font-bold uppercase tracking-[0.2em] mb-4 text-orange-500/50">
-              Session_Summary
+              {/* Localized: System Data/ACTIVITÉ DU MATCH/SPIELAKTIVITÄT/گزارش بازی */}
+              {t.matchActivity}
             </h3>
             <div className="space-y-1 text-zinc-500">
               <p>
-                Status:{" "}
+                {/* Localized: Action/ACTION/AKTION/عملیات[cite: 2] */}
+                {t.action}:{" "}
                 <span className="text-zinc-200 uppercase">
                   {roomData.status}
                 </span>

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/hooks/useTranslation"; // Integrated translation hook
+
 interface DixitCardProps {
   cardId: string;
   isRevealed?: boolean;
@@ -23,6 +25,7 @@ export default function DixitCard({
   ownerName,
   isLobby = false,
 }: DixitCardProps) {
+  const { t } = useTranslation(); // Destructured translation set
   const isBack = cardId === "BACK" || !isRevealed;
 
   const imageSrc = isBack
@@ -44,7 +47,8 @@ export default function DixitCard({
     >
       <img
         src={imageSrc}
-        alt={isBack ? "Card Back" : cardId}
+        /* Refactored alt text to use translations[cite: 2] */
+        alt={isBack ? t.finalHand : cardId}
         className="absolute inset-0 w-full h-full object-cover pointer-events-none"
         draggable={false}
       />
