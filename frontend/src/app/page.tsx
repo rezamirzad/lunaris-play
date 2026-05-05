@@ -202,7 +202,7 @@ function HomeContent() {
               {t.arcade}
             </h2>
           </div>
-          <GameCatalog lang={lang} onHost={handleHost} />
+          <GameCatalog onHost={handleHost} />
         </div>
       </div>
     </main>
