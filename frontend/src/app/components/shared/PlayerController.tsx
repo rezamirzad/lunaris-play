@@ -9,6 +9,7 @@ interface PlayerControllerProps {
   isMyTurn: boolean;
   statsSlot: React.ReactNode;
   actionsSlot: React.ReactNode;
+  className?: string;
 }
 
 export default function PlayerController({

@@ -70,7 +70,6 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
   }, [selectedCards]);
 
   const handleProtocolExecution = async (forcedAction?: string) => {
-    // Protocol differentiation: Discard vs Attack
     const isAttackInitiation = protocol === "STEAL_EGG" && !forcedAction;
     const actionType = forcedAction || (isAttackInitiation ? "ATTACK" : "PLAY");
 
@@ -112,7 +111,9 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
   const canDefend = roosterCount >= 2;
 
   return (
-    <div className="relative min-h-screen bg-black overflow-hidden flex flex-col">
+    <div className="relative min-h-screen bg-black overflow-hidden flex flex-col pt-2 lg:pt-8">
+      {" "}
+      {/* Compressed Top Space[cite: 2] */}
       {/* --- 🏆 WINNER OVERLAY[cite: 2] --- */}
       {isGameFinished && (
         <div className="absolute inset-0 z-[200] bg-black/95 backdrop-blur-2xl flex flex-col items-center justify-center p-8 animate-in fade-in zoom-in duration-700">
@@ -135,7 +136,6 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
           </button>
         </div>
       )}
-
       {/* --- 🦊 VICTIM DEFENSE OVERLAY[cite: 2] --- */}
       {isVictim && (
         <div className="absolute inset-0 z-50 bg-red-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 animate-in fade-in duration-500">
@@ -155,8 +155,8 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
                   onClick={() => handleProtocolExecution("DEFEND")}
                   className={`w-full py-4 font-black uppercase rounded-xl transition-all ${
                     canDefend
-                      ? "bg-white text-black hover:scale-105"
-                      : "bg-zinc-900 text-zinc-700 border border-white/5 cursor-not-allowed"
+                      ? "bg-white text-black"
+                      : "bg-zinc-900 text-zinc-700 border border-white/5"
                   }`}
                 >
                   Defend (2 Roosters)
@@ -169,7 +169,7 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
               </div>
               <button
                 onClick={() => handleProtocolExecution("ACCEPT")}
-                className="w-full py-4 border border-white/20 text-white font-black uppercase rounded-xl hover:bg-white/5 active:scale-95 transition-all"
+                className="w-full py-4 border border-white/20 text-white font-black uppercase rounded-xl"
               >
                 Surrender Egg
               </button>
@@ -177,14 +177,14 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
           </div>
         </div>
       )}
-
       <PlayerController
         player={player}
         roomData={roomData}
         isMyTurn={isMyTurn && !isGameFinished}
+        className="p-2 lg:p-6" // Minimal padding[cite: 2]
         statsSlot={
-          <div className="flex flex-col gap-3 w-full lg:w-fit animate-in slide-in-from-left duration-500">
-            {/* MOBILE HEADER: Side-by-side stats and hints[cite: 2] */}
+          <div className="flex flex-col gap-2 w-full lg:w-fit animate-in slide-in-from-left duration-500">
+            {/* COMPACT HEADER GRID[cite: 2] */}
             <div className="grid grid-cols-2 lg:flex lg:flex-col gap-2">
               <PlayerCard
                 name={player.name}
@@ -197,17 +197,14 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
                     ? "GAME OVER"
                     : isVictim
                       ? "DEFEND!"
-                      : isAttacker
-                        ? "WAITING..."
-                        : undefined
+                      : undefined
                 }
-                className="h-full"
+                className="h-full p-3" // Reduced internal padding[cite: 2]
               >
                 <PiouPiouPlayerStats state={player.state} />
               </PlayerCard>
 
-              <div className="bg-[#09090b]/80 border border-white/10 p-3 rounded-xl relative overflow-hidden flex items-center justify-center h-full">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-transparent to-transparent opacity-50" />
+              <div className="bg-[#09090b]/80 border border-white/10 p-2 rounded-xl relative overflow-hidden flex items-center justify-center h-full">
                 <ComboHints
                   hand={player.gameHand || []}
                   eggs={player.state?.eggs || 0}
@@ -217,7 +214,7 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
               </div>
             </div>
 
-            {/* TARGET SELECTION: Horizontal scroll for mobile[cite: 2] */}
+            {/* TARGET SELECTION[cite: 2] */}
             {isTargetRequired && isMyTurn && !isAttackActive && (
               <div className="flex gap-2 p-2 bg-zinc-900/50 border border-white/5 rounded-xl overflow-x-auto no-scrollbar">
                 {otherPlayers.map((opp: any) => {
@@ -228,9 +225,9 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
                       key={opp._id}
                       disabled={!hasEggs}
                       onClick={() => setTargetId(String(opp._id))}
-                      className={`flex-shrink-0 py-2 px-3 rounded-lg text-[9px] uppercase font-mono border transition-all flex items-center gap-2 ${
+                      className={`flex-shrink-0 py-2 px-3 rounded-lg text-[9px] uppercase font-mono border transition-all ${
                         targetId === String(opp._id)
-                          ? "border-orange-500 bg-orange-500/10 text-orange-400 shadow-sm"
+                          ? "border-orange-500 bg-orange-500/10 text-orange-400"
                           : "border-white/5 text-zinc-500"
                       }`}
                     >
@@ -241,14 +238,14 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
               </div>
             )}
 
-            {/* ACTION STACK: Docked under header[cite: 2] */}
-            <div className="space-y-2">
+            {/* ACTION STACK[cite: 2] */}
+            <div className="space-y-2 mt-1">
               <button
                 disabled={!canExecute}
                 onClick={() => handleProtocolExecution()}
-                className={`w-full py-4 rounded-xl border text-[10px] uppercase font-black tracking-widest transition-all active:scale-95 ${
+                className={`w-full py-3 rounded-xl border text-[10px] uppercase font-black tracking-widest transition-all ${
                   canExecute
-                    ? "border-teal-500 bg-teal-500/10 text-teal-400 shadow-lg shadow-teal-900/10"
+                    ? "border-teal-500 bg-teal-500/10 text-teal-400"
                     : "opacity-20 border-white/10 text-zinc-500"
                 }`}
               >
@@ -260,7 +257,7 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
               {protocol === "STEAL_EGG" && isMyTurn && (
                 <button
                   onClick={() => handleProtocolExecution("PLAY")}
-                  className="w-full py-2 bg-zinc-900/50 text-zinc-500 text-[8px] uppercase font-bold rounded-lg border border-white/5 transition-colors hover:bg-zinc-800"
+                  className="w-full py-2 bg-zinc-900/50 text-zinc-500 text-[8px] uppercase font-bold rounded-lg border border-white/5"
                 >
                   Discard Fox Instead
                 </button>
@@ -269,8 +266,8 @@ export default function PiouPiouPlayerView({ player, roomData }: any) {
           </div>
         }
         actionsSlot={
-          /* Lift cards higher to eliminate scroll[cite: 2] */
-          <div className="mt-[-10px] lg:mt-0 pb-4 flex-grow overflow-visible">
+          /* Aggressive "Lift" to clear dead space[cite: 2] */
+          <div className="mt-[-40px] lg:mt-0 pb-2 flex-grow overflow-visible">
             <PiouPiouHandGrid
               hand={player.gameHand || []}
               isMyTurn={isMyTurn && !isGameFinished}
