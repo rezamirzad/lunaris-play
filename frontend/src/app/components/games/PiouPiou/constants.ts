@@ -5,17 +5,18 @@ export const PIOU_PIOU_BASE_CONFIG = {
 
 export const PIOU_PIOU_DECK_SPEC = {
   CHICKEN: {
-    baseCount: 15,
-    img: "/assets/games/pioupiou/chicken.png",
+    baseCount: 11,
+    img: "/assets/games/pioupiou/cards/chicken.png",
     type: "unit",
   },
   ROOSTER: {
-    baseCount: 15,
-    img: "/assets/games/pioupiou/rooster.png",
+    baseCount: 11,
+    img: "/assets/games/pioupiou/cards/rooster.png",
     type: "unit",
   },
-  NEST: { baseCount: 11, img: "/assets/games/pioupiou/nest.png", type: "unit" },
-  FOX: { baseCount: 6, img: "/assets/games/pioupiou/fox.png", type: "action" },
+  NEST: { baseCount: 11, img: "/assets/games/pioupiou/cards/nest.png", type: "unit" },
+  FOX: { baseCount: 6, img: "/assets/games/pioupiou/cards/fox.png", type: "action" },
+
 };
 
 /**

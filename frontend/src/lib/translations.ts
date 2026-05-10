@@ -15,6 +15,7 @@ export interface TranslationSet {
   capacityLabel: string;
   maxLabel: string;
   players: string;
+  capacity: string;
   footer: string;
   noOngoing: string;
   host: string;
@@ -43,10 +44,13 @@ export interface TranslationSet {
   lobby: string;
   results: string;
   storyteller: string;
+  dixit_round_summary: string;
   dixit_title: string;
   dixit_desc: string;
   pioupiou_title: string;
   pioupiou_desc: string;
+  sushinode_title: string;
+  sushinode_desc: string;
   dixit_score: string;
   dixit_clue_placeholder: string;
   dixit_phase_clue: string;
@@ -58,9 +62,14 @@ export interface TranslationSet {
   dixit_who_voted: string;
   dixit_st_bonus: string;
   dixit_st_fail: string;
+  dixit_st_fail_all: string;
+  dixit_st_fail_none: string;
   dixit_found_original: string;
+  dixit_found_original_all: string;
+  dixit_found_original_none: string;
   dixit_others_fooled: string;
   dixit_all_or_none: string;
+  rank_out_of: string;
   LOG_LAY_EGG: string;
   LOG_HATCH: string;
   LOG_DISCARD: string;
@@ -89,6 +98,7 @@ export interface TranslationSet {
   statusLobby: string;
   invalidSession: string;
   authenticating: string;
+  available: string;
 }
 
 export const translations: Record<Language, TranslationSet> = {
@@ -104,12 +114,13 @@ export const translations: Record<Language, TranslationSet> = {
     step1: "1. Open this page on your TV to HOST.",
     step2: "2. Scan the QR code on your PHONE.",
     step3: "3. Use your phone as the controller!",
-    capacityLabel: "CAPACITY",
+    capacityLabel: "MAXIMUM CAPACITY",
     maxLabel: "MAX",
     players: "PLAYERS",
+    capacity: "CAPACITY",
     footer: "Lunaris League v1.0.4",
     noOngoing: "No public games active.",
-    host: "HOST GAME",
+    host: "HOST",
     startMatch: "START MATCH",
     activeTurn: "ACTIVE TURN",
     matchActivity: "MATCH ACTIVITY",
@@ -135,10 +146,13 @@ export const translations: Record<Language, TranslationSet> = {
     lobby: "LOBBY",
     results: "ROUND RESULTS",
     storyteller: "STORYTELLER",
+    dixit_round_summary: "ROUND SUMMARY",
     dixit_title: "Dixit",
     dixit_desc: "A game of imagination and abstract art.",
     pioupiou_title: "Piou Piou",
-    pioupiou_desc: "Tactical henhouse card game.",
+    pioupiou_desc: "Protect the flock. Hatch eggs. Outsmart the fox",
+    sushinode_title: "Sushi Node",
+    sushinode_desc: "Fast-paced digital drafting protocol.",
     dixit_score: "SCORE",
     dixit_clue_placeholder: "Your clue...",
     dixit_phase_clue: "CHOOSE CARD & CLUE",
@@ -150,9 +164,14 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_who_voted: "GUESSERS",
     dixit_st_bonus: "SOME GUESSED (STORYTELLER BONUS)",
     dixit_st_fail: "EVERYONE OR NO ONE GUESSED (0 PTS)",
+    dixit_st_fail_all: "EVERYONE FOUND YOUR CARD",
+    dixit_st_fail_none: "NO ONE FOUND YOUR CARD",
     dixit_found_original: "YOU FOUND THE ORIGINAL",
+    dixit_found_original_all: "YOU AND EVERYONE ELSE FOUND THE ORIGINAL",
+    dixit_found_original_none: "YOU AND NO ONE ELSE FOUND THE ORIGINAL",
     dixit_others_fooled: "PLAYER(S) FELL FOR YOUR CARD",
     dixit_all_or_none: "EVERYONE/NO ONE FOUND THE ORIGINAL",
+    rank_out_of: "{rank} of {total}",
     LOG_LAY_EGG: "{player} laid an egg! 🥚",
     LOG_HATCH: "{player} hatched a chick! 🐣",
     LOG_DISCARD: "{player} discarded a {card}. ♻️",
@@ -181,6 +200,7 @@ export const translations: Record<Language, TranslationSet> = {
     statusLobby: "Initializing",
     invalidSession: "Invalid Session",
     authenticating: "Authenticating Node",
+    available: "Available",
   },
   fr: {
     title: "LUNARIS",
@@ -194,9 +214,10 @@ export const translations: Record<Language, TranslationSet> = {
     step1: "1. Ouvrez sur TV pour HÉBERGER.",
     step2: "2. Scannez le QR sur MOBILE.",
     step3: "3. Jouez avec votre mobile !",
-    capacityLabel: "CAPACITÉ",
+    capacityLabel: "CAPACITÉ MAXIMUM",
     maxLabel: "MAX",
     players: "JOUEURS",
+    capacity: "CAPACITY",
     footer: "Lunaris League v1.0.4",
     noOngoing: "Aucune partie en cours.",
     host: "HÉBERGER",
@@ -225,10 +246,14 @@ export const translations: Record<Language, TranslationSet> = {
     lobby: "SALON",
     results: "RÉSULTATS DU TOUR",
     storyteller: "CONTEUR",
+    dixit_round_summary: "RÉSUMÉ DU TOUR",
     dixit_title: "Dixit",
     dixit_desc: "Un jeu d'imagination et d'art.",
     pioupiou_title: "Piou Piou",
-    pioupiou_desc: "Jeu de cartes tactique.",
+    pioupiou_desc:
+      "Protégez le troupeau. Faites éclore les œufs. Rusez contre le renard.",
+    sushinode_title: "Sushi Node",
+    sushinode_desc: "Protocole de draft numérique rapide.",
     dixit_score: "SCORE",
     dixit_clue_placeholder: "Votre indice...",
     dixit_phase_clue: "CHOISISSEZ IMAGE & INDICE",
@@ -240,9 +265,14 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_who_voted: "VOTANTS",
     dixit_st_bonus: "CERTAINS ONT TROUVÉ (BONUS CONTEUR)",
     dixit_st_fail: "TOUT LE MONDE OU PERSONNE N'A TROUVÉ (0 PTS)",
+    dixit_st_fail_all: "TOUT LE MONDE A TROUVÉ VOTRE CARTE",
+    dixit_st_fail_none: "PERSONNE N'A TROUVÉ VOTRE CARTE",
     dixit_found_original: "VOUS AVEZ TROUVÉ L'ORIGINAL",
+    dixit_found_original_all: "VOUS ET TOUS LES AUTRES AVEZ TROUVÉ L'ORIGINAL",
+    dixit_found_original_none: "VOUS ET PERSONNE D'AUTRE N'AVEZ TROUVÉ L'ORIGINAL",
     dixit_others_fooled: "JOUEUR(S) ONT ÉTÉ PIÉGÉS PAR VOTRE CARTE",
     dixit_all_or_none: "TOUT LE MONDE/PERSONNE N'A TROUVÉ L'ORIGINAL",
+    rank_out_of: "{rank} sur {total}",
     LOG_LAY_EGG: "{player} a pondu un œuf ! 🥚",
     LOG_HATCH: "{player} a fait éclore un poussin ! 🐣",
     LOG_DISCARD: "{player} a défaussé un {card}. ♻️",
@@ -271,6 +301,7 @@ export const translations: Record<Language, TranslationSet> = {
     statusLobby: "Initialisation",
     invalidSession: "Session Invalide",
     authenticating: "Authentification du Nœud",
+    available: "Disponible",
   },
   de: {
     title: "LUNARIS",
@@ -284,9 +315,10 @@ export const translations: Record<Language, TranslationSet> = {
     step1: "1. Seite auf TV öffnen.",
     step2: "2. Code auf dem Handy eingeben.",
     step3: "3. Handy als Controller nutzen!",
-    capacityLabel: "KAPAZITÄT",
+    capacityLabel: "KAPAZITÄT MAXIMAL",
     maxLabel: "MAX",
     players: "SPIELER",
+    capacity: "KAPAZITÄT",
     footer: "Lunaris League v1.0.4",
     noOngoing: "Keine aktiven Spiele.",
     host: "HOSTEN",
@@ -315,10 +347,13 @@ export const translations: Record<Language, TranslationSet> = {
     lobby: "LOBBY",
     results: "RUNDENERGEBNISSE",
     storyteller: "ERZÄHLER",
+    dixit_round_summary: "RUNDENZUSAMMENFASSUNG",
     dixit_title: "Dixit",
     dixit_desc: "Ein Spiel der Fantasie.",
     pioupiou_title: "Piou Piou",
-    pioupiou_desc: "Taktisches Kartenspiel.",
+    pioupiou_desc: "Schütze die Herde. Brüte Eier aus. Überliste den Fuchs.",
+    sushinode_title: "Sushi Node",
+    sushinode_desc: "Schnelles digitales Drafting-Protokoll.",
     dixit_score: "PUNKTE",
     dixit_clue_placeholder: "Dein Hinweis...",
     dixit_phase_clue: "BILD & HINWEIS WÄHLEN",
@@ -330,15 +365,20 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_who_voted: "GIPFEL",
     dixit_st_bonus: "EINIGE HABEN ERRATEN (ERZÄHLER-BONUS)",
     dixit_st_fail: "ALLE ODER NIEMAND HAT ERRATEN (0 PKT)",
+    dixit_st_fail_all: "ALLE HABEN DEINE KARTE GEFUNDEN",
+    dixit_st_fail_none: "NIEMAND HAT DEINE KARTE GEFUNDEN",
     dixit_found_original: "DU HAST DAS ORIGINAL GEFUNDEN",
+    dixit_found_original_all: "DU UND ALLE ANDEREN HABEN DAS ORIGINAL GEFUNDEN",
+    dixit_found_original_none: "DU UND NIEMAND SONST HABEN DAS ORIGINAL GEFUNDEN",
     dixit_others_fooled: "SPIELER SIND AUF DEINE KARTE REINGEFALLEN",
     dixit_all_or_none: "ALLE/NIEMAND HAT DAS ORIGINAL GEFUNDEN",
+    rank_out_of: "{rank} von {total}",
     LOG_LAY_EGG: "{player} hat ein Ei gelegt! 🥚",
     LOG_HATCH: "{player} hat ein Küken ausgebrütet! 🐣",
     LOG_DISCARD: "{player} hat ein {card} abgewerfen. ♻️",
     LOG_INVALID: "Ungültiger Zug! 🚫",
     LOG_FOX_SUCCESS: "{player} hat {target} ein Ei gestohlen! 🦊",
-    LOG_FOX_BLOCKED: "{target} hat den Fuchs mit 2 Hähnen abgewehrt! 🐓🐓",
+    LOG_FOX_BLOCKED: "{target} hat den Fuchs with 2 Hähnen abgewehrt! 🐓🐓",
     finalHand: "Letzte Hand",
     waitingPlayers: "Warten auf Spieler",
     minPlayersRequired: "Mindestens {count} Spieler erforderlich",
@@ -358,9 +398,10 @@ export const translations: Record<Language, TranslationSet> = {
     room: "Raum",
     statusLive: "Live",
     statusArchived: "Archiviert",
-    statusLobby: "Initialisierung",
+    statusLobby: "Initializing",
     invalidSession: "Ungültige Sitzung",
     authenticating: "Authentifizierung des Knotens",
+    available: "Verfügbar",
   },
   fa: {
     title: "لوناریس",
@@ -374,12 +415,13 @@ export const translations: Record<Language, TranslationSet> = {
     step1: "۱. این صفحه را در تلویزیون باز کنید.",
     step2: "۲. کد اتاق را در گوشی وارد کنید.",
     step3: "۳. از گوشی به عنوان دسته استفاده کنید!",
-    capacityLabel: "ظرفیت",
+    capacityLabel: "ظرفیت حداکثر",
     maxLabel: "حداکثر",
     players: "بازیکن",
+    capacity: "ظرفیت",
     footer: "لوناریس لیگ نسخه ۱.۰.۴",
     noOngoing: "بازی فعالی وجود ندارد.",
-    host: "ایجاد بازی",
+    host: "ایجاد",
     startMatch: "شروع بازی",
     activeTurn: "نوبت فعلی",
     matchActivity: "گزارش بازی",
@@ -405,10 +447,14 @@ export const translations: Record<Language, TranslationSet> = {
     lobby: "لابی",
     results: "نتایج دور",
     storyteller: "قصه‌گو",
+    dixit_round_summary: "خلاصه دور",
     dixit_title: "دیکسیت",
-    dixit_desc: "بازی تخیل و هنر انتزاعی.",
+    dixit_desc: "بازی تخیل و هنر",
     pioupiou_title: "پیو پیو",
-    pioupiou_desc: "بازی کارتی استراتژیک.",
+    pioupiou_desc:
+      "از گله محافظت کنید. تخم‌مرغ‌ها را جوجه کنید. روباه را فریب دهید",
+    sushinode_title: "سوشی نود",
+    sushinode_desc: "پروتکل یارکشی دیجیتال سریع.",
     dixit_score: "امتیاز",
     dixit_clue_placeholder: "سرنخ شما...",
     dixit_phase_clue: "تصویر و سرنخ را انتخاب کنید",
@@ -420,12 +466,17 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_who_voted: "حدس‌زننده‌ها",
     dixit_st_bonus: "تعدادی حدس زدند (امتیاز قصه‌گو)",
     dixit_st_fail: "همه یا هیچ‌کس حدس نزد (۰ امتیاز)",
+    dixit_st_fail_all: "همه کارت شما را پیدا کردند",
+    dixit_st_fail_none: "هیچ‌کس کارت شما را پیدا نکرد",
     dixit_found_original: "کارت اصلی را پیدا کردی",
+    dixit_found_original_all: "تو و همه بازیکنان دیگر کارت اصلی را پیدا کردید",
+    dixit_found_original_none: "تو و هیچ‌کس دیگر کارت اصلی را پیدا نکردید",
     dixit_others_fooled: "بازیکن دیگر فریب کارت تو را خوردند",
     dixit_all_or_none: "همه یا هیچ‌کس کارت اصلی را پیدا نکرد",
+    rank_out_of: "{rank} از {total}",
     LOG_LAY_EGG: "{player} یک تخم گذاشت! 🥚",
     LOG_HATCH: "{player} یک جوجه به دنیا آورد! 🐣",
-    LOG_DISCARD: "{player} کارت {card} را دور انداخت. ♻️",
+    LOG_DISCARD: "را دور انداخت {card} کارت {player}",
     LOG_INVALID: "حرکت اشتباه! 🚫",
     LOG_FOX_SUCCESS: "{player} یک تخم از {target} دزدید! 🦊",
     LOG_FOX_BLOCKED: "{target} با دو خروس جلو روباه را گرفت! 🐓🐓",
@@ -451,6 +502,7 @@ export const translations: Record<Language, TranslationSet> = {
     statusLobby: "آماده‌سازی",
     invalidSession: "نشست نامعتبر",
     authenticating: "در حال تایید هویت",
+    available: "در دسترس",
   },
 };
 
@@ -483,4 +535,28 @@ export function formatLog(
     result = result.replace(`{${key}}`, String(value));
   }
   return result;
+}
+
+/**
+ * Resolves a game title based on database fields or translation keys.
+ */
+export function getLocalizedGameTitle(
+  slug: string,
+  lang: Language,
+  t: TranslationSet,
+  dbTitle?: string,
+  dbTitleFr?: string,
+  dbTitleDe?: string,
+  dbTitleFa?: string,
+): string {
+  // 1. Try DB specific language fields
+  let title = dbTitle || slug;
+  if (lang === "fr") title = dbTitleFr || title;
+  else if (lang === "de") title = dbTitleDe || title;
+  else if (lang === "fa") title = dbTitleFa || title;
+
+  // 2. Try translation file key (slug_title)
+  const tTitle = (t as any)[`${slug.toLowerCase()}_title`];
+
+  return tTitle || title;
 }

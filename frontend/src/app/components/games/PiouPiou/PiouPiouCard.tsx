@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useTranslation } from "@/hooks/useTranslation"; // Integrated translation hook
+import { useTranslation } from "@/hooks/useTranslation";
+import { motion } from "framer-motion";
 
 interface PiouPiouCardProps {
   cardKey: string;
@@ -11,9 +12,7 @@ interface PiouPiouCardProps {
 }
 
 /**
- * PiouPiouCard: Minimalist Selection Logic.
- * Implementation: Locked grid positions with teal border highlights.
- * Refactored for LTR Multilingual Accessibility.
+ * PiouPiouCard: Cinematic Haptic Card.
  */
 export default function PiouPiouCard({
   cardKey,
@@ -21,52 +20,66 @@ export default function PiouPiouCard({
   onSelect,
   isSelected,
 }: PiouPiouCardProps) {
-  const { t } = useTranslation(); // Destructured localization set
+  const { t } = useTranslation();
   const normalizedKey = cardKey.toLowerCase();
 
   const assetMap: Record<string, string> = {
-    chicken: "/assets/games/pioupiou/chicken.png",
-    rooster: "/assets/games/pioupiou/rooster.png",
-    fox: "/assets/games/pioupiou/fox.png",
-    nest: "/assets/games/pioupiou/nest.png",
+    chicken: "/assets/games/pioupiou/cards/chicken.png",
+    rooster: "/assets/games/pioupiou/cards/rooster.png",
+    fox: "/assets/games/pioupiou/cards/fox.png",
+    nest: "/assets/games/pioupiou/cards/nest.png",
   };
 
-  const imageSrc =
-    assetMap[normalizedKey] || "/assets/games/pioupiou/card-back.png";
+  const imageSrc = assetMap[normalizedKey] || "/assets/games/pioupiou/cards/card-back.png";
 
   return (
-    <button
+    <motion.button
+      whileHover={isInteractable ? { 
+        scale: 1.05, 
+        rotate: 1,
+        boxShadow: "0 0 30px rgba(45,212,191,0.2)" 
+      } : {}}
+      whileTap={isInteractable ? { scale: 0.95 } : {}}
       disabled={!isInteractable}
       onClick={() => onSelect?.(cardKey)}
-      className={`relative aspect-[2/3] w-28 md:w-32 rounded-xl border transition-all duration-200 overflow-hidden bg-[#09090b]
+      className={`relative aspect-[2/3] w-28 md:w-36 rounded-[2rem] border transition-all duration-500 overflow-hidden bg-zinc-900 shadow-2xl
         ${
           isSelected
-            ? "border-teal-400 shadow-[0_0_15px_rgba(45,212,191,0.4)]"
-            : "border-white/10 hover:border-white/20"
+            ? "border-teal-400 ring-4 ring-teal-400/20 z-10 shadow-[0_0_40px_rgba(45,212,191,0.4)] scale-105"
+            : "border-white/10"
         }
-        ${!isInteractable && "opacity-50 grayscale cursor-not-allowed"}`}
+        ${!isInteractable && "opacity-20 grayscale cursor-not-allowed scale-95"}`}
     >
-      {/* Background Gradient matching the software terminal aesthetic */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent z-10" />
+      {/* Background Gradient */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-black/40 via-transparent to-white/5 z-10 pointer-events-none" />
 
-      <div className="relative h-full w-full p-2">
-        <Image
-          src={imageSrc}
-          /* Localized alt text using cardKey as a translation key */
-          alt={t[normalizedKey as keyof typeof t] || cardKey}
-          fill
-          className="object-contain p-2"
-          sizes="128px"
-          priority={isSelected}
-        />
+      {/* Safari Fix: Use absolute inset-0 to force bounds propagation */}
+      <div className="absolute inset-0 p-3 z-20">
+        <div className="relative h-full w-full">
+          <Image
+            src={imageSrc}
+            alt={t[normalizedKey as keyof typeof t] || cardKey}
+            fill
+            className={`object-contain p-4 transition-transform duration-1000 ${isSelected ? "scale-110" : "scale-100"}`}
+            sizes="150px"
+            priority={isSelected}
+          />
+        </div>
       </div>
 
-      {/* Tiny Selection Indicator: Top-right teal dot for extra clarity */}
+      {/* Internal atmosphere glow */}
+      <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_30px_rgba(0,0,0,0.6)]" />
+
+      {/* Selection Indicator */}
       {isSelected && (
-        <div className="absolute top-2 right-2 z-20">
-          <span className="flex h-2 w-2 rounded-full bg-teal-400 shadow-[0_0_8px_rgba(45,212,191,0.8)]" />
-        </div>
+        <motion.div 
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="absolute top-4 right-4 z-30"
+        >
+          <span className="flex h-3 w-3 rounded-full bg-teal-400 shadow-[0_0_12px_rgba(45,212,191,0.8)]" />
+        </motion.div>
       )}
-    </button>
+    </motion.button>
   );
 }

@@ -2,47 +2,40 @@
 
 import { useState, useMemo } from "react";
 import { useMutation } from "convex/react";
-import { api } from "../../../../../convex/_generated/api";
+import { api } from "convex/_generated/api";
 import { translations, Language, toPersianDigits } from "@/lib/translations";
 import DixitCard from "./DixitCard";
-
-function hashString(str: string) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = (hash << 5) - hash + str.charCodeAt(i);
-    hash |= 0;
-  }
-  return hash;
-}
+import { motion, AnimatePresence } from "framer-motion";
+import { Doc } from "convex/_generated/dataModel";
+import { shuffle } from "@/lib/utils";
 
 export default function DixitHand({
   room,
   player,
   initialLang,
 }: {
-  room: any;
-  player: any;
+  room: Doc<"rooms"> & { players: Doc<"players">[] };
+  player: Doc<"players">;
   initialLang: Language;
 }) {
-  const [lang, setLang] = useState<Language>(initialLang);
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
   const [clue, setClue] = useState("");
 
-  const t = translations[lang];
-  const submitAction = useMutation((api as any).games.dixit.handleAction);
-  const isFA = lang === "fa";
+  const t = translations[initialLang];
+  const submitAction = useMutation(api.games.dixit.handleAction);
+  const isFA = initialLang === "fa";
 
-  const board = room?.gameBoard;
+  const board = room.gameBoard.gameType === "dixit" ? room.gameBoard : null;
   const isLobby = room.status === "LOBBY";
   const storytellerId = room.turnOrder?.[room.currentTurnIndex];
   const isST = storytellerId === player._id;
   const storytellerName =
-    room.players.find((p: any) => p._id === storytellerId)?.name || "...";
+    room.players.find((p) => p._id === storytellerId)?.name || "...";
 
   const hasSubmitted = board?.submittedCards?.some(
-    (c: any) => c.playerId === player._id,
+    (c) => c.playerId === player._id,
   );
-  const hasVoted = board?.votes?.some((v: any) => v.voterId === player._id);
+  const hasVoted = board?.votes?.some((v) => v.voterId === player._id);
   const roundPoints = board?.roundResults?.pointsEarned?.[player._id] || 0;
 
   const isWaitingPhase =
@@ -55,66 +48,87 @@ export default function DixitHand({
       return ["BACK", "BACK", "BACK", "BACK", "BACK", "BACK"];
     }
     if (board?.phase === "VOTING" && !isST) {
-      const seed = `${room._id}${board.currentClue || ""}`;
-      return [...(board.submittedCards || [])]
-        .filter((c: any) => c.playerId !== player._id)
-        .sort((a: any, b: any) => {
-          const hashA = hashString(a.cardId + seed);
-          const hashB = hashString(b.cardId + seed);
-          return hashA - hashB;
-        });
+      // Logic: Use the pre-shuffled cards from the board state to ensure relative consistency across nodes.
+      // We filter out the player's own card before displaying.
+      const cardsToDisplay = (board.shuffledBoardCards || board.submittedCards || [])
+        .filter((c) => c.playerId !== player._id);
+      return cardsToDisplay;
     }
     return player.gameHand;
   }, [
     isLobby,
-    player.gameHand,
+    player.gameHand.length,
     board?.phase,
-    board?.submittedCards,
+    board?.submittedCards.length,
     isST,
     player._id,
-    room._id,
-    board?.currentClue,
   ]);
 
   const pointReasons = useMemo(() => {
     if (board?.phase !== "RESULTS" || !board.roundResults) return null;
     const results = board.roundResults;
-    const myPoints = results.pointsEarned?.[player._id] || 0;
     const myCard = board.submittedCards?.find(
-      (c: any) => c.playerId === player._id,
+      (c) => c.playerId === player._id,
     )?.cardId;
     const votesForMe =
       board.votes?.filter(
-        (v: any) => v.cardId === myCard && v.voterId !== player._id,
+        (v) => v.cardId === myCard && v.voterId !== player._id,
       ).length || 0;
     const votedCorrect = board.votes?.some(
-      (v: any) =>
+      (v) =>
         v.voterId === player._id && v.cardId === results.storytellerCard,
     );
 
+    // Dixit Scoring Rules for "All or None" edge case:
+    const votesForStoryteller = board.votes?.filter(
+      (v) => v.cardId === results.storytellerCard
+    ).length || 0;
+    const totalGuessers = room.players.length - 1;
+    const everyoneGuessed = votesForStoryteller === totalGuessers;
+    const noOneGuessed = votesForStoryteller === 0;
+    const isAllOrNone = everyoneGuessed || noOneGuessed;
+
     const reasons = [];
     if (isST) {
-      if (myPoints === 3) reasons.push(t.dixit_st_bonus);
-      else if (myPoints === 0) reasons.push(t.dixit_st_fail);
+      if (isAllOrNone) {
+        if (everyoneGuessed) {
+          reasons.push(`${t.dixit_st_fail_all} (0 pts)`);
+        } else {
+          reasons.push(`${t.dixit_st_fail_none} (0 pts)`);
+        }
+      } else {
+        reasons.push(`${t.dixit_st_bonus} (+3)`);
+      }
     } else {
-      if (votedCorrect) reasons.push(`${t.dixit_found_original} (+3)`);
+      if (isAllOrNone) {
+        if (everyoneGuessed) {
+          reasons.push(`${t.dixit_found_original_all} (+2)`);
+        } else {
+          reasons.push(`${t.dixit_found_original_none} (+2)`);
+        }
+      } else {
+        if (votedCorrect) {
+          reasons.push(`${t.dixit_found_original} (+3)`);
+        }
+      }
+
       if (votesForMe > 0)
         reasons.push(`${votesForMe} ${t.dixit_others_fooled} (+${votesForMe})`);
-      if (myPoints === 2 && !votedCorrect)
-        reasons.push(`${t.dixit_all_or_none} (+2)`);
     }
     return reasons;
   }, [
     board?.phase,
-    board.roundResults,
+    board?.roundResults,
+    board?.submittedCards,
+    board?.votes,
     player._id,
+    room.players.length,
     isST,
-    board.submittedCards,
-    board.votes,
     t,
   ]);
 
   const handleAction = async () => {
+    if (!board) return;
     if (board.phase === "RESULTS") {
       if (isST)
         await submitAction({ playerId: player._id, actionType: "NEXT_ROUND" });
@@ -137,74 +151,65 @@ export default function DixitHand({
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-zinc-950 text-white font-black overflow-hidden">
-      <div className="w-full max-w-2xl mx-auto flex flex-col min-h-screen p-2 sm:p-6">
-        <header className="flex justify-between items-center mb-4 bg-zinc-900/50 p-4 rounded-3xl border border-zinc-800 mt-2">
-          <div className="flex flex-col">
-            <p className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">
-              {t.players}
-            </p>
-            <p className="text-lg italic truncate max-w-[120px]">
-              {player.name}
-            </p>
-          </div>
-
-          {/* Refactored Toggle Strip: Pure LTR Layout */}
-          <div className="flex gap-1 items-center px-2">
-            {["EN", "FR", "DE", "FA"].map((l) => (
-              <button
-                key={l}
-                onClick={() => setLang(l.toLowerCase() as Language)}
-                className={`px-3 py-1 rounded-lg text-[9px] font-black transition-colors ${
-                  lang === l.toLowerCase()
-                    ? "bg-teal-500 text-black shadow-[0_0_10px_rgba(20,184,166,0.3)]"
-                    : "bg-zinc-800 text-zinc-400"
-                }`}
-              >
-                {l}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex flex-col items-end">
-            <p className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">
-              {t.dixit_score}
-            </p>
-            <p className="text-2xl text-teal-500">
-              {isFA
-                ? toPersianDigits(player.state?.score || 0)
-                : player.state?.score || 0}
-              <span className="ml-1 text-xs">{t.dixit_score}</span>
-            </p>
-          </div>
-        </header>
-
-        <div className="mb-4 text-center px-4 min-h-[100px] flex flex-col justify-center">
+    <div className="flex flex-col h-full font-mono p-4 lg:p-8">
+      {/* PHASE HEADER */}
+      <div className="mb-8 text-center min-h-[100px] flex flex-col justify-center bg-black/20 rounded-3xl p-6 border border-white/5">
+        <AnimatePresence mode="wait">
           {board?.phase === "RESULTS" ? (
-            <div className="animate-in zoom-in duration-500 space-y-2">
-              <h2 className="text-teal-500 uppercase text-4xl">
-                +{isFA ? toPersianDigits(roundPoints) : roundPoints}{" "}
-                {t.dixit_score}
+            <motion.div
+              key="results"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="space-y-3"
+            >
+              <h2 className="text-blue-500 font-black uppercase text-4xl italic tracking-tighter">
+                +{isFA ? toPersianDigits(roundPoints) : roundPoints} PTS
               </h2>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-wrap justify-center gap-2">
                 {pointReasons?.map((reason, idx) => (
-                  <p
+                  <span
                     key={idx}
-                    className="text-zinc-400 text-[9px] font-black uppercase tracking-tighter"
+                    className="text-zinc-500 text-[8px] font-black uppercase tracking-widest bg-white/5 px-2 py-1 rounded"
                   >
-                    • {reason}
-                  </p>
+                    {reason}
+                  </span>
                 ))}
               </div>
-            </div>
+            </motion.div>
           ) : (
-            <>
-              <h2 className="text-teal-500 uppercase text-xl">
+            <motion.div
+              key="active-phase"
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -10, opacity: 0 }}
+            >
+              <h2
+                className={`font-black uppercase text-xl italic tracking-tighter ${isST ? "text-blue-400" : "text-white"}`}
+              >
                 {isST
-                  ? `⚡ ${t.yourTurn} ⚡`
-                  : `${t.waiting} ${storytellerName}`}
+                  ? `⚡ NODE_STORYTELLER: YOUR_SEQUENCE ⚡`
+                  : `WAITING_FOR_${storytellerName.toUpperCase()}`}
               </h2>
-              <p className="text-[10px] text-zinc-500 mt-1 uppercase tracking-widest">
+
+              {/* 🔍 CLUE READOUT FOR ALL NODES */}
+              {board?.currentClue && (
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="mt-4 p-4 bg-blue-500/5 border border-blue-500/20 rounded-2xl inline-block relative group overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-blue-400/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="text-[8px] text-blue-400 font-black tracking-[0.4em] mb-1 block">
+                    STORY_CLUE_TRANSMISSION
+                  </span>
+                  <p className="text-xl font-black text-white italic tracking-tight [text-shadow:0_0_15px_rgba(59,130,246,0.3)] leading-none uppercase">
+                    "{board.currentClue}"
+                  </p>
+                </motion.div>
+              )}
+
+              <p className="text-[9px] text-zinc-500 mt-4 uppercase tracking-[0.3em] font-black">
                 {board?.phase === "CLUE"
                   ? isST
                     ? t.dixit_phase_clue
@@ -217,66 +222,109 @@ export default function DixitHand({
                       ? t.dixit_wait_others
                       : t.dixit_guess_card}
               </p>
-            </>
+            </motion.div>
           )}
-        </div>
+        </AnimatePresence>
+      </div>
 
-        <div className="flex-1 grid grid-cols-3 gap-3 overflow-y-auto no-scrollbar pb-36 px-1">
-          {displayCards.map((item: any, i: number) => {
-            const cardId = typeof item === "string" ? item : item.cardId;
-            return (
+      {/* CLUE INPUT (STORYTELLER ONLY) */}
+      <AnimatePresence>
+        {board?.phase === "CLUE" && isST && selectedCard && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="mb-6"
+          >
+            <input
+              autoFocus
+              value={clue}
+              onChange={(e) => setClue(e.target.value)}
+              placeholder={t.dixit_clue_placeholder}
+              className="w-full p-6 bg-black/60 border-2 border-zinc-800 rounded-2xl text-white font-black outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-center uppercase tracking-widest shadow-inner placeholder:opacity-20"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* CARD GRID */}
+      <div className="flex-1 grid grid-cols-3 gap-4 overflow-y-auto no-scrollbar pb-32" dir="ltr">
+        {displayCards.map((item: any, i: number) => {
+          const cardId = typeof item === "string" ? item : item.cardId;
+          const ownerName =
+            typeof item === "object"
+              ? room.players.find((p) => p._id === item.playerId)?.name
+              : undefined;
+
+          return (
+            <motion.div
+              key={i}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{
+                delay: i * 0.05,
+                type: "spring",
+                stiffness: 260,
+                damping: 20,
+              }}
+            >
               <DixitCard
-                key={i}
                 cardId={cardId}
                 isLobby={isLobby}
                 selected={selectedCard === cardId}
                 selectable={
-                  !isLobby && !isWaitingPhase && board.phase !== "RESULTS"
+                  !isLobby && !isWaitingPhase && board?.phase !== "RESULTS"
                 }
                 onClick={() => setSelectedCard(cardId)}
                 isRevealed={!isLobby && cardId !== "BACK"}
+                ownerName={board?.phase === "RESULTS" ? ownerName : undefined}
                 disabled={
                   isLobby ||
-                  (board.phase === "VOTING" && isST) ||
+                  (board?.phase === "VOTING" && isST) ||
                   isWaitingPhase ||
-                  board.phase === "RESULTS"
+                  board?.phase === "RESULTS"
                 }
               />
-            );
-          })}
-        </div>
+            </motion.div>
+          );
+        })}
+      </div>
 
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-zinc-950 to-transparent z-20">
-          <div className="max-w-2xl mx-auto">
-            {board?.phase === "CLUE" && isST && selectedCard && (
-              <input
-                autoFocus
-                value={clue}
-                onChange={(e) => setClue(e.target.value)}
-                placeholder={t.dixit_clue_placeholder}
-                className="w-full mb-4 p-5 bg-zinc-900 border-2 border-zinc-800 rounded-2xl text-white outline-none focus:border-teal-500 text-center"
-              />
-            )}
-            <button
-              onClick={handleAction}
-              disabled={
-                board.phase === "RESULTS"
-                  ? !isST
-                  : !selectedCard ||
-                    (board.phase === "CLUE" && !clue) ||
-                    isWaitingPhase
-              }
-              className="w-full py-5 bg-white text-black rounded-3xl font-black uppercase text-xl disabled:opacity-20 transition-all"
-            >
-              {board.phase === "RESULTS"
+      {/* ACTION TRIGGER */}
+      <div className="absolute bottom-8 left-0 right-0 px-8 pointer-events-none">
+        <div className="max-w-xl mx-auto pointer-events-auto">
+          <motion.button
+            whileHover={
+              !(board?.phase === "RESULTS"
+                ? !isST
+                : !selectedCard ||
+                  (board?.phase === "CLUE" && !clue) ||
+                  isWaitingPhase)
+                ? { scale: 1.02, boxShadow: "0 0 40px rgba(59,130,246,0.3)" }
+                : {}
+            }
+            whileTap={{ scale: 0.98 }}
+            onClick={handleAction}
+            disabled={
+              board?.phase === "RESULTS"
+                ? !isST
+                : !selectedCard ||
+                  (board?.phase === "CLUE" && !clue) ||
+                  isWaitingPhase
+            }
+            className="w-full py-6 bg-white text-black rounded-[2rem] font-black uppercase text-lg tracking-[0.2em] disabled:opacity-10 transition-all shadow-2xl relative overflow-hidden group"
+          >
+            <div className="absolute inset-0 bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <span className="relative z-10 group-hover:text-white transition-colors">
+              {board?.phase === "RESULTS"
                 ? isST
-                  ? t.startMatch
-                  : t.waiting
+                  ? "INITIATE_NEXT_ROUND"
+                  : "WAITING_FOR_ST_SYNC"
                 : isWaitingPhase
-                  ? t.dixit_wait_others
-                  : t.action}
-            </button>
-          </div>
+                  ? "NODE_WAIT_STATE"
+                  : "EXECUTE_SEQUENCE"}
+            </span>
+          </motion.button>
         </div>
       </div>
     </div>

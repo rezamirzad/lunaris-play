@@ -5,27 +5,49 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Language, translations } from "@/lib/translations";
 import GameCatalog from "./components/GameCatalog";
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "convex/_generated/api";
+import { useUser } from "./UserProvider";
+import OngoingRooms from "./components/OngoingRooms";
+import Leaderboard from "./components/Leaderboard";
+import { motion, Variants } from "framer-motion";
+
+const titleVariants: Variants = {
+  hidden: { skewX: 20, opacity: 0, scale: 0.9 },
+  visible: {
+    skewX: 0,
+    opacity: 1,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 400,
+      damping: 15,
+    },
+  },
+};
 
 function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { playerName, setPlayerName } = useUser();
   const [lang, setLang] = useState<Language>("en");
-  const [name, setName] = useState("");
+  const [nameInput, setNameInput] = useState(playerName);
   const [roomCode, setRoomCode] = useState("");
 
-  const ongoingRooms = useQuery((api as any).engine.getOngoingRooms);
-  const createRoom = useMutation((api as any).engine.createRoom);
-  const joinRoom = useMutation((api as any).engine.joinRoom);
+  const ongoingRooms = useQuery(api.engine.getOngoingRooms);
+  const createRoom = useMutation(api.engine.createRoom);
+  const joinRoom = useMutation(api.engine.joinRoom);
+  const getOrCreateUser = useMutation(api.engine.getOrCreateUser);
 
   useEffect(() => {
     const l = searchParams.get("lang") as Language;
     if (l && ["en", "fr", "de", "fa"].includes(l)) {
       setLang(l);
     }
-    const savedName = localStorage.getItem("playerName");
-    if (savedName) setName(savedName);
   }, [searchParams]);
+
+  useEffect(() => {
+    setNameInput(playerName);
+  }, [playerName]);
 
   const t = translations[lang];
   const isRTL = lang === "fa";
@@ -38,14 +60,12 @@ function HomeContent() {
   };
 
   const handleJoin = async () => {
-    if (!name || !roomCode) return;
+    if (!nameInput || !roomCode) return;
     const cleanCode = roomCode.toUpperCase();
     try {
-      // 1. Actually join in the database
-      await joinRoom({ roomCode: cleanCode, playerName: name });
-      // 2. Persist name for the room page check
-      localStorage.setItem("playerName", name);
-      // 3. Navigate to player view (no board param)
+      await getOrCreateUser({ name: nameInput });
+      await joinRoom({ roomCode: cleanCode, playerName: nameInput });
+      setPlayerName(nameInput);
       router.push(`/room/${cleanCode}?lang=${lang}`);
     } catch (error) {
       console.error("Join failed:", error);
@@ -64,6 +84,10 @@ function HomeContent() {
   const handleHost = async (slug: string) => {
     const code = Math.random().toString(36).substring(2, 6).toUpperCase();
     try {
+      if (nameInput) {
+        await getOrCreateUser({ name: nameInput });
+        setPlayerName(nameInput);
+      }
       await createRoom({ roomCode: code, gameSlug: slug });
       router.push(`/room/${code}?lang=${lang}&game=${slug}&view=board`);
     } catch (e) {
@@ -73,19 +97,44 @@ function HomeContent() {
 
   return (
     <main
-      className={`min-h-screen bg-black text-white p-4 sm:p-8 md:p-12 transition-all duration-500 ${isRTL ? "font-serif" : ""}`}
-      dir={isRTL ? "rtl" : "ltr"}
+      className={`min-h-screen bg-[#020203] text-white p-4 sm:p-8 md:p-12 transition-all duration-500 relative overflow-hidden `}
+      //dir={isRTL ? "rtl" : "ltr"}
     >
-      <header className="max-w-6xl mx-auto w-full flex flex-col sm:flex-row justify-between items-center gap-8 mb-12 sm:mb-16">
-        <div className="text-center sm:text-left">
-          <h1 className="text-5xl sm:text-7xl font-black italic tracking-tighter text-white leading-none uppercase">
-            {t.title}
-          </h1>
-          <p className="text-teal-400 font-bold tracking-[0.3em] text-[10px] sm:text-xs mt-2 uppercase">
-            {t.subtitle}
-          </p>
-        </div>
-        <div className="flex bg-zinc-900/80 backdrop-blur-md p-1 rounded-2xl border border-zinc-800 shadow-xl">
+      {/* Cinematic Background FX */}
+      <div className="neuro-grid" />
+      <div className="scanline" />
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(45,212,191,0.05),transparent)] pointer-events-none" />
+
+      <header className="max-w-6xl mx-auto w-full flex flex-col items-center gap-8 mb-20 relative z-10">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={titleVariants}
+          className="text-center space-y-4"
+        >
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] tracking-[0.6em] text-zinc-500 mb-2 opacity-50">
+              SYSTEM_AUTH: ACTIVE
+            </span>
+            <h1 className="text-7xl sm:text-9xl font-black italic tracking-tighter text-white leading-none uppercase logo-glow">
+              LUNARIS
+            </h1>
+          </div>
+          <div className="flex items-center justify-center gap-4">
+            <div className="h-[1px] w-12 bg-teal-400/20" />
+            <p className="text-teal-400 font-bold tracking-[0.5em] text-[10px] uppercase">
+              {t.subtitle}
+            </p>
+            <div className="h-[1px] w-12 bg-teal-400/20" />
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="flex bg-zinc-900/40 backdrop-blur-md p-1 rounded-2xl border border-white/5 shadow-2xl"
+        >
           {(["en", "fr", "de", "fa"] as Language[]).map((l) => (
             <button
               key={l}
@@ -95,123 +144,127 @@ function HomeContent() {
               {l.toUpperCase()}
             </button>
           ))}
-        </div>
+        </motion.div>
       </header>
 
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 relative z-10">
         <div className="lg:col-span-4 space-y-10">
-          <section className="bg-zinc-900/50 border border-zinc-800 p-8 rounded-[2.5rem] shadow-2xl space-y-8 sticky top-8 z-10">
-            <h2 className="text-[10px] font-black tracking-widest text-zinc-500 uppercase">
+          <div className="flex items-end border-b border-zinc-900 pb-4 h-[25px]">
+            <h2 className="text-[10px] font-black tracking-[0.5em] text-zinc-600 uppercase">
+              COMMAND_INTERFACE
+            </h2>
+          </div>
+
+          <motion.section
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{
+              delay: 0.6,
+              type: "spring",
+              stiffness: 260,
+              damping: 20,
+            }}
+            className="glass-card p-8 shadow-2xl space-y-8"
+          >
+            <h2 className="text-[10px] font-black tracking-widest text-zinc-500 uppercase flex items-center gap-2">
+              <div className="h-1.5 w-1.5 bg-teal-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(45,212,191,0.6)]" />
               {t.enterLobby}
             </h2>
             <div className="space-y-4">
               <input
                 type="text"
                 placeholder={t.namePlaceholder}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full bg-black/50 border-2 border-zinc-800 rounded-2xl px-6 py-4 text-xl font-bold focus:border-teal-500 outline-none transition-all placeholder:text-zinc-800"
+                value={nameInput}
+                onChange={(e) => setNameInput(e.target.value)}
+                className="w-full bg-black/80 border-2 border-zinc-800 rounded-2xl px-6 py-4 text-xl font-bold focus:border-teal-400 focus:ring-2 focus:ring-teal-400/20 outline-none transition-all placeholder:text-zinc-800 text-white shadow-inner"
               />
               <input
                 type="text"
                 placeholder={t.roomPlaceholder}
                 value={roomCode}
                 onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-                className="w-full bg-black/50 border-2 border-zinc-800 rounded-2xl px-6 py-4 text-xl font-bold focus:border-teal-500 outline-none transition-all text-center tracking-[0.2em]"
+                className="w-full bg-black/80 border-2 border-zinc-800 rounded-2xl px-6 py-4 text-xl font-bold focus:border-teal-400 focus:ring-2 focus:ring-teal-400/20 outline-none transition-all text-center tracking-[0.2em] text-white shadow-inner"
               />
-              <button
+              <motion.button
+                whileHover={{
+                  scale: 1.02,
+                  boxShadow: "0 0 30px rgba(45,212,191,0.3)",
+                }}
+                whileTap={{ scale: 0.98 }}
                 onClick={handleJoin}
-                className="w-full bg-teal-500 hover:bg-teal-400 text-black font-black py-5 rounded-2xl text-xl uppercase tracking-widest transition-all active:scale-95 shadow-[0_15px_30px_rgba(20,184,166,0.2)]"
+                className="w-full bg-white hover:bg-teal-400 text-black font-black py-5 rounded-2xl text-xl uppercase tracking-widest transition-all shadow-[0_15px_30px_rgba(0,0,0,0.4)]"
               >
                 {t.enterLobby}
-              </button>
+              </motion.button>
             </div>
-          </section>
+            <div className="pt-4 flex justify-between items-center opacity-30">
+              <span className="text-[8px] font-bold">NODE_STABILITY: 100%</span>
+              <span className="text-[8px] font-bold text-teal-400">
+                ENCRYPTED
+              </span>
+            </div>
+          </motion.section>
 
-          <section className="space-y-6">
-            <h2 className="text-[10px] font-black tracking-widest text-zinc-600 uppercase px-4">
-              {t.ongoingGames}
+          <motion.section
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{
+              delay: 0.7,
+              type: "spring",
+              stiffness: 260,
+              damping: 20,
+            }}
+            className="space-y-6"
+          >
+            <h2 className="text-[10px] font-black tracking-widest text-zinc-600 uppercase px-4 flex justify-between items-center">
+              <span>{t.ongoingGames}</span>
+              <span className="text-teal-400/50 tabular-nums">
+                00{ongoingRooms?.length || 0}
+              </span>
             </h2>
-            <div className="space-y-3">
-              {!ongoingRooms || ongoingRooms.length === 0 ? (
-                <div className="p-8 border-2 border-dashed border-zinc-900 rounded-[2rem] text-center opacity-40">
-                  <p className="text-zinc-600 font-bold uppercase text-[9px] tracking-[0.3em]">
-                    {t.noOngoing}
-                  </p>
-                </div>
-              ) : (
-                ongoingRooms.map((room: any) => {
-                  const isFinished = room.status === "FINISHED";
-                  const winnerName = room.gameBoard?.winner;
-                  return (
-                    <div
-                      key={room._id}
-                      className={`group bg-zinc-900/30 border p-6 rounded-[2rem] space-y-4 transition-all ${isFinished ? "border-zinc-800/50 opacity-80" : "border-zinc-800 hover:border-teal-500/50"}`}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div className="flex flex-col min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xl font-black italic text-white tracking-tighter">
-                              {room.roomCode}
-                            </span>
-                            {isFinished && winnerName && (
-                              <div className="flex items-center gap-1.5 bg-teal-500/10 border border-teal-500/20 px-2 py-0.5 rounded-lg shrink-0">
-                                <span className="text-[10px]">🏆</span>
-                                <span className="text-[10px] font-black italic text-teal-500 uppercase truncate max-w-[80px]">
-                                  {winnerName}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                          <span className="text-[9px] font-bold text-teal-500 uppercase tracking-widest">
-                            {room.currentGame?.toUpperCase()}
-                          </span>
-                        </div>
-                        <div
-                          className={`w-2.5 h-2.5 rounded-full mt-1.5 transition-all duration-500 ${isFinished ? "bg-zinc-800" : "bg-teal-500 animate-pulse shadow-[0_0_12px_rgba(20,184,166,0.6)]"}`}
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          onClick={() => handleViewBoard(room.roomCode)}
-                          className="bg-zinc-800 hover:bg-zinc-700 text-white py-2 rounded-xl text-[9px] font-black uppercase transition-all"
-                        >
-                          Board
-                        </button>
-                        <button
-                          onClick={() =>
-                            !isFinished && selectRoomForJoining(room.roomCode)
-                          }
-                          disabled={isFinished}
-                          className={`py-2 rounded-xl text-[9px] font-black uppercase transition-all ${isFinished ? "bg-zinc-900 text-zinc-700 cursor-not-allowed border border-zinc-800/30" : "bg-teal-500/10 border border-teal-500/20 text-teal-500 hover:bg-teal-500 hover:text-black"}`}
-                        >
-                          {isFinished ? "Ended" : "Player"}
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </section>
+            <OngoingRooms
+              rooms={ongoingRooms}
+              onJoin={selectRoomForJoining}
+              onViewBoard={handleViewBoard}
+              t={t}
+            />
+          </motion.section>
+
+          <Leaderboard />
         </div>
 
-        <div className="lg:col-span-8 space-y-6">
-          <div className="flex justify-between items-end border-b border-zinc-900 pb-4">
+        <motion.div
+          initial={{ x: 20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{
+            delay: 0.8,
+            type: "spring",
+            stiffness: 260,
+            damping: 20,
+          }}
+          className="lg:col-span-8 space-y-6"
+        >
+          <div className="flex justify-between items-end border-b border-zinc-900 pb-4 h-[25px]">
             <h2 className="text-[10px] font-black tracking-[0.5em] text-zinc-600 uppercase">
               {t.arcade}
             </h2>
           </div>
           <GameCatalog onHost={handleHost} />
-        </div>
+        </motion.div>
       </div>
+
+      <footer className="max-w-6xl mx-auto w-full mt-32 pb-12 text-center opacity-20 relative z-10">
+        <p className="text-[10px] font-bold tracking-[0.4em] text-zinc-500 uppercase">
+          LUNARIS_CORE v2.0.0 // DESIGN_BY_AURA
+        </p>
+      </footer>
     </main>
   );
 }
 
 export default function Home() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-black" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#020203]" />}>
       <HomeContent />
     </Suspense>
   );

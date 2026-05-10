@@ -1,29 +1,35 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "convex/_generated/api";
+import { Doc } from "convex/_generated/dataModel";
 
 export function useGame(roomCode: string) {
-  // Fix: Path changed from api.game to api.engine
-  // Cast to any to prevent Vercel build blocks while types regenerate
-  const gameState = useQuery((api as any).engine.getRoomState, { roomCode });
+  const gameState = useQuery(api.engine.getRoomState, { roomCode });
 
   const playerName =
     typeof window !== "undefined" ? localStorage.getItem("playerName") : null;
 
-  const me = gameState?.players?.find((p: any) => p.name === playerName);
+  const players = (gameState?.players || []) as Doc<"players">[];
+  const me = players.find((p) => p.name === playerName);
 
-  // Added null-safety check for turnOrder and currentTurnIndex
-  const isMyTurn =
-    gameState?.turnOrder && gameState?.currentTurnIndex !== undefined
-      ? gameState.turnOrder[gameState.currentTurnIndex] === me?._id
-      : false;
+  // Derive turn information safely
+  const turnOrder = gameState?.turnOrder || [];
+  const currentTurnIndex = gameState?.currentTurnIndex ?? 0;
+  const isMyTurn = turnOrder[currentTurnIndex] === me?._id;
+
+  // Narrow the game board and state for easier consumption
+  const gameBoard = gameState?.gameBoard;
+  const myState = me?.state;
 
   return {
-    room: gameState,
-    players: gameState?.players || [],
-    me,
+    room: gameState as (Doc<"rooms"> & { players: Doc<"players">[], gameMetadata: Doc<"games"> | null }) | null | undefined,
+    players,
+    me: me as Doc<"players"> | undefined,
+    myState,
+    gameBoard,
     isMyTurn,
     isLoading: gameState === undefined,
+    gameMetadata: gameState?.gameMetadata,
   };
 }

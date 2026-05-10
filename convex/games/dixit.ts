@@ -1,6 +1,75 @@
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
 import { Doc } from "../_generated/dataModel";
+import { GamePlugin, GameMutationCtx } from "./types";
+import { finishTurn } from "./transitions";
+import { DIXIT_DECK } from "./dixit_deck";
+
+/**
+ * Standard Fisher-Yates Shuffle
+ */
+const shuffle = <T>(array: T[]) => {
+  const newArray = [...array];
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  }
+  return newArray;
+};
+
+export const dixitPlugin: GamePlugin = {
+  gameType: "dixit",
+
+  getInitialBoard() {
+    return {
+      gameType: "none",
+    };
+  },
+
+  getInitialPlayerState(status: string, room: Doc<"rooms">) {
+    let initialHand: string[] = [];
+    let initialState: any = { gameType: "none" };
+
+    if (status === "LOBBY") {
+      initialHand = ["BACK", "BACK", "BACK", "BACK", "BACK", "BACK"];
+    } else if (status === "PLAYING") {
+      if (room.gameBoard.gameType === "dixit") {
+        const pool = room.gameBoard.availableCards || [];
+        if (pool.length >= 6) {
+          initialHand = pool.slice(0, 6);
+        }
+        initialState = { gameType: "dixit", score: 0 };
+      }
+    }
+
+    return { initialHand, initialState };
+  },
+
+  async onStart(ctx: GameMutationCtx, roomId: Doc<"rooms">["_id"], players: Doc<"players">[]) {
+    // Dynamically retrieve deck from manifest
+    const dixitPool = shuffle([...DIXIT_DECK]);
+
+    for (const player of players) {
+      const initialHand = dixitPool.splice(0, 6);
+      await ctx.db.patch(player._id, {
+        gameHand: initialHand,
+        state: { gameType: "dixit", score: 0 },
+      });
+    }
+
+    await ctx.db.patch(roomId, {
+      gameBoard: {
+        gameType: "dixit",
+        phase: "CLUE",
+        availableCards: dixitPool,
+        usedCards: [], // Explicit initialization for fresh game state
+        submittedCards: [],
+        votes: [],
+        history: [{ key: "LOG_GAME_STARTED", data: { time: Date.now() } }],
+      },
+    });
+  },
+};
 
 export const handleAction = mutation({
   args: {
@@ -14,6 +83,10 @@ export const handleAction = mutation({
     if (!player) throw new Error("Player not found");
     const room = await ctx.db.get(player.roomId);
     if (!room) throw new Error("Room not found");
+
+    if (room.gameBoard.gameType !== "dixit" || player.state.gameType !== "dixit") {
+      throw new Error("Invalid state");
+    }
 
     const board = room.gameBoard;
     const players = await ctx.db
@@ -32,6 +105,7 @@ export const handleAction = mutation({
       await ctx.db.patch(room._id, {
         gameBoard: {
           ...board,
+          gameType: "dixit",
           phase: "SUBMITTING",
           currentClue: args.clue,
           submittedCards: [{ playerId: player._id, cardId: args.cardId! }],
@@ -53,7 +127,9 @@ export const handleAction = mutation({
       await ctx.db.patch(room._id, {
         gameBoard: {
           ...board,
+          gameType: "dixit",
           submittedCards: newSubmitted,
+          shuffledBoardCards: allDone ? shuffle([...newSubmitted]) : undefined,
           phase: allDone ? "VOTING" : "SUBMITTING",
         },
       });
@@ -69,27 +145,33 @@ export const handleAction = mutation({
         await calculateScores(ctx, room, players, newVotes);
       } else {
         await ctx.db.patch(room._id, {
-          gameBoard: { ...board, votes: newVotes },
+          gameBoard: { ...board, gameType: "dixit", votes: newVotes },
         });
       }
     }
 
     if (args.actionType === "NEXT_ROUND") {
-      const winner = players.find((p) => (p.state.score || 0) >= 30);
-      const nextBoard: any = {
-        ...board,
-        phase: "CLUE",
-        submittedCards: [],
-        votes: [],
-        currentClue: "",
-        winner: winner?.name,
-      };
-      delete nextBoard.roundResults;
+      const winner = players.find((p) => (p.state.gameType === "dixit" ? p.state.score : 0) >= 30);
+      
+      const nextUsedCards = [
+        ...(board.usedCards || []),
+        ...board.submittedCards.map(s => s.cardId)
+      ];
 
-      await ctx.db.patch(room._id, {
-        status: winner ? "FINISHED" : "PLAYING",
-        currentTurnIndex: (room.currentTurnIndex + 1) % room.turnOrder.length,
-        gameBoard: nextBoard,
+      return await finishTurn({
+        ctx,
+        room,
+        advanceTurn: true,
+        winnerName: winner?.name,
+        winnerId: winner?._id,
+        gameBoardPatch: {
+          gameType: "dixit",
+          phase: "CLUE",
+          submittedCards: [],
+          usedCards: nextUsedCards,
+          votes: [],
+          currentClue: "",
+        },
       });
     }
 
@@ -98,11 +180,12 @@ export const handleAction = mutation({
 });
 
 async function calculateScores(
-  ctx: any,
+  ctx: GameMutationCtx,
   room: Doc<"rooms">,
   players: Doc<"players">[],
-  votes: any[],
+  votes: { voterId: Doc<"players">["_id"]; cardId: string }[],
 ) {
+  if (room.gameBoard.gameType !== "dixit") throw new Error("Invalid board");
   const board = room.gameBoard;
   const storytellerId = room.turnOrder[room.currentTurnIndex];
   const storytellerCard = board.submittedCards!.find(
@@ -110,12 +193,15 @@ async function calculateScores(
   )!.cardId;
 
   let deck = [...(board.availableCards || [])];
+  let used = [...(board.usedCards || [])];
   const correctVotes = votes.filter((v) => v.cardId === storytellerCard);
   const everyoneCorrect = correctVotes.length === players.length - 1;
   const noOneCorrect = correctVotes.length === 0;
   const roundPoints: Record<string, number> = {};
 
   for (const p of players) {
+    if (p.state.gameType !== "dixit") throw new Error("Invalid player state");
+    
     let scoreGain = 0;
     const isST = p._id === storytellerId;
 
@@ -123,31 +209,33 @@ async function calculateScores(
       if (!isST) scoreGain = 2;
     } else {
       if (isST) scoreGain = 3;
-      if (
-        votes.find(
-          (v: any) => v.voterId === p._id && v.cardId === storytellerCard,
-        )
-      ) {
+      if (votes.find((v) => v.voterId === p._id && v.cardId === storytellerCard)) {
         scoreGain = 3;
       }
     }
 
     if (!isST) {
-      const myCard = board.submittedCards!.find(
-        (c: any) => c.playerId === p._id,
-      )!.cardId;
-      scoreGain += votes.filter((v: any) => v.cardId === myCard).length;
+      const submission = board.submittedCards!.find((c) => c.playerId === p._id);
+      if (submission) {
+        scoreGain += votes.filter((v) => v.cardId === submission.cardId).length;
+      }
     }
 
     roundPoints[p._id] = scoreGain;
 
     let newHand = [...p.gameHand];
+    // Refill logic: if deck is empty, shuffle used cards back in
+    if (deck.length === 0 && used.length > 0) {
+      deck = shuffle(used);
+      used = [];
+    }
+
     if (deck.length > 0) {
       newHand.push(deck.shift()!);
     }
 
     await ctx.db.patch(p._id, {
-      state: { ...p.state, score: (p.state.score || 0) + scoreGain },
+      state: { ...p.state, gameType: "dixit", score: (p.state.score || 0) + scoreGain },
       gameHand: newHand,
     });
   }
@@ -155,9 +243,11 @@ async function calculateScores(
   await ctx.db.patch(room._id, {
     gameBoard: {
       ...board,
+      gameType: "dixit",
       votes: votes,
       phase: "RESULTS",
       availableCards: deck,
+      usedCards: used,
       roundResults: {
         storytellerCard: storytellerCard,
         pointsEarned: roundPoints,

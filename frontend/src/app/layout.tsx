@@ -1,5 +1,6 @@
 import "./globals.css";
-import ConvexClientProvider from "@/app/ConvexClientProvider";
+import ConvexClientProvider from "./ConvexClientProvider";
+import { UserProvider } from "./UserProvider";
 
 export default function RootLayout({
   children,
@@ -9,7 +10,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-black">
-        <ConvexClientProvider>{children}</ConvexClientProvider>
+        <ConvexClientProvider>
+          <UserProvider>
+            {children}
+          </UserProvider>
+        </ConvexClientProvider>
       </body>
     </html>
   );

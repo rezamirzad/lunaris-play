@@ -1,11 +1,11 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Language, translations } from "@/lib/translations"; // Adjust path as needed
+import { Language, translations } from "@/lib/translations";
+import { motion } from "framer-motion";
 
 /**
- * LanguageSelector: A high-visibility Toggle Strip.
- * Replaces the dropdown for instant access and technical transparency.
+ * LanguageSelector: Cinematic Technical Toggle Strip.
  */
 export default function LanguageSelector() {
   const router = useRouter();
@@ -18,24 +18,31 @@ export default function LanguageSelector() {
   const handleLanguageChange = (newLang: Language) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("lang", newLang);
-    router.push(`${pathname}?${params.toString()}`); // Standard Next.js navigation
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   return (
-    <div className="flex items-center gap-1 bg-white/5 p-1 rounded-lg border border-white/10">
-      {availableLanguages.map((lang) => (
-        <button
-          key={lang}
-          onClick={() => handleLanguageChange(lang)}
-          className={`px-2 py-1 text-[9px] font-mono font-black uppercase tracking-tighter transition-all duration-300 rounded-md ${
-            currentLang === lang
-              ? "bg-teal-500 text-black shadow-[0_0_10px_rgba(20,184,166,0.3)]"
-              : "text-zinc-500 hover:text-white hover:bg-white/5"
-          }`}
-        >
-          {lang}
-        </button>
-      ))}
+    <div className="flex flex-col gap-2">
+      <span className="text-[6px] font-black uppercase tracking-[0.5em] text-zinc-600 px-1">
+        LOCALIZATION_CORE
+      </span>
+      <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/5 backdrop-blur-xl shadow-inner">
+        {availableLanguages.map((lang) => (
+          <motion.button
+            key={lang}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => handleLanguageChange(lang)}
+            className={`px-3 py-1.5 text-[9px] font-mono font-black uppercase tracking-tighter transition-all duration-300 rounded-lg relative overflow-hidden ${
+              currentLang === lang
+                ? "bg-teal-500 text-black shadow-[0_0_15px_rgba(45,212,191,0.4)]"
+                : "text-zinc-500 hover:text-white hover:bg-white/5"
+            }`}
+          >
+            {lang}
+          </motion.button>
+        ))}
+      </div>
     </div>
   );
 }

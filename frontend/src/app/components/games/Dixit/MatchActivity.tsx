@@ -20,14 +20,6 @@ export default function MatchActivity({ log }: { log: ActivityLog }) {
   const template = t[log.key as keyof TranslationSet] || log.key;
 
   return (
-    <div className="flex items-start gap-2 py-1 border-l border-white/5 pl-3 hover:bg-white/[0.02] transition-colors">
-      <span className="text-teal-500/50 font-mono text-[8px] mt-0.5">
-        {">_"}
-      </span>
-      <p className="text-zinc-400 font-mono text-[10px] tracking-wider leading-relaxed">
-        {/* formatLog handles the player name injection and Persian digit conversion */}
-        {formatLog(template, log.data, lang)}
-      </p>
-    </div>
+    <div className="flex items-start gap-2 py-1 border-l border-white/5 pl-3 hover:bg-white/[0.02] transition-colors"></div>
   );
 }

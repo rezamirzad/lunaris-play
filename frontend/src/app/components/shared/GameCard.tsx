@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useTranslation } from "@/hooks/useTranslation"; // Integrated translation hook
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface GameCardProps {
   cardKey: string;
@@ -12,8 +12,7 @@ interface GameCardProps {
 
 /**
  * GameCard: High-fidelity asset resolver for PiouPiou and Dixit.
- * Optimized for the "Dark Mode 2.0" developer-cool aesthetic.
- * Refactored for LTR Multilingual support.
+ * Optimized for the "Top Class" cinematic aesthetic.
  */
 export default function GameCard({
   cardKey,
@@ -21,27 +20,26 @@ export default function GameCard({
   onSelect,
   isSelected,
 }: GameCardProps) {
-  const { t } = useTranslation(); // Destructured localization set[cite: 2]
-  const isDixit = cardKey.startsWith("dixit_");
-
-  // Normalize key for asset mapping
+  const { t } = useTranslation();
+  const isDixit = cardKey.includes("dixit_");
   const normalizedKey = cardKey.toLowerCase();
 
-  // Map text values to your local public assets[cite: 1]
-  const assetMap: Record<string, string> = {
-    chicken: "/assets/games/pioupiou/chicken.png",
-    rooster: "/assets/games/pioupiou/rooster.png",
-    fox: "/assets/games/pioupiou/fox.png",
-    nest: "/assets/games/pioupiou/nest.png",
+  const piouPiouMap: Record<string, string> = {
+    chicken: "/assets/games/pioupiou/cards/chicken.png",
+    rooster: "/assets/games/pioupiou/cards/rooster.png",
+    fox: "/assets/games/pioupiou/cards/fox.png",
+    nest: "/assets/games/pioupiou/cards/nest.png",
   };
 
-  const imageSrc = assetMap[normalizedKey];
+  const imageSrc = isDixit 
+    ? `/assets/games/dixit/cards/${cardKey}.png`
+    : piouPiouMap[normalizedKey];
 
   return (
     <button
       disabled={!isInteractable}
       onClick={() => onSelect?.(cardKey)}
-      className={`relative group aspect-[2/3] w-24 md:w-32 rounded-xl border transition-all duration-300 overflow-hidden shadow-2xl
+      className={`relative group aspect-[2/3] w-24 md:w-32 rounded-[2rem] border transition-all duration-300 overflow-hidden shadow-2xl
         ${
           isSelected
             ? "border-teal-400 scale-105 -translate-y-4 z-10 shadow-[0_0_30px_rgba(45,212,191,0.2)]"
@@ -50,32 +48,25 @@ export default function GameCard({
         ${!isInteractable && "opacity-50 grayscale cursor-not-allowed"}
         bg-[#09090b]`}
     >
-      {/* Visual Depth Overlay matching terminal aesthetic[cite: 2] */}
+      {/* Visual Depth Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent z-10" />
 
-      <div className="relative h-full w-full flex flex-col items-center justify-center p-2 text-center">
-        {isDixit ? (
-          <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-tighter">
-            {/* Localized technical label for Dixit nodes[cite: 2] */}
-            Node_{cardKey.split("_")[1]}
-          </span>
-        ) : imageSrc ? (
-          /* High-Performance Image Component[cite: 1] */
+      {/* Safari Fix: Use absolute inset-0 to force bounds propagation */}
+      <div className="absolute inset-0 p-2 z-20 flex flex-col items-center justify-center text-center">
+        {imageSrc ? (
           <div className="relative h-full w-full">
             <Image
               src={imageSrc}
-              /* Localized alt text using normalized cardKey[cite: 2] */
               alt={t[normalizedKey as keyof typeof t] || cardKey}
               fill
-              className="object-contain p-1 group-hover:scale-110 transition-transform duration-500"
+              className="object-contain p-2 group-hover:scale-110 transition-transform duration-500"
               sizes="(max-width: 768px) 96px, 128px"
               priority={isSelected}
             />
           </div>
         ) : (
-          <span className="text-xs font-black uppercase tracking-widest text-white italic leading-tight">
-            {/* Fallback to localized text if asset is missing[cite: 2] */}
-            {t[normalizedKey as keyof typeof t] || cardKey}
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white italic leading-tight px-2">
+            {isDixit ? `NODE_${cardKey.split("_")[1]}` : t[normalizedKey as keyof typeof t] || cardKey}
           </span>
         )}
       </div>

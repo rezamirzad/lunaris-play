@@ -1,24 +1,27 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useTranslation } from "@/hooks/useTranslation"; // Integrated translation hook
+import { useTranslation } from "@/hooks/useTranslation";
+import { motion } from "framer-motion";
 
 /**
- * BackButton: Next-Gen navigation protocol.
- * Optimized for immersive game-to-lobby transitions.
- * Refactored for LTR Multilingual support.
+ * BackButton: Cinematic "System Escape" Control.
  */
 export default function BackButton() {
   const router = useRouter();
-  const { t, lang } = useTranslation(); // Destructured localization set
+  const { t, lang } = useTranslation();
 
   return (
-    <button
+    <motion.button
+      whileHover={{ scale: 1.05, x: -4, backgroundColor: "rgba(255,255,255,0.1)" }}
+      whileTap={{ scale: 0.95 }}
       onClick={() => router.push(`/?lang=${lang}`)}
-      className="group flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:border-white/20 transition-all duration-300 active:scale-95"
+      className="group flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/10 rounded-xl transition-all duration-300 shadow-lg relative overflow-hidden"
     >
+      <div className="absolute inset-0 bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+      
       <svg
-        className="w-4 h-4 text-zinc-400 group-hover:text-white transition-colors"
+        className="w-4 h-4 text-zinc-400 group-hover:text-red-400 transition-colors relative z-10"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -30,10 +33,15 @@ export default function BackButton() {
           d="M15 19l-7-7 7-7"
         />
       </svg>
-      <span className="text-[10px] font-mono text-zinc-500 group-hover:text-zinc-200 uppercase tracking-widest">
-        {/* Localized Label: Back/QUITTER/BEENDEN/خروج */}
-        {t.exit}
-      </span>
-    </button>
+      
+      <div className="flex flex-col items-start relative z-10">
+        <span className="text-[6px] font-black uppercase tracking-[0.4em] text-zinc-600 group-hover:text-red-400/50 leading-none mb-1">
+          SYS_ESCAPE
+        </span>
+        <span className="text-[10px] font-black font-mono text-zinc-400 group-hover:text-white uppercase tracking-[0.2em] leading-none">
+          {t.exit || "EXIT"}
+        </span>
+      </div>
+    </motion.button>
   );
 }

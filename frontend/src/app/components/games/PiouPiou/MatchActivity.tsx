@@ -26,6 +26,7 @@ export default function MatchActivity({ log }: { log: ActivityLog }) {
     color: "text-zinc-400",
   };
 
+  const translatedCardName = (t as any)[asset.labelKey] || log.data.card;
   // Safely map the log key (e.g., "LOG_VICTORY") to the translation set[cite: 2]
   const template = t[log.key as keyof TranslationSet] || log.key;
 
@@ -67,7 +68,7 @@ export default function MatchActivity({ log }: { log: ActivityLog }) {
           <span className="text-white tracking-tighter">
             {formatLog(
               template,
-              { ...log.data, card: `${asset.icon} ${asset.labelKey}` },
+              { ...log.data, card: `${asset.icon} ${translatedCardName}` },
               lang,
             )}
           </span>

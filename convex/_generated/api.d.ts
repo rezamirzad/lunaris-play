@@ -11,7 +11,11 @@
 import type * as engine from "../engine.js";
 import type * as game from "../game.js";
 import type * as games_dixit from "../games/dixit.js";
+import type * as games_dixit_deck from "../games/dixit_deck.js";
 import type * as games_pioupiou from "../games/pioupiou.js";
+import type * as games_registry from "../games/registry.js";
+import type * as games_transitions from "../games/transitions.js";
+import type * as games_types from "../games/types.js";
 import type * as rooms from "../rooms.js";
 
 import type {
@@ -24,7 +28,11 @@ declare const fullApi: ApiFromModules<{
   engine: typeof engine;
   game: typeof game;
   "games/dixit": typeof games_dixit;
+  "games/dixit_deck": typeof games_dixit_deck;
   "games/pioupiou": typeof games_pioupiou;
+  "games/registry": typeof games_registry;
+  "games/transitions": typeof games_transitions;
+  "games/types": typeof games_types;
   rooms: typeof rooms;
 }>;
 
