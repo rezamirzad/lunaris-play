@@ -186,13 +186,14 @@ export const translations: Record<Language, TranslationSet> = {
     storyteller: "STORYTELLER",
     dixit_round_summary: "ROUND SUMMARY",
     dixit_title: "Dixit",
-    dixit_desc: "Decode abstract visual data and deceive rival nodes.",
+    dixit_desc:
+      "Give clever clues about beautiful, dreamlike cards. Guess the right picture to score points!",
     pioupiou_title: "PiouPiou",
     pioupiou_desc:
-      "Defend your digital flock. Hatch eggs. Block the Fox algorithm.",
+      "Collect cards to hatch your chicks, but watch out for the sly fox trying to steal your eggs!",
     themind_title: "The Mind",
     themind_desc:
-      "Synchronize frequencies in perfect ascending order. No communication allowed.",
+      "Play number cards in ascending order as a team. The catch? You can't speak or communicate at all!",
     themind_level: "LEVEL {level}",
     themind_lives: "SYSTEM INTEGRITY",
     themind_emps: "EMP OVERRIDES",
@@ -202,7 +203,7 @@ export const translations: Record<Language, TranslationSet> = {
     themind_game_over: "SYSTEM FAILURE",
     justone_title: "Just One",
     justone_desc:
-      "Transmit unique decryption clues. Duplicate keys are purged by the firewall.",
+      "Write a single-word clue to help your teammate guess the secret word. Careful: duplicate clues are canceled out!",
     justone_mystery_word: "MYSTERY WORD",
     justone_clue_placeholder: "Enter single-word clue...",
     justone_guess_placeholder: "Enter final guess...",
@@ -321,13 +322,13 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_round_summary: "RÉSUMÉ DU TOUR",
     dixit_title: "Dixit",
     dixit_desc:
-      "Décryptez des données visuelles abstraites et trompez les nœuds rivaux.",
+      "Donnez des indices subtils sur des cartes oniriques. Devinez la bonne image pour marquer des points !",
     pioupiou_title: "PiouPiou",
     pioupiou_desc:
-      "Défendez votre troupeau numérique. Bloquez l'algorithme Renard.",
+      "Rassemblez des cartes pour faire éclore vos poussins, mais attention au renard qui veut voler vos œufs !",
     themind_title: "The Mind",
     themind_desc:
-      "Synchronisez les fréquences en ordre croissant. Aucune communication autorisée.",
+      "Jouez des cartes numérotées dans l'ordre croissant en équipe. Le piège ? Vous ne pouvez absolument pas communiquer !",
     themind_level: "NIVEAU {level}",
     themind_lives: "INTÉGRITÉ DU SYSTÈME",
     themind_emps: "CODES EMP",
@@ -337,7 +338,7 @@ export const translations: Record<Language, TranslationSet> = {
     themind_game_over: "ÉCHEC DU SYSTÈME",
     justone_title: "Just One",
     justone_desc:
-      "Transmettez des indices uniques. Les clés en double sont purgées par le pare-feu.",
+      "Écrivez un indice d'un seul mot pour faire deviner le mot secret. Attention : les indices identiques s'annulent !",
     justone_mystery_word: "MOT MYSTÈRE",
     justone_clue_placeholder: "Entrez un indice unique...",
     justone_guess_placeholder: "Entrez votre réponse...",
@@ -457,13 +458,13 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_round_summary: "RUNDENZUSAMMENFASSUNG",
     dixit_title: "Dixit",
     dixit_desc:
-      "Entschlüssele abstrakte visuelle Daten und täusche rivalisierende Knoten.",
+      "Gib clevere Hinweise zu traumhaften Karten. Errate das richtige Bild, um zu punkten!",
     pioupiou_title: "PiouPiou",
     pioupiou_desc:
-      "Verteidige deine digitale Herde. Blockiere den Fuchs-Algorithmus.",
+      "Sammle Karten, um deine Küken schlüpfen zu lassen, aber hüte dich vor dem hungrigen Fuchs!",
     themind_title: "The Mind",
     themind_desc:
-      "Synchronisiere Frequenzen in aufsteigender Reihenfolge. Keine Kommunikation erlaubt.",
+      "Spielt als Team Zahlenkarten in aufsteigender Reihenfolge aus. Der Haken? Ihr dürft überhaupt nicht kommunizieren!",
     themind_level: "LEVEL {level}",
     themind_lives: "SYSTEMINTEGRITÄT",
     themind_emps: "EMP OVERRIDES",
@@ -473,7 +474,7 @@ export const translations: Record<Language, TranslationSet> = {
     themind_game_over: "SYSTEMFEHLER",
     justone_title: "Just One",
     justone_desc:
-      "Sende einzigartige Hinweise. Duplikate werden von der Firewall gelöscht.",
+      "Schreibe ein einziges Wort als Hinweis für das geheime Wort. Aber Vorsicht: Doppelte Hinweise werden gelöscht!",
     justone_mystery_word: "GEHEIMWORT",
     justone_clue_placeholder: "Einzelnes Hinweiswort...",
     justone_guess_placeholder: "Deine Antwort...",
@@ -595,13 +596,13 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_round_summary: "خلاصه دور",
     dixit_title: "دیکسیت",
     dixit_desc:
-      "داده‌های بصری انتزاعی را رمزگشایی کنید و گره‌های رقیب را فریب دهید.",
+      "درباره کارت‌های رویایی سرنخ‌های هوشمندانه بدهید. برای امتیاز گرفتن، تصویر درست را حدس بزنید",
     pioupiou_title: "پیو پیو",
     pioupiou_desc:
-      "از گله دیجیتال خود دفاع کنید. الگوریتم روباه را مسدود کنید.",
+      "کارت‌ها را جمع کنید تا جوجه‌هایتان از تخم بیرون بیایند، اما مراقب روباه مکار باشید",
     themind_title: "The Mind",
     themind_desc:
-      "فرکانس‌ها را به ترتیب صعودی همگام کنید. هرگونه ارتباط ممنوع است.",
+      "به صورت تیمی کارت‌های اعداد را به ترتیب صعودی بازی کنید. چالش بازی؟ شما اصلاً نمی‌توانید با هم ارتباط برقرار کنید",
     themind_level: "مرحله {level}",
     themind_lives: "پایداری سیستم",
     themind_emps: "کدهای EMP",
@@ -611,7 +612,7 @@ export const translations: Record<Language, TranslationSet> = {
     themind_game_over: "خطای بحرانی سیستم",
     justone_title: "Just One",
     justone_desc:
-      "سرنخ‌های منحصربه‌فرد ارسال کنید. کلیدهای تکراری توسط فایروال حذف می‌شوند.",
+      "برای حدس زدن کلمه مخفی یک راهنمای یک کلمه‌ای بنویسید. مراقب باشید: راهنماهای تکراری حذف می‌شوند",
     justone_mystery_word: "کلمه رمز",
     justone_clue_placeholder: "یک کلمه سرنخ وارد کنید...",
     justone_guess_placeholder: "حدس نهایی خود را وارد کنید...",
