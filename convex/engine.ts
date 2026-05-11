@@ -64,11 +64,10 @@ export const getRoomState = query({
 export const getLeaderboard = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db
-      .query("users")
-      .withIndex("by_totalScore")
-      .order("desc")
-      .take(10);
+    const users = await ctx.db.query("users").collect();
+    return users
+      .sort((a, b) => (b.wins || 0) - (a.wins || 0))
+      .slice(0, 10);
   },
 });
 
