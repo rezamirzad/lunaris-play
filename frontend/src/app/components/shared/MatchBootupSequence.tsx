@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { GAME_REGISTRY } from "../games/registry";
 
 interface MatchBootupSequenceProps {
@@ -22,14 +22,14 @@ export default function MatchBootupSequence({
   const [progress, setProgress] = useState(0);
   const [logIndex, setLogIndex] = useState(0);
 
-  const bootLogs = [
+  const bootLogs = useMemo(() => [
     "INITIALIZING...",
     "CALIBRATING...",
     "SYNCHRONIZING PLAYERS...",
     "LOADING GAME: " + gameTitle.toUpperCase(),
     "ESTABLISHING SECURE UPLINK...",
     "BOOT SEQUENCECOMPLETE",
-  ];
+  ], [gameTitle]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -55,7 +55,7 @@ export default function MatchBootupSequence({
       clearInterval(logTimer);
       clearTimeout(finishTimer);
     };
-  }, [onComplete]);
+  }, [onComplete, bootLogs.length]);
 
   return (
     <motion.div

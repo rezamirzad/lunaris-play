@@ -12,18 +12,20 @@ interface VotingRevealProps {
 
 export default function VotingReveal({ roomData }: VotingRevealProps) {
   const board = roomData.gameBoard.gameType === "dixit" ? roomData.gameBoard : null;
-  if (!board) return null;
-
-  const submittedCards = board.submittedCards || [];
-  const votes = board.votes || [];
-  const isResults = board.phase === "RESULTS";
-  const storytellerId = roomData.turnOrder[roomData.currentTurnIndex];
 
   // Logic: Use the pre-shuffled cards from the board state to ensure consistency across all clients.
   const displayCards = useMemo(() => {
+    if (!board) return [];
+    const submittedCards = board.submittedCards || [];
     if (board.phase === "SUBMITTING") return submittedCards;
     return board.shuffledBoardCards || submittedCards;
-  }, [board.phase, submittedCards.length, board.shuffledBoardCards]);
+  }, [board]);
+
+  if (!board) return null;
+
+  const votes = board.votes || [];
+  const isResults = board.phase === "RESULTS";
+  const storytellerId = roomData.turnOrder[roomData.currentTurnIndex];
 
   return (
     <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-6 pt-4">

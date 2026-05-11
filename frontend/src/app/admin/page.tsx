@@ -9,7 +9,6 @@ import GameCatalog from "../components/GameCatalog";
 import AdminGateway from "./AdminGateway";
 import LiveNodeManager from "./LiveNodeManager";
 import SecurityLogsManager from "./SecurityLogsManager";
-import { motion } from "framer-motion";
 
 function AdminDashboard() {
   const { t } = useTranslation();

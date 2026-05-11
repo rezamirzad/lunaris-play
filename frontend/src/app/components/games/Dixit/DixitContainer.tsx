@@ -111,7 +111,7 @@ export default function DixitContainer({ roomData }: BoardProps) {
                     RECEIVED_CLUE_BROADCAST
                   </span>
                   <h2 className="text-5xl lg:text-7xl font-black italic tracking-tighter text-blue-400 uppercase [text-shadow:0_0_30px_rgba(59,130,246,0.8)] leading-tight">
-                    "{board.currentClue}"
+                    &quot;{board.currentClue}&quot;
                   </h2>
                 </motion.div>
               ) : (

@@ -57,9 +57,10 @@ export default function DixitHand({
     return player.gameHand;
   }, [
     isLobby,
-    player.gameHand.length,
+    player.gameHand,
     board?.phase,
-    board?.submittedCards.length,
+    board?.shuffledBoardCards,
+    board?.submittedCards,
     isST,
     player._id,
   ]);
@@ -204,7 +205,7 @@ export default function DixitHand({
                     STORY_CLUE_TRANSMISSION
                   </span>
                   <p className="text-xl font-black text-white italic tracking-tight [text-shadow:0_0_15px_rgba(59,130,246,0.3)] leading-none uppercase">
-                    "{board.currentClue}"
+                    &quot;{board.currentClue}&quot;
                   </p>
                 </motion.div>
               )}

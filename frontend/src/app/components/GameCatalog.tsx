@@ -10,6 +10,7 @@ import {
 } from "@/lib/translations";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { GAME_REGISTRY } from "./games/registry";
+import Image from "next/image";
 
 interface Game {
   _id: string;
@@ -49,7 +50,7 @@ export default function GameCatalog({
   onHost,
   mode = "standard",
 }: {
-  onHost: (slug: string) => void;
+  onHost?: (slug: string) => void;
   mode?: GameCatalogMode;
 }) {
   const games = useQuery(api.engine.listGames);
@@ -102,7 +103,7 @@ export default function GameCatalog({
                   </h3>
                 </div>
                 <button
-                  onClick={() => onHost(game.slug)}
+                  onClick={() => onHost?.(game.slug)}
                   className="bg-white text-black px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all hover:bg-teal-400 hover:shadow-[0_0_20px_rgba(45,212,191,0.4)]"
                 >
                   {t.host}
@@ -127,17 +128,16 @@ export default function GameCatalog({
                 y: -5,
                 boxShadow: "0 20px 40px -20px rgba(45,212,191,0.25)",
               }}
-              whileTap={{ scale: 0.98 }}
-              className="group relative flex flex-col h-full overflow-hidden bg-zinc-950/40 backdrop-blur-3xl rounded-[2.5rem] border border-white/5 hover:border-teal-400/40 transition-all duration-500 cursor-pointer shadow-[0_0_40px_-15px_rgba(0,0,0,0.5)] game-tile-atmosphere"
-              onClick={() => onHost(game.slug)}
+              className="group relative flex flex-col h-full overflow-hidden bg-zinc-950/40 backdrop-blur-3xl rounded-[2.5rem] border border-white/5 hover:border-teal-400/40 transition-all duration-500 shadow-[0_0_40px_-15px_rgba(0,0,0,0.5)] game-tile-atmosphere"
             >
               {/* VISUAL ANCHOR (THUMBNAIL) */}
               <div className="w-full aspect-[4/3] relative overflow-hidden bg-black/40 flex items-center justify-center p-6">
                 {game.thumbnail ? (
-                  <img
+                  <Image
                     src={game.thumbnail}
                     alt={displayTitle}
-                    className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-1000 game-thumbnail-mask"
+                    fill
+                    className="object-contain p-6 group-hover:scale-110 transition-transform duration-1000 game-thumbnail-mask"
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-10 group-hover:opacity-25 transition-opacity pointer-events-none">

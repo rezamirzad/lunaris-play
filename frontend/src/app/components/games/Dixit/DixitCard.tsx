@@ -4,6 +4,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Doc } from "convex/_generated/dataModel";
 import { GAME_REGISTRY } from "../registry";
+import Image from "next/image";
 
 interface DixitCardProps {
   cardId: string;
@@ -64,12 +65,16 @@ export default function DixitCard({
       <div className="absolute inset-0 bg-gradient-to-tr from-black/60 via-transparent to-white/10 z-10 pointer-events-none" />
 
       {/* 🖼️ CORE IMAGE */}
-      <img
-        src={imageSrc}
-        alt={isBack ? "CARD_HIDDEN" : cardId}
-        className={`absolute inset-0 w-full h-full object-cover pointer-events-none transition-transform duration-1000 ${selected || isStorytellerCard ? "scale-110" : "scale-100"}`}
-        draggable={false}
-      />
+      <div className="absolute inset-0 w-full h-full">
+        <Image
+          src={imageSrc}
+          alt={isBack ? "CARD_HIDDEN" : cardId}
+          fill
+          className={`object-cover pointer-events-none transition-transform duration-1000 ${selected || isStorytellerCard ? "scale-110" : "scale-100"}`}
+          draggable={false}
+          sizes="(max-width: 768px) 33vw, 20vw"
+        />
+      </div>
 
       {/* 📝 METADATA OVERLAY (RESULTS PHASE) */}
       {isRevealed && cardId !== "BACK" && (

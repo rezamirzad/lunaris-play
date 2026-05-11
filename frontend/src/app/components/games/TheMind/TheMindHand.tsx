@@ -95,7 +95,7 @@ export default function TheMindHand({
             )}
             
             <p className="text-[8px] text-zinc-500 uppercase tracking-[0.4em] font-black opacity-60">
-               {formatLog(t.themind_level, { level: isFA ? toPersianDigits(board.level) : board.level }, initialLang)} // INTEGRITY: {board.lives}/5
+               {formatLog(t.themind_level, { level: isFA ? toPersianDigits(board.level) : board.level }, initialLang)} {" // INTEGRITY: "} {board.lives}/5
             </p>
           </motion.div>
         </AnimatePresence>

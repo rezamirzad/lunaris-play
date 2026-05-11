@@ -35,7 +35,6 @@ function HomeContent() {
   const [roomCode, setRoomCode] = useState("");
 
   const ongoingRooms = useQuery(api.engine.getOngoingRooms);
-  const createRoom = useMutation(api.engine.createRoom);
   const joinRoom = useMutation(api.engine.joinRoom);
   const getOrCreateUser = useMutation(api.engine.getOrCreateUser);
 
@@ -79,20 +78,6 @@ function HomeContent() {
 
   const handleViewBoard = (code: string) => {
     router.push(`/room/${code.toUpperCase()}?lang=${lang}&view=board`);
-  };
-
-  const handleHost = async (slug: string) => {
-    const code = Math.random().toString(36).substring(2, 6).toUpperCase();
-    try {
-      if (nameInput) {
-        await getOrCreateUser({ name: nameInput });
-        setPlayerName(nameInput);
-      }
-      await createRoom({ roomCode: code, gameSlug: slug });
-      router.push(`/room/${code}?lang=${lang}&game=${slug}&view=board`);
-    } catch (e) {
-      console.error("Host failed", e);
-    }
   };
 
   return (
@@ -251,7 +236,7 @@ function HomeContent() {
               {t.arcade}
             </h2>
           </div>
-          <GameCatalog mode="standard" onHost={handleHost} />
+          <GameCatalog mode="standard" />
         </motion.div>
       </div>
 

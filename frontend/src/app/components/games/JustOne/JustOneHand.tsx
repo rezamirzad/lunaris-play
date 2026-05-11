@@ -23,15 +23,15 @@ export default function JustOneHand({
 
   const submitAction = useMutation(api.justone.handleAction);
 
+  const [localClue, setLocalClue] = useState("");
+  const [localGuess, setLocalGuess] = useState("");
+
   const board = room.gameBoard.gameType === "justone" ? room.gameBoard : null;
   if (!board) return null;
 
   const isInfiltrator = player._id === board.activePlayerId;
   const hasSubmittedClue = !!board.clues[player._id];
   const hasConfirmedValidation = board.confirmedPlayers?.includes(player._id);
-
-  const [localClue, setLocalClue] = useState("");
-  const [localGuess, setLocalGuess] = useState("");
 
   const handleClueSubmit = async () => {
     if (!localClue.trim()) return;

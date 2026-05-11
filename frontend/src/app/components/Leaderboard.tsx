@@ -52,7 +52,8 @@ export default function Leaderboard() {
                     {isFA
                       ? toPersianDigits(user.gamesPlayed)
                       : user.gamesPlayed}{" "}
-                    // WINS: {isFA ? toPersianDigits(user.wins) : user.wins}
+                    {" // WINS: "}
+                    {isFA ? toPersianDigits(user.wins) : user.wins}
                   </span>
                 </div>
               </div>

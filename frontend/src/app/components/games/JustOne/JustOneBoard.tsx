@@ -135,7 +135,7 @@ export default function JustOneBoard({ roomData }: BoardProps) {
                   <div className="space-y-4">
                      <span className="text-xs font-black text-orange-500 tracking-[0.4em] uppercase">DECRYPTION_AMBIGUITY_DETECTED</span>
                      <h2 className="text-6xl font-black italic tracking-tighter text-white uppercase">
-                        "{board.lastGuess}"
+                        &quot;{board.lastGuess}&quot;
                      </h2>
                   </div>
 
