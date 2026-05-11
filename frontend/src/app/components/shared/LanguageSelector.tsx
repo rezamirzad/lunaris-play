@@ -23,9 +23,6 @@ export default function LanguageSelector() {
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-[6px] font-black uppercase tracking-[0.5em] text-zinc-600 px-1">
-        LOCALIZATION_CORE
-      </span>
       <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/5 backdrop-blur-xl shadow-inner">
         {availableLanguages.map((lang) => (
           <motion.button
@@ -33,10 +30,10 @@ export default function LanguageSelector() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => handleLanguageChange(lang)}
-            className={`px-3 py-1.5 text-[9px] font-mono font-black uppercase tracking-tighter transition-all duration-300 rounded-lg relative overflow-hidden ${
+            className={`px-3 py-1.5 text-[11px] font-mono font-black uppercase tracking-tighter transition-all duration-300 rounded-lg relative overflow-hidden ${
               currentLang === lang
                 ? "bg-teal-500 text-black shadow-[0_0_15px_rgba(45,212,191,0.4)]"
-                : "text-zinc-500 hover:text-white hover:bg-white/5"
+                : "text-zinc-100 hover:text-white hover:bg-white/5"
             }`}
           >
             {lang}

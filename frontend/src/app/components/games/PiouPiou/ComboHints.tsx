@@ -7,6 +7,8 @@ import { translations, Language } from "@/lib/translations";
  * Logic: Validates hand state against game rules in real-time.
  * Adheres to LUMZ LTR standards for all localizations.
  */
+import { Doc } from "convex/_generated/dataModel";
+
 export default function ComboHints({
   hand,
   eggs,
@@ -16,7 +18,7 @@ export default function ComboHints({
   hand: string[];
   eggs: number;
   lang: Language;
-  otherPlayers: any[];
+  otherPlayers: Doc<"players">[];
 }) {
   // Pulling the translation set based on the active session language
   const t = translations[lang] || translations.en;
@@ -30,7 +32,7 @@ export default function ComboHints({
 
   const canLay = hasRooster && hasChicken && hasNest;
   const canHatch = chickenCount >= 2 && eggs > 0;
-  const someoneHasEggs = otherPlayers.some((p) => (p.state?.eggs || 0) > 0);
+  const someoneHasEggs = otherPlayers.some((p) => (p.state.gameType === "pioupiou" ? p.state.eggs || 0 : 0) > 0);
   const canSteal = hasFox && someoneHasEggs;
 
   const moves = [

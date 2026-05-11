@@ -1,6 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { getGamePlugin } from "./games/registry";
+import { getGamePlugin } from "./registry";
 
 /**
  * Standard Fisher-Yates Shuffle
@@ -146,6 +146,38 @@ export const seedGames = mutation({
       suggestedMax: 6,
       absoluteMax: 12,
     });
+
+    await ctx.db.insert("games", {
+      slug: "themind",
+      title: "Neural Sync",
+      title_fr: "Neural Sync",
+      title_de: "Neural Sync",
+      title_fa: "همگام‌سازی عصبی",
+      description: "A cooperative game of shared timing and intuition.",
+      description_fr: "Un jeu coopératif de timing et d'intuition partagés.",
+      description_de: "Ein kooperatives Spiel mit shared timing und Intuition.",
+      description_fa: "یک بازی همکارانه از زمان‌بندی و شهود مشترک.",
+      thumbnail: "/assets/games/themind/box_scan.png",
+      minPlayers: 2,
+      suggestedMax: 4,
+      absoluteMax: 8,
+    });
+
+    await ctx.db.insert("games", {
+      slug: "justone",
+      title: "Just One",
+      title_fr: "Just One",
+      title_de: "Just One",
+      title_fa: "فقط یکی",
+      description: "A collaborative word association game.",
+      description_fr: "Un jeu d'association de mots collaboratif.",
+      description_de: "Ein kooperatives Wortassoziationsspiel.",
+      description_fa: "یک بازی همکارانه تداعی کلمات.",
+      thumbnail: "/assets/games/justone/box_scan.png",
+      minPlayers: 3,
+      suggestedMax: 7,
+      absoluteMax: 10,
+    });
   },
 });
 
@@ -275,5 +307,49 @@ export const toggleReady = mutation({
     const player = await ctx.db.get(args.playerId);
     if (!player) return;
     await ctx.db.patch(player._id, { isReady: !player.isReady });
+  },
+});
+
+export const updatePlayerName = mutation({
+  args: { playerId: v.id("players"), newName: v.string() },
+  handler: async (ctx, args) => {
+    const player = await ctx.db.get(args.playerId);
+    if (!player) throw new Error("Player not found");
+    await ctx.db.patch(player._id, { name: args.newName });
+  },
+});
+
+export const getSecurityLogs = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db
+      .query("security_logs")
+      .withIndex("by_timestamp")
+      .order("desc")
+      .take(50);
+  },
+});
+
+export const verifyAdminPin = mutation({
+  args: { pin: v.string() },
+  handler: async (ctx, args) => {
+    const ADMIN_PIN = "0000";
+    const isAuthorized = args.pin === ADMIN_PIN;
+
+    if (!isAuthorized) {
+      await ctx.db.insert("security_logs", {
+        event: "UNAUTHORIZED_ADMIN_ACCESS_ATTEMPT",
+        timestamp: Date.now(),
+        details: { attemptedPin: args.pin },
+      });
+    } else {
+      await ctx.db.insert("security_logs", {
+        event: "ADMIN_ACCESS_GRANTED",
+        timestamp: Date.now(),
+        details: {},
+      });
+    }
+
+    return isAuthorized;
   },
 });

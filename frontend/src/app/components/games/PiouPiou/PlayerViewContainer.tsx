@@ -11,8 +11,9 @@ import PiouPiouHandGrid from "./PiouPiouHandGrid";
 import PiouPiouMatchActivity from "./MatchActivity";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toPersianDigits } from "@/lib/translations";
-import { PlayerProps } from "../registry";
+import { PlayerProps, GAME_REGISTRY } from "../registry";
 import { motion, AnimatePresence } from "framer-motion";
+import { Doc } from "convex/_generated/dataModel";
 
 export default function PiouPiouPlayerView({ player, roomData }: PlayerProps) {
   const { t, lang } = useTranslation();
@@ -21,7 +22,7 @@ export default function PiouPiouPlayerView({ player, roomData }: PlayerProps) {
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
   const [targetId, setTargetId] = useState<string | null>(null);
 
-  const playAction = useMutation(api.games.pioupiou.handleAction);
+  const playAction = useMutation(api.pioupiou.handleAction);
 
   // Narrowing union: roomData.gameBoard
   const board =
@@ -64,7 +65,7 @@ export default function PiouPiouPlayerView({ player, roomData }: PlayerProps) {
 
   const protocol = useMemo(() => {
     const keys = selectedCards.map((k) => k.split("-")[0].toLowerCase());
-    const counts = keys.reduce((acc: any, key: string) => {
+    const counts = keys.reduce((acc: Record<string, number>, key: string) => {
       acc[key] = (acc[key] || 0) + 1;
       return acc;
     }, {});
@@ -96,7 +97,7 @@ export default function PiouPiouPlayerView({ player, roomData }: PlayerProps) {
         indices,
         cards,
         actionType,
-        targetPlayerId: isAttackInitiation ? (targetId as any) : undefined,
+        targetPlayerId: isAttackInitiation ? (targetId as Doc<"players">["_id"]) : undefined,
       });
 
       setSelectedCards([]);
@@ -251,7 +252,7 @@ export default function PiouPiouPlayerView({ player, roomData }: PlayerProps) {
               className="bg-zinc-900/80 backdrop-blur-xl border border-white/5 p-6 rounded-[2.5rem] shadow-2xl relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 p-4 opacity-10 text-4xl">
-                🐣
+                {GAME_REGISTRY.pioupiou.visuals.emoji}
               </div>
               <div className="flex items-center gap-3">
                 <div
@@ -280,7 +281,7 @@ export default function PiouPiouPlayerView({ player, roomData }: PlayerProps) {
               <ComboHints
                 hand={player.gameHand || []}
                 eggs={playerState?.eggs || 0}
-                otherPlayers={otherPlayers as any}
+                otherPlayers={otherPlayers}
                 lang={lang}
               />
             </motion.div>

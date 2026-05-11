@@ -1,6 +1,7 @@
 import "./globals.css";
 import ConvexClientProvider from "./ConvexClientProvider";
 import { UserProvider } from "./UserProvider";
+import { ThemeProvider } from "./components/ThemeProvider";
 
 export default function RootLayout({
   children,
@@ -8,13 +9,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="bg-black">
-        <ConvexClientProvider>
-          <UserProvider>
-            {children}
-          </UserProvider>
-        </ConvexClientProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ConvexClientProvider>
+            <UserProvider>
+              {children}
+            </UserProvider>
+          </ConvexClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

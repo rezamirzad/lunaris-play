@@ -28,15 +28,15 @@ export default function VotingReveal({ roomData }: VotingRevealProps) {
   return (
     <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-6 pt-4">
       <AnimatePresence mode="popLayout">
-        {displayCards.map((submission: any, index: number) => {
+        {displayCards.map((submission: { cardId: string; playerId: Doc<"players">["_id"] }, index: number) => {
           const isRevealed = board.phase === "VOTING" || isResults;
-          const cardVotes = votes.filter((v: any) => v.cardId === submission.cardId);
-          const owner = roomData.players.find((p: any) => p._id === submission.playerId);
+          const cardVotes = votes.filter((v) => v.cardId === submission.cardId);
+          const owner = roomData.players.find((p) => p._id === submission.playerId);
           const isSTCard = submission.playerId === storytellerId;
           
           // Get voter data for the cinematic tokens
-          const voterPlayers = cardVotes.map((v: any) => 
-            roomData.players.find((p: any) => p._id === v.voterId)
+          const voterPlayers = cardVotes.map((v) => 
+            roomData.players.find((p) => p._id === v.voterId)
           ).filter(Boolean) as Doc<"players">[];
 
           return (

@@ -1,0 +1,7 @@
+{
+  "emoji": "🖼️",
+  "assets": {
+    "cardBack": "/assets/games/dixit/card_back.png",
+    "cardsPath": "/assets/games/dixit/cards/"
+  }
+}

@@ -28,12 +28,12 @@ export const getScaledDeck = (playerCount: number) => {
   // For 6+, we increase the deck size by 20% per extra player.
   const multiplier = playerCount <= 5 ? 1 : 1 + (playerCount - 5) * 0.2;
 
-  return Object.entries(PIOU_PIOU_DECK_SPEC).reduce((acc, [key, config]) => {
+  return Object.entries(PIOU_PIOU_DECK_SPEC).reduce((acc: Record<string, { baseCount: number; img: string; type: string; count: number }>, [key, config]) => {
     acc[key] = {
       ...config,
       // Math.ceil ensures we always have enough cards
       count: Math.ceil(config.baseCount * multiplier),
     };
     return acc;
-  }, {} as any);
+  }, {});
 };

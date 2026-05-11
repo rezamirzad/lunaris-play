@@ -22,7 +22,7 @@ export default function DixitHand({
   const [clue, setClue] = useState("");
 
   const t = translations[initialLang];
-  const submitAction = useMutation(api.games.dixit.handleAction);
+  const submitAction = useMutation(api.dixit.handleAction);
   const isFA = initialLang === "fa";
 
   const board = room.gameBoard.gameType === "dixit" ? room.gameBoard : null;
@@ -241,7 +241,7 @@ export default function DixitHand({
               value={clue}
               onChange={(e) => setClue(e.target.value)}
               placeholder={t.dixit_clue_placeholder}
-              className="w-full p-6 bg-black/60 border-2 border-zinc-800 rounded-2xl text-white font-black outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-center uppercase tracking-widest shadow-inner placeholder:opacity-20"
+              className="w-full p-6 bg-black/60 border-2 border-zinc-800 rounded-2xl text-white font-black outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-center uppercase tracking-widest shadow-inner placeholder:opacity-20 text-base"
             />
           </motion.div>
         )}
@@ -249,7 +249,7 @@ export default function DixitHand({
 
       {/* CARD GRID */}
       <div className="flex-1 grid grid-cols-3 gap-4 overflow-y-auto no-scrollbar pb-32" dir="ltr">
-        {displayCards.map((item: any, i: number) => {
+        {displayCards.map((item: string | { playerId: Doc<"players">["_id"]; cardId: string }, i: number) => {
           const cardId = typeof item === "string" ? item : item.cardId;
           const ownerName =
             typeof item === "object"
@@ -312,7 +312,7 @@ export default function DixitHand({
                   (board?.phase === "CLUE" && !clue) ||
                   isWaitingPhase
             }
-            className="w-full py-6 bg-white text-black rounded-[2rem] font-black uppercase text-lg tracking-[0.2em] disabled:opacity-10 transition-all shadow-2xl relative overflow-hidden group"
+            className="w-full py-6 bg-white text-black rounded-[2rem] font-black uppercase text-lg tracking-[0.2em] disabled:opacity-10 transition-all shadow-2xl relative overflow-hidden group touch-manipulation select-none"
           >
             <div className="absolute inset-0 bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
             <span className="relative z-10 group-hover:text-white transition-colors">

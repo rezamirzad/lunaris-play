@@ -2,10 +2,12 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import { GAME_REGISTRY } from "../games/registry";
 
 interface MatchBootupSequenceProps {
   onComplete: () => void;
   gameTitle: string;
+  gameSlug: string;
 }
 
 /**
@@ -15,17 +17,18 @@ interface MatchBootupSequenceProps {
 export default function MatchBootupSequence({
   onComplete,
   gameTitle,
+  gameSlug,
 }: MatchBootupSequenceProps) {
   const [progress, setProgress] = useState(0);
   const [logIndex, setLogIndex] = useState(0);
 
   const bootLogs = [
-    "INITIALIZING_NEURAL_LINK...",
-    "CALIBRATING_VISUAL_MATRIX...",
-    "SYNCHRONIZING_PLAYER_NODES...",
-    "LOADING_GAME_PROTOCOL: " + gameTitle.toUpperCase(),
-    "ESTABLISHING_SECURE_UPLINK...",
-    "BOOT_SEQUENCE_COMPLETE",
+    "INITIALIZING...",
+    "CALIBRATING...",
+    "SYNCHRONIZING PLAYERS...",
+    "LOADING GAME: " + gameTitle.toUpperCase(),
+    "ESTABLISHING SECURE UPLINK...",
+    "BOOT SEQUENCECOMPLETE",
   ];
 
   useEffect(() => {
@@ -41,7 +44,7 @@ export default function MatchBootupSequence({
 
     const logTimer = setInterval(() => {
       setLogIndex((prev) => (prev < bootLogs.length - 1 ? prev + 1 : prev));
-    }, 500);
+    }, 1000);
 
     const finishTimer = setTimeout(() => {
       onComplete();
@@ -101,29 +104,29 @@ export default function MatchBootupSequence({
 
         {/* ⚛️ CORE ANIMATION */}
         <div className="flex justify-center py-8">
-           <motion.div 
-            animate={{ 
+          <motion.div
+            animate={{
               rotate: 360,
               scale: [1, 1.1, 1],
             }}
-            transition={{ 
+            transition={{
               rotate: { duration: 10, repeat: Infinity, ease: "linear" },
-              scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+              scale: { duration: 2, repeat: Infinity, ease: "easeInOut" },
             }}
             className="w-32 h-32 border-4 border-dashed border-teal-500/20 rounded-full flex items-center justify-center relative"
-           >
-              <div className="w-24 h-24 border-2 border-blue-500/10 rounded-full animate-ping" />
-              <div className="absolute inset-0 bg-teal-400/5 blur-3xl rounded-full" />
-              <span className="text-4xl filter drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
-                 {gameTitle.toLowerCase() === "pioupiou" ? "🐣" : gameTitle.toLowerCase() === "dixit" ? "🖼️" : "🍣"}
-              </span>
-           </motion.div>
+          >
+            <div className="w-24 h-24 border-2 border-blue-500/10 rounded-full animate-ping" />
+            <div className="absolute inset-0 bg-teal-400/5 blur-3xl rounded-full" />
+            <span className="text-4xl filter drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
+              {GAME_REGISTRY[gameSlug.toLowerCase()]?.visuals.emoji}
+            </span>
+          </motion.div>
         </div>
 
         <div className="text-center pt-8 border-t border-white/5">
-           <p className="text-[7px] text-zinc-700 font-bold uppercase tracking-[0.5em]">
-              LUNARIS_CORE // KERNEL_HANDSHAKE_READY
-           </p>
+          <p className="text-[7px] text-zinc-700 font-bold uppercase tracking-[0.5em]">
+            LUNARIS_CORE // KERNEL_HANDSHAKE_READY
+          </p>
         </div>
       </div>
     </motion.div>

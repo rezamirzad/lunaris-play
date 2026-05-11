@@ -18,13 +18,13 @@ export default function Leaderboard() {
   if (!leaderboard || leaderboard.length === 0) return null;
 
   return (
-    <motion.section 
+    <motion.section
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
       <h2 className="text-[10px] font-black tracking-widest text-zinc-600 uppercase px-4 flex justify-between items-center">
-        <span>TOP_RANKED_NODES</span>
+        <span>{t.hallOfFame}</span>
         <span className="text-teal-400/50">HALL_OF_FAME</span>
       </h2>
 
@@ -40,7 +40,7 @@ export default function Leaderboard() {
             >
               <div className="flex items-center gap-4">
                 <div className="w-6 text-[10px] font-black text-zinc-700 group-hover:text-teal-400 transition-colors">
-                   {isFA ? toPersianDigits(index + 1) : index + 1}
+                  {isFA ? toPersianDigits(index + 1) : index + 1}
                 </div>
                 <NodeGlyph name={user.name} size="sm" />
                 <div className="flex flex-col">
@@ -48,7 +48,11 @@ export default function Leaderboard() {
                     {user.name}
                   </span>
                   <span className="text-[7px] text-zinc-600 font-bold uppercase tracking-widest">
-                    GAMES: {isFA ? toPersianDigits(user.gamesPlayed) : user.gamesPlayed} // WINS: {isFA ? toPersianDigits(user.wins) : user.wins}
+                    GAMES:{" "}
+                    {isFA
+                      ? toPersianDigits(user.gamesPlayed)
+                      : user.gamesPlayed}{" "}
+                    // WINS: {isFA ? toPersianDigits(user.wins) : user.wins}
                   </span>
                 </div>
               </div>
@@ -64,11 +68,11 @@ export default function Leaderboard() {
             </motion.div>
           ))}
         </div>
-        
+
         <div className="p-4 bg-zinc-950/50 border-t border-white/5 text-center">
-           <p className="text-[7px] font-black text-zinc-700 uppercase tracking-[0.4em]">
-             GLOBAL_LEADERBOARD_v1.0 // PERSISTENT_STORAGE_ACTIVE
-           </p>
+          <p className="text-[7px] font-black text-zinc-700 uppercase tracking-[0.4em]">
+            GLOBAL_LEADERBOARD_v1.0 // PERSISTENT_STORAGE_ACTIVE
+          </p>
         </div>
       </div>
     </motion.section>

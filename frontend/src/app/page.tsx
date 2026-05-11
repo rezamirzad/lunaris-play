@@ -8,7 +8,8 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
 import { useUser } from "./UserProvider";
 import OngoingRooms from "./components/OngoingRooms";
-import Leaderboard from "./components/Leaderboard";
+import LeaderboardTicker from "./components/LeaderboardTicker";
+import Navbar from "./components/shared/Navbar";
 import { motion, Variants } from "framer-motion";
 
 const titleVariants: Variants = {
@@ -50,7 +51,6 @@ function HomeContent() {
   }, [playerName]);
 
   const t = translations[lang];
-  const isRTL = lang === "fa";
 
   const updateLang = (newLang: Language) => {
     setLang(newLang);
@@ -97,15 +97,17 @@ function HomeContent() {
 
   return (
     <main
-      className={`min-h-screen bg-[#020203] text-white p-4 sm:p-8 md:p-12 transition-all duration-500 relative overflow-hidden `}
-      //dir={isRTL ? "rtl" : "ltr"}
+      className={`min-h-[100dvh] bg-app text-content-base p-4 sm:p-8 md:p-12 transition-all duration-500 relative overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]`}
     >
+      <div className="pt-10 sm:pt-14">
+        <Navbar />
+      </div>
       {/* Cinematic Background FX */}
       <div className="neuro-grid" />
       <div className="scanline" />
-      <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(45,212,191,0.05),transparent)] pointer-events-none" />
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_20%,var(--accent-glow),transparent)] pointer-events-none" />
 
-      <header className="max-w-6xl mx-auto w-full flex flex-col items-center gap-8 mb-20 relative z-10">
+      <header className="max-w-6xl mx-auto w-full flex flex-col items-center gap-8 mb-20 relative z-10 pt-12">
         <motion.div
           initial="hidden"
           animate="visible"
@@ -113,19 +115,23 @@ function HomeContent() {
           className="text-center space-y-4"
         >
           <div className="flex flex-col items-center">
-            <span className="text-[10px] tracking-[0.6em] text-zinc-500 mb-2 opacity-50">
-              SYSTEM_AUTH: ACTIVE
-            </span>
-            <h1 className="text-7xl sm:text-9xl font-black italic tracking-tighter text-white leading-none uppercase logo-glow">
+            <div className="flex items-center justify-center gap-4">
+              <div className="h-[1px] w-12 bg-brand-accent/20" />
+              <p className="text-brand-accent font-bold tracking-[0.5em] text-[10px] uppercase">
+                Made by Lunaris Tech Group
+              </p>
+              <div className="h-[1px] w-12 bg-brand-accent/20" />
+            </div>
+            <h1 className="text-7xl sm:text-9xl font-black italic tracking-tighter text-content-strong leading-none uppercase logo-glow transition-all duration-300">
               LUNARIS
             </h1>
           </div>
           <div className="flex items-center justify-center gap-4">
-            <div className="h-[1px] w-12 bg-teal-400/20" />
-            <p className="text-teal-400 font-bold tracking-[0.5em] text-[10px] uppercase">
+            <div className="h-[1px] w-12 bg-brand-accent/20" />
+            <p className="text-brand-accent font-bold tracking-[0.5em] text-[10px] uppercase">
               {t.subtitle}
             </p>
-            <div className="h-[1px] w-12 bg-teal-400/20" />
+            <div className="h-[1px] w-12 bg-brand-accent/20" />
           </div>
         </motion.div>
 
@@ -145,16 +151,20 @@ function HomeContent() {
             </button>
           ))}
         </motion.div>
+
+        {/* Repositioned Hall of Fame Ticker */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="w-full"
+        >
+          <LeaderboardTicker />
+        </motion.div>
       </header>
 
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 relative z-10">
         <div className="lg:col-span-4 space-y-10">
-          <div className="flex items-end border-b border-zinc-900 pb-4 h-[25px]">
-            <h2 className="text-[10px] font-black tracking-[0.5em] text-zinc-600 uppercase">
-              COMMAND_INTERFACE
-            </h2>
-          </div>
-
           <motion.section
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
@@ -166,8 +176,8 @@ function HomeContent() {
             }}
             className="glass-card p-8 shadow-2xl space-y-8"
           >
-            <h2 className="text-[10px] font-black tracking-widest text-zinc-500 uppercase flex items-center gap-2">
-              <div className="h-1.5 w-1.5 bg-teal-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(45,212,191,0.6)]" />
+            <h2 className="text-[10px] font-black tracking-widest text-zinc-100 uppercase flex items-center gap-2">
+              <div className="h-1.5 w-1.5 bg-brand-accent rounded-full animate-pulse shadow-[0_0_8px_var(--accent-glow)]" />
               {t.enterLobby}
             </h2>
             <div className="space-y-4">
@@ -176,32 +186,26 @@ function HomeContent() {
                 placeholder={t.namePlaceholder}
                 value={nameInput}
                 onChange={(e) => setNameInput(e.target.value)}
-                className="w-full bg-black/80 border-2 border-zinc-800 rounded-2xl px-6 py-4 text-xl font-bold focus:border-teal-400 focus:ring-2 focus:ring-teal-400/20 outline-none transition-all placeholder:text-zinc-800 text-white shadow-inner"
+                className="w-full bg-black/40 border border-border-subtle rounded-2xl px-6 py-4 text-xl font-bold focus:border-brand-accent outline-none transition-all placeholder:text-zinc-800 text-content-strong shadow-inner text-base"
               />
               <input
                 type="text"
                 placeholder={t.roomPlaceholder}
                 value={roomCode}
                 onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-                className="w-full bg-black/80 border-2 border-zinc-800 rounded-2xl px-6 py-4 text-xl font-bold focus:border-teal-400 focus:ring-2 focus:ring-teal-400/20 outline-none transition-all text-center tracking-[0.2em] text-white shadow-inner"
+                className="w-full bg-black/40 border border-border-subtle rounded-2xl px-6 py-4 text-xl font-bold focus:border-brand-accent outline-none transition-all text-center tracking-[0.2em] text-content-strong shadow-inner text-base"
               />
               <motion.button
                 whileHover={{
                   scale: 1.02,
-                  boxShadow: "0 0 30px rgba(45,212,191,0.3)",
+                  boxShadow: "0 0 30px var(--accent-glow)",
                 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleJoin}
-                className="w-full bg-white hover:bg-teal-400 text-black font-black py-5 rounded-2xl text-xl uppercase tracking-widest transition-all shadow-[0_15px_30px_rgba(0,0,0,0.4)]"
+                className="w-full bg-white hover:bg-brand-accent text-black font-black py-5 rounded-2xl text-xl uppercase tracking-widest transition-all shadow-[0_15px_30px_rgba(0,0,0,0.4)] touch-manipulation select-none"
               >
                 {t.enterLobby}
               </motion.button>
-            </div>
-            <div className="pt-4 flex justify-between items-center opacity-30">
-              <span className="text-[8px] font-bold">NODE_STABILITY: 100%</span>
-              <span className="text-[8px] font-bold text-teal-400">
-                ENCRYPTED
-              </span>
             </div>
           </motion.section>
 
@@ -214,11 +218,11 @@ function HomeContent() {
               stiffness: 260,
               damping: 20,
             }}
-            className="space-y-6"
+            className="space-y-4"
           >
             <h2 className="text-[10px] font-black tracking-widest text-zinc-600 uppercase px-4 flex justify-between items-center">
               <span>{t.ongoingGames}</span>
-              <span className="text-teal-400/50 tabular-nums">
+              <span className="text-brand-accent/50 tabular-nums">
                 00{ongoingRooms?.length || 0}
               </span>
             </h2>
@@ -229,8 +233,6 @@ function HomeContent() {
               t={t}
             />
           </motion.section>
-
-          <Leaderboard />
         </div>
 
         <motion.div
@@ -242,20 +244,20 @@ function HomeContent() {
             stiffness: 260,
             damping: 20,
           }}
-          className="lg:col-span-8 space-y-6"
+          className="lg:col-span-8 flex flex-col space-y-6"
         >
-          <div className="flex justify-between items-end border-b border-zinc-900 pb-4 h-[25px]">
+          <div className="flex justify-between items-end border-b border-border-subtle pb-4 h-[25px]">
             <h2 className="text-[10px] font-black tracking-[0.5em] text-zinc-600 uppercase">
               {t.arcade}
             </h2>
           </div>
-          <GameCatalog onHost={handleHost} />
+          <GameCatalog mode="standard" onHost={handleHost} />
         </motion.div>
       </div>
 
-      <footer className="max-w-6xl mx-auto w-full mt-32 pb-12 text-center opacity-20 relative z-10">
-        <p className="text-[10px] font-bold tracking-[0.4em] text-zinc-500 uppercase">
-          LUNARIS_CORE v2.0.0 // DESIGN_BY_AURA
+      <footer className="max-w-6xl mx-auto w-full mt-32 pb-12 text-center opacity-60 relative z-10">
+        <p className="text-[10px] font-black tracking-[0.6em] text-teal-400/80 uppercase">
+          Lunaris Tech Group &copy; 2026
         </p>
       </footer>
     </main>
@@ -264,7 +266,7 @@ function HomeContent() {
 
 export default function Home() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#020203]" />}>
+    <Suspense fallback={<div className="min-h-[100dvh] bg-app" />}>
       <HomeContent />
     </Suspense>
   );

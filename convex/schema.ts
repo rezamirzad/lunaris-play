@@ -75,6 +75,55 @@ export default defineSchema({
         history: v.array(HistoryEvent),
         winner: v.optional(v.string()),
         winnerId: v.optional(v.id("players")),
+      }),
+      // Neural Sync (The Mind) state
+      v.object({
+        gameType: v.literal("themind"),
+        level: v.number(),
+        lives: v.number(),
+        emps: v.number(),
+        topCard: v.union(v.number(), v.null()),
+        lastPlayedBy: v.optional(v.id("players")),
+        deck: v.array(v.number()),
+        discardPile: v.array(v.number()),
+        hands: v.record(v.string(), v.array(v.number())),
+        empVotes: v.array(v.id("players")),
+        phase: v.union(v.literal("SYNCING"), v.literal("PLAYING"), v.literal("GAME_OVER"), v.literal("VICTORY")),
+        history: v.array(HistoryEvent),
+        winner: v.optional(v.string()),
+        winnerId: v.optional(v.id("players")),
+      }),
+      // Just One state
+      v.object({
+        gameType: v.literal("justone"),
+        language: v.union(v.literal("en"), v.literal("fr"), v.literal("de"), v.literal("fa")),
+        round: v.number(),
+        score: v.number(),
+        activePlayerId: v.id("players"),
+        mysteryWord: v.object({
+          en: v.string(),
+          fr: v.string(),
+          de: v.string(),
+          fa: v.string(),
+        }),
+        usedWords: v.array(v.string()),
+        clues: v.record(v.string(), v.string()),
+        canceledClues: v.array(v.id("players")),
+        confirmedPlayers: v.array(v.id("players")),
+        lastGuess: v.optional(v.string()),
+        lenientVotes: v.record(v.string(), v.boolean()),
+        phase: v.union(
+          v.literal("LOBBY"),
+          v.literal("CLUE_INPUT"),
+          v.literal("VALIDATION"),
+          v.literal("GUESSING"),
+          v.literal("LENIENT_VALIDATION"),
+          v.literal("ROUND_RESULTS"),
+          v.literal("GAME_OVER")
+        ),
+        history: v.array(HistoryEvent),
+        winner: v.optional(v.string()),
+        winnerId: v.optional(v.id("players")),
       })
     ),
   }).index("by_roomCode", ["roomCode"]),
@@ -94,6 +143,14 @@ export default defineSchema({
         gameType: v.literal("pioupiou"),
         eggs: v.number(),
         chicks: v.number(),
+      }),
+      v.object({
+        gameType: v.literal("themind"),
+        score: v.number(),
+      }),
+      v.object({
+        gameType: v.literal("justone"),
+        score: v.number(),
       })
     ),
   }).index("by_room", ["roomId"]),
@@ -106,4 +163,10 @@ export default defineSchema({
     lastLogin: v.number(),
   }).index("by_name", ["name"])
     .index("by_totalScore", ["totalScore"]),
+
+  security_logs: defineTable({
+    event: v.string(),
+    timestamp: v.number(),
+    details: v.any(),
+  }).index("by_timestamp", ["timestamp"]),
 });

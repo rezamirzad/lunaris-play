@@ -6,7 +6,7 @@ import PlayerController from "../../shared/PlayerController";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toPersianDigits, formatLog } from "@/lib/translations";
 import MatchActivity from "./MatchActivity";
-import { PlayerProps } from "../registry";
+import { PlayerProps, GAME_REGISTRY } from "../registry";
 import { motion, AnimatePresence } from "framer-motion";
 import DixitHand from "./DixitHand";
 import { calculateRank, getOrdinal } from "@/lib/utils";
@@ -19,7 +19,7 @@ export default function DixitPlayerView({
   const { t, lang } = useTranslation();
   const isFA = lang === "fa";
 
-  const dixitAction = useMutation(api.games.dixit.handleAction);
+  const dixitAction = useMutation(api.dixit.handleAction);
 
   // Narrowing union: roomData.gameBoard
   const board =
@@ -69,7 +69,7 @@ export default function DixitPlayerView({
               className={`backdrop-blur-xl border border-white/5 p-6 rounded-[2.5rem] shadow-2xl relative overflow-hidden ${isLeader ? "bg-yellow-500/10" : "bg-zinc-900/80"}`}
             >
               <div className="absolute top-0 right-0 p-4 opacity-60 text-4xl">
-                {isLeader ? "👑" : "🖼️"}
+                {isLeader ? "👑" : GAME_REGISTRY.dixit.visuals.emoji}
               </div>
               <div className="flex items-center gap-3">
                 <div

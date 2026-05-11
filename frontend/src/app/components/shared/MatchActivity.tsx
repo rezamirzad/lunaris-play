@@ -23,7 +23,7 @@ export default function MatchActivity({
   renderLog,
 }: MatchActivityProps) {
   const { t } = useTranslation();
-  const displayLogs = useMemo(() => history.slice(0, 8), [history]);
+  const displayLogs = useMemo(() => (history || []).slice(0, 8), [history]);
 
   return (
     <section className="w-full rounded-[2.5rem] border border-white/5 bg-black/40 backdrop-blur-3xl p-8 shadow-2xl font-mono overflow-hidden flex flex-col relative">

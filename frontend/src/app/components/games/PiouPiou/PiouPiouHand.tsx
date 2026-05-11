@@ -2,18 +2,20 @@
 
 import { useState, useMemo } from "react";
 import { useMutation } from "convex/react";
-import { api } from "../../../../../convex/_generated/api";
+import { api } from "convex/_generated/api";
 import Card from "./PiouPiouCard";
 import ComboHints from "./ComboHints";
 import { translations, Language } from "@/lib/translations";
+
+import { Doc } from "convex/_generated/dataModel";
 
 export default function PiouPiouHand({
   room,
   player,
   initialLang,
 }: {
-  room: any;
-  player: any;
+  room: Doc<"rooms"> & { players: Doc<"players">[] };
+  player: Doc<"players">;
   initialLang: Language;
 }) {
   // Lang remains static within the session based on initialLang
@@ -22,7 +24,7 @@ export default function PiouPiouHand({
   const [targetId, setTargetId] = useState<string | null>(null);
 
   const t = translations[lang] || translations.en; // Localized translation set[cite: 2]
-  const playAction = useMutation((api as any).games.pioupiou.handleAction);
+  const playAction = useMutation(api.pioupiou.handleAction);
 
   // --- 1. CORE TURN LOGIC ---
   const isMyTurn = useMemo(() => {
@@ -44,7 +46,7 @@ export default function PiouPiouHand({
         playerId: player._id,
         indices: indices,
         cards: indices.map((i: number) => player.gameHand[i]),
-        targetPlayerId: targetId || undefined,
+        targetPlayerId: (targetId as Doc<"players">["_id"]) || undefined,
         actionType: type,
       });
       setSelectedIndices([]);
@@ -69,10 +71,10 @@ export default function PiouPiouHand({
       <div className="p-6 flex-1 overflow-y-auto">
         <ComboHints
           hand={player.gameHand || []}
-          eggs={player.state?.eggs || 0}
+          eggs={player.state.gameType === "pioupiou" ? player.state.eggs || 0 : 0}
           lang={lang}
           otherPlayers={room.players.filter(
-            (p: any) => String(p._id) !== String(player._id),
+            (p) => String(p._id) !== String(player._id),
           )}
         />
         <div className="grid grid-cols-2 gap-4 py-8">
@@ -100,7 +102,7 @@ export default function PiouPiouHand({
         <button
           disabled={!isMyTurn || selectedIndices.length === 0}
           onClick={() => handleAction("PLAY")}
-          className={`w-full py-7 rounded-[2.5rem] text-3xl font-black uppercase transition-all active:scale-95 ${
+          className={`w-full py-7 rounded-[2.5rem] text-3xl font-black uppercase transition-all active:scale-95 touch-manipulation select-none ${
             isMyTurn
               ? "bg-white text-black shadow-xl"
               : "bg-zinc-900 text-zinc-700 opacity-40"

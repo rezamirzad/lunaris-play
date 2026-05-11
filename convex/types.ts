@@ -1,11 +1,11 @@
-import { Id } from "../_generated/dataModel";
+import { Id } from "./_generated/dataModel";
 import { GenericMutationCtx } from "convex/server";
-import { DataModel } from "../_generated/dataModel";
+import { DataModel } from "./_generated/dataModel";
 
 export type GameMutationCtx = GenericMutationCtx<DataModel>;
 
 export interface GamePlugin {
-  gameType: "dixit" | "pioupiou" | "sushinode";
+  gameType: "dixit" | "pioupiou" | "themind" | "justone";
   
   // Defines the initial state for the room's gameBoard when created in LOBBY
   getInitialBoard(): any;

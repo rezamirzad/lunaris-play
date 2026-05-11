@@ -84,6 +84,7 @@ export default function RoomPage() {
       return (
         <MatchBootupSequence 
           gameTitle={localizedGameTitle} 
+          gameSlug={room.currentGame}
           onComplete={() => setIsBooting(false)} 
         />
       );
@@ -103,7 +104,7 @@ export default function RoomPage() {
     }
 
     // 3. Playing Phase: Resolve via Registry
-    const gameSlug = room.currentGame.toLowerCase();
+    const gameSlug = room.currentGame.toLowerCase().replace(/\s+/g, "");
     const gameModule = GAME_REGISTRY[gameSlug];
 
     if (!gameModule) {

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useTranslation } from "@/hooks/useTranslation";
 import { motion } from "framer-motion";
+import { GAME_REGISTRY } from "../registry";
 
 interface PiouPiouCardProps {
   cardKey: string;
@@ -22,15 +23,9 @@ export default function PiouPiouCard({
 }: PiouPiouCardProps) {
   const { t } = useTranslation();
   const normalizedKey = cardKey.toLowerCase();
-
-  const assetMap: Record<string, string> = {
-    chicken: "/assets/games/pioupiou/cards/chicken.png",
-    rooster: "/assets/games/pioupiou/cards/rooster.png",
-    fox: "/assets/games/pioupiou/cards/fox.png",
-    nest: "/assets/games/pioupiou/cards/nest.png",
-  };
-
-  const imageSrc = assetMap[normalizedKey] || "/assets/games/pioupiou/cards/card-back.png";
+  const visuals = GAME_REGISTRY.pioupiou.visuals;
+  const imageSrc =
+    visuals.assets?.cards[normalizedKey] || visuals.assets?.cards.back;
 
   return (
     <motion.button

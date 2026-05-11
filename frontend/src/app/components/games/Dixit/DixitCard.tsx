@@ -3,6 +3,7 @@
 import { useTranslation } from "@/hooks/useTranslation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Doc } from "convex/_generated/dataModel";
+import { GAME_REGISTRY } from "../registry";
 
 interface DixitCardProps {
   cardId: string;
@@ -31,10 +32,11 @@ export default function DixitCard({
 }: DixitCardProps) {
   const { t } = useTranslation();
   const isBack = cardId === "BACK" || !isRevealed;
+  const visuals = GAME_REGISTRY.dixit.visuals;
 
   const imageSrc = isBack
-    ? "/assets/games/dixit/card_back.png"
-    : `/assets/games/dixit/cards/${cardId}.png`;
+    ? visuals.assets?.cardBack
+    : `${visuals.assets?.cardsPath}${cardId}.png`;
 
   return (
     <motion.div

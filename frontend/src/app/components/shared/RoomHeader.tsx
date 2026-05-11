@@ -44,7 +44,7 @@ export default function RoomHeader({
         return {
           color: "text-orange-500",
           glow: "shadow-[0_0_10px_rgba(245,158,11,0.5)]",
-          label: t.statusLobby || "INITIALIZING",
+          label: t.statusLobby,
           pulse: true,
         };
     }
@@ -81,11 +81,11 @@ export default function RoomHeader({
         <div className="flex items-center justify-between w-full border-t border-white/5 pt-4">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-zinc-500 font-bold tracking-[0.3em] text-[10px] uppercase">
-                {t.room}_ID:
+              <span className="font-bold tracking-[0.5em] text-[12px] uppercase">
+                {t.roomPlaceholder}:
               </span>
-              <span className="text-white font-black tracking-widest bg-zinc-900 px-3 py-1 rounded border border-zinc-800 text-[10px] lg:text-xs shadow-inner">
-                {isFA ? toPersianDigits(roomCode) : roomCode}
+              <span className="text-white font-black tracking-widest bg-zinc-900 px-3 py-1 rounded border border-zinc-800 text-[12px] lg:text-xs shadow-inner">
+                {roomCode}
               </span>
             </div>
 

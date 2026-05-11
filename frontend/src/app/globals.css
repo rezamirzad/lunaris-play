@@ -3,15 +3,43 @@
 @tailwind utilities;
 
 :root {
-  --color-brand-black: #020203;
-  --color-brand-accent: #2dd4bf;
+  /* Daybreak Tech (Light Mode) */
+  --bg-app: #f8fafc;
+  --bg-card: rgba(255, 255, 255, 0.8);
+  --text-strong: #0f172a;
+  --text-base: #475569;
+  --border-subtle: rgba(0, 0, 0, 0.05);
+  --brand-accent: #0d9488;
+  --accent-glow: rgba(13, 148, 136, 0.2);
+}
+
+.dark {
+  /* Midnight Tech (Dark Mode) */
+  --bg-app: #020203;
+  --bg-card: rgba(9, 9, 11, 0.4);
+  --text-strong: #ffffff;
+  --text-base: #a1a1aa;
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --brand-accent: #2dd4bf;
+  --accent-glow: rgba(45, 212, 191, 0.3);
 }
 
 @layer base {
   body {
-    @apply text-white antialiased;
-    background-color: var(--color-brand-black);
-    min-height: 100vh;
+    @apply antialiased transition-colors duration-300;
+    background-color: var(--bg-app);
+    color: var(--text-base);
+    min-height: 100dvh;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  input {
+    @apply text-base; /* Prevent iOS zoom */
+  }
+
+  button {
+    @apply touch-manipulation select-none;
   }
 }
 
@@ -19,15 +47,17 @@
   /* Global Background FX */
   .neuro-grid {
     @apply pointer-events-none fixed inset-0;
-    background-image: radial-gradient(circle at 1px 1px, rgba(45, 212, 191, 0.05) 1px, transparent 0);
+    background-image: radial-gradient(circle at 1px 1px, var(--brand-accent) 1px, transparent 0);
     background-size: 40px 40px;
     mask-image: linear-gradient(to bottom, black, transparent);
+    opacity: 0.05;
   }
 
   .scanline {
     @apply pointer-events-none fixed inset-0 w-full h-[2px] z-[100];
-    background: linear-gradient(to right, transparent, rgba(45, 212, 191, 0.1), transparent);
+    background: linear-gradient(to right, transparent, var(--accent-glow), transparent);
     animation: scanline 8s linear infinite;
+    opacity: 0.1;
   }
 
   @keyframes scanline {
@@ -37,15 +67,15 @@
 
   /* Header Overhaul */
   .logo-glow {
-    @apply text-white;
+    @apply text-white dark:text-white transition-all;
     text-shadow: 
       0 0 10px rgba(255, 255, 255, 0.5),
-      0 0 40px rgba(45, 212, 191, 0.3);
+      0 0 40px var(--accent-glow);
   }
 
   /* Game Tiles 2.0 */
   .game-tile-atmosphere {
-    box-shadow: inset 0 0 20px rgba(45, 212, 191, 0.05);
+    box-shadow: inset 0 0 20px var(--accent-glow);
   }
 
   .game-thumbnail-mask {
@@ -55,6 +85,33 @@
 
   /* Shared Components */
   .glass-card {
-    @apply bg-zinc-950/40 border border-white/5 backdrop-blur-3xl rounded-[2.5rem];
+    @apply bg-app-card border border-border-subtle backdrop-blur-3xl rounded-[2.5rem];
+  }
+
+  .logo-glow-red {
+    @apply text-white;
+    text-shadow: 
+      0 0 10px rgba(255, 0, 0, 0.5),
+      0 0 40px rgba(225, 29, 72, 0.8);
+  }
+
+  .animate-shake {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+  }
+
+  @keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+  }
+}
+
+@layer utilities {
+  .bg-app-card {
+    background-color: var(--bg-card);
+  }
+  .border-border-subtle {
+    border-color: var(--border-subtle);
   }
 }

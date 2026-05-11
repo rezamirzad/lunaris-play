@@ -1,4 +1,4 @@
-import { Doc, Id } from "../_generated/dataModel";
+import { Doc, Id } from "./_generated/dataModel";
 import { GameMutationCtx } from "./types";
 
 export interface TransitionParams {

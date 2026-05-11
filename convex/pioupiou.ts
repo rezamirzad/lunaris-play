@@ -1,6 +1,6 @@
 import { v } from "convex/values";
-import { mutation } from "../_generated/server";
-import { Doc } from "../_generated/dataModel";
+import { mutation } from "./_generated/server";
+import { Doc } from "./_generated/dataModel";
 import { GamePlugin, GameMutationCtx } from "./types";
 import { finishTurn } from "./transitions";
 

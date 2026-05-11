@@ -3,12 +3,19 @@ export type Language = "en" | "fr" | "de" | "fa";
 export interface TranslationSet {
   title: string;
   subtitle: string;
+  game: string;
+  wins: string;
+  rank: string;
+  board: string;
   namePlaceholder: string;
   roomPlaceholder: string;
   enterLobby: string;
+  lobbyInitiation: string;
+  matchInitiation: string;
   arcade: string;
   ongoingGames: string;
   howToPlay: string;
+  hallOfFame: string;
   step1: string;
   step2: string;
   step3: string;
@@ -49,6 +56,26 @@ export interface TranslationSet {
   dixit_desc: string;
   pioupiou_title: string;
   pioupiou_desc: string;
+  themind_title: string;
+  themind_desc: string;
+  themind_level: string;
+  themind_lives: string;
+  themind_emps: string;
+  themind_syncing: string;
+  themind_playing: string;
+  themind_victory: string;
+  themind_game_over: string;
+  justone_title: string;
+  justone_desc: string;
+  justone_mystery_word: string;
+  justone_clue_placeholder: string;
+  justone_guess_placeholder: string;
+  justone_standby: string;
+  justone_validation: string;
+  justone_confirm_data: string;
+  justone_pass: string;
+  justone_correct: string;
+  justone_wrong: string;
   sushinode_title: string;
   sushinode_desc: string;
   dixit_score: string;
@@ -91,6 +118,7 @@ export interface TranslationSet {
   lastEvents: string;
   noEvents: string;
   ready: string;
+  notReady: string;
   hand: string;
   room: string;
   statusLive: string;
@@ -99,17 +127,26 @@ export interface TranslationSet {
   invalidSession: string;
   authenticating: string;
   available: string;
+  connectedPlayers: string;
+  readyPlayers: string;
+  waitingForPlayers: string;
 }
 
 export const translations: Record<Language, TranslationSet> = {
   en: {
     title: "LUNARIS",
     subtitle: "ARCADE HUB",
+    game: "GAMES",
+    wins: "WINS",
+    rank: "RANK",
     namePlaceholder: "YOUR NAME",
     roomPlaceholder: "ROOM CODE",
     enterLobby: "JOIN ROOM",
     arcade: "AVAILABLE GAMES",
     ongoingGames: "ONGOING SESSIONS",
+    board: "TO BOARD",
+    lobbyInitiation: "Initializing lobby...",
+    matchInitiation: "Start match",
     howToPlay: "HOW TO PLAY",
     step1: "1. Open this page on your TV to HOST.",
     step2: "2. Scan the QR code on your PHONE.",
@@ -118,6 +155,7 @@ export const translations: Record<Language, TranslationSet> = {
     maxLabel: "MAX",
     players: "PLAYERS",
     capacity: "CAPACITY",
+    hallOfFame: "HALL OF FAME",
     footer: "Lunaris League v1.0.4",
     noOngoing: "No public games active.",
     host: "HOST",
@@ -148,11 +186,34 @@ export const translations: Record<Language, TranslationSet> = {
     storyteller: "STORYTELLER",
     dixit_round_summary: "ROUND SUMMARY",
     dixit_title: "Dixit",
-    dixit_desc: "A game of imagination and abstract art.",
-    pioupiou_title: "Piou Piou",
-    pioupiou_desc: "Protect the flock. Hatch eggs. Outsmart the fox",
+    dixit_desc: "Decode abstract visual data and deceive rival nodes.",
+    pioupiou_title: "PiouPiou",
+    pioupiou_desc:
+      "Defend your digital flock. Hatch eggs. Block the Fox algorithm.",
+    themind_title: "The Mind",
+    themind_desc:
+      "Synchronize frequencies in perfect ascending order. No communication allowed.",
+    themind_level: "LEVEL {level}",
+    themind_lives: "SYSTEM INTEGRITY",
+    themind_emps: "EMP OVERRIDES",
+    themind_syncing: "SYNCING...",
+    themind_playing: "UPLINK ACTIVE",
+    themind_victory: "SYNC COMPLETE",
+    themind_game_over: "SYSTEM FAILURE",
+    justone_title: "Just One",
+    justone_desc:
+      "Transmit unique decryption clues. Duplicate keys are purged by the firewall.",
+    justone_mystery_word: "MYSTERY WORD",
+    justone_clue_placeholder: "Enter single-word clue...",
+    justone_guess_placeholder: "Enter final guess...",
+    justone_standby: "Standby: Hackers encrypting data...",
+    justone_validation: "VALIDATE DATA PACKETS",
+    justone_confirm_data: "justone_validation",
+    justone_pass: "PASS / ABORT",
+    justone_correct: "DECRYPTION SUCCESSFUL",
+    justone_wrong: "DECRYPTION FAILED",
     sushinode_title: "Sushi Node",
-    sushinode_desc: "Fast-paced digital drafting protocol.",
+    sushinode_desc: "High-speed data drafting and resource allocation.",
     dixit_score: "SCORE",
     dixit_clue_placeholder: "Your clue...",
     dixit_phase_clue: "CHOOSE CARD & CLUE",
@@ -193,6 +254,7 @@ export const translations: Record<Language, TranslationSet> = {
     lastEvents: "Last 5 events",
     noEvents: "No events recorded",
     ready: "Ready",
+    notReady: "Not Ready",
     hand: "Hand",
     room: "Room",
     statusLive: "Live",
@@ -201,13 +263,22 @@ export const translations: Record<Language, TranslationSet> = {
     invalidSession: "Invalid Session",
     authenticating: "Authenticating Node",
     available: "Available",
+    connectedPlayers: "Connected Players",
+    readyPlayers: "READY",
+    waitingForPlayers: "Waiting for players",
   },
   fr: {
     title: "LUNARIS",
     subtitle: "CENTRE ARCADE",
+    game: "Matchs",
+    wins: "Victoires",
+    rank: "Rang",
     namePlaceholder: "VOTRE NOM",
     roomPlaceholder: "CODE SALLE",
     enterLobby: "REJOINDRE",
+    lobbyInitiation: "Initialisation du salon...",
+    matchInitiation: "Démarrer du match",
+    board: "AU PLATEAU",
     arcade: "JEUX DISPONIBLES",
     ongoingGames: "SESSIONS EN COURS",
     howToPlay: "COMMENT JOUER",
@@ -218,6 +289,7 @@ export const translations: Record<Language, TranslationSet> = {
     maxLabel: "MAX",
     players: "JOUEURS",
     capacity: "CAPACITY",
+    hallOfFame: "HALL OF FAME",
     footer: "Lunaris League v1.0.4",
     noOngoing: "Aucune partie en cours.",
     host: "HÉBERGER",
@@ -248,12 +320,35 @@ export const translations: Record<Language, TranslationSet> = {
     storyteller: "CONTEUR",
     dixit_round_summary: "RÉSUMÉ DU TOUR",
     dixit_title: "Dixit",
-    dixit_desc: "Un jeu d'imagination et d'art.",
-    pioupiou_title: "Piou Piou",
+    dixit_desc:
+      "Décryptez des données visuelles abstraites et trompez les nœuds rivaux.",
+    pioupiou_title: "PiouPiou",
     pioupiou_desc:
-      "Protégez le troupeau. Faites éclore les œufs. Rusez contre le renard.",
+      "Défendez votre troupeau numérique. Bloquez l'algorithme Renard.",
+    themind_title: "The Mind",
+    themind_desc:
+      "Synchronisez les fréquences en ordre croissant. Aucune communication autorisée.",
+    themind_level: "NIVEAU {level}",
+    themind_lives: "INTÉGRITÉ DU SYSTÈME",
+    themind_emps: "CODES EMP",
+    themind_syncing: "SYNCHRONISATION...",
+    themind_playing: "LIAISON ACTIVE",
+    themind_victory: "SYNCHRO RÉUSSIE",
+    themind_game_over: "ÉCHEC DU SYSTÈME",
+    justone_title: "Just One",
+    justone_desc:
+      "Transmettez des indices uniques. Les clés en double sont purgées par le pare-feu.",
+    justone_mystery_word: "MOT MYSTÈRE",
+    justone_clue_placeholder: "Entrez un indice unique...",
+    justone_guess_placeholder: "Entrez votre réponse...",
+    justone_standby: "Attente : Les hackers cryptent les données...",
+    justone_validation: "VALIDER LES PAQUETS",
+    justone_confirm_data: "CONFIRMER",
+    justone_pass: "PASSER / ABANDONNER",
+    justone_correct: "DÉCRYPTAGE RÉUSSI",
+    justone_wrong: "ÉCHEC DU DÉCRYPTAGE",
     sushinode_title: "Sushi Node",
-    sushinode_desc: "Protocole de draft numérique rapide.",
+    sushinode_desc: "Sélection rapide de données et allocation de ressources.",
     dixit_score: "SCORE",
     dixit_clue_placeholder: "Votre indice...",
     dixit_phase_clue: "CHOISISSEZ IMAGE & INDICE",
@@ -269,7 +364,8 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_st_fail_none: "PERSONNE N'A TROUVÉ VOTRE CARTE",
     dixit_found_original: "VOUS AVEZ TROUVÉ L'ORIGINAL",
     dixit_found_original_all: "VOUS ET TOUS LES AUTRES AVEZ TROUVÉ L'ORIGINAL",
-    dixit_found_original_none: "VOUS ET PERSONNE D'AUTRE N'AVEZ TROUVÉ L'ORIGINAL",
+    dixit_found_original_none:
+      "VOUS ET PERSONNE D'AUTRE N'AVEZ TROUVÉ L'ORIGINAL",
     dixit_others_fooled: "JOUEUR(S) ONT ÉTÉ PIÉGÉS PAR VOTRE CARTE",
     dixit_all_or_none: "TOUT LE MONDE/PERSONNE N'A TROUVÉ L'ORIGINAL",
     rank_out_of: "{rank} sur {total}",
@@ -294,6 +390,7 @@ export const translations: Record<Language, TranslationSet> = {
     lastEvents: "5 derniers événements",
     noEvents: "Aucun événement enregistré",
     ready: "Prêt",
+    notReady: "Pas prêt",
     hand: "Main",
     room: "Salle",
     statusLive: "En Direct",
@@ -302,13 +399,20 @@ export const translations: Record<Language, TranslationSet> = {
     invalidSession: "Session Invalide",
     authenticating: "Authentification du Nœud",
     available: "Disponible",
+    connectedPlayers: "Joueurs Connectés",
+    readyPlayers: "PRÊTS",
+    waitingForPlayers: "En attente des joueurs",
   },
   de: {
     title: "LUNARIS",
     subtitle: "ARCADE-ZENTRUM",
+    game: "SPIELE",
+    wins: "SIEGE",
+    rank: "RANG",
     namePlaceholder: "DEIN NAME",
     roomPlaceholder: "RAUMCODE",
     enterLobby: "BEITRETEN",
+    board: "ZUM SPIELBRETT",
     arcade: "VERFÜGBARE SPIELE",
     ongoingGames: "AKTIVE SPIELE",
     howToPlay: "SO WIRD GESPIELT",
@@ -316,9 +420,12 @@ export const translations: Record<Language, TranslationSet> = {
     step2: "2. Code auf dem Handy eingeben.",
     step3: "3. Handy als Controller nutzen!",
     capacityLabel: "KAPAZITÄT MAXIMAL",
+    lobbyInitiation: "Lobby wird initialisiert...",
+    matchInitiation: "Match wird gestartet",
     maxLabel: "MAX",
     players: "SPIELER",
     capacity: "KAPAZITÄT",
+    hallOfFame: "HALL OF FAME",
     footer: "Lunaris League v1.0.4",
     noOngoing: "Keine aktiven Spiele.",
     host: "HOSTEN",
@@ -349,11 +456,36 @@ export const translations: Record<Language, TranslationSet> = {
     storyteller: "ERZÄHLER",
     dixit_round_summary: "RUNDENZUSAMMENFASSUNG",
     dixit_title: "Dixit",
-    dixit_desc: "Ein Spiel der Fantasie.",
-    pioupiou_title: "Piou Piou",
-    pioupiou_desc: "Schütze die Herde. Brüte Eier aus. Überliste den Fuchs.",
+    dixit_desc:
+      "Entschlüssele abstrakte visuelle Daten und täusche rivalisierende Knoten.",
+    pioupiou_title: "PiouPiou",
+    pioupiou_desc:
+      "Verteidige deine digitale Herde. Blockiere den Fuchs-Algorithmus.",
+    themind_title: "The Mind",
+    themind_desc:
+      "Synchronisiere Frequenzen in aufsteigender Reihenfolge. Keine Kommunikation erlaubt.",
+    themind_level: "LEVEL {level}",
+    themind_lives: "SYSTEMINTEGRITÄT",
+    themind_emps: "EMP OVERRIDES",
+    themind_syncing: "SYNCHRONISIERUNG...",
+    themind_playing: "UPLINK AKTIV",
+    themind_victory: "SYNCHRO BEREIT",
+    themind_game_over: "SYSTEMFEHLER",
+    justone_title: "Just One",
+    justone_desc:
+      "Sende einzigartige Hinweise. Duplikate werden von der Firewall gelöscht.",
+    justone_mystery_word: "GEHEIMWORT",
+    justone_clue_placeholder: "Einzelnes Hinweiswort...",
+    justone_guess_placeholder: "Deine Antwort...",
+    justone_standby: "Warten: Hacker verschlüsseln Daten...",
+    justone_validation: "DATENPAKETE PRÜFEN",
+    justone_confirm_data: "BESTÄTIGEN",
+    justone_pass: "PASSEN / ABBRUCH",
+    justone_correct: "ENTSCHLÜSSELUNG ERFOLGREICH",
+    justone_wrong: "ENTSCHLÜSSELUNG FEHLGESCHLAGEN",
     sushinode_title: "Sushi Node",
-    sushinode_desc: "Schnelles digitales Drafting-Protokoll.",
+    sushinode_desc:
+      "Hochgeschwindigkeits-Datenentwurf und Ressourcenzuweisung.",
     dixit_score: "PUNKTE",
     dixit_clue_placeholder: "Dein Hinweis...",
     dixit_phase_clue: "BILD & HINWEIS WÄHLEN",
@@ -369,7 +501,8 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_st_fail_none: "NIEMAND HAT DEINE KARTE GEFUNDEN",
     dixit_found_original: "DU HAST DAS ORIGINAL GEFUNDEN",
     dixit_found_original_all: "DU UND ALLE ANDEREN HABEN DAS ORIGINAL GEFUNDEN",
-    dixit_found_original_none: "DU UND NIEMAND SONST HABEN DAS ORIGINAL GEFUNDEN",
+    dixit_found_original_none:
+      "DU UND NIEMAND SONST HABEN DAS ORIGINAL GEFUNDEN",
     dixit_others_fooled: "SPIELER SIND AUF DEINE KARTE REINGEFALLEN",
     dixit_all_or_none: "ALLE/NIEMAND HAT DAS ORIGINAL GEFUNDEN",
     rank_out_of: "{rank} von {total}",
@@ -378,7 +511,8 @@ export const translations: Record<Language, TranslationSet> = {
     LOG_DISCARD: "{player} hat ein {card} abgewerfen. ♻️",
     LOG_INVALID: "Ungültiger Zug! 🚫",
     LOG_FOX_SUCCESS: "{player} hat {target} ein Ei gestohlen! 🦊",
-    LOG_FOX_BLOCKED: "{target} hat den Fuchs with 2 Hähnen abgewehrt! 🐓🐓",
+    LOG_FOX_BLOCKED:
+      "{target} hat den Fuchs with 2 Hähnen abgewehrt! Could not execute command.",
     finalHand: "Letzte Hand",
     waitingPlayers: "Warten auf Spieler",
     minPlayersRequired: "Mindestens {count} Spieler erforderlich",
@@ -394,21 +528,31 @@ export const translations: Record<Language, TranslationSet> = {
     lastEvents: "Letzte 5 Ereignisse",
     noEvents: "Keine Ereignisse aufgezeichnet",
     ready: "Bereit",
+    notReady: "Nicht bereit",
     hand: "Hand",
     room: "Raum",
     statusLive: "Live",
-    statusArchived: "Archiviert",
+    statusArchived: "Archived",
     statusLobby: "Initializing",
     invalidSession: "Ungültige Sitzung",
     authenticating: "Authentifizierung des Knotens",
     available: "Verfügbar",
+    connectedPlayers: "Verbunden Spieler",
+    readyPlayers: "Bereite",
+    waitingForPlayers: "Warten auf Spieler",
   },
   fa: {
     title: "لوناریس",
     subtitle: "مرکز بازی",
+    game: "بازی",
+    wins: "برد",
+    rank: "رتبه",
     namePlaceholder: "نام شما",
     roomPlaceholder: "کد اتاق",
+    lobbyInitiation: "در حال راه‌اندازی...",
+    matchInitiation: "شروع بازی",
     enterLobby: "ورود به اتاق",
+    board: "رفتن به بازی",
     arcade: "بازی‌های موجود",
     ongoingGames: "بازی‌های در جریان",
     howToPlay: "راهنمای بازی",
@@ -419,6 +563,7 @@ export const translations: Record<Language, TranslationSet> = {
     maxLabel: "حداکثر",
     players: "بازیکن",
     capacity: "ظرفیت",
+    hallOfFame: "تالار مشاهیر",
     footer: "لوناریس لیگ نسخه ۱.۰.۴",
     noOngoing: "بازی فعالی وجود ندارد.",
     host: "ایجاد",
@@ -449,12 +594,35 @@ export const translations: Record<Language, TranslationSet> = {
     storyteller: "قصه‌گو",
     dixit_round_summary: "خلاصه دور",
     dixit_title: "دیکسیت",
-    dixit_desc: "بازی تخیل و هنر",
+    dixit_desc:
+      "داده‌های بصری انتزاعی را رمزگشایی کنید و گره‌های رقیب را فریب دهید.",
     pioupiou_title: "پیو پیو",
     pioupiou_desc:
-      "از گله محافظت کنید. تخم‌مرغ‌ها را جوجه کنید. روباه را فریب دهید",
+      "از گله دیجیتال خود دفاع کنید. الگوریتم روباه را مسدود کنید.",
+    themind_title: "The Mind",
+    themind_desc:
+      "فرکانس‌ها را به ترتیب صعودی همگام کنید. هرگونه ارتباط ممنوع است.",
+    themind_level: "مرحله {level}",
+    themind_lives: "پایداری سیستم",
+    themind_emps: "کدهای EMP",
+    themind_syncing: "در حال همگام‌سازی...",
+    themind_playing: "اتصال فعال",
+    themind_victory: "اتصال موفق",
+    themind_game_over: "خطای بحرانی سیستم",
+    justone_title: "Just One",
+    justone_desc:
+      "سرنخ‌های منحصربه‌فرد ارسال کنید. کلیدهای تکراری توسط فایروال حذف می‌شوند.",
+    justone_mystery_word: "کلمه رمز",
+    justone_clue_placeholder: "یک کلمه سرنخ وارد کنید...",
+    justone_guess_placeholder: "حدس نهایی خود را وارد کنید...",
+    justone_standby: "در انتظار: هکرها در حال رمزنگاری...",
+    justone_validation: "تایید بسته‌های داده",
+    justone_confirm_data: "تایید نهایی",
+    justone_pass: "رد شدن / انصراف",
+    justone_correct: "رمزگشایی موفق",
+    justone_wrong: "خطای رمزگشایی",
     sushinode_title: "سوشی نود",
-    sushinode_desc: "پروتکل یارکشی دیجیتال سریع.",
+    sushinode_desc: "پروتکل یارکشی دیجیتال و تخصیص منابع با سرعت بالا.",
     dixit_score: "امتیاز",
     dixit_clue_placeholder: "سرنخ شما...",
     dixit_phase_clue: "تصویر و سرنخ را انتخاب کنید",
@@ -495,6 +663,7 @@ export const translations: Record<Language, TranslationSet> = {
     lastEvents: "آخرین گزارش‌ها",
     noEvents: "گزارشی ثبت نشده",
     ready: "آماده",
+    notReady: "غیر آماده",
     hand: "دست",
     room: "اتاق",
     statusLive: "در حال بازی",
@@ -503,6 +672,9 @@ export const translations: Record<Language, TranslationSet> = {
     invalidSession: "نشست نامعتبر",
     authenticating: "در حال تایید هویت",
     available: "در دسترس",
+    connectedPlayers: "بازیکنان متصل",
+    readyPlayers: "آماده",
+    waitingForPlayers: "در انتظار بازیکنان",
   },
 };
 
