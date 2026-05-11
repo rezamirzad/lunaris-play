@@ -710,7 +710,7 @@ export function formatLog(
 }
 
 /**
- * Resolves a game title based on database fields or translation keys.
+ * Resolves a game title based on database fields or translation keys
  */
 export function getLocalizedGameTitle(
   slug: string,
