@@ -125,7 +125,14 @@ export const handleAction = mutation({
             winner: isFailure ? "FAILURE" : board.winner,
             history: [
               ...board.history,
-              { key: "LOG_DISCARD", data: { player: player.name, card: String(card) } },
+              { 
+                key: "LOG_MISTAKE", 
+                data: { 
+                  player: player.name, 
+                  played: String(card),
+                  discarded: lowerCards.map(String) 
+                } 
+              },
             ] as any,
           },
         });

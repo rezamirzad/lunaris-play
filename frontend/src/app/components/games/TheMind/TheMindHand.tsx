@@ -31,6 +31,16 @@ export default function TheMindHand({
     return [...rawHand].sort((a, b) => a - b);
   }, [board?.hands, player._id]);
 
+  const rows = useMemo(() => {
+    const r: number[][] = [[], [], []];
+    playerHand.forEach((card, i) => {
+      if (i < 3) r[0].push(card);
+      else if (i < 6) r[1].push(card);
+      else r[2].push(card);
+    });
+    return r.filter(row => row.length > 0);
+  }, [playerHand]);
+
   const lowestCard = playerHand.length > 0 ? playerHand[0] : null;
 
   const handlePlayCard = async (card: number) => {
@@ -42,17 +52,12 @@ export default function TheMindHand({
     });
   };
 
-  const handleToggleEMP = async (isDown: boolean) => {
+  const handleToggleEMP = async () => {
     if (!board || board.phase !== "PLAYING" || board.emps <= 0) return;
-    const isCurrentlyVoted = board.empVotes.includes(player._id);
-    
-    // We only want to fire the mutation if the state needs to change
-    if (isDown !== isCurrentlyVoted) {
-      await submitAction({
-        playerId: player._id,
-        actionType: "TOGGLE_EMP",
-      });
-    }
+    await submitAction({
+      playerId: player._id,
+      actionType: "TOGGLE_EMP",
+    });
   };
 
   if (!board) return null;
@@ -67,7 +72,7 @@ export default function TheMindHand({
   return (
     <div className={`flex flex-col h-full font-mono p-4 lg:p-8 ${isGameOver ? "animate-pulse" : ""}`}>
       {/* PHASE HEADER */}
-      <div className="mb-8 text-center min-h-[80px] flex flex-col justify-center bg-black/40 rounded-3xl p-6 border border-white/5 relative overflow-hidden">
+      <div className="mb-4 lg:mb-8 text-center min-h-[60px] lg:min-h-[80px] flex flex-col justify-center bg-black/40 rounded-3xl p-4 lg:p-6 border border-white/5 relative overflow-hidden">
         <div className="absolute inset-0 bg-teal-500/5 scanline" />
         <AnimatePresence mode="wait">
           <motion.div
@@ -102,19 +107,24 @@ export default function TheMindHand({
       </div>
 
       {/* FREQUENCY NODES GRID */}
-      <div className="flex-1 flex items-center justify-center gap-4 overflow-x-auto no-scrollbar pb-12 px-4" dir="ltr">
+      <div className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-2 lg:gap-4 overflow-y-auto no-scrollbar pb-12 lg:pb-0 px-4" dir="ltr">
         <AnimatePresence>
-          {playerHand.map((card) => (
-            <NeuralNode
-              key={card}
-              val={card}
-              isInteractable={card === lowestCard}
-              disabled={card !== lowestCard || isFinished}
-              onClick={() => handlePlayCard(card)}
-              className={card === lowestCard && !isFinished ? "shadow-[0_0_30px_rgba(45,212,191,0.2)]" : "opacity-30"}
-            />
-          ))}
-          {playerHand.length === 0 && board.phase === "PLAYING" && (
+          {rows.length > 0 ? (
+            rows.map((row, rowIndex) => (
+              <div key={rowIndex} className={`flex gap-2 lg:gap-4 justify-center ${rowIndex === 2 ? "flex-wrap max-w-full" : ""}`}>
+                {row.map((card) => (
+                  <NeuralNode
+                    key={card}
+                    val={card}
+                    isInteractable={card === lowestCard}
+                    disabled={card !== lowestCard || isFinished}
+                    onClick={() => handlePlayCard(card)}
+                    className={`${card === lowestCard && !isFinished ? "shadow-[0_0_30px_rgba(45,212,191,0.2)]" : "opacity-30"} !w-24 !h-36 sm:!w-32 sm:!h-48 lg:!w-48 lg:!h-72`}
+                  />
+                ))}
+              </div>
+            ))
+          ) : board.phase === "PLAYING" ? (
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -122,8 +132,7 @@ export default function TheMindHand({
             >
               Uplink_Clear // Awaiting_Nodes
             </motion.div>
-          )}
-          {isFinished && playerHand.length === 0 && (
+          ) : isFinished && (
              <motion.div 
                initial={{ opacity: 0 }}
                animate={{ opacity: 1 }}
@@ -136,7 +145,7 @@ export default function TheMindHand({
       </div>
 
       {/* ACTION AREA */}
-      <div className="mt-8 space-y-4">
+      <div className="mt-4 lg:mt-8 space-y-4">
         {isFinished ? (
            <motion.button
              initial={{ y: 20, opacity: 0 }}
@@ -154,12 +163,11 @@ export default function TheMindHand({
             </div>
             
             <motion.button
-              onPointerDown={() => handleToggleEMP(true)}
-              onPointerUp={() => handleToggleEMP(false)}
-              onPointerLeave={() => handleToggleEMP(false)}
+              onClick={handleToggleEMP}
+              onContextMenu={(e) => e.preventDefault()}
               disabled={board.emps <= 0 || board.phase !== "PLAYING"}
-              className={`w-full py-8 rounded-[2.5rem] relative overflow-hidden font-black uppercase transition-all shadow-2xl touch-manipulation select-none
-                ${amIVoting ? "scale-[0.98] brightness-125" : "hover:scale-[1.01]"}
+              className={`w-full py-6 lg:py-8 rounded-[2rem] lg:rounded-[2.5rem] relative overflow-hidden font-black uppercase transition-all shadow-2xl touch-manipulation select-none
+                ${amIVoting ? "scale-[0.98] brightness-125 border-teal-500 border-2" : "hover:scale-[1.01]"}
                 ${board.emps > 0 
                   ? `bg-[linear-gradient(45deg,#facc15_25%,#000_25%,#000_50%,#facc15_50%,#facc15_75%,#000_75%,#000)] bg-[length:40px_40px] text-white shadow-yellow-500/20 ${isTeammateRequesting ? "animate-[pulse_0.5s_infinite] brightness-125 border-yellow-400 shadow-[0_0_40px_rgba(250,204,21,0.6)]" : ""}` 
                   : "bg-zinc-900 text-zinc-700 opacity-20 grayscale cursor-not-allowed"}
@@ -173,7 +181,7 @@ export default function TheMindHand({
                    <span className="text-[10px] tracking-[0.2em] mb-1 opacity-80">TEAMMATE REQUESTS EMP</span>
                  )}
                  <span className="text-2xl tracking-[0.4em]">
-                    {amIVoting ? "CHARGING..." : isTeammateRequesting ? "HOLD TO CONFIRM" : "INITIATE EMP"}
+                    {amIVoting ? "VOTE ACTIVE" : isTeammateRequesting ? "TAP TO CONFIRM" : "INITIATE EMP"}
                  </span>
               </div>
               

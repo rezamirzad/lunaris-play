@@ -9,7 +9,8 @@ const HistoryEvent = v.union(
   v.object({ key: v.literal("LOG_FOX_SUCCESS"), data: v.object({ player: v.string(), target: v.string() }) }),
   v.object({ key: v.literal("LOG_LAY_EGG"), data: v.object({ player: v.string() }) }),
   v.object({ key: v.literal("LOG_HATCH"), data: v.object({ player: v.string() }) }),
-  v.object({ key: v.literal("LOG_DISCARD"), data: v.object({ player: v.string(), card: v.string() }) })
+  v.object({ key: v.literal("LOG_DISCARD"), data: v.object({ player: v.string(), card: v.string() }) }),
+  v.object({ key: v.literal("LOG_MISTAKE"), data: v.object({ player: v.string(), played: v.string(), discarded: v.array(v.string()) }) })
 );
 
 export default defineSchema({

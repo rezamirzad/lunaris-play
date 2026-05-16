@@ -23,6 +23,21 @@ export default function TheMindLogMessage({ log }: { log: ActivityLog }) {
           <span className="text-zinc-300 font-bold">{log.data.player} played {log.data.card}</span>
         </div>
       );
+    case "LOG_MISTAKE":
+      return (
+        <div className="flex flex-col gap-1">
+          <div className="flex gap-2 items-center">
+            <span className="text-rose-500 font-black">[{formatTime()}]</span>
+            <span className="bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded text-[8px] font-black">INTEGRITY_FAIL</span>
+            <span className="text-zinc-300 font-bold">{log.data.player} played {log.data.played}</span>
+          </div>
+          {log.data.discarded && log.data.discarded.length > 0 && (
+            <div className="ml-8 text-[9px] text-zinc-500 italic">
+               Discarded lower nodes: {log.data.discarded.join(", ")}
+            </div>
+          )}
+        </div>
+      );
     default:
       return (
         <div className="flex gap-2">

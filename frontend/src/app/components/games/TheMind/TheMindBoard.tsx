@@ -21,6 +21,20 @@ export default function TheMindBoard({ roomData }: BoardProps) {
   const [lastTopCard, setLastTopCard] = useState<number | null>(null);
   const [flash, setFlash] = useState(false);
 
+  const lastMistake = useMemo(() => {
+    return board ? [...board.history].reverse().find(h => h.key === "LOG_MISTAKE") : undefined;
+  }, [board]);
+
+  const [mistakeToShow, setMistakeToShow] = useState<any>(null);
+
+  useEffect(() => {
+    if (lastMistake) {
+      setMistakeToShow(lastMistake);
+      const timer = setTimeout(() => setMistakeToShow(null), 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [lastMistake]);
+
   useEffect(() => {
     if (board?.topCard !== lastTopCard) {
       setLastTopCard(board?.topCard || null);
@@ -208,7 +222,25 @@ export default function TheMindBoard({ roomData }: BoardProps) {
                 <div className="absolute inset-0 bg-teal-500/5 scanline" />
                 
                 <AnimatePresence mode="wait">
-                  {board.topCard ? (
+                  {mistakeToShow ? (
+                    <motion.div
+                      key="mistake"
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 1.2, opacity: 0 }}
+                      className="flex flex-col items-center p-4 text-center z-20"
+                    >
+                      <span className="text-[10px] text-rose-500 font-black tracking-[0.3em] mb-2 uppercase">Integrity_Compromised</span>
+                      <span className="text-xs text-zinc-400 mb-1 uppercase font-bold">{mistakeToShow.data.player} Miscalculated</span>
+                      <div className="flex gap-2 items-center justify-center flex-wrap">
+                         <span className="text-2xl font-black text-rose-500">{mistakeToShow.data.played}</span>
+                         <span className="text-[10px] text-zinc-600 font-black tracking-[0.4em]">PURGED:</span>
+                         {mistakeToShow.data.discarded?.map((c: string) => (
+                           <span key={c} className="text-lg font-black text-zinc-500">{c}</span>
+                         ))}
+                      </div>
+                    </motion.div>
+                  ) : board.topCard ? (
                     <motion.div
                       key={board.topCard}
                       initial={{ scale: 0.5, opacity: 0 }}

@@ -70,7 +70,7 @@ export default function Leaderboard() {
       */}
       <div className="h-20 flex items-center justify-center border-b border-white/5 bg-black/20">
         <span className="text-[10px] text-zinc-800 font-black tracking-[0.5em] uppercase">
-          /// END_OF_CYCLE ///
+          {"/// END_OF_CYCLE ///"}
         </span>
       </div>
     </div>
@@ -119,7 +119,7 @@ export default function Leaderboard() {
         {/* The persistent footer, anchored to the bottom */}
         <div className="relative z-20 p-4 bg-zinc-950 border-t border-white/5 text-center shrink-0">
           <p className="text-[7px] font-black text-zinc-700 uppercase tracking-[0.4em]">
-            GLOBAL_LEADERBOARD_v1.0 // PERSISTENT_STORAGE_ACTIVE
+            {"GLOBAL_LEADERBOARD_v1.0 // PERSISTENT_STORAGE_ACTIVE"}
           </p>
         </div>
       </div>
