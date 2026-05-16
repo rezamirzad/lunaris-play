@@ -38,6 +38,14 @@ export default function TheMindLogMessage({ log }: { log: ActivityLog }) {
           )}
         </div>
       );
+    case "LOG_LEVEL_CLEARED":
+      return (
+        <div className="flex gap-2 items-center">
+          <span className="text-teal-400 font-black">[{formatTime()}]</span>
+          <span className="bg-teal-500/10 text-teal-400 px-1.5 py-0.5 rounded text-[8px] font-black">LEVEL_CLEAR</span>
+          <span className="text-white font-black italic tracking-tighter uppercase">Sector {log.data.level} Stabilized</span>
+        </div>
+      );
     default:
       return (
         <div className="flex gap-2">

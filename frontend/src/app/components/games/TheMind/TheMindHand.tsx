@@ -67,6 +67,7 @@ export default function TheMindHand({
 
   const isGameOver = board.phase === "GAME_OVER";
   const isVictory = board.phase === "VICTORY";
+  const isAwaitingNextLevel = board.phase === "AWAITING_NEXT_LEVEL";
   const isFinished = isGameOver || isVictory;
 
   return (
@@ -132,6 +133,20 @@ export default function TheMindHand({
             >
               Uplink_Clear // Awaiting_Nodes
             </motion.div>
+          ) : isAwaitingNextLevel ? (
+            <motion.div 
+               initial={{ scale: 0.8, opacity: 0 }}
+               animate={{ scale: 1, opacity: 1 }}
+               className="text-teal-400 text-center flex flex-col gap-4"
+             >
+               <span className="text-[10px] font-black uppercase tracking-[0.4em]">LEVEL_COMPLETE</span>
+               <button
+                 onClick={() => submitAction({ playerId: player._id, actionType: "START_NEXT_LEVEL" })}
+                 className="px-8 py-4 bg-teal-500 text-black font-black uppercase rounded-2xl shadow-lg active:scale-95 transition-all"
+               >
+                 START LEVEL {board.level + 1}
+               </button>
+             </motion.div>
           ) : isFinished && (
              <motion.div 
                initial={{ opacity: 0 }}

@@ -10,6 +10,8 @@ import { BoardProps } from "../registry";
 import NeuralNode from "./NeuralNode";
 import TheMindLogMessage from "./MatchActivity";
 import { useEffect, useState, useMemo, useRef } from "react";
+import { useMutation } from "convex/react";
+import { api } from "convex/_generated/api";
 
 export default function TheMindBoard({ roomData }: BoardProps) {
   const { t, lang } = useTranslation();
@@ -18,28 +20,32 @@ export default function TheMindBoard({ roomData }: BoardProps) {
   const board = roomData.gameBoard.gameType === "themind" ? roomData.gameBoard : null;
   const players = roomData.players;
 
+  const startNextLevel = useMutation(api.themind.startNextLevelAction);
+
   const [lastTopCard, setLastTopCard] = useState<number | null>(null);
   const [flash, setFlash] = useState(false);
 
-  const lastMistake = useMemo(() => {
-    return board ? [...board.history].reverse().find(h => h.key === "LOG_MISTAKE") : undefined;
-  }, [board]);
+  const latestEvent = useMemo(() => {
+    return board?.history[board.history.length - 1];
+  }, [board?.history]);
 
   const [mistakeToShow, setMistakeToShow] = useState<any>(null);
   const lastMistakeIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (lastMistake) {
-      // Use history length + player + card to ensure uniqueness
-      const mistakeId = `${board?.history.length}-${lastMistake.data.player}-${lastMistake.data.played}`;
+    if (latestEvent?.key === "LOG_MISTAKE") {
+      const mistakeId = `${board?.history.length}-${latestEvent.data.player}-${latestEvent.data.played}`;
       if (mistakeId !== lastMistakeIdRef.current) {
         lastMistakeIdRef.current = mistakeId;
-        setMistakeToShow(lastMistake);
-        const timer = setTimeout(() => setMistakeToShow(null), 5000);
+        setMistakeToShow(latestEvent);
+        // Extend timeout but it will be cleared by success
+        const timer = setTimeout(() => setMistakeToShow(null), 10000);
         return () => clearTimeout(timer);
       }
+    } else if (latestEvent?.key === "LOG_DISCARD") {
+      setMistakeToShow(null);
     }
-  }, [lastMistake, board?.history.length]);
+  }, [latestEvent, board?.history.length]);
 
   useEffect(() => {
     if (board?.topCard !== lastTopCard) {
@@ -63,6 +69,7 @@ export default function TheMindBoard({ roomData }: BoardProps) {
 
   const isGameOver = board.phase === "GAME_OVER";
   const isVictory = board.phase === "VICTORY";
+  const isAwaitingNextLevel = board.phase === "AWAITING_NEXT_LEVEL";
   const isFinished = isGameOver || isVictory;
 
   return (
@@ -302,7 +309,7 @@ export default function TheMindBoard({ roomData }: BoardProps) {
 
           {/* Last Played By Tag (Hidden when finished) */}
           <AnimatePresence>
-            {lastPlayedByPlayer && board.topCard && !isFinished && (
+            {lastPlayedByPlayer && board.topCard && !isFinished && !isAwaitingNextLevel && (
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -316,6 +323,33 @@ export default function TheMindBoard({ roomData }: BoardProps) {
                 <span className="text-white font-black italic tracking-tighter uppercase">
                   {lastPlayedByPlayer.name}
                 </span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* START NEXT LEVEL BUTTON */}
+          <AnimatePresence>
+            {isAwaitingNextLevel && (
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -20, opacity: 0 }}
+                className="mt-12 flex flex-col items-center gap-6"
+              >
+                <div className="px-6 py-2 bg-teal-500/10 border border-teal-500/30 rounded-full flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-teal-400" />
+                  <span className="text-[10px] font-black tracking-[0.3em] uppercase text-teal-400">
+                    SECTOR_STABILIZED // READY_FOR_UPLINK
+                  </span>
+                </div>
+
+                <button
+                  onClick={() => startNextLevel({ roomId: roomData._id })}
+                  className="group relative px-12 py-6 bg-teal-500 text-black font-black text-2xl tracking-[0.4em] uppercase rounded-full shadow-[0_0_50px_rgba(45,212,191,0.4)] hover:scale-105 active:scale-95 transition-all"
+                >
+                  START LEVEL {board.level + 1}
+                  <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
+                </button>
               </motion.div>
             )}
           </AnimatePresence>

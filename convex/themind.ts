@@ -68,6 +68,16 @@ export const themindPlugin: GamePlugin = {
   },
 };
 
+export const startNextLevelAction = mutation({
+  args: { roomId: v.id("rooms") },
+  handler: async (ctx, args) => {
+    const room = await ctx.db.get(args.roomId);
+    if (!room || room.gameBoard.gameType !== "themind") throw new Error("Invalid room");
+    if (room.gameBoard.phase !== "AWAITING_NEXT_LEVEL") throw new Error("Not awaiting next level");
+    await nextLevel(ctx, room._id);
+  },
+});
+
 export const handleAction = mutation({
   args: {
     playerId: v.id("players"),
@@ -82,6 +92,12 @@ export const handleAction = mutation({
 
     if (room.gameBoard.gameType !== "themind") throw new Error("Invalid game");
     const board = room.gameBoard;
+
+    if (args.actionType === "START_NEXT_LEVEL") {
+      if (board.phase !== "AWAITING_NEXT_LEVEL") return { success: false, error: "NOT_AWAITING_NEXT_LEVEL" };
+      await nextLevel(ctx, room._id);
+      return { success: true };
+    }
 
     if (board.phase !== "PLAYING") return { success: false, error: "NOT_IN_PLAY" };
 
@@ -162,6 +178,10 @@ export const handleAction = mutation({
             topCard: card,
             lastPlayedBy: player._id,
             discardPile: newDiscardPile,
+            history: [
+              ...board.history,
+              { key: "LOG_DISCARD", data: { player: player.name, card: String(card) } }
+            ] as any,
           },
         });
 
@@ -225,7 +245,20 @@ export const handleAction = mutation({
 async function checkLevelWin(ctx: GameMutationCtx, roomId: Doc<"rooms">["_id"], hands: Record<string, number[]>) {
   const allHandsEmpty = Object.values(hands).every((h) => h.length === 0);
   if (allHandsEmpty) {
-    await nextLevel(ctx, roomId);
+    const room = await ctx.db.get(roomId);
+    if (!room || room.gameBoard.gameType !== "themind") return;
+    const board = room.gameBoard;
+
+    await ctx.db.patch(roomId, {
+      gameBoard: {
+        ...board,
+        phase: "AWAITING_NEXT_LEVEL",
+        history: [
+          ...board.history,
+          { key: "LOG_LEVEL_CLEARED", data: { level: board.level } }
+        ] as any,
+      },
+    });
   }
 }
 

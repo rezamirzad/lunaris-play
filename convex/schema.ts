@@ -10,7 +10,8 @@ const HistoryEvent = v.union(
   v.object({ key: v.literal("LOG_LAY_EGG"), data: v.object({ player: v.string() }) }),
   v.object({ key: v.literal("LOG_HATCH"), data: v.object({ player: v.string() }) }),
   v.object({ key: v.literal("LOG_DISCARD"), data: v.object({ player: v.string(), card: v.string() }) }),
-  v.object({ key: v.literal("LOG_MISTAKE"), data: v.object({ player: v.string(), played: v.string(), discarded: v.array(v.string()) }) })
+  v.object({ key: v.literal("LOG_MISTAKE"), data: v.object({ player: v.string(), played: v.string(), discarded: v.array(v.string()) }) }),
+  v.object({ key: v.literal("LOG_LEVEL_CLEARED"), data: v.object({ level: v.number() }) })
 );
 
 export default defineSchema({
@@ -89,7 +90,7 @@ export default defineSchema({
         discardPile: v.array(v.number()),
         hands: v.record(v.string(), v.array(v.number())),
         empVotes: v.array(v.id("players")),
-        phase: v.union(v.literal("SYNCING"), v.literal("PLAYING"), v.literal("GAME_OVER"), v.literal("VICTORY")),
+        phase: v.union(v.literal("SYNCING"), v.literal("PLAYING"), v.literal("GAME_OVER"), v.literal("VICTORY"), v.literal("AWAITING_NEXT_LEVEL")),
         history: v.array(HistoryEvent),
         winner: v.optional(v.string()),
         winnerId: v.optional(v.id("players")),
