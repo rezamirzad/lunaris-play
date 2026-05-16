@@ -290,7 +290,7 @@ export default function LobbyInitialization({
                 : "bg-white text-black border-transparent"
             }`}
           >
-            {me?.isReady ? t.ready : t.notReady}
+            {me?.isReady ? t.notReady : t.ready}
           </motion.button>
         )}
       </motion.div>

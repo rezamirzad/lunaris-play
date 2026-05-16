@@ -21,7 +21,9 @@ export default function RoundResultsPanel({
   if (!board || board.phase !== "RESULTS" || !board.roundResults) return null;
 
   const pointsMap = board.roundResults.pointsEarned || {};
-  const allScores = roomData.players.map((p) => (p.state.gameType === "dixit" ? p.state.score || 0 : 0));
+  const allScores = roomData.players.map((p) =>
+    p.state.gameType === "dixit" ? p.state.score || 0 : 0,
+  );
 
   // Sort players by points earned this round, then by total score
   const sortedPlayers = [...roomData.players].sort((a, b) => {
@@ -73,11 +75,15 @@ export default function RoundResultsPanel({
                 className={`flex items-center justify-between p-4 border rounded-2xl group transition-all ${isLeader ? "bg-yellow-400/10 border-yellow-400/30 shadow-[0_0_20px_rgba(250,204,21,0.1)]" : "bg-black/40 border-white/5 hover:border-blue-500/30"}`}
               >
                 <div className="flex items-center gap-4">
-                  <div className={`h-8 w-8 rounded-full flex items-center justify-center text-[10px] font-black border transition-colors ${isLeader ? "bg-yellow-400 border-yellow-500 text-black" : "bg-zinc-800 border-white/10 group-hover:bg-blue-500 group-hover:text-white"}`}>
+                  <div
+                    className={`h-8 w-8 rounded-full flex items-center justify-center text-[10px] font-black border transition-colors ${isLeader ? "bg-yellow-400 border-yellow-500 text-black" : "bg-zinc-800 border-white/10 group-hover:bg-blue-500 group-hover:text-white"}`}
+                  >
                     {isFA ? toPersianDigits(rank) : rank}
                   </div>
                   <div className="flex flex-col">
-                    <span className={`font-black uppercase text-sm tracking-tight italic ${isLeader ? "text-yellow-400" : "text-white"}`}>
+                    <span
+                      className={`font-black uppercase text-sm tracking-tight italic ${isLeader ? "text-yellow-400" : "text-white"}`}
+                    >
                       {player.name} {isLeader && "👑"}
                     </span>
                     <span className="text-[8px] text-zinc-500 font-bold tracking-widest">
@@ -103,11 +109,6 @@ export default function RoundResultsPanel({
             );
           })}
         </AnimatePresence>
-      </div>
-
-      <div className="mt-8 pt-6 border-t border-white/5 flex justify-between items-center opacity-30 text-[8px] font-black tracking-widest">
-        <span>ALGORITHM: DIXIT_V1_SCORE</span>
-        <span className="text-blue-400">READY_FOR_NEXT_CYCLE</span>
       </div>
     </motion.section>
   );

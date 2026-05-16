@@ -23,7 +23,9 @@ export default function DixitContainer({ roomData }: BoardProps) {
   const submittedCards = board?.submittedCards || [];
   const votes = board?.votes || [];
 
-  const allScores = roomData.players.map((p) => (p.state.gameType === "dixit" ? p.state.score || 0 : 0));
+  const allScores = roomData.players.map((p) =>
+    p.state.gameType === "dixit" ? p.state.score || 0 : 0,
+  );
   const totalPlayers = roomData.players.length;
 
   return (
@@ -33,7 +35,7 @@ export default function DixitContainer({ roomData }: BoardProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 relative z-10 p-4 lg:p-8">
         {/* PLAYER GRID AREA */}
-        <div className="lg:col-span-3 space-y-8">
+        <div className="lg:col-span-2 space-y-8">
           <section>
             <motion.div
               initial={{ x: -20, opacity: 0 }}
@@ -42,19 +44,20 @@ export default function DixitContainer({ roomData }: BoardProps) {
             >
               <div className="h-2 w-2 bg-blue-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
               <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em]">
-                PARTICIPANT_NODES
+                PARTICIPANTS
               </h3>
             </motion.div>
 
             <div className="flex flex-col gap-4">
               <AnimatePresence mode="popLayout">
                 {roomData.players.map((player, index) => {
-                  const storytellerId = roomData.turnOrder[roomData.currentTurnIndex];
+                  const storytellerId =
+                    roomData.turnOrder[roomData.currentTurnIndex];
                   const isST = storytellerId === player._id;
 
                   const playerState =
                     player.state.gameType === "dixit" ? player.state : null;
-                  
+
                   const score = playerState?.score || 0;
                   const rank = calculateRank(score, allScores);
 
@@ -74,15 +77,13 @@ export default function DixitContainer({ roomData }: BoardProps) {
                         name={player.name}
                         isReady={player.isReady}
                         isCurrentTurn={isST}
-                        statusOverride={
-                          isST ? t.storyteller : undefined
-                        }
+                        statusOverride={isST ? t.storyteller : undefined}
                         className="glass-card p-4"
                       >
-                        <DixitPlayerStats 
-                          state={playerState} 
-                          rank={rank} 
-                          totalPlayers={totalPlayers} 
+                        <DixitPlayerStats
+                          state={playerState}
+                          rank={rank}
+                          totalPlayers={totalPlayers}
                           isST={isST}
                         />
                       </PlayerCard>
@@ -95,8 +96,8 @@ export default function DixitContainer({ roomData }: BoardProps) {
         </div>
 
         {/* 🖼️ CENTRAL TABLE: THE VISUAL MATRIX */}
-        <div className="lg:col-span-6 space-y-8">
-          <section className="min-h-[500px] flex flex-col">
+        <div className="lg:col-span-8 space-y-4">
+          <section className="min-h-[600px] flex flex-col">
             {/* CURRENT CLUE READOUT: GIANT GLOWING TEXT */}
             <AnimatePresence mode="wait">
               {board?.currentClue ? (
@@ -108,10 +109,10 @@ export default function DixitContainer({ roomData }: BoardProps) {
                   className="mb-12 p-10 bg-blue-500/5 border border-blue-500/20 rounded-[3rem] text-center backdrop-blur-3xl shadow-[0_0_50px_rgba(59,130,246,0.1)]"
                 >
                   <span className="text-[10px] tracking-[0.8em] text-blue-400 font-black mb-4 block uppercase opacity-50">
-                    RECEIVED_CLUE_BROADCAST
+                    CLUE
                   </span>
                   <h2 className="text-5xl lg:text-7xl font-black italic tracking-tighter text-blue-400 uppercase [text-shadow:0_0_30px_rgba(59,130,246,0.8)] leading-tight">
-                    &quot;{board.currentClue}&quot;
+                    {board.currentClue}
                   </h2>
                 </motion.div>
               ) : (
@@ -122,7 +123,7 @@ export default function DixitContainer({ roomData }: BoardProps) {
                   className="mb-12 p-10 border border-zinc-800 rounded-[3rem] text-center bg-black/20"
                 >
                   <p className="text-zinc-600 text-[11px] uppercase tracking-[0.5em] animate-pulse">
-                    AWAITING_STORYTELLER_TRANSMISSION...
+                    AWAITING STORYTELLER...
                   </p>
                 </motion.div>
               )}
@@ -141,7 +142,7 @@ export default function DixitContainer({ roomData }: BoardProps) {
         </div>
 
         {/* SYSTEM STATUS & LOGS */}
-        <div className="lg:col-span-3 space-y-8">
+        <div className="lg:col-span-2 space-y-8">
           <motion.section
             initial={{ x: 20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
@@ -171,17 +172,6 @@ export default function DixitContainer({ roomData }: BoardProps) {
               </div>
             </div>
           </motion.section>
-
-          <motion.div
-            initial={{ x: 20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <MatchActivity
-              history={board?.history || []}
-              renderLog={(log) => <DixitLogMessage log={log} />}
-            />
-          </motion.div>
         </div>
       </div>
     </div>

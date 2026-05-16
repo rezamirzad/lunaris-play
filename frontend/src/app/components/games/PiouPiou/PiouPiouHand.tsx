@@ -98,10 +98,15 @@ export default function PiouPiouHand({
         </div>
       </div>
 
-      <div className="p-6 pb-10">
+      <div className="p-6 pb-10 z-[100]">
         <button
           disabled={!isMyTurn || selectedIndices.length === 0}
-          onClick={() => handleAction("PLAY")}
+          onPointerDown={(e) => {
+            if (isMyTurn && selectedIndices.length > 0 && e.pointerType === 'touch') handleAction("PLAY");
+          }}
+          onClick={(e) => {
+            if (isMyTurn && selectedIndices.length > 0 && (e as any).pointerType !== 'touch') handleAction("PLAY");
+          }}
           className={`w-full py-7 rounded-[2.5rem] text-3xl font-black uppercase transition-all active:scale-95 touch-manipulation select-none ${
             isMyTurn
               ? "bg-white text-black shadow-xl"

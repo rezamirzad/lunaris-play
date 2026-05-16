@@ -140,12 +140,7 @@ export default function TheMindHand({
                className="text-teal-400 text-center flex flex-col gap-4"
              >
                <span className="text-[10px] font-black uppercase tracking-[0.4em]">LEVEL_COMPLETE</span>
-               <button
-                 onClick={() => submitAction({ playerId: player._id, actionType: "START_NEXT_LEVEL" })}
-                 className="px-8 py-4 bg-teal-500 text-black font-black uppercase rounded-2xl shadow-lg active:scale-95 transition-all"
-               >
-                 START LEVEL {board.level + 1}
-               </button>
+               <p className="text-[8px] text-zinc-500 uppercase tracking-widest">Awaiting Command...</p>
              </motion.div>
           ) : isFinished && (
              <motion.div 
@@ -160,7 +155,7 @@ export default function TheMindHand({
       </div>
 
       {/* ACTION AREA */}
-      <div className="mt-4 lg:mt-8 space-y-4">
+      <div className="mt-4 lg:mt-8 space-y-4 z-50">
         {isFinished ? (
            <motion.button
              initial={{ y: 20, opacity: 0 }}
@@ -170,6 +165,20 @@ export default function TheMindHand({
            >
              RETURN_TO_ARCADE
            </motion.button>
+        ) : isAwaitingNextLevel ? (
+           <motion.button
+             initial={{ scale: 0.9, opacity: 0 }}
+             animate={{ scale: 1, opacity: 1 }}
+             onPointerDown={(e) => {
+               if (e.pointerType === 'touch') submitAction({ playerId: player._id, actionType: "START_NEXT_LEVEL" });
+             }}
+             onClick={(e) => {
+               if ((e as any).pointerType !== 'touch') submitAction({ playerId: player._id, actionType: "START_NEXT_LEVEL" });
+             }}
+             className="w-full py-8 bg-teal-500 text-black font-black text-xl tracking-[0.4em] uppercase rounded-[2.5rem] shadow-[0_0_50px_rgba(45,212,191,0.4)] hover:bg-teal-400 transition-all touch-manipulation select-none"
+           >
+             START LEVEL {board.level + 1}
+           </motion.button>
         ) : (
           <>
             <div className="flex justify-between items-end px-2">
@@ -178,7 +187,12 @@ export default function TheMindHand({
             </div>
             
             <motion.button
-              onClick={handleToggleEMP}
+              onPointerDown={(e) => {
+                if (e.pointerType === 'touch') handleToggleEMP();
+              }}
+              onClick={(e) => {
+                if ((e as any).pointerType !== 'touch') handleToggleEMP();
+              }}
               onContextMenu={(e) => e.preventDefault()}
               disabled={board.emps <= 0 || board.phase !== "PLAYING"}
               className={`w-full py-6 lg:py-8 rounded-[2rem] lg:rounded-[2.5rem] relative overflow-hidden font-black uppercase transition-all shadow-2xl touch-manipulation select-none

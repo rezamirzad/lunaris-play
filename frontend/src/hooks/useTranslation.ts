@@ -13,7 +13,8 @@ export function useTranslation() {
     setMounted(true);
   }, []);
 
-  const lang = (searchParams.get("lang") as Language) || "en";
+  const langParam = searchParams.get("lang");
+  const lang: Language = (["en", "fr", "de", "fa"].includes(langParam || "") ? langParam : "en") as Language;
   const t = translations[lang];
 
   // Return default English/Server-safe values until mounted

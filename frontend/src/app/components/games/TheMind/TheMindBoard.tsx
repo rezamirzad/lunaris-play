@@ -108,7 +108,7 @@ export default function TheMindBoard({ roomData }: BoardProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 relative z-10 p-4 lg:p-8 h-full">
         {/* TEAM TELEMETRY DOCK */}
-        <div className="lg:col-span-3 space-y-8">
+        <div className="lg:col-span-2 space-y-8">
           <section>
             <div className="flex items-center gap-4 mb-8">
               <div className="h-2 w-2 bg-teal-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(45,212,191,0.8)]" />
@@ -186,7 +186,7 @@ export default function TheMindBoard({ roomData }: BoardProps) {
         </div>
 
         {/* MAIN UPLINK HUB */}
-        <div className="lg:col-span-6 flex flex-col items-center justify-center space-y-12 py-12">
+        <div className="lg:col-span-8 flex flex-col items-center justify-center space-y-12 py-12">
           {/* TOP HUD */}
           <div className="w-full flex justify-between px-12 mb-12">
             {/* System Integrity */}
@@ -371,7 +371,7 @@ export default function TheMindBoard({ roomData }: BoardProps) {
         </div>
 
         {/* SYSTEM LOGS */}
-        <div className="lg:col-span-3 space-y-8">
+        <div className="lg:col-span-2 space-y-8">
            <section className="glass-card p-6 border-zinc-800">
              <div className="flex flex-col gap-1 mb-6">
                 <span className="text-[8px] font-black text-teal-500 uppercase tracking-[0.3em]">MISSION_PHASE</span>

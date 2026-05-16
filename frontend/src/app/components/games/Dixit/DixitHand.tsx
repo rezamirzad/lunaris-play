@@ -50,8 +50,11 @@ export default function DixitHand({
     if (board?.phase === "VOTING" && !isST) {
       // Logic: Use the pre-shuffled cards from the board state to ensure relative consistency across nodes.
       // We filter out the player's own card before displaying.
-      const cardsToDisplay = (board.shuffledBoardCards || board.submittedCards || [])
-        .filter((c) => c.playerId !== player._id);
+      const cardsToDisplay = (
+        board.shuffledBoardCards ||
+        board.submittedCards ||
+        []
+      ).filter((c) => c.playerId !== player._id);
       return cardsToDisplay;
     }
     return player.gameHand;
@@ -76,14 +79,13 @@ export default function DixitHand({
         (v) => v.cardId === myCard && v.voterId !== player._id,
       ).length || 0;
     const votedCorrect = board.votes?.some(
-      (v) =>
-        v.voterId === player._id && v.cardId === results.storytellerCard,
+      (v) => v.voterId === player._id && v.cardId === results.storytellerCard,
     );
 
     // Dixit Scoring Rules for "All or None" edge case:
-    const votesForStoryteller = board.votes?.filter(
-      (v) => v.cardId === results.storytellerCard
-    ).length || 0;
+    const votesForStoryteller =
+      board.votes?.filter((v) => v.cardId === results.storytellerCard).length ||
+      0;
     const totalGuessers = room.players.length - 1;
     const everyoneGuessed = votesForStoryteller === totalGuessers;
     const noOneGuessed = votesForStoryteller === 0;
@@ -189,8 +191,8 @@ export default function DixitHand({
                 className={`font-black uppercase text-xl italic tracking-tighter ${isST ? "text-blue-400" : "text-white"}`}
               >
                 {isST
-                  ? `⚡ NODE_STORYTELLER: YOUR_SEQUENCE ⚡`
-                  : `WAITING_FOR_${storytellerName.toUpperCase()}`}
+                  ? `⚡ YOU ARE THE STORYTELLER ⚡`
+                  : `WAITING FOR ${storytellerName.toUpperCase()}`}
               </h2>
 
               {/* 🔍 CLUE READOUT FOR ALL NODES */}
@@ -249,50 +251,58 @@ export default function DixitHand({
       </AnimatePresence>
 
       {/* CARD GRID */}
-      <div className="flex-1 grid grid-cols-3 gap-4 overflow-y-auto no-scrollbar pb-32" dir="ltr">
-        {displayCards.map((item: string | { playerId: Doc<"players">["_id"]; cardId: string }, i: number) => {
-          const cardId = typeof item === "string" ? item : item.cardId;
-          const ownerName =
-            typeof item === "object"
-              ? room.players.find((p) => p._id === item.playerId)?.name
-              : undefined;
+      <div
+        className="flex-1 grid grid-cols-3 gap-4 overflow-y-auto no-scrollbar pb-32"
+        dir="ltr"
+      >
+        {displayCards.map(
+          (
+            item: string | { playerId: Doc<"players">["_id"]; cardId: string },
+            i: number,
+          ) => {
+            const cardId = typeof item === "string" ? item : item.cardId;
+            const ownerName =
+              typeof item === "object"
+                ? room.players.find((p) => p._id === item.playerId)?.name
+                : undefined;
 
-          return (
-            <motion.div
-              key={i}
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{
-                delay: i * 0.05,
-                type: "spring",
-                stiffness: 260,
-                damping: 20,
-              }}
-            >
-              <DixitCard
-                cardId={cardId}
-                isLobby={isLobby}
-                selected={selectedCard === cardId}
-                selectable={
-                  !isLobby && !isWaitingPhase && board?.phase !== "RESULTS"
-                }
-                onClick={() => setSelectedCard(cardId)}
-                isRevealed={!isLobby && cardId !== "BACK"}
-                ownerName={board?.phase === "RESULTS" ? ownerName : undefined}
-                disabled={
-                  isLobby ||
-                  (board?.phase === "VOTING" && isST) ||
-                  isWaitingPhase ||
-                  board?.phase === "RESULTS"
-                }
-              />
-            </motion.div>
-          );
-        })}
+            return (
+              <motion.div
+                key={i}
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{
+                  delay: i * 0.05,
+                  type: "spring",
+                  stiffness: 260,
+                  damping: 20,
+                }}
+              >
+                <DixitCard
+                  cardId={cardId}
+                  isLobby={isLobby}
+                  selected={selectedCard === cardId}
+                  selectable={
+                    !isLobby && !isWaitingPhase && board?.phase !== "RESULTS"
+                  }
+                  onClick={() => setSelectedCard(cardId)}
+                  isRevealed={!isLobby && cardId !== "BACK"}
+                  ownerName={board?.phase === "RESULTS" ? ownerName : undefined}
+                  disabled={
+                    isLobby ||
+                    (board?.phase === "VOTING" && isST) ||
+                    isWaitingPhase ||
+                    board?.phase === "RESULTS"
+                  }
+                />
+              </motion.div>
+            );
+          },
+        )}
       </div>
 
       {/* ACTION TRIGGER */}
-      <div className="absolute bottom-8 left-0 right-0 px-8 pointer-events-none">
+      <div className="absolute bottom-0 left-0 right-0 p-8 pt-12 bg-gradient-to-t from-[#020203] via-[#020203]/90 to-transparent pointer-events-none z-50">
         <div className="max-w-xl mx-auto pointer-events-auto">
           <motion.button
             whileHover={
@@ -305,7 +315,14 @@ export default function DixitHand({
                 : {}
             }
             whileTap={{ scale: 0.98 }}
-            onClick={handleAction}
+            onPointerDown={(e) => {
+              // High-speed responsiveness for mobile
+              if (e.pointerType === "touch") handleAction();
+            }}
+            onClick={(e) => {
+              // Fallback for mouse
+              if ((e as any).pointerType !== "touch") handleAction();
+            }}
             disabled={
               board?.phase === "RESULTS"
                 ? !isST
@@ -319,11 +336,11 @@ export default function DixitHand({
             <span className="relative z-10 group-hover:text-white transition-colors">
               {board?.phase === "RESULTS"
                 ? isST
-                  ? "INITIATE_NEXT_ROUND"
-                  : "WAITING_FOR_ST_SYNC"
+                  ? "INITIATE NEXT ROUND"
+                  : "WAITING FOR PREVIOUS STORYTELLER"
                 : isWaitingPhase
-                  ? "NODE_WAIT_STATE"
-                  : "EXECUTE_SEQUENCE"}
+                  ? "WAITING FOR OTHERS"
+                  : "SUBMIT"}
             </span>
           </motion.button>
         </div>

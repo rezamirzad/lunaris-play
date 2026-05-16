@@ -15,8 +15,9 @@ export default function JustOnePlayerView({
 }: PlayerProps) {
   const { lang } = useTranslation();
   const isFA = lang === "fa";
-  
-  const board = roomData.gameBoard.gameType === "justone" ? roomData.gameBoard : null;
+
+  const board =
+    roomData.gameBoard.gameType === "justone" ? roomData.gameBoard : null;
 
   return (
     <div className="relative min-h-[calc(100vh-180px)] bg-zinc-950/50 rounded-[3rem] overflow-hidden flex flex-col font-mono">
@@ -45,7 +46,7 @@ export default function JustOnePlayerView({
                   className={`h-2 w-2 rounded-full ${isMyTurn ? "bg-teal-400 shadow-[0_0_10px_rgba(45,212,191,0.8)] animate-pulse" : "bg-zinc-700"}`}
                 />
                 <span className="text-[10px] text-zinc-500 uppercase tracking-[0.3em]">
-                  {isMyTurn ? "ACTIVE_NODE" : "NODE_STANDBY"}
+                  {isMyTurn ? "Active" : "Standby"}
                 </span>
               </div>
 
@@ -74,7 +75,9 @@ export default function JustOnePlayerView({
                     ROUND
                   </span>
                   <span className="text-xs font-black uppercase text-white tracking-widest">
-                    {isFA ? toPersianDigits(board?.round || 0) : board?.round || 0}
+                    {isFA
+                      ? toPersianDigits(board?.round || 0)
+                      : board?.round || 0}
                   </span>
                 </div>
               </div>

@@ -51,7 +51,12 @@ export default function DixitCard({
           : {}
       }
       whileTap={selectable && !disabled ? { scale: 0.95 } : {}}
-      onClick={() => !disabled && onClick?.()}
+      onPointerDown={(e) => {
+        if (selectable && !disabled && e.pointerType === 'touch') onClick?.();
+      }}
+      onClick={(e) => {
+        if (selectable && !disabled && (e as any).pointerType !== 'touch') onClick?.();
+      }}
       className={`
         relative aspect-[2/3] w-full rounded-[2rem] overflow-hidden transition-all duration-700 border-2
         ${selected ? "border-blue-500 ring-4 ring-blue-500/20 z-10 shadow-[0_0_40px_rgba(59,130,246,0.4)]" : "border-white/5 shadow-2xl"}
@@ -78,17 +83,18 @@ export default function DixitCard({
 
       {/* 📝 METADATA OVERLAY (RESULTS PHASE) */}
       {isRevealed && cardId !== "BACK" && (
-        <div className="relative z-20 h-full flex flex-col justify-between p-4">
+        <div className="relative z-20 h-full flex flex-col justify-between p-4 bg-black/20">
           <div className="flex flex-col gap-2">
             <AnimatePresence>
               {ownerName && (
                 <motion.div
                   initial={{ y: -10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  className="bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/5 self-start"
+                  className="bg-zinc-950/80 backdrop-blur-xl px-3 py-2 rounded-2xl border border-white/10 self-start shadow-xl"
                 >
-                  <p className="text-[8px] font-black uppercase text-blue-400 tracking-[0.2em] leading-none">
-                    {ownerName.toUpperCase()}
+                  <span className="text-[7px] font-black uppercase text-zinc-500 tracking-[0.3em] block mb-1">NODE_OWNER</span>
+                  <p className="text-[10px] font-black uppercase text-blue-400 tracking-[0.1em] leading-none">
+                    {ownerName}
                   </p>
                 </motion.div>
               )}
@@ -96,25 +102,28 @@ export default function DixitCard({
           </div>
 
           {/* 🗳️ VOTER TOKENS */}
-          <div className="flex flex-wrap justify-end gap-1.5">
-            <AnimatePresence>
-              {voters.map((voter, i) => (
-                <motion.div
-                  key={voter._id}
-                  initial={{ scale: 0, rotate: 180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ delay: 0.8 + i * 0.1, type: "spring" }}
-                  className="w-8 h-8 rounded-full bg-blue-500 border-2 border-white/20 shadow-lg flex items-center justify-center relative group"
-                >
-                  <span className="text-[10px] text-white font-black">
-                    {voter.name.charAt(0).toUpperCase()}
-                  </span>
-                  <div className="absolute bottom-full mb-2 hidden group-hover:block bg-black text-white text-[7px] font-black px-2 py-1 rounded border border-white/10 uppercase tracking-widest whitespace-nowrap">
-                    {voter.name}
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
+          <div className="flex flex-col items-end gap-1.5">
+            {voters.length > 0 && (
+              <span className="text-[7px] font-black uppercase text-zinc-500 tracking-[0.3em] bg-black/40 px-2 py-0.5 rounded-full mb-1">RECEIVED_GUESSES ({voters.length})</span>
+            )}
+            <div className="flex flex-col gap-1.5 items-end max-h-[60%] overflow-hidden">
+              <AnimatePresence>
+                {voters.map((voter, i) => (
+                  <motion.div
+                    key={voter._id}
+                    initial={{ x: 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.8 + i * 0.1, type: "spring" }}
+                    className="bg-white/95 text-black px-3 py-1 rounded-lg border-l-4 border-blue-500 shadow-lg flex items-center gap-2"
+                  >
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                    <span className="text-[9px] font-black uppercase tracking-tight truncate max-w-[80px]">
+                      {voter.name}
+                    </span>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       )}

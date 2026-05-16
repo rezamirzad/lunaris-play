@@ -28,7 +28,7 @@ export default function VotingReveal({ roomData }: VotingRevealProps) {
   const storytellerId = roomData.turnOrder[roomData.currentTurnIndex];
 
   return (
-    <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-6 pt-4">
+    <div className="flex-1 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 pt-4">
       <AnimatePresence mode="popLayout">
         {displayCards.map((submission: { cardId: string; playerId: Doc<"players">["_id"] }, index: number) => {
           const isRevealed = board.phase === "VOTING" || isResults;
@@ -66,12 +66,13 @@ export default function VotingReveal({ roomData }: VotingRevealProps) {
               {/* Cinematic Entrance for the Storyteller Badge */}
               {isResults && isSTCard && (
                 <motion.div
-                  initial={{ scale: 0, rotate: -20 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ delay: 0.5, type: "spring" }}
-                  className="absolute -top-3 -right-3 z-30 bg-blue-500 text-white text-[8px] font-black px-3 py-1 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.6)] uppercase tracking-widest border border-white/20"
+                  initial={{ scale: 0, rotate: -20, y: 10 }}
+                  animate={{ scale: 1, rotate: 0, y: 0 }}
+                  transition={{ delay: 0.5, type: "spring", stiffness: 400, damping: 10 }}
+                  className="absolute -top-4 -right-4 z-30 bg-blue-500 text-white px-4 py-2 rounded-2xl shadow-[0_0_30px_rgba(59,130,246,0.6)] border-2 border-white/40 flex flex-col items-center"
                 >
-                  Storyteller
+                  <span className="text-[7px] font-black uppercase tracking-[0.3em] opacity-80 mb-0.5">ORIGINAL_NODE</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest">Storyteller</span>
                 </motion.div>
               )}
             </motion.div>
