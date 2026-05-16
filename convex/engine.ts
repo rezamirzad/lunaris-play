@@ -64,7 +64,10 @@ export const getRoomState = query({
 export const getLeaderboard = query({
   args: {},
   handler: async (ctx) => {
-    const users = await ctx.db.query("users").collect();
+    const users = await ctx.db
+      .query("users")
+      .filter((q) => q.neq(q.field("name"), "ADMIN_NODE"))
+      .collect();
     return users
       .sort((a, b) => (b.wins || 0) - (a.wins || 0))
       .slice(0, 10);

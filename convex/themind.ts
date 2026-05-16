@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import { mutation } from "./_generated/server";
 import { Doc } from "./_generated/dataModel";
 import { GamePlugin, GameMutationCtx } from "./types";
-import { finishTurn } from "./transitions";
+import { finishTurn, updateLeaderboardAtGameEnd } from "./transitions";
 
 /**
  * Standard Fisher-Yates Shuffle
@@ -99,7 +99,7 @@ export const handleAction = mutation({
       if (lowerCards.length > 0) {
         // Penalty: lose a life
         const newLives = board.lives - 1;
-        const nextPhase = newLives <= 0 ? "GAME_OVER" : "PLAYING";
+        const nextPhase = (newLives <= 0 ? "GAME_OVER" : "PLAYING") as "GAME_OVER" | "PLAYING";
 
         // Remove played card and ALL lower cards from all hands and move to discardPile
         const newHands: Record<string, number[]> = {};
@@ -112,32 +112,41 @@ export const handleAction = mutation({
 
         const isFailure = nextPhase === "GAME_OVER";
 
+        const patchedGameBoard = {
+          ...board,
+          lives: newLives,
+          phase: nextPhase,
+          hands: newHands,
+          topCard: card,
+          lastPlayedBy: player._id,
+          discardPile: newDiscardPile,
+          winner: isFailure ? "FAILURE" : board.winner,
+          history: [
+            ...board.history,
+            { 
+              key: "LOG_MISTAKE", 
+              data: { 
+                player: player.name, 
+                played: String(card),
+                discarded: lowerCards.map(String) 
+              } 
+            },
+          ] as any,
+        };
+
         await ctx.db.patch(room._id, {
           status: isFailure ? "FINISHED" : room.status,
-          gameBoard: {
-            ...board,
-            lives: newLives,
-            phase: nextPhase,
-            hands: newHands,
-            topCard: card,
-            lastPlayedBy: player._id,
-            discardPile: newDiscardPile,
-            winner: isFailure ? "FAILURE" : board.winner,
-            history: [
-              ...board.history,
-              { 
-                key: "LOG_MISTAKE", 
-                data: { 
-                  player: player.name, 
-                  played: String(card),
-                  discarded: lowerCards.map(String) 
-                } 
-              },
-            ] as any,
-          },
+          gameBoard: patchedGameBoard,
         });
 
-        if (!isFailure) {
+        if (isFailure) {
+          const players = await ctx.db
+            .query("players")
+            .withIndex("by_room", (q) => q.eq("roomId", room._id))
+            .collect();
+          const updatedRoom = { ...room, gameBoard: patchedGameBoard } as any;
+          await updateLeaderboardAtGameEnd(ctx, updatedRoom, players);
+        } else {
           await checkLevelWin(ctx, room._id, newHands);
         }
       } else {
@@ -227,14 +236,22 @@ async function nextLevel(ctx: GameMutationCtx, roomId: Doc<"rooms">["_id"]) {
   const nextLvl = board.level + 1;
 
   if (nextLvl > 12) {
+    const patchedGameBoard = { 
+      ...board, 
+      phase: "VICTORY",
+      winner: "TEAM"
+    };
     await ctx.db.patch(roomId, {
       status: "FINISHED",
-      gameBoard: { 
-        ...board, 
-        phase: "VICTORY",
-        winner: "TEAM"
-      },
+      gameBoard: patchedGameBoard as any,
     });
+
+    const players = await ctx.db
+      .query("players")
+      .withIndex("by_room", (q) => q.eq("roomId", roomId))
+      .collect();
+    const updatedRoom = { ...room, gameBoard: patchedGameBoard } as any;
+    await updateLeaderboardAtGameEnd(ctx, updatedRoom, players);
     return;
   }
 

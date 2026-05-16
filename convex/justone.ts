@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { mutation } from "./_generated/server";
 import { Doc, Id } from "./_generated/dataModel";
 import { GamePlugin, GameMutationCtx } from "./types";
+import { updateLeaderboardAtGameEnd } from "./transitions";
 import { justoneDictionary, NexusWord } from "./justone_words";
 
 /**
@@ -300,14 +301,18 @@ export const handleAction = mutation({
         .collect();
 
       if (board.round >= 13) {
+        const patchedGameBoard = {
+          ...board,
+          phase: "GAME_OVER",
+          winner: "TEAM",
+        };
         await ctx.db.patch(room._id, {
           status: "FINISHED",
-          gameBoard: {
-            ...board,
-            phase: "GAME_OVER",
-            winner: "TEAM",
-          },
+          gameBoard: patchedGameBoard as any,
         });
+
+        const updatedRoom = { ...room, gameBoard: patchedGameBoard } as any;
+        await updateLeaderboardAtGameEnd(ctx, updatedRoom, players);
         return;
       }
 

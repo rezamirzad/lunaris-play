@@ -9,7 +9,7 @@ import MatchActivity from "../../shared/MatchActivity";
 import { BoardProps } from "../registry";
 import NeuralNode from "./NeuralNode";
 import TheMindLogMessage from "./MatchActivity";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 
 export default function TheMindBoard({ roomData }: BoardProps) {
   const { t, lang } = useTranslation();
@@ -26,14 +26,20 @@ export default function TheMindBoard({ roomData }: BoardProps) {
   }, [board]);
 
   const [mistakeToShow, setMistakeToShow] = useState<any>(null);
+  const lastMistakeIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (lastMistake) {
-      setMistakeToShow(lastMistake);
-      const timer = setTimeout(() => setMistakeToShow(null), 8000);
-      return () => clearTimeout(timer);
+      // Use history length + player + card to ensure uniqueness
+      const mistakeId = `${board?.history.length}-${lastMistake.data.player}-${lastMistake.data.played}`;
+      if (mistakeId !== lastMistakeIdRef.current) {
+        lastMistakeIdRef.current = mistakeId;
+        setMistakeToShow(lastMistake);
+        const timer = setTimeout(() => setMistakeToShow(null), 5000);
+        return () => clearTimeout(timer);
+      }
     }
-  }, [lastMistake]);
+  }, [lastMistake, board?.history.length]);
 
   useEffect(() => {
     if (board?.topCard !== lastTopCard) {
@@ -248,10 +254,11 @@ export default function TheMindBoard({ roomData }: BoardProps) {
                       exit={{ scale: 1.5, opacity: 0 }}
                       className="flex flex-col items-center"
                     >
-                      <span className="text-[10px] text-teal-500 font-black tracking-[0.5em] mb-2">TRANSMISSION_ID</span>
-                      <h2 className="text-8xl font-black italic tracking-tighter text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.4)]">
-                        {board.topCard}
-                      </h2>
+                      <NeuralNode 
+                        val={board.topCard} 
+                        isInteractable={false}
+                        className="scale-90"
+                      />
                     </motion.div>
                   ) : (
                     <motion.div
