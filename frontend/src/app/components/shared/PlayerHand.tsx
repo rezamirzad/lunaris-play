@@ -50,7 +50,7 @@ export default function PlayerHand({
             className={`h-2 w-2 rounded-full ${isMyTurn ? "bg-teal-400 shadow-[0_0_10px_rgba(45,212,191,1)] animate-pulse" : "bg-zinc-700"}`}
           />
           <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">
-            {playerName}_UPLINK // {t.hand || "HAND"}: (
+            {playerName} // {t.hand}: (
             {isFA ? toPersianDigits(hand.length) : hand.length})
           </span>
         </motion.div>

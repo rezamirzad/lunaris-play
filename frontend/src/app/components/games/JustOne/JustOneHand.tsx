@@ -96,7 +96,7 @@ export default function JustOneHand({
         <div className="mb-8 text-center bg-black/40 rounded-3xl p-8 border border-white/5 relative overflow-hidden">
           <div className="absolute inset-0 bg-orange-500/5 scanline" />
           <h2 className="text-orange-400 font-black uppercase text-xl italic tracking-tighter relative z-10">
-            You are the Guesser
+            {t.justone_guesser}
           </h2>
         </div>
 
@@ -115,7 +115,7 @@ export default function JustOneHand({
                 <div className="w-16 h-16 rounded-full border-4 border-t-orange-500 border-r-transparent border-b-transparent border-l-transparent animate-spin" />
                 <p className="text-zinc-500 uppercase tracking-[0.4em] font-black text-xs max-w-[250px]">
                   {board.phase === "LENIENT_VALIDATION"
-                    ? "UPLINK_PENDING: HACKERS VERIFYING GUESS..."
+                    ? t.justone_consensus_required
                     : t.justone_standby}
                 </p>
               </motion.div>
@@ -128,7 +128,7 @@ export default function JustOneHand({
               >
                 <div className="w-full space-y-4">
                   <label className="text-[8px] font-black text-teal-500 uppercase tracking-[0.4em] px-2">
-                    DECRYPTION_INPUT
+                    {t.justone_decryption_input}
                   </label>
                   <input
                     autoFocus
@@ -152,7 +152,7 @@ export default function JustOneHand({
                     }}
                     className="w-full py-6 bg-white text-black font-black uppercase rounded-2xl tracking-[0.2em] touch-manipulation select-none"
                   >
-                    EXECUTE_DECRYPTION
+                    {t.justone_execute_guess}
                   </motion.button>
                   <button
                     onClick={() => handleGuessSubmit(true)}
@@ -170,10 +170,10 @@ export default function JustOneHand({
                 className="flex flex-col items-center gap-6"
               >
                 <div className="text-[10px] font-black tracking-[0.4em] text-zinc-600 uppercase">
-                  AWAITING_SYNC_ADVANCEMENT
+                  {t.justone_waiting_sync}
                 </div>
                 <div className="text-xs text-zinc-400 font-bold uppercase italic">
-                  The word was: {localizedMysteryWord}
+                  {t.justone_target_word}: {localizedMysteryWord}
                 </div>
               </motion.div>
             ) : null}
@@ -183,7 +183,7 @@ export default function JustOneHand({
     );
   }
 
-  // 2. HACKER VIEW (Non-guesser)
+  // 2. HELPER VIEW (Non-guesser)
   return (
     <div className="flex flex-col h-full font-mono p-4 lg:p-8">
       {/* HEADER */}
@@ -191,7 +191,7 @@ export default function JustOneHand({
         <div className="absolute inset-0 bg-teal-500/5 scanline" />
         <div className="relative z-10">
           <span className="text-[8px] font-black text-teal-500 uppercase tracking-[0.4em]">
-            The target word
+            {t.justone_mystery_word}
           </span>
           <h2 className="text-2xl font-black text-white italic tracking-tighter uppercase">
             {localizedMysteryWord}
@@ -199,9 +199,9 @@ export default function JustOneHand({
         </div>
         <div className="relative z-10 text-right">
           <span className="text-[8px] font-black text-zinc-600 uppercase tracking-[0.4em]">
-            ROLE
+            {t.shared_status}
           </span>
-          <div className="text-xs font-black text-zinc-400">HELPER</div>
+          <div className="text-xs font-black text-zinc-400">{t.justone_helper}</div>
         </div>
       </div>
 
@@ -219,16 +219,16 @@ export default function JustOneHand({
                 <div className="flex flex-col items-center gap-6 text-center">
                   <div className="text-4xl animate-pulse">🔒</div>
                   <p className="text-zinc-500 uppercase tracking-[0.4em] font-black text-[10px]">
-                    DATA_PACKET_ENCRYPTED
+                    {t.justone_clue_submitted}
                     <br />
-                    AWAITING_OTHER_HACKERS
+                    {t.justone_waiting_sync}
                   </p>
                 </div>
               ) : (
                 <>
                   <div className="w-full space-y-4">
                     <label className="text-[8px] font-black text-teal-500 uppercase tracking-[0.4em] px-2">
-                      CLUE
+                      {t.justone_clue_input}
                     </label>
                     <input
                       autoFocus
@@ -250,7 +250,7 @@ export default function JustOneHand({
                     }}
                     className="w-full py-6 bg-teal-500 text-black font-black uppercase rounded-2xl tracking-[0.2em] shadow-lg shadow-teal-500/20 touch-manipulation select-none"
                   >
-                    SUBMIT CLUE
+                    {t.justone_submit_clue}
                   </motion.button>
                 </>
               )}
@@ -310,7 +310,7 @@ export default function JustOneHand({
                   }`}
                 >
                   {hasConfirmedValidation
-                    ? "WAITING_FOR_HACKERS"
+                    ? t.justone_waiting_sync
                     : t.justone_confirm_data}
                 </motion.button>
               </div>
@@ -324,11 +324,11 @@ export default function JustOneHand({
             >
               <div className="text-center space-y-4">
                 <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em]">
-                  LENIENT_VALIDATION_PROTOCOL
+                  {t.justone_consensus_required}
                 </span>
                 <div className="flex flex-col gap-2">
                   <div className="text-xs font-bold text-zinc-500 uppercase">
-                    INFILTRATOR GUESSED:
+                    {t.justone_guesser} {t.activeTurn}:
                   </div>
                   <div className="text-3xl font-black text-white italic underline decoration-teal-500/50 underline-offset-8">
                     {board.lastGuess}
@@ -336,7 +336,7 @@ export default function JustOneHand({
                 </div>
                 <div className="pt-4 flex flex-col gap-2">
                   <div className="text-xs font-bold text-zinc-500 uppercase">
-                    TARGET_NODE WAS:
+                    {t.justone_target_word}:
                   </div>
                   <div className="text-2xl font-black text-teal-400">
                     {localizedMysteryWord}
@@ -356,7 +356,7 @@ export default function JustOneHand({
                         : "bg-white text-black border-transparent"
                     }`}
                   >
-                    ACCEPT
+                    {t.justone_accepted}
                   </motion.button>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
@@ -368,11 +368,11 @@ export default function JustOneHand({
                         : "bg-zinc-800 text-white border-transparent"
                     }`}
                   >
-                    REJECT
+                    {t.justone_rejected}
                   </motion.button>
                 </div>
                 <p className="text-[8px] text-center text-zinc-600 uppercase tracking-widest animate-pulse">
-                  UNANIMOUS_CONSENT_REQUIRED
+                  {t.justone_consensus_required}
                 </p>
               </div>
             </motion.div>
@@ -387,9 +387,9 @@ export default function JustOneHand({
                 <div className="w-2 h-2 bg-teal-500 rounded-full animate-ping" />
               </div>
               <p className="text-zinc-500 uppercase tracking-[0.4em] font-black text-[10px]">
-                UPLINK_BROADCASTING
+                {t.justone_clue_submitted}
                 <br />
-                AWAITING_INFILTRATOR_DECISION
+                {t.justone_standby}
               </p>
 
               {board.phase === "ROUND_RESULTS" && (
@@ -399,7 +399,7 @@ export default function JustOneHand({
                   onClick={handleNextRound}
                   className="mt-8 px-12 py-4 bg-zinc-800 text-white font-black uppercase text-xs rounded-xl tracking-widest hover:bg-teal-500 hover:text-black transition-all touch-manipulation select-none"
                 >
-                  INITIATE_NEXT_CYCLE
+                  {t.startMatch}
                 </motion.button>
               )}
             </motion.div>

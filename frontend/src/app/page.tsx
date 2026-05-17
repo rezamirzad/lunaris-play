@@ -103,7 +103,7 @@ function HomeContent() {
             <div className="flex items-center justify-center gap-4">
               <div className="h-[1px] w-12 bg-brand-accent/20" />
               <p className="text-brand-accent font-bold tracking-[0.5em] text-[10px] uppercase">
-                Made by Lunaris Tech Group
+                {t.madeBy}
               </p>
               <div className="h-[1px] w-12 bg-brand-accent/20" />
             </div>
@@ -242,7 +242,7 @@ function HomeContent() {
 
       <footer className="max-w-6xl mx-auto w-full mt-32 pb-12 text-center opacity-60 relative z-10">
         <p className="text-[10px] font-black tracking-[0.6em] text-teal-400/80 uppercase">
-          Lunaris Tech Group &copy; 2026
+          {t.madeBy} &copy; 2026
         </p>
       </footer>
     </main>

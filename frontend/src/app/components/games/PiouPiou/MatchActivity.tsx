@@ -77,7 +77,7 @@ export default function MatchActivity({ log }: { log: ActivityLog }) {
     default:
       return (
         <span className="text-zinc-500 uppercase tracking-widest">
-          {player}_EVENT: {log.key.replace("LOG_", "")}
+          {player}: {log.key.replace("LOG_", "")}
         </span>
       );
   }

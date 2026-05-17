@@ -13,7 +13,7 @@ export default function TheMindPlayerView({
   roomData,
   isMyTurn,
 }: PlayerProps) {
-  const { lang } = useTranslation();
+  const { lang, t } = useTranslation();
   const isFA = lang === "fa";
   
   const board = roomData.gameBoard.gameType === "themind" ? roomData.gameBoard : null;
@@ -45,7 +45,7 @@ export default function TheMindPlayerView({
                   className={`h-2 w-2 rounded-full ${isMyTurn ? "bg-teal-400 shadow-[0_0_10px_rgba(45,212,191,0.8)] animate-pulse" : "bg-zinc-700"}`}
                 />
                 <span className="text-[10px] text-zinc-500 uppercase tracking-[0.3em]">
-                  {isMyTurn ? "UPLINK_READY" : "WAITING_SYNC"}
+                  {isMyTurn ? t.ready : t.waiting}
                 </span>
               </div>
 
@@ -55,8 +55,8 @@ export default function TheMindPlayerView({
 
               <div className="mt-6 border-t border-white/5 pt-6 flex justify-between items-end">
                 <div className="flex flex-col">
-                  <span className="text-[8px] uppercase tracking-[0.2em] text-zinc-500 mb-1 font-black">
-                    INTEGRITY
+                  <span className="text-[7px] uppercase tracking-[0.4em] text-zinc-500 mb-1 font-black opacity-60">
+                    {t.themind_lives}
                   </span>
                   <div className="flex gap-1">
                     {Array.from({ length: 5 }).map((_, i) => (

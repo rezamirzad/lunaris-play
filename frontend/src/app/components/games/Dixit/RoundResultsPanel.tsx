@@ -46,7 +46,7 @@ export default function RoundResultsPanel({
       <div className="flex items-center justify-between mb-8">
         <div className="space-y-1">
           <span className="text-[8px] tracking-[0.6em] text-blue-400 font-black uppercase opacity-60">
-            SEQUENCE_CALCULATION_COMPLETE
+            {t.results}
           </span>
           <h2 className="text-3xl font-black italic tracking-tighter text-white uppercase">
             {t.dixit_round_summary || "ROUND_SUMMARY"}
@@ -87,7 +87,7 @@ export default function RoundResultsPanel({
                       {player.name} {isLeader && "👑"}
                     </span>
                     <span className="text-[8px] text-zinc-500 font-bold tracking-widest">
-                      TOTAL:{" "}
+                      {t.dixit_score}:{" "}
                       {isFA
                         ? toPersianDigits(totalScore || 0)
                         : totalScore || 0}
@@ -102,7 +102,7 @@ export default function RoundResultsPanel({
                     +{isFA ? toPersianDigits(pointsEarned) : pointsEarned}
                   </span>
                   <span className="text-[7px] text-zinc-600 font-bold uppercase tracking-widest">
-                    PTS
+                    {t.shared_points}
                   </span>
                 </div>
               </motion.div>

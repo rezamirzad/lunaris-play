@@ -47,17 +47,17 @@ function AdminDashboard() {
           <div className="flex items-center gap-6">
             <div className="flex flex-col items-end">
               <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest">
-                SYSTEM_STATUS
+                System Status
               </span>
               <span className="text-[10px] font-black text-teal-400 uppercase">
-                ENCRYPTED_UPLINK
+                CONNECTED
               </span>
             </div>
             <button
               onClick={() => (window.location.href = "/")}
               className="px-4 py-1.5 border border-white/10 rounded-lg text-[9px] font-black text-zinc-500 hover:text-white hover:bg-white/5 transition-all uppercase tracking-widest"
             >
-              TERMINATE_SESSION
+              EXIT DASHBOARD
             </button>
           </div>
         </div>

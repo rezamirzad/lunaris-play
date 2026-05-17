@@ -45,9 +45,9 @@ export default function Leaderboard() {
                   {user.name}
                 </span>
                 <span className="text-[7px] text-zinc-600 font-bold uppercase tracking-widest">
-                  GAMES:{" "}
+                  {t.game}:{" "}
                   {isFA ? toPersianDigits(user.gamesPlayed) : user.gamesPlayed}{" "}
-                  {" // WINS: "}
+                  {" // "} {t.wins}: {" "}
                   {isFA ? toPersianDigits(user.wins) : user.wins}
                 </span>
               </div>
@@ -58,7 +58,7 @@ export default function Leaderboard() {
                 {isFA ? toPersianDigits(user.totalScore) : user.totalScore}
               </span>
               <span className="text-[6px] text-zinc-600 font-black uppercase tracking-widest">
-                SYNC_POINTS
+                {t.shared_score}
               </span>
             </div>
           </div>
@@ -116,10 +116,9 @@ export default function Leaderboard() {
           </motion.div>
         </div>
 
-        {/* The persistent footer, anchored to the bottom */}
         <div className="relative z-20 p-4 bg-zinc-950 border-t border-white/5 text-center shrink-0">
           <p className="text-[7px] font-black text-zinc-700 uppercase tracking-[0.4em]">
-            {"GLOBAL_LEADERBOARD_v1.0 // PERSISTENT_STORAGE_ACTIVE"}
+            {t.footer}
           </p>
         </div>
       </div>

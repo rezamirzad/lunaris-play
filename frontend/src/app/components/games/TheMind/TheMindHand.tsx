@@ -91,7 +91,7 @@ export default function TheMindHand({
               >
                 <div className={`w-1.5 h-1.5 rounded-full ${isGameOver ? "bg-rose-500 animate-pulse" : "bg-teal-500"}`} />
                 <span className="text-[7px] font-black tracking-[0.3em] uppercase">
-                   {isGameOver ? "MISSION_FAILED" : "MISSION_SUCCESS"}
+                   {isGameOver ? t.themind_game_over : t.themind_victory}
                 </span>
               </motion.div>
             ) : (
@@ -101,13 +101,13 @@ export default function TheMindHand({
             )}
             
             <p className="text-[8px] text-zinc-500 uppercase tracking-[0.4em] font-black opacity-60">
-               {formatLog(t.themind_level, { level: isFA ? toPersianDigits(board.level) : board.level }, initialLang)} {" // INTEGRITY: "} {board.lives}/5
+               {formatLog(t.themind_level, { level: isFA ? toPersianDigits(board.level) : board.level }, initialLang)} {" // "} {t.themind_lives}: {board.lives}/5
             </p>
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* FREQUENCY NODES GRID */}
+      {/* CARDS GRID */}
       <div className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-2 lg:gap-4 overflow-y-auto no-scrollbar pb-12 lg:pb-0 px-4" dir="ltr">
         <AnimatePresence>
           {rows.length > 0 ? (
@@ -131,7 +131,7 @@ export default function TheMindHand({
               animate={{ opacity: 1 }}
               className="text-zinc-700 text-[10px] font-black uppercase tracking-[0.6em]"
             >
-              Uplink_Clear // Awaiting_Nodes
+              {t.themind_awaiting_play}
             </motion.div>
           ) : isAwaitingNextLevel ? (
             <motion.div 
@@ -139,8 +139,8 @@ export default function TheMindHand({
                animate={{ scale: 1, opacity: 1 }}
                className="text-teal-400 text-center flex flex-col gap-4"
              >
-               <span className="text-[10px] font-black uppercase tracking-[0.4em]">LEVEL_COMPLETE</span>
-               <p className="text-[8px] text-zinc-500 uppercase tracking-widest">Awaiting Command...</p>
+               <span className="text-[10px] font-black uppercase tracking-[0.4em]">{t.themind_victory}</span>
+               <p className="text-[8px] text-zinc-500 uppercase tracking-widest">{t.waiting}</p>
              </motion.div>
           ) : isFinished && (
              <motion.div 
@@ -148,7 +148,7 @@ export default function TheMindHand({
                animate={{ opacity: 1 }}
                className="text-zinc-700 text-[10px] font-black uppercase tracking-[0.6em] text-center"
              >
-               TERMINAL_LOCKED<br/>SESSION_COMPLETE
+               {t.themind_terminal_locked}
              </motion.div>
           )}
         </AnimatePresence>
@@ -163,7 +163,7 @@ export default function TheMindHand({
              onClick={() => window.location.href = "/"}
              className="w-full py-8 bg-white text-black font-black text-xl tracking-[0.4em] uppercase rounded-[2.5rem] shadow-2xl hover:bg-teal-400 transition-all touch-manipulation select-none"
            >
-             RETURN_TO_ARCADE
+             {t.exit}
            </motion.button>
         ) : isAwaitingNextLevel ? (
            <motion.button
@@ -177,13 +177,13 @@ export default function TheMindHand({
              }}
              className="w-full py-8 bg-teal-500 text-black font-black text-xl tracking-[0.4em] uppercase rounded-[2.5rem] shadow-[0_0_50px_rgba(45,212,191,0.4)] hover:bg-teal-400 transition-all touch-manipulation select-none"
            >
-             START LEVEL {board.level + 1}
+             {t.themind_start_level} {board.level + 1}
            </motion.button>
         ) : (
           <>
             <div className="flex justify-between items-end px-2">
-               <span className="text-[8px] font-black text-zinc-600 uppercase tracking-[0.4em]">EMP_OVERRIDE_CAPACITY</span>
-               <span className="text-[10px] font-black text-blue-400 tabular-nums">{board.emps} Available</span>
+               <span className="text-[8px] font-black text-zinc-600 uppercase tracking-[0.4em]">{t.themind_shurikens}</span>
+               <span className="text-[10px] font-black text-blue-400 tabular-nums">{board.emps} {t.available}</span>
             </div>
             
             <motion.button
@@ -207,10 +207,10 @@ export default function TheMindHand({
               
               <div className="flex flex-col items-center relative z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
                  {isTeammateRequesting && (
-                   <span className="text-[10px] tracking-[0.2em] mb-1 opacity-80">TEAMMATE REQUESTS EMP</span>
+                    <span className="text-[10px] tracking-[0.2em] mb-1 text-yellow-200 animate-pulse font-black uppercase">{t.themind_shuriken_request}</span>
                  )}
                  <span className="text-2xl tracking-[0.4em]">
-                    {amIVoting ? "VOTE ACTIVE" : isTeammateRequesting ? "TAP TO CONFIRM" : "INITIATE EMP"}
+                    {amIVoting ? t.themind_shuriken_vote : isTeammateRequesting ? t.themind_shuriken_confirm : t.themind_shurikens}
                  </span>
               </div>
               

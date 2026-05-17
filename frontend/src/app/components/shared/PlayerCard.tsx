@@ -83,7 +83,7 @@ export default function PlayerCard({
                   isCurrentTurn ? "text-blue-400" : 
                   isReady ? "text-teal-400/70" : "text-zinc-600"
                 }`}>
-                  {statusOverride || (isCurrentTurn ? "ACTIVE_NODE" : isReady ? "SYNCED" : "AWAITING")}
+                  {statusOverride || (isCurrentTurn ? t.activeTurn : isReady ? t.ready : t.waiting)}
                 </span>
               </div>
             )}

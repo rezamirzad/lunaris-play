@@ -95,9 +95,9 @@ export default function DixitHand({
     if (isST) {
       if (isAllOrNone) {
         if (everyoneGuessed) {
-          reasons.push(`${t.dixit_st_fail_all} (0 pts)`);
+          reasons.push(`${t.dixit_st_fail_all} (0 ${t.shared_points})`);
         } else {
-          reasons.push(`${t.dixit_st_fail_none} (0 pts)`);
+          reasons.push(`${t.dixit_st_fail_none} (0 ${t.shared_points})`);
         }
       } else {
         reasons.push(`${t.dixit_st_bonus} (+3)`);
@@ -167,7 +167,7 @@ export default function DixitHand({
               className="space-y-3"
             >
               <h2 className="text-blue-500 font-black uppercase text-4xl italic tracking-tighter">
-                +{isFA ? toPersianDigits(roundPoints) : roundPoints} PTS
+                +{isFA ? toPersianDigits(roundPoints) : roundPoints} {t.shared_points}
               </h2>
               <div className="flex flex-wrap justify-center gap-2">
                 {pointReasons?.map((reason, idx) => (
@@ -191,8 +191,8 @@ export default function DixitHand({
                 className={`font-black uppercase text-xl italic tracking-tighter ${isST ? "text-blue-400" : "text-white"}`}
               >
                 {isST
-                  ? `⚡ YOU ARE THE STORYTELLER ⚡`
-                  : `WAITING FOR ${storytellerName.toUpperCase()}`}
+                  ? t.storyteller
+                  : `${t.waiting} ${storytellerName.toUpperCase()}`}
               </h2>
 
               {/* 🔍 CLUE READOUT FOR ALL NODES */}
@@ -204,7 +204,7 @@ export default function DixitHand({
                 >
                   <div className="absolute inset-0 bg-blue-400/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <span className="text-[8px] text-blue-400 font-black tracking-[0.4em] mb-1 block">
-                    STORY_CLUE_TRANSMISSION
+                    {t.dixit_clue_received}
                   </span>
                   <p className="text-xl font-black text-white italic tracking-tight [text-shadow:0_0_15px_rgba(59,130,246,0.3)] leading-none uppercase">
                     &quot;{board.currentClue}&quot;
@@ -336,11 +336,11 @@ export default function DixitHand({
             <span className="relative z-10 group-hover:text-white transition-colors">
               {board?.phase === "RESULTS"
                 ? isST
-                  ? "INITIATE NEXT ROUND"
-                  : "WAITING FOR PREVIOUS STORYTELLER"
+                  ? t.matchInitiation
+                  : t.dixit_wait_storyteller
                 : isWaitingPhase
-                  ? "WAITING FOR OTHERS"
-                  : "SUBMIT"}
+                  ? t.dixit_wait_others_action
+                  : t.action}
             </span>
           </motion.button>
         </div>

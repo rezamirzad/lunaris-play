@@ -47,7 +47,7 @@ export default function PiouPiouPlayerView({ player, roomData }: PlayerProps) {
   const attackerPlayer = roomData.players.find(
     (p) => String(p._id) === String(attackerId),
   );
-  const attackerName = attackerPlayer?.name || "An Unknown Predator";
+  const attackerName = attackerPlayer?.name || t.unknown_predator;
 
   const isMyTurn = useMemo(() => {
     if (isAttackActive) return isVictim;
@@ -123,6 +123,19 @@ export default function PiouPiouPlayerView({ player, roomData }: PlayerProps) {
   }, [player.gameHand]);
 
   const canDefend = roosterCount >= 2;
+
+  const getActionLabel = () => {
+    if (isTargetRequired && !targetId) return t.targetPlayer;
+    if (!protocol) return t.waiting_for_sequence;
+    
+    switch (protocol) {
+      case "STEAL_EGG": return t.hintSteal;
+      case "LAY_EGG": return t.hintLayEgg;
+      case "HATCH": return t.hintHatch;
+      case "DISCARD": return t.discard;
+      default: return protocol;
+    }
+  };
 
   return (
     <div className="relative min-h-[calc(100vh-180px)] bg-zinc-950/50 rounded-[3rem] overflow-hidden flex flex-col font-mono">
@@ -351,11 +364,7 @@ export default function PiouPiouPlayerView({ player, roomData }: PlayerProps) {
                     : "opacity-20 border-white/5 text-zinc-600"
                 }`}
               >
-                {isTargetRequired && !targetId
-                  ? "SELECT_TARGET"
-                  : protocol
-                    ? protocol.replace("_", " ")
-                    : "WAITING_FOR_SEQUENCE"}
+                {getActionLabel()}
               </motion.button>
 
               {protocol === "STEAL_EGG" && isMyTurn && (

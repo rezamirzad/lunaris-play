@@ -64,7 +64,7 @@ export default function RoomHeader({
             </motion.div>
             <div className="flex items-baseline gap-4">
               <h1 className="text-3xl lg:text-4xl font-black italic uppercase tracking-tighter text-white leading-none">
-                LUNARIS
+                {t.title}
               </h1>
               <h2 className="text-[16px] lg:text-[20px] font-bold uppercase tracking-[0.3em] text-teal-400 italic">
                 {gameTitle?.toUpperCase() || t.lobby}

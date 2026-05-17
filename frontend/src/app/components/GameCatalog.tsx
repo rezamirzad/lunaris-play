@@ -166,12 +166,8 @@ export default function GameCatalog({
                           {t.players}
                         </span>
                       </div>
-                      <span className="text-zinc-50 font-black text-[10px] tracking-tighter">
-                        (up to{" "}
-                        {isFA
-                          ? toPersianDigits(game.absoluteMax)
-                          : game.absoluteMax}
-                        )
+                      <span className="text-zinc-500 font-black text-[9px] tracking-tighter uppercase ml-2 opacity-60">
+                        {t.maxLabel}: {isFA ? toPersianDigits(game.absoluteMax) : game.absoluteMax}
                       </span>
                     </div>
                     <h3 className="text-3xl sm:text-4xl font-black italic uppercase  text-white leading-none group-hover:text-teal-400 transition-colors">

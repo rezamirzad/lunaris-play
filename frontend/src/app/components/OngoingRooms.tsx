@@ -112,7 +112,7 @@ export default function OngoingRooms({
                 disabled={isFinished}
                 className={`py-2.5 rounded-xl text-[12px] font-black uppercase tracking-widest transition-all ${isFinished ? "bg-zinc-950 text-zinc-500 cursor-not-allowed border border-white/5" : "bg-teal-400/10 border border-teal-400/30 text-teal-400 hover:text-white"}`}
               >
-                {isFinished ? "Ended" : "Join"}
+                {isFinished ? t.statusArchived : t.enterLobby}
               </motion.button>
             </div>
           </motion.div>

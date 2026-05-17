@@ -58,16 +58,16 @@ export default function LobbyInitialization({
 
   const renderLanguageSelector = () => {
     const langs: { id: "en" | "fr" | "de" | "fa"; label: string }[] = [
-      { id: "en", label: "EN_PROT" },
-      { id: "fr", label: "FR_PROT" },
-      { id: "de", label: "DE_PROT" },
-      { id: "fa", label: "FA_PROT" },
+      { id: "en", label: "English" },
+      { id: "fr", label: "Français" },
+      { id: "de", label: "Deutsch" },
+      { id: "fa", label: "Farsi" },
     ];
 
     return (
       <div className="space-y-4">
         <h3 className="text-[8px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center">
-          LANGUAGE_SETTINGS
+          {t.shared_language}
         </h3>
         <div className="flex gap-4 p-4 bg-zinc-900/50 border border-white/5 rounded-2xl">
           {langs.map((l) => (
@@ -160,7 +160,7 @@ export default function LobbyInitialization({
           <div className="h-[1px] w-20 bg-teal-400/20" />
           <div className="flex items-center gap-3">
             <div className="h-2 w-2 bg-teal-400 rounded-full animate-pulse shadow-[0_0_15px_rgba(45,212,191,1)]" />
-            <span className="text-[10px] tracking-[0.6em] text-teal-400 font-black">
+            <span className="text-[10px] tracking-[0.6em] text-teal-400 font-black uppercase">
               {t.lobbyInitiation}
             </span>
           </div>

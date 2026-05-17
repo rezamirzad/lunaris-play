@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useMemo } from "react";
 import { GAME_REGISTRY } from "../games/registry";
 
+import { useTranslation } from "@/hooks/useTranslation";
+
 interface MatchBootupSequenceProps {
   onComplete: () => void;
   gameTitle: string;
@@ -12,24 +14,25 @@ interface MatchBootupSequenceProps {
 
 /**
  * MatchBootupSequence: Ultra-high fidelity 'Top Class' transition.
- * Vibe: Neural-link calibration and data stream synchronization.
+ * Vibe: Cinematic game preparation.
  */
 export default function MatchBootupSequence({
   onComplete,
   gameTitle,
   gameSlug,
 }: MatchBootupSequenceProps) {
+  const { t } = useTranslation();
   const [progress, setProgress] = useState(0);
   const [logIndex, setLogIndex] = useState(0);
 
   const bootLogs = useMemo(() => [
-    "INITIALIZING...",
-    "CALIBRATING...",
-    "SYNCHRONIZING PLAYERS...",
-    "LOADING GAME: " + gameTitle.toUpperCase(),
-    "ESTABLISHING SECURE UPLINK...",
-    "BOOT SEQUENCECOMPLETE",
-  ], [gameTitle]);
+    t.lobbyInitiation.toUpperCase(),
+    t.boot_preparing.toUpperCase() + "...",
+    t.boot_syncing.toUpperCase() + "...",
+    t.boot_loading.toUpperCase() + " " + gameTitle.toUpperCase(),
+    t.boot_starting.toUpperCase() + "...",
+    t.boot_ready.toUpperCase(),
+  ], [gameTitle, t]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -90,7 +93,7 @@ export default function MatchBootupSequence({
         {/* 📊 PROGRESS BAR */}
         <div className="space-y-4">
           <div className="flex justify-between items-end text-[9px] font-black uppercase tracking-[0.4em] text-zinc-500">
-            <span>UPLINK_PROGRESS</span>
+            <span>{t.lobby}</span>
             <span className="text-teal-400">{progress}%</span>
           </div>
           <div className="h-2 w-full bg-zinc-900 rounded-full border border-white/5 overflow-hidden p-0.5">
@@ -125,7 +128,7 @@ export default function MatchBootupSequence({
 
         <div className="text-center pt-8 border-t border-white/5">
           <p className="text-[7px] text-zinc-700 font-bold uppercase tracking-[0.5em]">
-            LUNARIS_CORE // KERNEL_HANDSHAKE_READY
+            LUNARIS ARCADE // {t.available}
           </p>
         </div>
       </div>

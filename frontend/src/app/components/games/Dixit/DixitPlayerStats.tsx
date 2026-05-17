@@ -57,14 +57,14 @@ export default function DixitPlayerStats({
           className="flex flex-col"
         >
           <span className="text-[7px] uppercase tracking-[0.4em] text-zinc-500 mb-2 font-black opacity-60">
-            SCORE
+            {t.dixit_score}
           </span>
           <div className="flex items-baseline gap-2">
             <span className={`text-3xl font-black tracking-tighter tabular-nums ${isLeader ? "text-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.3)]" : "text-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.3)]"}`}>
               {isFA ? toPersianDigits(score) : score}
             </span>
             <span className="text-[10px] font-black text-zinc-600 tracking-widest">
-              PTS
+              {t.shared_points}
             </span>
           </div>
         </motion.div>
@@ -75,7 +75,7 @@ export default function DixitPlayerStats({
           className="flex flex-col items-end"
         >
           <span className="text-[7px] uppercase tracking-[0.4em] text-zinc-500 mb-2 font-black opacity-60">
-            RANK
+            {t.rank}
           </span>
           <span className={`text-[10px] font-black uppercase tracking-[0.1em] px-2 py-1 rounded border ${isLeader ? "text-yellow-400 bg-yellow-400/10 border-yellow-400/20" : "text-white bg-blue-500/10 border-blue-500/20"}`}>
             {rankString}

@@ -1,39 +1,53 @@
 "use client";
 
 import { ActivityLog } from "../../shared/MatchActivity";
+import { useTranslation } from "@/hooks/useTranslation";
+import { formatLog } from "@/lib/translations";
 
 export default function TheMindLogMessage({ log }: { log: ActivityLog }) {
+  const { t } = useTranslation();
   const formatTime = () => {
-    return new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' });
+    return new Date().toLocaleTimeString([], {
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   switch (log.key) {
     case "LOG_GAME_STARTED":
       return (
         <div className="flex gap-2">
-          <span className="text-teal-500 font-black">[{formatTime()}]</span>
-          <span className="text-white font-black italic tracking-tight">Neural Link Established</span>
+          <span className="bg-teal-500/10 text-teal-400 px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-widest">
+            {t.lobbyInitiation}
+          </span>
         </div>
       );
     case "LOG_DISCARD":
       return (
         <div className="flex gap-2 items-center">
-          <span className="text-rose-500 font-black">[{formatTime()}]</span>
-          <span className="bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded text-[8px] font-black">INTEGRITY_FAIL</span>
-          <span className="text-zinc-300 font-bold">{log.data.player} played {log.data.card}</span>
+          <span className="bg-teal-500/10 text-teal-400 px-1.5 py-0.5 rounded text-[8px] font-black">
+            {t.discard}
+          </span>
+          <span className="text-zinc-300 font-bold">
+            {log.data.player} {t.themind_secured_by} {log.data.card}
+          </span>
         </div>
       );
     case "LOG_MISTAKE":
       return (
         <div className="flex flex-col gap-1">
           <div className="flex gap-2 items-center">
-            <span className="text-rose-500 font-black">[{formatTime()}]</span>
-            <span className="bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded text-[8px] font-black">INTEGRITY_FAIL</span>
-            <span className="text-zinc-300 font-bold">{log.data.player} played {log.data.played}</span>
+            <span className="bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded text-[8px] font-black">
+              {t.themind_game_over}
+            </span>
+            <span className="text-zinc-300 font-bold">
+              {log.data.player} {t.themind_secured_by} {log.data.played}
+            </span>
           </div>
           {log.data.discarded && log.data.discarded.length > 0 && (
             <div className="ml-8 text-[9px] text-zinc-500 italic">
-               Discarded lower nodes: {log.data.discarded.join(", ")}
+              {t.themind_discard_pile}: {log.data.discarded.join(", ")}
             </div>
           )}
         </div>
@@ -42,8 +56,12 @@ export default function TheMindLogMessage({ log }: { log: ActivityLog }) {
       return (
         <div className="flex gap-2 items-center">
           <span className="text-teal-400 font-black">[{formatTime()}]</span>
-          <span className="bg-teal-500/10 text-teal-400 px-1.5 py-0.5 rounded text-[8px] font-black">LEVEL_CLEAR</span>
-          <span className="text-white font-black italic tracking-tighter uppercase">Sector {log.data.level} Stabilized</span>
+          <span className="bg-teal-500/10 text-teal-400 px-1.5 py-0.5 rounded text-[8px] font-black">
+            {t.victory}
+          </span>
+          <span className="text-white font-black italic tracking-tighter uppercase">
+            {formatLog(t.themind_sector_stabilized, { level: log.data.level })}
+          </span>
         </div>
       );
     default:

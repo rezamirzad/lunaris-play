@@ -44,7 +44,7 @@ export default function DixitContainer({ roomData }: BoardProps) {
             >
               <div className="h-2 w-2 bg-blue-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
               <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em]">
-                PARTICIPANTS
+                {t.dixit_participants}
               </h3>
             </motion.div>
 
@@ -109,7 +109,7 @@ export default function DixitContainer({ roomData }: BoardProps) {
                   className="mb-12 p-10 bg-blue-500/5 border border-blue-500/20 rounded-[3rem] text-center backdrop-blur-3xl shadow-[0_0_50px_rgba(59,130,246,0.1)]"
                 >
                   <span className="text-[10px] tracking-[0.8em] text-blue-400 font-black mb-4 block uppercase opacity-50">
-                    CLUE
+                    {t.dixit_clue_received}
                   </span>
                   <h2 className="text-5xl lg:text-7xl font-black italic tracking-tighter text-blue-400 uppercase [text-shadow:0_0_30px_rgba(59,130,246,0.8)] leading-tight">
                     {board.currentClue}
@@ -123,7 +123,7 @@ export default function DixitContainer({ roomData }: BoardProps) {
                   className="mb-12 p-10 border border-zinc-800 rounded-[3rem] text-center bg-black/20"
                 >
                   <p className="text-zinc-600 text-[11px] uppercase tracking-[0.5em] animate-pulse">
-                    AWAITING STORYTELLER...
+                    {t.dixit_awaiting_st}
                   </p>
                 </motion.div>
               )}
@@ -150,24 +150,24 @@ export default function DixitContainer({ roomData }: BoardProps) {
           >
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-zinc-500 font-black uppercase tracking-[0.3em] text-blue-500/50">
-                MATCH
+                {t.game}
               </h3>
               <span className="bg-blue-500/10 text-blue-500 px-2 py-0.5 rounded border border-blue-500/20">
-                LIVE
+                {t.statusLive}
               </span>
             </div>
 
             <div className="space-y-3 text-zinc-500 border-t border-white/5 pt-6">
               <div className="flex justify-between items-center">
-                <span className="uppercase tracking-widest">PHASE:</span>
+                <span className="uppercase tracking-widest">{t.dixit_current_phase}:</span>
                 <span className="text-white font-black uppercase tracking-tighter shadow-blue-500/20">
                   {board?.phase || "INIT"}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="uppercase tracking-widest">ENCRYPTION:</span>
-                <span className="text-teal-400/80 font-black tracking-tighter">
-                  SECURE
+                <span className="uppercase tracking-widest">{t.dixit_integrity}:</span>
+                <span className="text-teal-400/80 font-black tracking-tighter uppercase">
+                  {t.activeTurn}
                 </span>
               </div>
             </div>

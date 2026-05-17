@@ -78,7 +78,7 @@ export default function DixitPlayerView({
                   className={`h-2 w-2 rounded-full ${isST ? "bg-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.8)] animate-pulse" : "bg-zinc-700"}`}
                 />
                 <span className="text-[10px] text-zinc-500 uppercase tracking-[0.3em]">
-                  {isST ? "STORYTELLER" : "WAITING FOR CLUE"}
+                  {isST ? t.storyteller : t.dixit_wait_others}
                 </span>
               </div>
 
@@ -98,7 +98,7 @@ export default function DixitPlayerView({
               <div className="mt-6 border-t border-white/5 pt-6 flex justify-between items-end">
                 <div className="flex flex-col">
                   <span className="text-[8px] uppercase tracking-[0.2em] text-zinc-500 mb-1 font-black">
-                    SCORE
+                    {t.dixit_score}
                   </span>
                   <div className="flex items-baseline gap-1">
                     <span
@@ -115,7 +115,7 @@ export default function DixitPlayerView({
                 </div>
                 <div className="flex flex-col items-end">
                   <span className="text-[8px] uppercase tracking-[0.2em] text-zinc-500 mb-1 font-black">
-                    RANK
+                    {t.rank}
                   </span>
                   <span
                     className={`text-[10px] font-black uppercase tracking-widest ${isLeader ? "text-yellow-400" : "text-white"}`}
@@ -126,7 +126,6 @@ export default function DixitPlayerView({
               </div>
             </motion.div>
 
-            {/* ACTION STACK */}
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -134,13 +133,13 @@ export default function DixitPlayerView({
               className="space-y-4"
             >
               <h3 className="text-zinc-600 text-[9px] font-black uppercase tracking-[0.4em] px-2">
-                Command Phase
+                {t.dixit_current_phase}
               </h3>
               <div className="flex flex-col gap-3">
                 {/* Board Phase Telemetry */}
                 <div className="bg-black/40 border border-white/5 p-4 rounded-2xl">
                   <div className="flex justify-between items-center text-[8px] text-zinc-500 mb-2">
-                    <span>PHASE</span>
+                    <span>{t.dixit_current_phase}</span>
                     <span className="text-blue-500 font-black">
                       {board?.phase}
                     </span>

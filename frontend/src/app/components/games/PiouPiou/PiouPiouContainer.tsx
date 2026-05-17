@@ -34,7 +34,7 @@ export default function PiouPiouContainer({ roomData }: BoardProps) {
             >
               <div className="h-2 w-2 bg-orange-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(245,158,11,0.8)]" />
               <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em]">
-                PARTICIPANTS
+                {t.shared_players}
               </h3>
             </motion.div>
 
@@ -111,30 +111,30 @@ export default function PiouPiouContainer({ roomData }: BoardProps) {
           >
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-zinc-500 font-black uppercase tracking-[0.3em] text-orange-500/50">
-                MATCH_TELEMETRY
+                {t.pioupiou_match_telemetry}
               </h3>
               <span className="bg-orange-500/10 text-orange-500 px-2 py-0.5 rounded border border-orange-500/20">
-                LIVE
+                {t.statusLive}
               </span>
             </div>
 
             <div className="space-y-3 text-zinc-500 border-t border-white/5 pt-6">
               <div className="flex justify-between items-center">
-                <span className="uppercase tracking-widest">STATUS:</span>
+                <span className="uppercase tracking-widest">{t.shared_status}:</span>
                 <span className="text-zinc-200 font-black uppercase tracking-tighter">
                   {roomData.status}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="uppercase tracking-widest">RESOLUTION:</span>
-                <span className="text-blue-400 font-black tracking-tighter">
-                  {board?.winnerId ? "SYSTEM_DETERMINED" : "LOGIC_INFERRED"}
+                <span className="uppercase tracking-widest">{t.pioupiou_resolution}:</span>
+                <span className="text-blue-400 font-black tracking-tighter uppercase">
+                  {board?.winnerId ? t.winner : t.waiting}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="uppercase tracking-widest">ENCRYPTION:</span>
-                <span className="text-teal-400/50 font-black tracking-tighter">
-                  RSA_AES_256
+                <span className="uppercase tracking-widest">{t.pioupiou_encryption}:</span>
+                <span className="text-teal-400/50 font-black tracking-tighter uppercase">
+                  {t.pioupiou_secure}
                 </span>
               </div>
             </div>

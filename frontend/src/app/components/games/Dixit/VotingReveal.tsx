@@ -6,11 +6,14 @@ import DixitCard from "./DixitCard";
 import { useMemo } from "react";
 import { shuffle } from "@/lib/utils";
 
+import { useTranslation } from "@/hooks/useTranslation";
+
 interface VotingRevealProps {
   roomData: Doc<"rooms"> & { players: Doc<"players">[] };
 }
 
 export default function VotingReveal({ roomData }: VotingRevealProps) {
+  const { t } = useTranslation();
   const board = roomData.gameBoard.gameType === "dixit" ? roomData.gameBoard : null;
 
   // Logic: Use the pre-shuffled cards from the board state to ensure consistency across all clients.
@@ -71,8 +74,8 @@ export default function VotingReveal({ roomData }: VotingRevealProps) {
                   transition={{ delay: 0.5, type: "spring", stiffness: 400, damping: 10 }}
                   className="absolute -top-4 -right-4 z-30 bg-blue-500 text-white px-4 py-2 rounded-2xl shadow-[0_0_30px_rgba(59,130,246,0.6)] border-2 border-white/40 flex flex-col items-center"
                 >
-                  <span className="text-[7px] font-black uppercase tracking-[0.3em] opacity-80 mb-0.5">ORIGINAL_NODE</span>
-                  <span className="text-[10px] font-black uppercase tracking-widest">Storyteller</span>
+                  <span className="text-[7px] font-black uppercase tracking-[0.3em] opacity-80 mb-0.5">{t.storyteller}</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest">{t.dixit_title}</span>
                 </motion.div>
               )}
             </motion.div>

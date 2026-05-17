@@ -13,7 +13,7 @@ export default function JustOnePlayerView({
   roomData,
   isMyTurn,
 }: PlayerProps) {
-  const { lang } = useTranslation();
+  const { lang, t } = useTranslation();
   const isFA = lang === "fa";
 
   const board =
@@ -46,7 +46,7 @@ export default function JustOnePlayerView({
                   className={`h-2 w-2 rounded-full ${isMyTurn ? "bg-teal-400 shadow-[0_0_10px_rgba(45,212,191,0.8)] animate-pulse" : "bg-zinc-700"}`}
                 />
                 <span className="text-[10px] text-zinc-500 uppercase tracking-[0.3em]">
-                  {isMyTurn ? "Active" : "Standby"}
+                  {isMyTurn ? t.ready : t.waiting}
                 </span>
               </div>
 
@@ -57,7 +57,7 @@ export default function JustOnePlayerView({
               <div className="mt-6 border-t border-white/5 pt-6 flex justify-between items-end">
                 <div className="flex flex-col">
                   <span className="text-[8px] uppercase tracking-[0.2em] text-zinc-500 mb-1 font-black">
-                    SCORE
+                    {t.shared_score}
                   </span>
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-black text-teal-500 tracking-tighter tabular-nums">
@@ -72,7 +72,7 @@ export default function JustOnePlayerView({
                 </div>
                 <div className="flex flex-col items-end">
                   <span className="text-[8px] uppercase tracking-[0.2em] text-zinc-500 mb-1 font-black">
-                    ROUND
+                    {t.justone_round_count}
                   </span>
                   <span className="text-xs font-black uppercase text-white tracking-widest">
                     {isFA

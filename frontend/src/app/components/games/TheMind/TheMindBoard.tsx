@@ -99,7 +99,7 @@ export default function TheMindBoard({ roomData }: BoardProps) {
                  exit={{ scale: 1.2, opacity: 0 }}
                  className="bg-yellow-500 text-black font-black text-2xl tracking-[0.6em] uppercase skew-x-[-12deg] px-12 py-6 shadow-[0_0_50px_rgba(234,179,8,0.3)]"
                >
-                 WARNING: EMP REQUESTED
+                 {t.themind_shuriken_request}
                </motion.div>
             </div>
           </>
@@ -107,13 +107,13 @@ export default function TheMindBoard({ roomData }: BoardProps) {
       </AnimatePresence>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 relative z-10 p-4 lg:p-8 h-full">
-        {/* TEAM TELEMETRY DOCK */}
+        {/* TEAM STATS DOCK */}
         <div className="lg:col-span-2 space-y-8">
           <section>
             <div className="flex items-center gap-4 mb-8">
               <div className="h-2 w-2 bg-teal-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(45,212,191,0.8)]" />
               <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em]">
-                TEAM_TELEMETRY_DOCK
+                {t.themind_team_stats}
               </h3>
             </div>
 
@@ -135,7 +135,7 @@ export default function TheMindBoard({ roomData }: BoardProps) {
                       <div className="flex justify-between items-end">
                         <div className="flex flex-col">
                           <span className="text-[7px] uppercase tracking-[0.4em] text-zinc-500 mb-1 font-black opacity-60">
-                            HAND_WEIGHT
+                            {t.themind_hand_size}
                           </span>
                           <div className="flex gap-1.5">
                             {Array.from({ length: 10 }).map((_, i) => (
@@ -161,7 +161,7 @@ export default function TheMindBoard({ roomData }: BoardProps) {
                           className="flex items-center gap-2"
                         >
                            <div className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-ping" />
-                           <span className="text-[7px] font-black text-yellow-500 uppercase tracking-widest">Awaiting Override...</span>
+                           <span className="text-[7px] font-black text-yellow-500 uppercase tracking-widest">{t.themind_shuriken_vote}</span>
                         </motion.div>
                       )}
                     </div>
@@ -171,16 +171,16 @@ export default function TheMindBoard({ roomData }: BoardProps) {
             </div>
           </section>
           
-          {/* PURGED NODES FEED */}
+          {/* DISCARD PILE FEED */}
           <section className="p-6 rounded-[2rem] bg-zinc-900/40 border border-white/5 font-mono">
-            <h3 className="text-[8px] font-black text-zinc-600 uppercase tracking-[0.4em] mb-4">PURGED_NODES_FEED</h3>
+            <h3 className="text-[8px] font-black text-zinc-600 uppercase tracking-[0.4em] mb-4">{t.themind_discard_pile}</h3>
             <div className="flex flex-wrap gap-2">
                {board.discardPile?.slice(-15).map((card, i) => (
                  <div key={i} className="text-[10px] font-black text-zinc-500 bg-black/40 border border-white/5 rounded px-2 py-1">
                     {card}
                  </div>
                ))}
-               {!board.discardPile?.length && <span className="text-[8px] text-zinc-800 italic uppercase">No Purges Recorded</span>}
+               {!board.discardPile?.length && <span className="text-[8px] text-zinc-800 italic uppercase">{t.noEvents}</span>}
             </div>
           </section>
         </div>
@@ -217,7 +217,7 @@ export default function TheMindBoard({ roomData }: BoardProps) {
                      </svg>
                   </div>
                 ))}
-                {board.emps === 0 && <span className="text-zinc-800 font-black italic uppercase">DEPLETED</span>}
+                {board.emps === 0 && <span className="text-zinc-800 font-black italic uppercase">{t.noOngoing}</span>}
               </div>
             </div>
           </div>
@@ -243,11 +243,11 @@ export default function TheMindBoard({ roomData }: BoardProps) {
                       exit={{ scale: 1.2, opacity: 0 }}
                       className="flex flex-col items-center p-4 text-center z-20"
                     >
-                      <span className="text-[10px] text-rose-500 font-black tracking-[0.3em] mb-2 uppercase">Integrity_Compromised</span>
-                      <span className="text-xs text-zinc-400 mb-1 uppercase font-bold">{mistakeToShow.data.player} Miscalculated</span>
+                      <span className="text-[10px] text-rose-500 font-black tracking-[0.3em] mb-2 uppercase">{t.themind_miscalculated}</span>
+                      <span className="text-xs text-zinc-400 mb-1 uppercase font-bold">{mistakeToShow.data.player}</span>
                       <div className="flex gap-2 items-center justify-center flex-wrap">
                          <span className="text-2xl font-black text-rose-500">{mistakeToShow.data.played}</span>
-                         <span className="text-[10px] text-zinc-600 font-black tracking-[0.4em]">PURGED:</span>
+                         <span className="text-[10px] text-zinc-600 font-black tracking-[0.4em]">{t.themind_purged}:</span>
                          {mistakeToShow.data.discarded?.map((c: string) => (
                            <span key={c} className="text-lg font-black text-zinc-500">{c}</span>
                          ))}
@@ -275,7 +275,7 @@ export default function TheMindBoard({ roomData }: BoardProps) {
                       className="flex flex-col items-center gap-4"
                     >
                        <div className="text-3xl animate-pulse">⚡</div>
-                       <span className="text-[8px] text-zinc-600 font-black tracking-[0.6em] uppercase">AWAITING_UPLINK</span>
+                       <span className="text-[8px] text-zinc-600 font-black tracking-[0.6em] uppercase">{t.themind_awaiting_play}</span>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -289,7 +289,7 @@ export default function TheMindBoard({ roomData }: BoardProps) {
                   />
                 )}
 
-                {/* Central Result Badge (Added over the core when finished) */}
+                {/* Central Result Badge */}
                 {isFinished && (
                   <motion.div
                     initial={{ scale: 0.5, opacity: 0 }}
@@ -297,9 +297,9 @@ export default function TheMindBoard({ roomData }: BoardProps) {
                     className={`absolute inset-0 m-auto z-30 flex items-center justify-center backdrop-blur-md rounded-full border-4 ${isGameOver ? "bg-rose-950/80 border-rose-500 text-rose-500" : "bg-teal-950/80 border-teal-500 text-teal-500"}`}
                   >
                     <div className="flex flex-col items-center gap-1">
-                       <span className="text-[10px] font-black tracking-[0.4em] uppercase opacity-70">SESSION_STATUS</span>
+                       <span className="text-[10px] font-black tracking-[0.4em] uppercase opacity-70">{t.shared_status}</span>
                        <span className="text-2xl font-black italic tracking-tighter uppercase whitespace-nowrap px-6 text-center">
-                          {isGameOver ? "MISSION_FAILED" : "MISSION_SUCCESS"}
+                          {isGameOver ? t.themind_game_over : t.themind_victory}
                        </span>
                     </div>
                   </motion.div>
@@ -318,7 +318,7 @@ export default function TheMindBoard({ roomData }: BoardProps) {
               >
                 <div className="w-2 h-2 rounded-full bg-teal-400 animate-ping" />
                 <span className="text-[10px] font-black tracking-[0.3em] uppercase text-teal-400/80">
-                  UPLINK SECURED BY:
+                  {t.themind_secured_by}
                 </span>
                 <span className="text-white font-black italic tracking-tighter uppercase">
                   {lastPlayedByPlayer.name}
@@ -339,7 +339,7 @@ export default function TheMindBoard({ roomData }: BoardProps) {
                 <div className="px-6 py-2 bg-teal-500/10 border border-teal-500/30 rounded-full flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full bg-teal-400" />
                   <span className="text-[10px] font-black tracking-[0.3em] uppercase text-teal-400">
-                    SECTOR_STABILIZED // READY_FOR_UPLINK
+                    {t.themind_ready_for_next}
                   </span>
                 </div>
 
@@ -347,17 +347,17 @@ export default function TheMindBoard({ roomData }: BoardProps) {
                   onClick={() => startNextLevel({ roomId: roomData._id })}
                   className="group relative px-12 py-6 bg-teal-500 text-black font-black text-2xl tracking-[0.4em] uppercase rounded-full shadow-[0_0_50px_rgba(45,212,191,0.4)] hover:scale-105 active:scale-95 transition-all"
                 >
-                  START LEVEL {board.level + 1}
+                  {t.themind_start_level} {board.level + 1}
                   <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
                 </button>
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* SYNC BAR */}
+          {/* PROGRESS BAR */}
           <div className="w-full max-w-md space-y-3 mt-12">
              <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-[0.4em]">
-                <span className="text-zinc-500">COLLECTIVE_SYNC_PROTOCOL</span>
+                <span className="text-zinc-500">{t.themind_level_progress}</span>
                 <span className="text-teal-400">{Math.round(syncProgress)}%</span>
              </div>
              <div className="h-2 w-full bg-zinc-900 rounded-full overflow-hidden border border-white/5 p-[1px]">
@@ -374,7 +374,7 @@ export default function TheMindBoard({ roomData }: BoardProps) {
         <div className="lg:col-span-2 space-y-8">
            <section className="glass-card p-6 border-zinc-800">
              <div className="flex flex-col gap-1 mb-6">
-                <span className="text-[8px] font-black text-teal-500 uppercase tracking-[0.3em]">MISSION_PHASE</span>
+                <span className="text-[8px] font-black text-teal-500 uppercase tracking-[0.3em]">{t.themind_level_progress}</span>
                 <h2 className="text-2xl font-black italic text-white tracking-tighter uppercase">
                    {formatLog(t.themind_level, { level: isFA ? toPersianDigits(board.level) : board.level }, lang)}
                 </h2>
@@ -382,14 +382,10 @@ export default function TheMindBoard({ roomData }: BoardProps) {
 
              <div className="space-y-4 border-t border-white/5 pt-6">
                 <div className="flex justify-between items-center">
-                   <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">STATUS:</span>
+                   <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">{t.shared_status}:</span>
                    <span className={`text-[9px] font-black uppercase tracking-tighter ${isFinished ? "text-rose-500" : "text-teal-400"}`}>
                       {isGameOver ? t.themind_game_over : isVictory ? t.themind_victory : t.themind_playing}
                    </span>
-                </div>
-                <div className="flex justify-between items-center">
-                   <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">ENCRYPTION:</span>
-                   <span className="text-[9px] text-zinc-300 font-black">MIL_GRADE</span>
                 </div>
              </div>
            </section>
@@ -408,7 +404,7 @@ export default function TheMindBoard({ roomData }: BoardProps) {
              onClick={() => (window.location.href = "/")}
              className="px-12 py-4 bg-white text-black font-black uppercase rounded-2xl hover:bg-teal-400 transition-all shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/20"
            >
-             RETURN_TO_ROOT
+             {t.exit}
            </button>
         </div>
       )}

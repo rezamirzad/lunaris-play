@@ -13,7 +13,7 @@ export default function SecurityLogsManager() {
       <div className="flex items-center gap-3">
         <div className="w-1 h-4 bg-rose-500 rounded-full shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
         <h3 className="text-[10px] font-black tracking-[0.4em] text-zinc-500 uppercase">
-          Security Protocols
+          System Logs
         </h3>
       </div>
 
@@ -57,7 +57,7 @@ export default function SecurityLogsManager() {
           {(!logs || logs.length === 0) && (
             <div className="p-8 text-center">
               <span className="text-[8px] font-black text-zinc-700 tracking-[0.5em] uppercase">
-                NO_SECURITY_EVENTS_RECORDED
+                NO LOGS RECORDED
               </span>
             </div>
           )}

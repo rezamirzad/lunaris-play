@@ -45,10 +45,10 @@ export default function LiveNodeManager() {
       <div className="bg-zinc-900/40 border border-border-subtle rounded-[2rem] overflow-hidden backdrop-blur-xl">
         {/* Table Header */}
         <div className="grid grid-cols-5 gap-4 px-8 py-4 bg-black/20 border-b border-white/5 text-[9px] font-black text-zinc-500 uppercase tracking-widest">
-          <div className="col-span-1">ROOM_CODE</div>
-          <div className="col-span-1">PROTOCOL</div>
+          <div className="col-span-1">ROOM</div>
+          <div className="col-span-1">GAME</div>
           <div className="col-span-1">STATUS</div>
-          <div className="col-span-2">CONNECTED_NODES (CLICK TO EDIT)</div>
+          <div className="col-span-2">PLAYERS (CLICK TO EDIT)</div>
         </div>
 
         {/* Table Body */}
@@ -97,7 +97,7 @@ export default function LiveNodeManager() {
                   ))}
                   {(!room.players || room.players.length === 0) && (
                     <span className="text-[8px] text-zinc-700 italic">
-                      EMPTY_SESSION
+                      NO PLAYERS
                     </span>
                   )}
                 </div>
@@ -108,7 +108,7 @@ export default function LiveNodeManager() {
           {rooms?.length === 0 && (
             <div className="p-12 text-center">
               <span className="text-[10px] font-black text-zinc-700 tracking-[0.5em] uppercase">
-                NO_ACTIVE_UPLINKS_DETECTED
+                NO ACTIVE SESSIONS
               </span>
             </div>
           )}

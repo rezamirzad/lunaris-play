@@ -52,7 +52,7 @@ export default function MatchActivity({
             <div className="flex flex-col items-center justify-center py-12 opacity-20">
               <div className="h-1 w-1 bg-zinc-700 rounded-full animate-ping mb-4" />
               <p className="text-[9px] font-black uppercase tracking-[0.3em]">
-                AWAITING_DATA_INPUT...
+                {t.noEvents}...
               </p>
             </div>
           )}

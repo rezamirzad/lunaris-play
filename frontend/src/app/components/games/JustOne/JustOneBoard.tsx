@@ -48,7 +48,7 @@ export default function JustOneBoard({ roomData }: BoardProps) {
             <div className="flex items-center gap-4 mb-8">
               <div className="h-2 w-2 bg-teal-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(45,212,191,0.8)]" />
               <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em]">
-                PARTICIPANTS
+                {t.shared_players}
               </h3>
             </div>
 
@@ -71,7 +71,7 @@ export default function JustOneBoard({ roomData }: BoardProps) {
                     name={player.name}
                     isReady={player.isReady}
                     isCurrentTurn={isInfiltrator}
-                    statusOverride={isInfiltrator ? "INFILTRATOR" : undefined}
+                    statusOverride={isInfiltrator ? t.justone_guesser : undefined}
                     className={`glass-card p-4 transition-all duration-300 ${isInfiltrator ? "border-orange-500/40 bg-orange-500/5 shadow-[0_0_20px_rgba(245,158,11,0.1)]" : ""}`}
                   >
                     {!isInfiltrator && (
@@ -82,8 +82,8 @@ export default function JustOneBoard({ roomData }: BoardProps) {
                           />
                           <span className="text-[7px] font-black text-zinc-500 uppercase tracking-widest">
                             {hasSubmitted
-                              ? "Clues recieved"
-                              : "Waiting for clues..."}
+                              ? t.justone_clue_submitted
+                              : t.justone_awaiting_clues}
                           </span>
                         </div>
                         {board.phase === "VALIDATION" && hasConfirmed && (
@@ -94,7 +94,7 @@ export default function JustOneBoard({ roomData }: BoardProps) {
                           >
                             <div className="w-1 h-1 rounded-full bg-teal-400 animate-pulse" />
                             <span className="text-[6px] font-black text-teal-400 uppercase tracking-widest">
-                              VALIDATED
+                              {t.justone_validated}
                             </span>
                           </motion.div>
                         )}
@@ -108,7 +108,7 @@ export default function JustOneBoard({ roomData }: BoardProps) {
                               className={`w-1 h-1 rounded-full ${lenientVote ? "bg-teal-400" : "bg-rose-400"} animate-pulse`}
                             />
                             <span className="text-[6px] font-black uppercase tracking-widest">
-                              {lenientVote ? "ACCEPTED" : "REJECTED"}
+                              {lenientVote ? t.justone_accepted : t.justone_rejected}
                             </span>
                           </motion.div>
                         )}
@@ -121,13 +121,13 @@ export default function JustOneBoard({ roomData }: BoardProps) {
           </section>
         </div>
 
-        {/* CENTRAL DECRYPTION MATRIX */}
+        {/* CENTRAL AREA */}
         <div className="lg:col-span-8 flex flex-col items-center justify-center space-y-12 py-12">
           {/* TOP HUD */}
           <div className="w-full flex justify-between px-12 mb-8">
             <div className="flex flex-col gap-1">
               <span className="text-[8px] font-black text-zinc-600 uppercase tracking-[0.4em]">
-                SCORE
+                {t.shared_score}
               </span>
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-black text-teal-500 italic tracking-tighter drop-shadow-[0_0_15px_rgba(45,212,191,0.3)]">
@@ -138,10 +138,10 @@ export default function JustOneBoard({ roomData }: BoardProps) {
             </div>
             <div className="flex flex-col items-end gap-1">
               <span className="text-[8px] font-black text-zinc-600 uppercase tracking-[0.4em]">
-                MISSION_ROUND
+                {t.justone_round_count}
               </span>
               <span className="text-2xl font-black text-white tabular-nums tracking-tighter uppercase italic">
-                {isFA ? toPersianDigits(board.round) : board.round} OF 13
+                {isFA ? toPersianDigits(board.round) : board.round} / 13
               </span>
             </div>
           </div>
@@ -190,7 +190,7 @@ export default function JustOneBoard({ roomData }: BoardProps) {
                 className="flex flex-col items-center gap-8"
               >
                 <span className="text-[10px] text-zinc-500 font-black tracking-[0.8em] uppercase">
-                  ENCRYPTED_TARGET_NODE
+                  {t.justone_mystery_word}
                 </span>
 
                 {/* Aura's Masked Letter Blocks */}
@@ -219,7 +219,7 @@ export default function JustOneBoard({ roomData }: BoardProps) {
                 {!isRoundResults && !isGameOver && (
                   <div className="mt-4 px-6 py-2 bg-teal-500/10 border border-teal-500/20 rounded-lg animate-pulse">
                     <span className="text-[10px] font-black text-teal-400 tracking-[0.3em] uppercase">
-                      WAITING FOR HACKER CLUES...
+                      {t.justone_awaiting_clues}
                     </span>
                   </div>
                 )}
@@ -252,8 +252,8 @@ export default function JustOneBoard({ roomData }: BoardProps) {
                 {validClues.length === 0 && (
                   <div className="flex flex-col items-center gap-4 py-12 opacity-40">
                     <div className="text-6xl">🚫</div>
-                    <span className="text-[10px] font-black tracking-[0.5em] text-rose-500">
-                      ALL_CLUES_CANCELED_BY_PROTOCOL
+                    <span className="text-[10px] font-black tracking-[0.5em] text-rose-500 uppercase">
+                      {t.justone_all_canceled}
                     </span>
                   </div>
                 )}
@@ -262,7 +262,7 @@ export default function JustOneBoard({ roomData }: BoardProps) {
           </AnimatePresence>
 
           <div className="mt-12 text-[8px] text-zinc-700 font-black tracking-[0.5em] uppercase">
-            PHASE: {board.phase.replace("_", " ")}
+            {t.shared_status}: {board.phase.replace("_", " ")}
           </div>
         </div>
 
@@ -271,10 +271,10 @@ export default function JustOneBoard({ roomData }: BoardProps) {
           <section className="glass-card p-6 border-zinc-800">
             <div className="flex flex-col gap-1 mb-6">
               <span className="text-[8px] font-black text-teal-500 uppercase tracking-[0.3em]">
-                The guesser is
+                {t.justone_guesser}
               </span>
               <h2 className="text-xl font-black italic text-white tracking-tighter uppercase">
-                {activePlayer?.name || "AUTHENTICATING..."}
+                {activePlayer?.name || t.waiting}
               </h2>
             </div>
 
@@ -307,16 +307,16 @@ export default function JustOneBoard({ roomData }: BoardProps) {
           >
             <div className="text-9xl mb-8">📡</div>
             <h1 className="text-7xl font-black italic tracking-tighter text-white uppercase mb-4 logo-glow">
-              SESSION_TERMINATED
+              {t.justone_session_ended}
             </h1>
             <p className="text-teal-500 font-mono tracking-[0.6em] uppercase text-xl mb-12">
-              FINAL_SCORE: {board.score} / 13
+              {t.shared_score}: {board.score} / 13
             </p>
             <button
               onClick={() => (window.location.href = "/")}
               className="px-12 py-4 bg-white text-black font-black uppercase rounded-2xl hover:bg-teal-400 transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)]"
             >
-              RETURN_TO_ROOT
+              {t.exit}
             </button>
           </motion.div>
         )}

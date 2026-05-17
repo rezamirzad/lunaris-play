@@ -26,7 +26,7 @@ export default function DangerBadge() {
       
       <div className="flex flex-col">
         <span className="text-[7px] font-black uppercase tracking-[0.4em] text-orange-500/50 leading-none mb-1">
-          MATCHPOINT_PROTOCOL
+          {t.shared_status}
         </span>
         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white font-mono leading-none">
           {t.nearlyWinning}
