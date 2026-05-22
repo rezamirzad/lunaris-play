@@ -35,7 +35,8 @@ export default function PlayerCard({
   statusOverride,
   className = "",
 }: PlayerCardProps) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
+  const isFA = lang === "fa";
 
   return (
     <motion.div
@@ -79,7 +80,9 @@ export default function PlayerCard({
                   isCurrentTurn ? "bg-blue-400 animate-pulse" : 
                   isReady ? "bg-teal-400" : "bg-zinc-700"
                 }`} />
-                <span className={`text-[8px] font-black uppercase tracking-[0.3em] ${
+                <span 
+                  dir={isFA ? "rtl" : "ltr"}
+                  className={`text-[8px] font-black uppercase ${isFA ? 'fa-text-fix' : 'tracking-[0.3em]'} ${
                   isCurrentTurn ? "text-blue-400" : 
                   isReady ? "text-teal-400/70" : "text-zinc-600"
                 }`}>

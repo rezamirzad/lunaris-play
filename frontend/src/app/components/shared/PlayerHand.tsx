@@ -49,8 +49,11 @@ export default function PlayerHand({
           <div
             className={`h-2 w-2 rounded-full ${isMyTurn ? "bg-teal-400 shadow-[0_0_10px_rgba(45,212,191,1)] animate-pulse" : "bg-zinc-700"}`}
           />
-          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">
-            {playerName} // {t.hand}: (
+          <span 
+            dir={isFA ? "rtl" : "ltr"}
+            className={`text-[10px] font-black uppercase text-zinc-400 ${isFA ? 'fa-text-fix' : 'tracking-[0.4em]'}`}
+          >
+            {playerName} {"//"} {t.hand}: (
             {isFA ? toPersianDigits(hand.length) : hand.length})
           </span>
         </motion.div>
@@ -100,10 +103,13 @@ export default function PlayerHand({
                   onPlayCard(selectedCard);
                   setSelectedCard(null);
                 }}
-                className="bg-white text-black font-black py-4 px-12 rounded-[2rem] text-sm uppercase tracking-[0.3em] transition-all shadow-2xl relative overflow-hidden group"
+                className={`bg-white text-black font-black py-4 px-12 rounded-[2rem] text-sm uppercase transition-all shadow-2xl relative overflow-hidden group ${isFA ? 'fa-text-fix' : 'tracking-[0.3em]'}`}
               >
                 <div className="absolute inset-0 bg-teal-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <span className="relative z-10 group-hover:text-white transition-colors">
+                <span 
+                  dir={isFA ? "rtl" : "ltr"}
+                  className="relative z-10 group-hover:text-white transition-colors"
+                >
                   {t.action || "INITIALIZE_PROTOCOL"}
                 </span>
               </motion.button>

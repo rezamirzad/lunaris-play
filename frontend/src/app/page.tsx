@@ -26,37 +26,24 @@ const titleVariants: Variants = {
   },
 };
 
+import { useTranslation } from "@/hooks/useTranslation";
+
 function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { playerName, setPlayerName } = useUser();
-  const [lang, setLang] = useState<Language>("en");
+  const { t, lang, setLanguage } = useTranslation();
   const [nameInput, setNameInput] = useState(playerName);
   const [roomCode, setRoomCode] = useState("");
 
   const ongoingRooms = useQuery(api.engine.getOngoingRooms);
+  const availableGames = useQuery(api.engine.listGames);
   const joinRoom = useMutation(api.engine.joinRoom);
   const getOrCreateUser = useMutation(api.engine.getOrCreateUser);
 
   useEffect(() => {
-    const l = searchParams.get("lang") as Language;
-    if (l && ["en", "fr", "de", "fa"].includes(l)) {
-      setLang(l);
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
     setNameInput(playerName);
   }, [playerName]);
-
-  const t = translations[lang];
-
-  const updateLang = (newLang: Language) => {
-    setLang(newLang);
-    const params = new URLSearchParams(searchParams);
-    params.set("lang", newLang);
-    router.replace(`/?${params.toString()}`);
-  };
 
   const handleJoin = async () => {
     if (!nameInput || !roomCode) return;
@@ -82,7 +69,8 @@ function HomeContent() {
 
   return (
     <main
-      className={`min-h-[100dvh] bg-app text-content-base p-4 sm:p-8 md:p-12 transition-all duration-500 relative overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]`}
+      lang={lang}
+      className={`min-h-[100dvh] bg-app text-content-base p-4 sm:p-8 md:p-12 transition-all duration-500 relative overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] ${lang === 'fa' ? 'fa-text-fix' : ''}`}
     >
       <div className="pt-10 sm:pt-14">
         <Navbar />
@@ -102,7 +90,7 @@ function HomeContent() {
           <div className="flex flex-col items-center">
             <div className="flex items-center justify-center gap-4">
               <div className="h-[1px] w-12 bg-brand-accent/20" />
-              <p className="text-brand-accent font-bold tracking-[0.5em] text-[10px] uppercase">
+              <p className={`text-brand-accent font-bold text-[10px] uppercase ${lang === 'fa' ? 'tracking-normal' : 'tracking-[0.5em]'}`}>
                 {t.madeBy}
               </p>
               <div className="h-[1px] w-12 bg-brand-accent/20" />
@@ -113,7 +101,7 @@ function HomeContent() {
           </div>
           <div className="flex items-center justify-center gap-4">
             <div className="h-[1px] w-12 bg-brand-accent/20" />
-            <p className="text-brand-accent font-bold tracking-[0.5em] text-[10px] uppercase">
+            <p className={`text-brand-accent font-bold text-[10px] uppercase ${lang === 'fa' ? 'tracking-normal' : 'tracking-[0.5em]'}`}>
               {t.subtitle}
             </p>
             <div className="h-[1px] w-12 bg-brand-accent/20" />
@@ -129,7 +117,7 @@ function HomeContent() {
           {(["en", "fr", "de", "fa"] as Language[]).map((l) => (
             <button
               key={l}
-              onClick={() => updateLang(l)}
+              onClick={() => setLanguage(l)}
               className={`px-4 sm:px-6 py-2 rounded-xl text-[10px] sm:text-xs font-black transition-all duration-300 ${lang === l ? "bg-white text-black shadow-lg" : "text-zinc-500 hover:text-white"}`}
             >
               {l.toUpperCase()}
@@ -216,6 +204,7 @@ function HomeContent() {
               onJoin={selectRoomForJoining}
               onViewBoard={handleViewBoard}
               t={t}
+              lang={lang}
             />
           </motion.section>
         </div>
@@ -232,11 +221,16 @@ function HomeContent() {
           className="lg:col-span-8 flex flex-col space-y-6"
         >
           <div className="flex justify-between items-end border-b border-border-subtle pb-4 h-[25px]">
-            <h2 className="text-[10px] font-black tracking-[0.5em] text-zinc-600 uppercase">
-              {t.arcade}
+            <h2 className="text-[10px] font-black tracking-[0.5em] text-zinc-600 uppercase flex justify-between w-full items-center">
+              <span>{t.arcade}</span>
+              <span className="text-brand-accent/50 tabular-nums">
+                00{availableGames?.length || 0}
+              </span>
             </h2>
           </div>
-          <GameCatalog mode="standard" />
+          <div className="max-h-[60vh] lg:max-h-[800px] overflow-y-auto pr-2 custom-scrollbar">
+            <GameCatalog mode="standard" />
+          </div>
         </motion.div>
       </div>
 
@@ -245,6 +239,29 @@ function HomeContent() {
           {t.madeBy} &copy; 2026
         </p>
       </footer>
+
+      {/* Admin Portal Shortcut */}
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2 }}
+        onClick={() => router.push("/admin")}
+        className="fixed bottom-6 left-6 z-[100] group flex items-center gap-3 bg-zinc-950/80 hover:bg-teal-500/10 border border-white/5 hover:border-teal-500/30 p-3 rounded-2xl backdrop-blur-xl transition-all duration-500"
+      >
+        <div className="w-10 h-10 rounded-xl bg-zinc-900 group-hover:bg-teal-500/20 flex items-center justify-center transition-colors">
+          <span className="text-xl group-hover:scale-110 transition-transform">
+            ⚙️
+          </span>
+        </div>
+        <div className="flex flex-col items-start pr-2">
+          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-teal-400/70 transition-colors">
+            System
+          </span>
+          <span className="text-sm font-black uppercase italic tracking-tighter text-zinc-400 group-hover:text-white transition-colors border-b border-transparent group-hover:border-teal-500/50">
+            ADMIN
+          </span>
+        </div>
+      </motion.button>
     </main>
   );
 }

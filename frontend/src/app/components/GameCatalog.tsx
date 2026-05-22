@@ -61,7 +61,6 @@ export default function GameCatalog({
     return (
       <div
         className={`grid gap-8 opacity-20 ${mode === "admin" ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}
-        dir="ltr"
       >
         {[1, 2].map((i) => (
           <div
@@ -75,7 +74,6 @@ export default function GameCatalog({
   return (
     <div
       className={`grid gap-6 sm:gap-8 lg:gap-10 text-left items-stretch ${mode === "admin" ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}
-      dir="ltr"
     >
       <AnimatePresence>
         {games.map((game: any, i: number) => {
@@ -162,11 +160,11 @@ export default function GameCatalog({
                             ? toPersianDigits(game.suggestedMax)
                             : game.suggestedMax}
                         </span>
-                        <span className="text-zinc-50 font-black text-[10px] tracking-tighter">
+                        <span className={`text-zinc-50 font-black text-[10px] ${isFA ? 'tracking-normal' : 'tracking-tighter'}`}>
                           {t.players}
                         </span>
                       </div>
-                      <span className="text-zinc-500 font-black text-[9px] tracking-tighter uppercase ml-2 opacity-60">
+                      <span className={`text-zinc-500 font-black text-[9px] uppercase ml-2 opacity-60 ${isFA ? 'tracking-normal' : 'tracking-tighter'}`}>
                         {t.maxLabel}: {isFA ? toPersianDigits(game.absoluteMax) : game.absoluteMax}
                       </span>
                     </div>
@@ -175,7 +173,10 @@ export default function GameCatalog({
                     </h3>
                   </div>
 
-                  <p className="text-sm sm:text-sm font-black italic tracking-tighter text-white leading-none group-hover:text-teal-400 transition-colors">
+                  <p 
+                    dir={isFA ? "rtl" : "ltr"}
+                    className={`text-sm sm:text-sm font-black italic text-white leading-relaxed group-hover:text-teal-400 transition-colors ${isFA ? 'text-right tracking-normal' : 'tracking-tighter'}`}
+                  >
                     {displayDescription}
                   </p>
                 </div>

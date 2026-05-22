@@ -160,7 +160,10 @@ export default function LobbyInitialization({
           <div className="h-[1px] w-20 bg-teal-400/20" />
           <div className="flex items-center gap-3">
             <div className="h-2 w-2 bg-teal-400 rounded-full animate-pulse shadow-[0_0_15px_rgba(45,212,191,1)]" />
-            <span className="text-[10px] tracking-[0.6em] text-teal-400 font-black uppercase">
+            <span 
+              dir={isFA ? "rtl" : "ltr"}
+              className={`text-[10px] tracking-[0.6em] text-teal-400 font-black uppercase ${isFA ? 'fa-text-fix' : ''}`}
+            >
               {t.lobbyInitiation}
             </span>
           </div>
@@ -173,7 +176,10 @@ export default function LobbyInitialization({
 
         <div className="flex items-center justify-center gap-8 pt-8">
           <div className="flex flex-col items-center group">
-            <span className="text-[12px] mb-2 font-black tracking-widest group-hover:text-teal-400/50 transition-colors">
+            <span 
+              dir={isFA ? "rtl" : "ltr"}
+              className={`text-[12px] mb-2 font-black tracking-widest group-hover:text-teal-400/50 transition-colors ${isFA ? 'fa-text-fix' : ''}`}
+            >
               {t.connectedPlayers}
             </span>
             <div className="bg-zinc-900/50 border border-white/5 px-4 py-1 rounded-lg">
@@ -183,7 +189,10 @@ export default function LobbyInitialization({
             </div>
           </div>
           <div className="flex flex-col items-center group">
-            <span className="text-[12px] mb-2 font-black tracking-widest group-hover:text-teal-400/50 transition-colors">
+            <span 
+              dir={isFA ? "rtl" : "ltr"}
+              className={`text-[12px] mb-2 font-black tracking-widest group-hover:text-teal-400/50 transition-colors ${isFA ? 'fa-text-fix' : ''}`}
+            >
               {t.readyPlayers}
             </span>
             <div
@@ -261,14 +270,17 @@ export default function LobbyInitialization({
                 whileTap={isAllReady ? { scale: 0.95 } : {}}
                 disabled={!isAllReady}
                 onClick={handleStartGame}
-                className={`w-full py-8 rounded-[2.5rem] font-black uppercase text-2xl tracking-[0.3em] transition-all relative overflow-hidden group shadow-2xl ${
+                className={`w-full py-8 rounded-[2.5rem] font-black uppercase text-2xl transition-all relative overflow-hidden group shadow-2xl ${
                   isAllReady
                     ? "bg-white text-black"
                     : "bg-zinc-950  border border-white/5 cursor-not-allowed"
-                }`}
+                } ${isFA ? 'fa-text-fix' : 'tracking-[0.3em]'}`}
               >
                 <div className="absolute inset-0 bg-teal-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <span className="relative z-10 group-hover:text-white transition-colors">
+                <span 
+                  dir={isFA ? "rtl" : "ltr"}
+                  className="relative z-10 group-hover:text-white transition-colors"
+                >
                   {isAllReady ? t.matchInitiation : t.waitingForPlayers}
                 </span>
               </motion.button>
@@ -284,13 +296,15 @@ export default function LobbyInitialization({
             }}
             whileTap={{ scale: 0.98 }}
             onClick={handleToggleReady}
-            className={`w-full py-8 rounded-[2.5rem] font-black uppercase text-2xl tracking-[0.3em] transition-all border-2 ${
+            className={`w-full py-8 rounded-[2.5rem] font-black uppercase text-2xl transition-all border-2 ${
               me?.isReady
                 ? "bg-teal-400/10 border-teal-400/40 text-teal-400 shadow-[0_0_30px_rgba(45,212,191,0.2)]"
                 : "bg-white text-black border-transparent"
-            }`}
+            } ${isFA ? 'fa-text-fix' : 'tracking-[0.3em]'}`}
           >
-            {me?.isReady ? t.notReady : t.ready}
+            <span dir={isFA ? "rtl" : "ltr"}>
+              {me?.isReady ? t.notReady : t.ready}
+            </span>
           </motion.button>
         )}
       </motion.div>

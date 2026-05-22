@@ -3,23 +3,14 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Language, translations } from "@/lib/translations";
 import { motion } from "framer-motion";
+import { useTranslation } from "@/hooks/useTranslation";
 
 /**
  * LanguageSelector: Cinematic Technical Toggle Strip.
  */
 export default function LanguageSelector() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  const currentLang = (searchParams.get("lang") as Language) || "en";
+  const { lang: currentLang, setLanguage } = useTranslation();
   const availableLanguages = Object.keys(translations) as Language[];
-
-  const handleLanguageChange = (newLang: Language) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("lang", newLang);
-    router.push(`${pathname}?${params.toString()}`);
-  };
 
   return (
     <div className="flex flex-col gap-2">
@@ -29,7 +20,7 @@ export default function LanguageSelector() {
             key={lang}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => handleLanguageChange(lang)}
+            onClick={() => setLanguage(lang)}
             className={`px-3 py-1.5 text-[11px] font-mono font-black uppercase tracking-tighter transition-all duration-300 rounded-lg relative overflow-hidden ${
               currentLang === lang
                 ? "bg-teal-500 text-black shadow-[0_0_15px_rgba(45,212,191,0.4)]"

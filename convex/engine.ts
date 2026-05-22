@@ -180,6 +180,21 @@ export const seedGames = mutation({
       suggestedMax: 7,
       absoluteMax: 10,
     });
+
+    await ctx.db.insert("games", {
+      slug: "timeattack",
+      title: "Time Attack",
+      title_fr: "Contre la montre",
+      title_de: "Zeitangriff",
+      title_fa: "حمله زمانی",
+      description: "A low-latency precision timing game.",
+      description_fr: "Un jeu de précision et de timing.",
+      description_de: "Ein Präzisions-Timing-Spiel.",
+      description_fa: "بازی دقت و زمان‌بندی پایین‌تأخیر.",
+      minPlayers: 2,
+      suggestedMax: 4,
+      absoluteMax: 8,
+    });
   },
 });
 
@@ -329,6 +344,38 @@ export const getSecurityLogs = query({
       .withIndex("by_timestamp")
       .order("desc")
       .take(50);
+  },
+});
+
+export const resetRoom = mutation({
+  args: { roomId: v.id("rooms") },
+  handler: async (ctx, args) => {
+    const room = await ctx.db.get(args.roomId);
+    if (!room) return;
+
+    const plugin = getGamePlugin(room.currentGame);
+
+    // Reset all players to ready=false and initial state
+    const players = await ctx.db
+      .query("players")
+      .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
+      .collect();
+
+    for (const player of players) {
+      const { initialHand, initialState } = plugin.getInitialPlayerState("LOBBY", room);
+      await ctx.db.patch(player._id, {
+        isReady: false,
+        gameHand: initialHand,
+        state: initialState,
+      });
+    }
+
+    await ctx.db.patch(args.roomId, {
+      status: "LOBBY",
+      currentTurnIndex: 0,
+      turnOrder: [],
+      gameBoard: plugin.getInitialBoard(),
+    });
   },
 });
 

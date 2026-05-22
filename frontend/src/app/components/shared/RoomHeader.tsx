@@ -66,7 +66,10 @@ export default function RoomHeader({
               <h1 className="text-3xl lg:text-4xl font-black italic uppercase tracking-tighter text-white leading-none">
                 {t.title}
               </h1>
-              <h2 className="text-[16px] lg:text-[20px] font-bold uppercase tracking-[0.3em] text-teal-400 italic">
+              <h2 
+                dir={isFA ? "rtl" : "ltr"}
+                className={`text-[16px] lg:text-[20px] font-bold uppercase italic text-teal-400 ${isFA ? 'fa-text-fix' : 'tracking-[0.3em]'}`}
+              >
                 {gameTitle?.toUpperCase() || t.lobby}
               </h2>
             </div>
@@ -81,7 +84,7 @@ export default function RoomHeader({
         <div className="flex items-center justify-between w-full border-t border-white/5 pt-4">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className="font-bold tracking-[0.5em] text-[12px] uppercase">
+              <span className={`font-bold text-[12px] uppercase ${lang === 'fa' ? 'tracking-normal' : 'tracking-[0.5em]'}`}>
                 {t.roomPlaceholder}:
               </span>
               <span className="text-white font-black tracking-widest bg-zinc-900 px-3 py-1 rounded border border-zinc-800 text-[12px] lg:text-xs shadow-inner">
@@ -105,7 +108,8 @@ export default function RoomHeader({
                 />
               </div>
               <span
-                className={`text-[9px] font-black tracking-[0.3em] uppercase ${statusConfig.color}`}
+                dir={isFA ? "rtl" : "ltr"}
+                className={`text-[9px] font-black uppercase ${statusConfig.color} ${isFA ? 'fa-text-fix' : 'tracking-[0.3em]'}`}
               >
                 {statusConfig.label}
               </span>

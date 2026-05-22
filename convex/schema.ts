@@ -126,6 +126,36 @@ export default defineSchema({
         history: v.array(HistoryEvent),
         winner: v.optional(v.string()),
         winnerId: v.optional(v.id("players")),
+      }),
+      // Time Attack (Sync Wave) state
+      v.object({
+        gameType: v.literal("timeattack"),
+        phase: v.union(
+          v.literal("ROUND_INTRO"),
+          v.literal("ACTIVE_PLAY"),
+          v.literal("ROUND_REVEAL"),
+          v.literal("FINAL_LEADERBOARD")
+        ),
+        currentRound: v.number(), // 1 to 7
+        targetMs: v.number(),     // Global target for the round
+        visuals: v.union(v.literal("FULL"), v.literal("BLIND"), v.literal("DISTRACTED")),
+        interaction: v.union(v.literal("TAP"), v.literal("PRESS_RELEASE")),
+        serverStartTime: v.number(),
+        // Submissions keyed by player ID string
+        submissions: v.record(v.string(), v.object({
+          inputs: v.array(v.object({
+            timestamp: v.number(),
+            type: v.union(v.literal("TAP"), v.literal("PRESS"), v.literal("RELEASE"))
+          })),
+          personalStartTime: v.optional(v.number()),
+          finalDeltaMs: v.optional(v.number()),
+          actualMs: v.optional(v.number()),
+          pointsEarned: v.optional(v.number())
+        })),
+        roundResults: v.optional(v.record(v.string(), v.number())),
+        history: v.array(HistoryEvent),
+        winner: v.optional(v.string()),
+        winnerId: v.optional(v.id("players")),
       })
     ),
   }).index("by_roomCode", ["roomCode"]),
@@ -152,6 +182,10 @@ export default defineSchema({
       }),
       v.object({
         gameType: v.literal("justone"),
+        score: v.number(),
+      }),
+      v.object({
+        gameType: v.literal("timeattack"),
         score: v.number(),
       })
     ),

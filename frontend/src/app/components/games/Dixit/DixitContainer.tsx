@@ -122,7 +122,7 @@ export default function DixitContainer({ roomData }: BoardProps) {
                   animate={{ opacity: 1 }}
                   className="mb-12 p-10 border border-zinc-800 rounded-[3rem] text-center bg-black/20"
                 >
-                  <p className="text-zinc-600 text-[11px] uppercase tracking-[0.5em] animate-pulse">
+                  <p className=" text-[11px] uppercase tracking-[0.5em] animate-pulse">
                     {t.dixit_awaiting_st}
                   </p>
                 </motion.div>
@@ -159,13 +159,17 @@ export default function DixitContainer({ roomData }: BoardProps) {
 
             <div className="space-y-3 text-zinc-500 border-t border-white/5 pt-6">
               <div className="flex justify-between items-center">
-                <span className="uppercase tracking-widest">{t.dixit_current_phase}:</span>
+                <span className="uppercase tracking-widest">
+                  {t.dixit_current_phase}:
+                </span>
                 <span className="text-white font-black uppercase tracking-tighter shadow-blue-500/20">
                   {board?.phase || "INIT"}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="uppercase tracking-widest">{t.dixit_integrity}:</span>
+                <span className="uppercase tracking-widest">
+                  {t.dixit_integrity}:
+                </span>
                 <span className="text-teal-400/80 font-black tracking-tighter uppercase">
                   {t.activeTurn}
                 </span>

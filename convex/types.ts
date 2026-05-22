@@ -5,7 +5,7 @@ import { DataModel } from "./_generated/dataModel";
 export type GameMutationCtx = GenericMutationCtx<DataModel>;
 
 export interface GamePlugin {
-  gameType: "dixit" | "pioupiou" | "themind" | "justone";
+  gameType: "dixit" | "pioupiou" | "themind" | "justone" | "timeattack";
   
   // Defines the initial state for the room's gameBoard when created in LOBBY
   getInitialBoard(): any;

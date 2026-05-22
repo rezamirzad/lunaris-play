@@ -1,26 +1,79 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { translations, Language } from "@/lib/translations";
+
+const STORAGE_KEY = "lunaris_preferred_language";
+const VALID_LANGUAGES: Language[] = ["en", "fr", "de", "fa"];
 
 export function useTranslation() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
+  const [lang, setLangState] = useState<Language>("en");
 
-  // Prevention of Hydration Mismatch
+  const updateLang = useCallback((newLang: Language, updateUrl = true) => {
+    if (!VALID_LANGUAGES.includes(newLang)) return;
+    
+    setLangState(newLang);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_KEY, newLang);
+      document.documentElement.lang = newLang;
+      
+      if (updateUrl) {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("lang") !== newLang) {
+          params.set("lang", newLang);
+          router.replace(`${pathname}?${params.toString()}`);
+        }
+      }
+    }
+  }, [pathname, router]);
+
+  // Initial Sync
   useEffect(() => {
     setMounted(true);
-  }, []);
+    
+    // 1. Check URL
+    const urlLang = searchParams.get("lang") as Language;
+    
+    // 2. Check Storage
+    const savedLang = localStorage.getItem(STORAGE_KEY) as Language;
+    
+    // 3. Check Browser
+    const browserLang = navigator.language.split("-")[0] as Language;
+    
+    let targetLang: Language = "en";
+    
+    if (VALID_LANGUAGES.includes(urlLang)) {
+      targetLang = urlLang;
+    } else if (VALID_LANGUAGES.includes(savedLang)) {
+      targetLang = savedLang;
+    } else if (VALID_LANGUAGES.includes(browserLang)) {
+      targetLang = browserLang;
+    }
+    
+    updateLang(targetLang, false);
+  }, [searchParams, updateLang]); // Initial Sync only, but dependencies must be declared
 
-  const langParam = searchParams.get("lang");
-  const lang: Language = (["en", "fr", "de", "fa"].includes(langParam || "") ? langParam : "en") as Language;
+  // Sync with URL changes (e.g. back button or manual URL edit)
+  useEffect(() => {
+    const urlLang = searchParams.get("lang") as Language;
+    if (VALID_LANGUAGES.includes(urlLang) && urlLang !== lang) {
+      setLangState(urlLang);
+      localStorage.setItem(STORAGE_KEY, urlLang);
+      document.documentElement.lang = urlLang;
+    }
+  }, [searchParams, lang]);
+
   const t = translations[lang];
 
-  // Return default English/Server-safe values until mounted
-  if (!mounted) {
-    return { t: translations["en"], lang: "en" as Language, isMounted: false };
-  }
-
-  return { t, lang, isMounted: true };
+  return { 
+    t, 
+    lang, 
+    isMounted: mounted,
+    setLanguage: (l: Language) => updateLang(l, true)
+  };
 }

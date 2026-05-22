@@ -117,7 +117,10 @@ export default function RoomPage() {
   };
 
   return (
-    <main className="min-h-screen bg-app relative overflow-x-hidden">
+    <main 
+      lang={lang}
+      className={`min-h-screen bg-app relative overflow-x-hidden ${lang === 'fa' ? 'fa-text-fix' : ''}`}
+    >
       {/* Dynamic Header */}
       <RoomHeader 
         gameTitle={localizedGameTitle} 
