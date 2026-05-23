@@ -123,15 +123,7 @@ export default function ArcadePlayerGrid({
 
                 {/* Status Indicator Badge */}
                 <div className="absolute -top-3 -right-3 z-30 flex flex-col items-end gap-1.5">
-                  {isWinner ? (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-sm text-white shadow-xl ring-2 ring-black font-black"
-                    >
-                      👑
-                    </motion.div>
-                  ) : isCurrentTurn ? (
+                  {isCurrentTurn ? (
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}

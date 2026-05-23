@@ -1142,7 +1142,6 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_phase_deciphering: "Deciphering",
     dixit_champion_title: "Le Maître Illusionniste",
     dixit_illusion_dissipated: "Illusion Dissipated",
-    dixit_champion_title: "Le Maître Illusionniste",
 
     pioupiou_match_telemetry: "ÉTAT DU JEU",
     pioupiou_resolution: "GAGNANT",
