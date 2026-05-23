@@ -70,7 +70,7 @@ function HomeContent() {
   return (
     <main
       lang={lang}
-      className={`min-h-[100dvh] bg-app text-content-base p-4 sm:p-8 md:p-12 transition-all duration-500 relative overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] ${lang === 'fa' ? 'fa-text-fix' : ''}`}
+      className={`min-h-[100dvh] bg-app text-content-base p-4 sm:p-8 md:p-12 transition-all duration-500 relative overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] ${lang === "fa" ? "fa-text-fix" : ""}`}
     >
       <div className="pt-10 sm:pt-14">
         <Navbar />
@@ -88,20 +88,16 @@ function HomeContent() {
           className="text-center space-y-4"
         >
           <div className="flex flex-col items-center">
-            <div className="flex items-center justify-center gap-4">
-              <div className="h-[1px] w-12 bg-brand-accent/20" />
-              <p className={`text-brand-accent font-bold text-[10px] uppercase ${lang === 'fa' ? 'tracking-normal' : 'tracking-[0.5em]'}`}>
-                {t.madeBy}
-              </p>
-              <div className="h-[1px] w-12 bg-brand-accent/20" />
-            </div>
+            <div className="flex items-center justify-center gap-4"></div>
             <h1 className="text-7xl sm:text-9xl font-black italic tracking-tighter text-content-strong leading-none uppercase logo-glow transition-all duration-300">
               LUNARIS
             </h1>
           </div>
           <div className="flex items-center justify-center gap-4">
             <div className="h-[1px] w-12 bg-brand-accent/20" />
-            <p className={`text-brand-accent font-bold text-[10px] uppercase ${lang === 'fa' ? 'tracking-normal' : 'tracking-[0.5em]'}`}>
+            <p
+              className={`text-brand-accent font-bold text-[10px] uppercase ${lang === "fa" ? "tracking-normal" : "tracking-[0.5em]"}`}
+            >
               {t.subtitle}
             </p>
             <div className="h-[1px] w-12 bg-brand-accent/20" />
@@ -228,7 +224,7 @@ function HomeContent() {
               </span>
             </h2>
           </div>
-          <div className="max-h-[60vh] lg:max-h-[800px] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="max-h-[60vh] lg:max-h-[1100px] overflow-y-auto pr-2 custom-scrollbar">
             <GameCatalog mode="standard" />
           </div>
         </motion.div>
