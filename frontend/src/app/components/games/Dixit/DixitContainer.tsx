@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { useMemo } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { BoardProps } from "../registry";
 import PlayerCard from "../../shared/PlayerCard";
@@ -15,6 +16,7 @@ import ArcadeVictoryOverlay from "../../arcade/ArcadeVictoryOverlay";
 import ArcadeHUD from "../../arcade/ArcadeHUD";
 import ArcadeStatusPanel from "../../arcade/ArcadeStatusPanel";
 import ArcadePlayerGrid from "../../arcade/ArcadePlayerGrid";
+import { calculateRank } from "@/lib/utils";
 
 export default function DixitContainer({ roomData }: BoardProps) {
   const { t } = useTranslation();
@@ -22,6 +24,11 @@ export default function DixitContainer({ roomData }: BoardProps) {
     roomData.gameBoard.gameType === "dixit" ? roomData.gameBoard : null;
   const players = roomData.players;
   const isLobby = roomData.status?.toUpperCase() === "LOBBY";
+
+  const allScores = useMemo(() => 
+    players.map(p => p.state.gameType === "dixit" ? p.state.score || 0 : 0),
+    [players]
+  );
 
   // 1. LOBBY MISSION BRIEFING
   if (isLobby) {
@@ -150,12 +157,14 @@ export default function DixitContainer({ roomData }: BoardProps) {
             const hasSubmitted = board.submittedCards?.some(sc => sc.playerId === player._id);
             const hasVoted = board.votes?.some((v) => v.voterId === player._id);
             const actionComplete = (board.phase === "SUBMITTING" && hasSubmitted) || (board.phase === "VOTING" && hasVoted);
+            const playerState = player.state.gameType === "dixit" ? player.state : null;
+            const rank = calculateRank(playerState?.score || 0, allScores);
 
             return (
               <>
                 <DixitPlayerStats
-                  state={player.state.gameType === "dixit" ? player.state : null}
-                  rank={1}
+                  state={playerState}
+                  rank={rank}
                   totalPlayers={players.length}
                   isST={player._id === storytellerId}
                 />

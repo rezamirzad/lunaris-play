@@ -97,7 +97,9 @@ export default function PiouPiouPlayerView({ player, roomData }: PlayerProps) {
         indices,
         cards,
         actionType,
-        targetPlayerId: isAttackInitiation ? (targetId as Doc<"players">["_id"]) : undefined,
+        targetPlayerId: isAttackInitiation
+          ? (targetId as Doc<"players">["_id"])
+          : undefined,
       });
 
       setSelectedCards([]);
@@ -127,13 +129,18 @@ export default function PiouPiouPlayerView({ player, roomData }: PlayerProps) {
   const getActionLabel = () => {
     if (isTargetRequired && !targetId) return t.targetPlayer;
     if (!protocol) return t.waiting_for_sequence;
-    
+
     switch (protocol) {
-      case "STEAL_EGG": return t.hintSteal;
-      case "LAY_EGG": return t.hintLayEgg;
-      case "HATCH": return t.hintHatch;
-      case "DISCARD": return t.discard;
-      default: return protocol;
+      case "STEAL_EGG":
+        return t.hintSteal;
+      case "LAY_EGG":
+        return t.hintLayEgg;
+      case "HATCH":
+        return t.hintHatch;
+      case "DISCARD":
+        return t.discard;
+      default:
+        return protocol;
     }
   };
 

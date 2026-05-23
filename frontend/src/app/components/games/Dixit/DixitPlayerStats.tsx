@@ -36,15 +36,15 @@ export default function DixitPlayerStats({
   }, lang);
 
   return (
-    <div className="flex flex-col gap-3 w-full font-mono">
-      {/* STORYTELLER BADGE */}
+    <div className="flex flex-col gap-3 w-full font-mono relative">
+      {/* STORYTELLER BADGE - Mirroring the iOS style badge[cite: 1] */}
       {isST && (
         <motion.div
-          initial={{ y: -5, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="bg-blue-500/20 border border-blue-500/30 rounded-full py-0.5 px-3 self-start"
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="absolute -top-24 -left-10 z-50 bg-blue-600 border-2 border-blue-400 rounded-2xl py-1.5 px-4 shadow-[0_10px_30px_rgba(59,130,246,0.5)] rotate-[-4deg]"
         >
-          <span className="text-[7px] font-black text-blue-400 uppercase tracking-[0.3em]">
+          <span className="text-[10px] font-black text-white uppercase tracking-[0.2em] whitespace-nowrap drop-shadow-md">
             ⚡ {t.storyteller}
           </span>
         </motion.div>

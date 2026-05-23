@@ -89,7 +89,7 @@ export default function DixitPlayerView({
                   </span>
                 )}
                 <div
-                  className={`text-3xl font-black italic tracking-tighter uppercase truncate ${isLeader ? "text-yellow-400" : "text-white"}`}
+                  className={`text-3xl font-black italic uppercase truncate ${isLeader ? "text-yellow-400" : "text-white"}`}
                 >
                   {player.name}
                 </div>
