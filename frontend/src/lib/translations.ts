@@ -285,6 +285,7 @@ export interface TranslationSet {
   dixit_briefing_desc: string;
   dixit_phase_incubation: string;
   dixit_phase_deciphering: string;
+  dixit_champion_title: string;
   dixit_illusion_dissipated: string;
 
   pioupiou_match_telemetry: string;
@@ -705,6 +706,7 @@ export const translations: Record<Language, TranslationSet> = {
       "Words are blunt instruments. We communicate through imagery, metaphor, and intuition. As the Storyteller, craft a clue ambiguous enough to fool some, but precise enough to guide your true allies. As an Agent, decipher the vision to find the true source.",
     dixit_phase_incubation: "Incubation",
     dixit_phase_deciphering: "Deciphering",
+    dixit_champion_title: "The Master Illusionist",
     dixit_illusion_dissipated: "Illusion Dissipated",
 
     pioupiou_match_telemetry: "GAME STATUS",
@@ -1138,7 +1140,9 @@ export const translations: Record<Language, TranslationSet> = {
       "Words are blunt instruments. We communicate through imagery, metaphor, and intuition. As the Storyteller, craft a clue ambiguous enough to fool some, but precise enough to guide your true allies. As an Agent, decipher the vision to find the true source.",
     dixit_phase_incubation: "Incubation",
     dixit_phase_deciphering: "Deciphering",
+    dixit_champion_title: "Le Maître Illusionniste",
     dixit_illusion_dissipated: "Illusion Dissipated",
+    dixit_champion_title: "Le Maître Illusionniste",
 
     pioupiou_match_telemetry: "ÉTAT DU JEU",
     pioupiou_resolution: "GAGNANT",
@@ -1560,6 +1564,7 @@ export const translations: Record<Language, TranslationSet> = {
       "Words are blunt instruments. We communicate through imagery, metaphor, and intuition. As the Storyteller, craft a clue ambiguous enough to fool some, but precise enough to guide your true allies. As an Agent, decipher the vision to find the true source.",
     dixit_phase_incubation: "Incubation",
     dixit_phase_deciphering: "Deciphering",
+    dixit_champion_title: "Der Illusionist Champion",
     dixit_illusion_dissipated: "Illusion Dissipated",
 
     pioupiou_match_telemetry: "STATUS",
@@ -1983,6 +1988,7 @@ export const translations: Record<Language, TranslationSet> = {
       "Words are blunt instruments. We communicate through imagery, metaphor, and intuition. As the Storyteller, craft a clue ambiguous enough to fool some, but precise enough to guide your true allies. As an Agent, decipher the vision to find the true source.",
     dixit_phase_incubation: "Incubation",
     dixit_phase_deciphering: "Deciphering",
+    dixit_champion_title: "استاد توهم‌پرداز",
     dixit_illusion_dissipated: "Illusion Dissipated",
 
     pioupiou_match_telemetry: "وضعیت",

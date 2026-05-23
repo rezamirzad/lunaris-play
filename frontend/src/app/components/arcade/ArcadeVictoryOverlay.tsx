@@ -92,7 +92,7 @@ export default function ArcadeVictoryOverlay({
       </div>
 
       <h2 className="text-5xl lg:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-zinc-500 uppercase leading-none mb-3">
-        {t.winner}
+        {championLabel}
       </h2>
 
       <p className="text-xl lg:text-5xl font-black text-yellow-500 uppercase  mb-12 italic  pb-2 px-12 max-w-3xl drop-shadow-lg">

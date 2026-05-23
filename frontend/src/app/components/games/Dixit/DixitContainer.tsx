@@ -25,9 +25,12 @@ export default function DixitContainer({ roomData }: BoardProps) {
   const players = roomData.players;
   const isLobby = roomData.status?.toUpperCase() === "LOBBY";
 
-  const allScores = useMemo(() => 
-    players.map(p => p.state.gameType === "dixit" ? p.state.score || 0 : 0),
-    [players]
+  const allScores = useMemo(
+    () =>
+      players.map((p) =>
+        p.state.gameType === "dixit" ? p.state.score || 0 : 0,
+      ),
+    [players],
   );
 
   // 1. LOBBY MISSION BRIEFING
@@ -51,7 +54,9 @@ export default function DixitContainer({ roomData }: BoardProps) {
 
   const storytellerId = roomData.turnOrder[roomData.currentTurnIndex];
   const stPlayer = players.find((p) => p._id === storytellerId);
-  const isFinished = roomData.status?.toUpperCase() === "FINISHED" || roomData.status?.toUpperCase() === "ARCHIVED";
+  const isFinished =
+    roomData.status?.toUpperCase() === "FINISHED" ||
+    roomData.status?.toUpperCase() === "ARCHIVED";
 
   return (
     <SharedArcadeLayout
@@ -66,7 +71,11 @@ export default function DixitContainer({ roomData }: BoardProps) {
         <ArcadeHUD
           title={t.dixit_title}
           statusLabel={`${t.dixit_match_live} • ${t.dixit_current_phase}: ${t[`dixit_phase_${board.phase.toLowerCase()}` as keyof typeof t] || board.phase}`}
-          badgeContent={stPlayer ? `${t.storyteller}: ${stPlayer.name}` : t.dixit_awaiting_st}
+          badgeContent={
+            stPlayer
+              ? `${t.storyteller}: ${stPlayer.name}`
+              : t.dixit_awaiting_st
+          }
           accentColor="blue"
         />
       }
@@ -93,32 +102,62 @@ export default function DixitContainer({ roomData }: BoardProps) {
 
             <AnimatePresence mode="wait">
               {board.phase === "CLUE" ? (
-                <motion.div key="clue" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center text-center">
+                <motion.div
+                  key="clue"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex flex-col items-center text-center"
+                >
                   <div className="w-48 h-48 rounded-full border-2 border-blue-500/20 flex items-center justify-center relative mb-12">
                     <div className="absolute inset-0 rounded-full border border-blue-500/10 animate-ping" />
                     <span className="text-7xl">🔮</span>
                   </div>
-                  <h2 className="text-3xl font-black text-blue-400 tracking-[0.4em] uppercase italic">{t.dixit_awaiting_st}</h2>
+                  <h2 className="text-3xl font-black text-blue-400 tracking-[0.4em] uppercase italic">
+                    {t.dixit_awaiting_st}
+                  </h2>
                 </motion.div>
               ) : board.phase === "SUBMITTING" ? (
-                <motion.div key="submit" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center text-center">
-                   <div className="px-8 py-4 bg-blue-500/10 border border-blue-500/30 rounded-2xl mb-8">
-                      <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.4em] block mb-2">{t.dixit_clue_received}</span>
-                      <h2 className="text-4xl font-black text-white italic tracking-tighter uppercase">&quot;{board.currentClue}&quot;</h2>
-                   </div>
-                   <span className="text-[8px] font-black text-zinc-500 uppercase tracking-[0.5em]">{t.dixit_phase_incubation}...</span>
+                <motion.div
+                  key="submit"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex flex-col items-center text-center"
+                >
+                  <div className="px-8 py-4 bg-blue-500/10 border border-blue-500/30 rounded-2xl mb-8">
+                    <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.4em] block mb-2">
+                      {t.dixit_clue_received}
+                    </span>
+                    <h2 className="text-4xl font-black text-white italic tracking-tighter uppercase">
+                      &quot;{board.currentClue}&quot;
+                    </h2>
+                  </div>
+                  <span className="text-[8px] font-black text-zinc-500 uppercase tracking-[0.5em]">
+                    {t.dixit_phase_incubation}...
+                  </span>
                 </motion.div>
               ) : board.phase === "VOTING" ? (
-                <motion.div key="vote" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center text-center w-full">
-                   <div className="px-6 py-3 bg-blue-500/10 border border-blue-500/30 rounded-xl mb-12">
-                      <h2 className="text-2xl font-black text-white italic tracking-tighter uppercase">&quot;{board.currentClue}&quot;</h2>
-                   </div>
-                   <VotingReveal roomData={roomData} />
+                <motion.div
+                  key="vote"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex flex-col items-center text-center w-full"
+                >
+                  <div className="px-6 py-3 bg-blue-500/10 border border-blue-500/30 rounded-xl mb-12">
+                    <h2 className="text-2xl font-black text-white italic tracking-tighter uppercase">
+                      &quot;{board.currentClue}&quot;
+                    </h2>
+                  </div>
+                  <VotingReveal roomData={roomData} />
                 </motion.div>
               ) : board.phase === "RESULTS" ? (
-                <motion.div key="results" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="w-full flex flex-col items-center gap-12 overflow-y-auto no-scrollbar max-h-full py-8">
-                   <VotingReveal roomData={roomData} />
-                   <RoundResultsPanel roomData={roomData} />
+                <motion.div
+                  key="results"
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="w-full flex flex-col items-center gap-12 overflow-y-auto no-scrollbar max-h-full py-8"
+                >
+                  <VotingReveal roomData={roomData} />
+                  <RoundResultsPanel roomData={roomData} />
                 </motion.div>
               ) : null}
             </AnimatePresence>
@@ -126,7 +165,7 @@ export default function DixitContainer({ roomData }: BoardProps) {
             {isFinished && (
               <ArcadeVictoryOverlay
                 winnerName={board.winner}
-                championLabel={t.champion}
+                championLabel={t.dixit_champion_title}
                 accentColor="blue"
               />
             )}
@@ -136,11 +175,15 @@ export default function DixitContainer({ roomData }: BoardProps) {
           <div className="lg:col-span-3 flex flex-col h-full gap-6">
             <ArcadeStatusPanel
               protocolLabel={t.dixit_integrity}
-              protocolValue={`${Math.round((players.filter(p => board.phase === "SUBMITTING" ? board.submittedCards?.some(sc => sc.playerId === p._id) : board.votes?.find(v => v.voterId === p._id)).length / players.length) * 100)}%`}
+              protocolValue={`${Math.round((players.filter((p) => (board.phase === "SUBMITTING" ? board.submittedCards?.some((sc) => sc.playerId === p._id) : board.votes?.find((v) => v.voterId === p._id))).length / players.length) * 100)}%`}
               accentColor="blue"
               rows={[
                 { label: t.shared_status, value: board.phase },
-                { label: t.dixit_participants, value: `${players.length} / 12`, valueColor: "text-zinc-300" },
+                {
+                  label: t.dixit_participants,
+                  value: `${players.length} / 12`,
+                  valueColor: "text-zinc-300",
+                },
               ]}
               title=""
             />
@@ -155,11 +198,16 @@ export default function DixitContainer({ roomData }: BoardProps) {
           isGameEnd={isFinished}
           accentColor="blue"
           renderStats={(player) => {
-            const hasSubmitted = board.submittedCards?.some(sc => sc.playerId === player._id);
+            const hasSubmitted = board.submittedCards?.some(
+              (sc) => sc.playerId === player._id,
+            );
             const hasVoted = board.votes?.some((v) => v.voterId === player._id);
             const isST = player._id === storytellerId;
-            const actionComplete = (board.phase === "SUBMITTING" && hasSubmitted) || (board.phase === "VOTING" && (hasVoted || isST));
-            const playerState = player.state.gameType === "dixit" ? player.state : null;
+            const actionComplete =
+              (board.phase === "SUBMITTING" && hasSubmitted) ||
+              (board.phase === "VOTING" && (hasVoted || isST));
+            const playerState =
+              player.state.gameType === "dixit" ? player.state : null;
             const rank = calculateRank(playerState?.score || 0, allScores);
 
             return (
@@ -172,8 +220,12 @@ export default function DixitContainer({ roomData }: BoardProps) {
                 />
                 {board.phase !== "RESULTS" && board.phase !== "CLUE" && (
                   <div className="mt-3 flex items-center gap-2 px-3 py-1.5 bg-black/40 border border-white/5 rounded-full self-start">
-                    <div className={`w-1.5 h-1.5 rounded-full ${actionComplete ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "bg-zinc-700 animate-pulse"}`} />
-                    <span className={`text-[7px] font-black uppercase tracking-widest ${actionComplete ? "text-emerald-400" : "text-zinc-500"}`}>
+                    <div
+                      className={`w-1.5 h-1.5 rounded-full ${actionComplete ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "bg-zinc-700 animate-pulse"}`}
+                    />
+                    <span
+                      className={`text-[7px] font-black uppercase tracking-widest ${actionComplete ? "text-emerald-400" : "text-zinc-500"}`}
+                    >
                       {actionComplete ? t.ready : t.waiting}
                     </span>
                   </div>
