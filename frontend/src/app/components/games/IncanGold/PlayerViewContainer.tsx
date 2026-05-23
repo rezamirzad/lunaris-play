@@ -248,7 +248,6 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData }) => {
             <span className="text-[10px] font-black text-emerald-500/60 uppercase italic tracking-widest">
               {t.incangold_chest_total}
             </span>
-            <span className="text-lg">⛺</span>
           </div>
 
           <div className="flex items-center gap-2 leading-none">
@@ -263,6 +262,7 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData }) => {
             <span className="text-xl md:text-2xl font-black tabular-nums text-emerald-400 filter drop-shadow-[0_0_8px_rgba(52,211,153,0.3)]">
               {myState.bankedScore}
             </span>
+            <span className="text-lg">⛺</span>
           </div>
         </div>
       </div>
