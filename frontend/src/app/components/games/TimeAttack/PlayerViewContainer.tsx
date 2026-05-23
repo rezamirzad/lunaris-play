@@ -71,7 +71,9 @@ export default function PlayerViewContainer({ player, roomData }: PlayerProps) {
       {/* HEADER: STATUS & LATENCY */}
       <div className="w-full flex justify-between items-start pt-4">
         <div className="flex flex-col">
-          <span className={`text-zinc-500 font-mono text-[10px] uppercase ${lang === 'fa' ? 'tracking-normal' : 'tracking-widest'}`}>
+          <span
+            className={`text-zinc-500 font-mono text-[10px] uppercase ${lang === "fa" ? "tracking-normal" : "tracking-widest"}`}
+          >
             {t.player}
           </span>
           <span className="text-white font-black italic uppercase tracking-tighter text-xl">
@@ -80,13 +82,18 @@ export default function PlayerViewContainer({ player, roomData }: PlayerProps) {
         </div>
         {!isFinal && (
           <div className="flex flex-col items-end">
-            <span className={`text-zinc-500 font-mono text-[10px] uppercase ${lang === 'fa' ? 'tracking-normal' : 'tracking-widest'}`}>
+            <span
+              className={`text-zinc-500 font-mono text-[10px] uppercase ${lang === "fa" ? "tracking-normal" : "tracking-widest"}`}
+            >
               {t.boot_syncing}
             </span>
             <span
               className={`font-mono text-sm ${latency < 50 ? "text-teal-400" : "text-yellow-400"}`}
             >
-              {lang === "fa" ? toPersianDigits(Math.round(latency)) : Math.round(latency)}ms
+              {lang === "fa"
+                ? toPersianDigits(Math.round(latency))
+                : Math.round(latency)}
+              ms
             </span>
           </div>
         )}
@@ -105,14 +112,14 @@ export default function PlayerViewContainer({ player, roomData }: PlayerProps) {
                     animate={{ opacity: 1, scale: 1 }}
                     className="flex flex-col items-center"
                   >
-                    <span className={`text-zinc-600 font-mono text-xs uppercase mb-2 ${lang === 'fa' ? 'tracking-normal' : 'tracking-widest'}`}>
-                      {t.timeattack_personal_timer}
-                    </span>
-                    <span 
+                    <span
                       dir={lang === "fa" ? "rtl" : "ltr"}
                       className="text-5xl font-black italic text-teal-400 tabular-nums"
                     >
-                      {lang === "fa" ? toPersianDigits((elapsed / 1000).toFixed(2)) : (elapsed / 1000).toFixed(2)}s
+                      {lang === "fa"
+                        ? toPersianDigits((elapsed / 1000).toFixed(2))
+                        : (elapsed / 1000).toFixed(2)}
+                      s
                     </span>
                   </motion.div>
                 )}
@@ -122,10 +129,14 @@ export default function PlayerViewContainer({ player, roomData }: PlayerProps) {
                     animate={{ opacity: 1 }}
                     className="flex flex-col items-center"
                   >
-                    <span className={`text-teal-500 font-black italic uppercase text-2xl ${lang === 'fa' ? 'tracking-normal' : 'tracking-widest'}`}>
+                    <span
+                      className={`text-teal-500 font-black italic uppercase text-2xl ${lang === "fa" ? "tracking-normal" : "tracking-widest"}`}
+                    >
                       {t.timeattack_locked}
                     </span>
-                    <span className={`text-zinc-500 font-mono text-xs mt-2 uppercase ${lang === 'fa' ? 'tracking-normal' : ''}`}>
+                    <span
+                      className={`text-zinc-500 font-mono text-xs mt-2 uppercase ${lang === "fa" ? "tracking-normal" : ""}`}
+                    >
                       {t.timeattack_waiting_reveal}
                     </span>
                   </motion.div>
@@ -181,7 +192,9 @@ export default function PlayerViewContainer({ player, roomData }: PlayerProps) {
                           : t.timeattack_start}
                   </span>
                 </div>
-                <span className={`text-zinc-500 font-mono text-[10px] uppercase mt-4 text-center px-8 ${lang === 'fa' ? 'tracking-normal' : 'tracking-[0.2em]'}`}>
+                <span
+                  className={`text-zinc-500 font-mono text-[10px] uppercase mt-4 text-center px-8 ${lang === "fa" ? "tracking-normal" : "tracking-[0.2em]"}`}
+                >
                   {!hasStarted
                     ? gameBoard.interaction === "PRESS_RELEASE"
                       ? t.timeattack_hold_to_start
@@ -205,7 +218,9 @@ export default function PlayerViewContainer({ player, roomData }: PlayerProps) {
                 <div className="w-16 h-16 rounded-full bg-teal-500/10 flex items-center justify-center border-2 border-teal-500/20 mx-auto mb-4">
                   <span className="text-2xl">🏆</span>
                 </div>
-                <h3 className={`text-white font-black italic uppercase text-2xl ${lang === 'fa' ? 'tracking-normal' : 'tracking-tighter'}`}>
+                <h3
+                  className={`text-white font-black italic uppercase text-2xl ${lang === "fa" ? "tracking-normal" : "tracking-tighter"}`}
+                >
                   {t.timeattack_final_results}
                 </h3>
               </div>
@@ -231,7 +246,7 @@ export default function PlayerViewContainer({ player, roomData }: PlayerProps) {
                           #{lang === "fa" ? toPersianDigits(idx + 1) : idx + 1}
                         </span>
                         <span
-                          className={`text-sm uppercase font-black italic ${lang === 'fa' ? 'tracking-normal' : 'tracking-tight'} ${p._id === player._id ? "text-teal-400" : "text-zinc-300"}`}
+                          className={`text-sm uppercase font-black italic ${lang === "fa" ? "tracking-normal" : "tracking-tight"} ${p._id === player._id ? "text-teal-400" : "text-zinc-300"}`}
                         >
                           {p.name}
                         </span>
@@ -239,7 +254,9 @@ export default function PlayerViewContainer({ player, roomData }: PlayerProps) {
                       <span
                         className={`font-mono text-sm ${p._id === player._id ? "text-teal-400" : "text-white"}`}
                       >
-                        {lang === "fa" ? toPersianDigits((p.state as any).score || 0) : ((p.state as any).score || 0)}
+                        {lang === "fa"
+                          ? toPersianDigits((p.state as any).score || 0)
+                          : (p.state as any).score || 0}
                       </span>
                     </div>
                   ))}
@@ -247,7 +264,7 @@ export default function PlayerViewContainer({ player, roomData }: PlayerProps) {
 
               <button
                 onClick={() => (window.location.href = "/")}
-                className={`w-full py-4 bg-white text-black font-black italic uppercase rounded-2xl hover:bg-teal-400 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] ${lang === 'fa' ? 'tracking-normal' : 'tracking-widest'}`}
+                className={`w-full py-4 bg-white text-black font-black italic uppercase rounded-2xl hover:bg-teal-400 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] ${lang === "fa" ? "tracking-normal" : "tracking-widest"}`}
               >
                 {t.timeattack_leave_game}
               </button>
@@ -271,25 +288,35 @@ export default function PlayerViewContainer({ player, roomData }: PlayerProps) {
       {/* FOOTER: ROUND INFO */}
       <div className="w-full bg-zinc-900/50 backdrop-blur-xl p-6 rounded-[2rem] border border-white/5 flex justify-between items-center mb-4">
         <div className="flex flex-col">
-          <span className={`text-zinc-500 font-mono text-[10px] uppercase ${lang === 'fa' ? 'tracking-normal' : 'tracking-widest'}`}>
+          <span
+            className={`text-zinc-500 font-mono text-[10px] uppercase ${lang === "fa" ? "tracking-normal" : "tracking-widest"}`}
+          >
             {t.timeattack_round}
           </span>
           <span className="text-teal-400 font-black italic text-2xl">
-            {lang === "fa" ? toPersianDigits(gameBoard.currentRound) : gameBoard.currentRound}/
-            {lang === "fa" ? toPersianDigits(10) : 10}
+            {lang === "fa"
+              ? toPersianDigits(gameBoard.currentRound)
+              : gameBoard.currentRound}
+            /{lang === "fa" ? toPersianDigits(10) : 10}
           </span>
         </div>
         <div className="flex flex-col items-end">
-          <span className={`text-zinc-500 font-mono text-[10px] uppercase ${lang === 'fa' ? 'tracking-normal' : 'tracking-widest'}`}>
+          <span
+            className={`text-zinc-500 font-mono text-[10px] uppercase ${lang === "fa" ? "tracking-normal" : "tracking-widest"}`}
+          >
             {t.shared_score}
           </span>
-          <span 
+          <span
             dir={lang === "fa" ? "rtl" : "ltr"}
             className="text-white font-black italic text-2xl"
           >
-            {player.state.gameType === "timeattack" 
-              ? (lang === "fa" ? toPersianDigits(player.state.score) : player.state.score)
-              : (lang === "fa" ? toPersianDigits(0) : 0)}
+            {player.state.gameType === "timeattack"
+              ? lang === "fa"
+                ? toPersianDigits(player.state.score)
+                : player.state.score
+              : lang === "fa"
+                ? toPersianDigits(0)
+                : 0}
           </span>
         </div>
       </div>
