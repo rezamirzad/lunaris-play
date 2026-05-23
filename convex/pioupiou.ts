@@ -305,3 +305,16 @@ async function finalizePiouPiouTurn(
     },
   });
 }
+
+export const performBotAction = internalMutation({
+  args: {
+    playerId: v.id("players"),
+    indices: v.array(v.number()),
+    cards: v.array(v.string()),
+    targetPlayerId: v.optional(v.id("players")),
+    actionType: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    return await handleActionCore(ctx, args);
+  },
+});

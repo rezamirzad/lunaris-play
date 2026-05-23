@@ -25,7 +25,6 @@ export interface TranslationSet {
   players: string;
   capacity: string;
   footer: string;
-  winner;
   noOngoing: string;
   host: string;
   startMatch: string;

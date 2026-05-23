@@ -102,7 +102,7 @@ export default function MissionBriefing({
               {briefingTitle}
             </h2>
             <p className="text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto">
-              "{briefingDesc}"
+              &quot;{briefingDesc}&quot;
             </p>
           </div>
           <div className={`text-[10px] ${theme.loading} uppercase tracking-[0.4em] animate-pulse`}>

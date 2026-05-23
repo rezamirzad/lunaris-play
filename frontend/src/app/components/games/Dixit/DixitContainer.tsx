@@ -97,14 +97,14 @@ export default function DixitContainer({ roomData }: BoardProps) {
                 <motion.div key="submit" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center text-center">
                    <div className="px-8 py-4 bg-blue-500/10 border border-blue-500/30 rounded-2xl mb-8">
                       <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.4em] block mb-2">{t.dixit_clue_received}</span>
-                      <h2 className="text-4xl font-black text-white italic tracking-tighter uppercase">"{board.currentClue}"</h2>
+                      <h2 className="text-4xl font-black text-white italic tracking-tighter uppercase">&quot;{board.currentClue}&quot;</h2>
                    </div>
                    <span className="text-[8px] font-black text-zinc-500 uppercase tracking-[0.5em]">{t.dixit_phase_incubation}...</span>
                 </motion.div>
               ) : board.phase === "VOTING" ? (
                 <motion.div key="vote" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center text-center w-full">
                    <div className="px-6 py-3 bg-blue-500/10 border border-blue-500/30 rounded-xl mb-12">
-                      <h2 className="text-2xl font-black text-white italic tracking-tighter uppercase">"{board.currentClue}"</h2>
+                      <h2 className="text-2xl font-black text-white italic tracking-tighter uppercase">&quot;{board.currentClue}&quot;</h2>
                    </div>
                    <VotingReveal roomData={roomData} />
                 </motion.div>
