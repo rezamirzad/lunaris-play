@@ -19,7 +19,7 @@ interface LobbyInitializationProps {
 
 /**
  * LobbyInitialization: Ultra-premium 'Top Class' boot-up sequence.
- * Features: Node-link SVG animations and real-time sync telemetry.
+ * Features: Node-link SVG animations and real-time fluid scaling telemetry.
  */
 export default function LobbyInitialization({
   room,
@@ -65,18 +65,18 @@ export default function LobbyInitialization({
     ];
 
     return (
-      <div className="space-y-4">
-        <h3 className="text-[8px] font-black text-zinc-600 uppercase tracking-[0.4em] text-center">
+      <div className="space-y-[1.5vh]">
+        <h3 className="text-[10px] md:text-xs font-black text-zinc-600 uppercase tracking-[0.4em] text-center">
           {t.shared_language}
         </h3>
-        <div className="flex gap-4 p-4 bg-zinc-900/50 border border-white/5 rounded-2xl">
+        <div className="flex flex-wrap sm:flex-nowrap gap-3 p-3 bg-zinc-900/50 border border-white/5 rounded-2xl">
           {langs.map((l) => (
             <button
               key={l.id}
               onClick={() => setJustOneLang(l.id)}
-              className={`flex-1 py-3 px-4 rounded-xl border-2 font-black text-xs tracking-widest transition-all cursor-pointer text-center ${
+              className={`flex-1 py-2.5 px-4 rounded-xl border-2 font-black text-xs transition-all cursor-pointer text-center whitespace-nowrap ${
                 justoneLang === l.id
-                  ? "border-teal-500 bg-teal-500/10 text-teal-400 shadow-[0_0_15px_rgba(45,212,191,0.2)] scale-105"
+                  ? "border-teal-500 bg-teal-500/10 text-teal-400 shadow-[0_0_15px_rgba(45,212,191,0.2)] scale-102"
                   : "border-zinc-800 text-zinc-600 hover:border-zinc-700 hover:text-zinc-500"
               }`}
             >
@@ -89,42 +89,44 @@ export default function LobbyInitialization({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-12 font-mono relative">
-      {/* 🔮 CENTRAL HUB SVG LINKING (BOARD VIEW ONLY) */}
+    <div className="flex flex-col items-center justify-center min-h-[70vh] w-full max-w-7xl mx-auto px-4 py-[4vh] space-y-[6vh] font-mono relative overflow-hidden transition-all duration-300">
+      {/* 🔮 CENTRAL HUB SVG LINKING (BOARD VIEW ONLY - Responsive Layout Mapping) */}
       {isBoardView && (
-        <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden opacity-20">
-          <svg className="w-full h-full" viewBox="0 0 1200 800" fill="none">
-            {/* Central Hub Glow */}
+        <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden opacity-25">
+          <svg
+            className="w-full h-full min-h-[500px]"
+            viewBox="0 0 1200 800"
+            fill="none"
+            preserveAspectRatio="xMidYMid slice"
+          >
             <circle
               cx="600"
               cy="180"
-              r="100"
+              r="120"
               fill="url(#hubGradient)"
               opacity="0.3"
             />
-
-            {/* Animated Node Links */}
             {players.map((_, i) => {
-              // Map indices to horizontal grid positions
-              const targetX = 150 + i * 300;
+              const targetX =
+                150 + i * (900 / Math.max(1, players.length - 1 || 1));
               const isSynced = players[i].isReady;
 
               return (
                 <g key={i}>
                   <motion.path
-                    d={`M600 180 C 600 300, ${targetX} 300, ${targetX} 450`}
+                    d={`M600 180 C 600 320, ${targetX} 320, ${targetX} 550`}
                     stroke={isSynced ? "#2dd4bf" : "#27272a"}
-                    strokeWidth="1.5"
-                    strokeDasharray="4 4"
+                    strokeWidth="2"
+                    strokeDasharray="5 5"
                     initial={{ pathLength: 0 }}
                     animate={{ pathLength: 1 }}
-                    transition={{ duration: 1, delay: i * 0.1 }}
+                    transition={{ duration: 1, delay: i * 0.08 }}
                   />
                   {isSynced && (
-                    <motion.circle r="3" fill="#2dd4bf">
+                    <motion.circle r="4" fill="#2dd4bf">
                       <animateMotion
-                        path={`M600 180 C 600 300, ${targetX} 300, ${targetX} 450`}
-                        dur="3s"
+                        path={`M600 180 C 600 320, ${targetX} 320, ${targetX} 550`}
+                        dur="2.5s"
                         repeatCount="indefinite"
                       />
                     </motion.circle>
@@ -140,7 +142,7 @@ export default function LobbyInitialization({
                 cy="0"
                 r="1"
                 gradientUnits="userSpaceOnUse"
-                gradientTransform="translate(600 180) rotate(90) scale(150)"
+                gradientTransform="translate(600 180) rotate(90) scale(180)"
               >
                 <stop stopColor="#2dd4bf" />
                 <stop offset="1" stopColor="#2dd4bf" stopOpacity="0" />
@@ -154,52 +156,52 @@ export default function LobbyInitialization({
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="text-center space-y-6 relative z-10"
+        className="text-center space-y-[2vh] relative z-10 w-full"
       >
         <div className="flex items-center justify-center gap-4">
-          <div className="h-[1px] w-20 bg-teal-400/20" />
-          <div className="flex items-center gap-3">
-            <div className="h-2 w-2 bg-teal-400 rounded-full animate-pulse shadow-[0_0_15px_rgba(45,212,191,1)]" />
-            <span 
+          <div className="h-[1px] w-12 md:w-20 bg-teal-400/20" />
+          <div className="flex items-center gap-2.5">
+            <div className="h-2 w-2 bg-teal-400 rounded-full animate-pulse shadow-[0_0_12px_rgba(45,212,191,1)]" />
+            <span
               dir={isFA ? "rtl" : "ltr"}
-              className={`text-[10px] tracking-[0.6em] text-teal-400 font-black uppercase ${isFA ? 'fa-text-fix' : ''}`}
+              className={`text-[10px] sm:text-xs tracking-[0.4em] text-teal-400 font-black uppercase ${isFA ? "fa-text-fix" : ""}`}
             >
               {t.lobbyInitiation}
             </span>
           </div>
-          <div className="h-[1px] w-20 bg-teal-400/20" />
+          <div className="h-[1px] w-12 md:w-20 bg-teal-400/20" />
         </div>
 
-        <h2 className="text-5xl lg:text-7xl font-black italic tracking-tighter uppercase text-white [text-shadow:0_0_30px_rgba(255,255,255,0.2)]">
+        <h2 className="text-4xl md:text-6xl lg:text-[4.5vw] font-black italic tracking-tighter uppercase text-white leading-none filter drop-shadow-[0_0_20px_rgba(255,255,255,0.15)]">
           {localizedGameTitle || room.currentGame}
         </h2>
 
-        <div className="flex items-center justify-center gap-8 pt-8">
+        <div className="flex items-center justify-center gap-[4vw] pt-[2vh]">
           <div className="flex flex-col items-center group">
-            <span 
+            <span
               dir={isFA ? "rtl" : "ltr"}
-              className={`text-[12px] mb-2 font-black tracking-widest group-hover:text-teal-400/50 transition-colors ${isFA ? 'fa-text-fix' : ''}`}
+              className={`text-xs md:text-sm mb-1.5 font-black tracking-widest text-zinc-500 group-hover:text-teal-400/50 transition-colors ${isFA ? "fa-text-fix" : ""}`}
             >
               {t.connectedPlayers}
             </span>
-            <div className="bg-zinc-900/50 border border-white/5 px-4 py-1 rounded-lg">
-              <span className="text-2xl font-black text-white tabular-nums tracking-tighter">
+            <div className="bg-zinc-900/50 border border-white/5 px-4 py-1 rounded-xl">
+              <span className="text-xl md:text-3xl font-black text-white tabular-nums tracking-tighter">
                 {isFA ? toPersianDigits(totalCount) : totalCount}
               </span>
             </div>
           </div>
           <div className="flex flex-col items-center group">
-            <span 
+            <span
               dir={isFA ? "rtl" : "ltr"}
-              className={`text-[12px] mb-2 font-black tracking-widest group-hover:text-teal-400/50 transition-colors ${isFA ? 'fa-text-fix' : ''}`}
+              className={`text-xs md:text-sm mb-1.5 font-black tracking-widest text-zinc-500 group-hover:text-teal-400/50 transition-colors ${isFA ? "fa-text-fix" : ""}`}
             >
               {t.readyPlayers}
             </span>
             <div
-              className={`bg-zinc-900/50 border px-4 py-1 rounded-lg transition-colors ${isAllReady ? "border-teal-400/30" : "border-white/5"}`}
+              className={`bg-zinc-900/50 border px-4 py-1 rounded-xl transition-colors ${isAllReady ? "border-teal-400/30 shadow-[0_0_15px_rgba(45,212,191,0.1)]" : "border-white/5"}`}
             >
               <span
-                className={`text-2xl font-black tabular-nums tracking-tighter ${isAllReady ? "text-teal-400 shadow-[0_0_15px_rgba(45,212,191,0.3)]" : "text-orange-500"}`}
+                className={`text-xl md:text-3xl font-black tabular-nums tracking-tighter ${isAllReady ? "text-teal-400" : "text-orange-500"}`}
               >
                 {isFA ? toPersianDigits(readyCount) : readyCount} /{" "}
                 {isFA ? toPersianDigits(totalCount) : totalCount}
@@ -210,18 +212,18 @@ export default function LobbyInitialization({
       </motion.div>
 
       {/* 👤 PARTICIPANT GRID */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl px-4 relative z-10">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full max-w-6xl relative z-10">
         <AnimatePresence mode="popLayout">
           {players.map((player, index) => (
             <motion.div
               key={player._id}
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              initial={{ scale: 0.95, opacity: 0, y: 15 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               transition={{
-                delay: index * 0.1,
+                delay: index * 0.05,
                 type: "spring",
-                stiffness: 260,
-                damping: 20,
+                stiffness: 240,
+                damping: 22,
               }}
             >
               <PlayerCard
@@ -230,14 +232,16 @@ export default function LobbyInitialization({
                 isCurrentTurn={false}
                 statusOverride={player.isReady ? t.ready : t.waiting}
                 className={
-                  player.isReady ? "border-teal-400/30" : "border-teal-400"
+                  player.isReady
+                    ? "border-teal-400/30 bg-teal-500/[0.02]"
+                    : "border-zinc-800 bg-zinc-950/40"
                 }
               >
-                <div className="w-full h-1 bg-zinc-900 rounded-full mt-2 overflow-hidden">
+                <div className="w-full h-1 bg-zinc-900 rounded-full mt-3 overflow-hidden relative">
                   <motion.div
                     initial={{ width: 0 }}
-                    animate={{ width: player.isReady ? "100%" : "10%" }}
-                    className={`h-full transition-all duration-1000 ${player.isReady ? "bg-teal-400" : "bg-zinc-800"}`}
+                    animate={{ width: player.isReady ? "100%" : "0%" }}
+                    className={`absolute inset-y-0 left-0 transition-all duration-700 ${player.isReady ? "bg-teal-400" : "bg-zinc-800"}`}
                   />
                 </div>
               </PlayerCard>
@@ -246,40 +250,40 @@ export default function LobbyInitialization({
         </AnimatePresence>
       </div>
 
-      {/* ⌨️ COMMAND CONTROL */}
+      {/* ⌨️ COMMAND CONTROL PANEL */}
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="w-full max-w-md space-y-6 pt-12 relative z-10"
+        transition={{ delay: 0.3 }}
+        className="w-full max-w-md sm:max-w-lg space-y-4 md:space-y-6 pt-4 relative z-10"
       >
         {isBoardView ? (
-          <div className="space-y-8">
+          <div className="space-y-[3vh] w-full">
             {room.currentGame === "justone" && renderLanguageSelector()}
 
-            <div className="space-y-4">
+            <div className="w-full">
               <motion.button
                 whileHover={
                   isAllReady
                     ? {
-                        scale: 1.05,
-                        boxShadow: "0 0 50px rgba(45,212,191,0.5)",
+                        scale: 1.02,
+                        boxShadow: "0 0 40px rgba(45,212,191,0.3)",
                       }
                     : {}
                 }
-                whileTap={isAllReady ? { scale: 0.95 } : {}}
+                whileTap={isAllReady ? { scale: 0.98 } : {}}
                 disabled={!isAllReady}
                 onClick={handleStartGame}
-                className={`w-full py-8 rounded-[2.5rem] font-black uppercase text-2xl transition-all relative overflow-hidden group shadow-2xl ${
+                className={`w-full py-5 md:py-6 rounded-2xl font-black uppercase text-lg md:text-xl transition-all relative overflow-hidden group shadow-xl ${
                   isAllReady
-                    ? "bg-white text-black"
-                    : "bg-zinc-950  border border-white/5 cursor-not-allowed"
-                } ${isFA ? 'fa-text-fix' : 'tracking-[0.3em]'}`}
+                    ? "bg-white text-black cursor-pointer"
+                    : "bg-zinc-950 text-zinc-600 border border-white/5 cursor-not-allowed"
+                } ${isFA ? "fa-text-fix" : "tracking-[0.2em]"}`}
               >
-                <div className="absolute inset-0 bg-teal-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <span 
+                <div className="absolute inset-0 bg-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <span
                   dir={isFA ? "rtl" : "ltr"}
-                  className="relative z-10 group-hover:text-white transition-colors"
+                  className="relative z-10 group-hover:text-white transition-colors duration-300"
                 >
                   {isAllReady ? t.matchInitiation : t.waitingForPlayers}
                 </span>
@@ -287,25 +291,35 @@ export default function LobbyInitialization({
             </div>
           </div>
         ) : (
-          <motion.button
-            whileHover={{
-              scale: 1.02,
-              boxShadow: me?.isReady
-                ? "none"
-                : "0 0 40px rgba(255,255,255,0.1)",
-            }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleToggleReady}
-            className={`w-full py-8 rounded-[2.5rem] font-black uppercase text-2xl transition-all border-2 ${
-              me?.isReady
-                ? "bg-teal-400/10 border-teal-400/40 text-teal-400 shadow-[0_0_30px_rgba(45,212,191,0.2)]"
-                : "bg-white text-black border-transparent"
-            } ${isFA ? 'fa-text-fix' : 'tracking-[0.3em]'}`}
-          >
-            <span dir={isFA ? "rtl" : "ltr"}>
-              {me?.isReady ? t.notReady : t.ready}
-            </span>
-          </motion.button>
+          /* UX FIX: Button acts as an explicit instruction block to resolve state paradox */
+          <div className="flex flex-col items-center gap-3 w-full">
+            <motion.button
+              whileHover={{
+                scale: 1.02,
+                boxShadow: me?.isReady
+                  ? "0 0 30px rgba(239,68,68,0.15)"
+                  : "0 0 30px rgba(45,212,191,0.25)",
+              }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleToggleReady}
+              className={`w-full py-5 md:py-6 rounded-2xl font-black uppercase text-lg md:text-xl transition-all border-2 cursor-pointer shadow-lg ${
+                me?.isReady
+                  ? "bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20"
+                  : "bg-gradient-to-r from-teal-500 to-emerald-600 text-white border-transparent hover:brightness-110"
+              } ${isFA ? "fa-text-fix" : "tracking-[0.2em]"}`}
+            >
+              <span dir={isFA ? "rtl" : "ltr"}>
+                {me?.isReady ? "Change to Not Ready ❌" : "Tap to Set Ready 👍"}
+              </span>
+            </motion.button>
+
+            {/* Status Display badge helping confirm current state instantly */}
+            <div
+              className={`px-4 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest ${me?.isReady ? "bg-teal-500/10 border-teal-500/20 text-teal-400 animate-pulse" : "bg-zinc-900 border-zinc-800 text-zinc-500"}`}
+            >
+              Current Status: {me?.isReady ? t.ready : t.waiting}
+            </div>
+          </div>
         )}
       </motion.div>
     </div>

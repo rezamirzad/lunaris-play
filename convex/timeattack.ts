@@ -16,7 +16,7 @@ function assertTimeAttack(
   }
 }
 
-export const syncClock = mutation({
+export const syncClock = query({
   args: { clientTime: v.number() },
   handler: async (ctx, args) => {
     return {

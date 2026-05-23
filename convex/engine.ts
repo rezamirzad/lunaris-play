@@ -195,6 +195,22 @@ export const seedGames = mutation({
       suggestedMax: 4,
       absoluteMax: 8,
     });
+
+    await ctx.db.insert("games", {
+      slug: "incangold",
+      title: "Incan Gold",
+      title_fr: "Incan Gold",
+      title_de: "Incan Gold",
+      title_fa: "طلای اینکا",
+      description: "A push-your-luck game of temple exploration.",
+      description_fr: "Un jeu d'exploration de temple et de prise de risque.",
+      description_de: "Ein Push-Your-Luck-Spiel zur Tempelexpedition.",
+      description_fa: "یک بازی هیجان‌انگیز از اکتشاف معبد و شانس.",
+      thumbnail: "/assets/games/incangold/box_scan.jpg.webp",
+      minPlayers: 3,
+      suggestedMax: 8,
+      absoluteMax: 8,
+    });
   },
 });
 

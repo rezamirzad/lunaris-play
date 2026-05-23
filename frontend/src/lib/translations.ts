@@ -77,6 +77,74 @@ export interface TranslationSet {
   justone_pass: string;
   justone_correct: string;
   justone_wrong: string;
+  incangold_title: string;
+  incangold_desc: string;
+  incangold_round: string;
+  incangold_path: string;
+  incangold_stay: string;
+  incangold_leave: string;
+  incangold_gems: string;
+  incangold_banked: string;
+  incangold_in_temple: string;
+  incangold_at_camp: string;
+  incangold_decide: string;
+  incangold_exploring: string;
+  incangold_results: string;
+  incangold_expedition_complete: string;
+  incangold_hall_of_riches: string;
+  incangold_adventurer: string;
+  incangold_cave_n: string;
+  incangold_total_wealth: string;
+  incangold_close_rules: string;
+  incangold_game_rules: string;
+  incangold_next_cave: string;
+  incangold_time_to_decide: string;
+  incangold_continue_exploration: string;
+  incangold_enter_cave: string;
+  incangold_venture_deeper: string;
+  incangold_expedition_ends: string;
+  incangold_wealth_found: string;
+  incangold_swallowed_by_cave: string;
+  incangold_danger: string;
+  incangold_gems_label: string;
+  incangold_left: string;
+  incangold_threat_level: string;
+  incangold_path_gems: string;
+  incangold_in_the_cave: string;
+  incangold_exit_bonus: string;
+  incangold_at_base_camp: string;
+  incangold_lost_gems: string;
+  incangold_the_dilemma: string;
+  incangold_checking_fists: string;
+  incangold_locked: string;
+  incangold_host_advances: string;
+  incangold_rules_title: string;
+  incangold_goal_title: string;
+  incangold_goal_desc: string;
+  incangold_gems_rules_title: string;
+  incangold_gems_rules_desc: string;
+  incangold_dangers_rules_title: string;
+  incangold_dangers_rules_desc: string;
+  incangold_dilemma_rules_title: string;
+  incangold_dilemma_rules_desc: string;
+  incangold_leaving_rules_title: string;
+  incangold_leaving_rules_desc: string;
+  incangold_safety_rules_title: string;
+  incangold_safety_rules_desc: string;
+  incangold_final_stats: string;
+  incangold_rank: string;
+  incangold_back_to_arcade: string;
+  incangold_in_hand: string;
+  incangold_chest_total: string;
+  incangold_resting_camp: string;
+  incangold_safe_reach: string;
+  incangold_expedition_result: string;
+  incangold_waiting_reveal: string;
+  incangold_secret_choice: string;
+  incangold_risk_loot: string;
+  incangold_bank_now: string;
+  incangold_on_path_bonus: string;
+  timeattack_title: string;
   timeattack_desc: string;
   sushinode_title: string;
   sushinode_desc: string;
@@ -202,7 +270,6 @@ export interface TranslationSet {
   boot_starting: string;
   boot_ready: string;
   boot_loading: string;
-  timeattack_title: string;
   timeattack_victory_lap: string;
   timeattack_current_phase: string;
   timeattack_round: string;
@@ -357,6 +424,73 @@ export const translations: Record<Language, TranslationSet> = {
     justone_pass: "PASS",
     justone_correct: "CORRECT",
     justone_wrong: "WRONG",
+    incangold_title: "Incan Gold",
+    incangold_desc: "A push-your-luck game of temple exploration. How deep will you go for gems?",
+    incangold_round: "Round {round} / 5",
+    incangold_path: "Expedition Path",
+    incangold_stay: "GO DEEPER",
+    incangold_leave: "GET OUT",
+    incangold_gems: "GEMS",
+    incangold_banked: "BANKED",
+    incangold_in_temple: "IN TEMPLE",
+    incangold_at_camp: "AT CAMP",
+    incangold_decide: "TIME TO DECIDE!",
+    incangold_exploring: "Exploring...",
+    incangold_results: "EXPEDITION SUMMARY",
+    incangold_expedition_complete: "Expedition Complete",
+    incangold_hall_of_riches: "The Hall of Riches",
+    incangold_adventurer: "Adventurer",
+    incangold_cave_n: "Cave {n}",
+    incangold_total_wealth: "Total Wealth",
+    incangold_close_rules: "Close Rules",
+    incangold_game_rules: "Game Rules",
+    incangold_next_cave: "Next Cave →",
+    incangold_time_to_decide: "Time to Decide",
+    incangold_continue_exploration: "Continue Exploration",
+    incangold_enter_cave: "Enter the Cave",
+    incangold_venture_deeper: "Venture Deeper",
+    incangold_expedition_ends: "Expedition Ends",
+    incangold_wealth_found: "Total Wealth Found",
+    incangold_swallowed_by_cave: "Swallowed by Cave",
+    incangold_danger: "Danger",
+    incangold_gems_label: "Gems",
+    incangold_left: "Left:",
+    incangold_threat_level: "Threat Level",
+    incangold_path_gems: "Path Gems",
+    incangold_in_the_cave: "In the Cave",
+    incangold_exit_bonus: "Exit Bonus: +{n}",
+    incangold_at_base_camp: "At Base Camp",
+    incangold_lost_gems: "Lost {n} Gems",
+    incangold_the_dilemma: "The Dilemma",
+    incangold_checking_fists: "Checking fists...",
+    incangold_locked: "LOCKED",
+    incangold_host_advances: "Host advances after choices",
+    incangold_rules_title: "Rules of Expedition",
+    incangold_goal_title: "The Goal",
+    incangold_goal_desc: "Bring back the most rubies and diamonds from 5 cave expeditions. The richest adventurer wins.",
+    incangold_gems_rules_title: "Diamonds & Rubies",
+    incangold_gems_rules_desc: "Divide treasures equally among all adventurers in the cave. Any remainder stays on the card to be collected by those who leave later.",
+    incangold_dangers_rules_title: "Dangers",
+    incangold_dangers_rules_desc: "A danger card appearing for the first time is safe. If the SAME danger appears a second time, everyone flees empty-handed!",
+    incangold_dilemma_rules_title: "The Dilemma",
+    incangold_dilemma_rules_desc: "Before each card, you must decide: STAY to go deeper for more loot, or LEAVE to return to camp and bank your current treasure.",
+    incangold_leaving_rules_title: "Leaving the Cave",
+    incangold_leaving_rules_desc: "If you leave, you bank everything found this round PLUS you pick up all leftover gems currently sitting on cards on the path.",
+    incangold_safety_rules_title: "Safety First",
+    incangold_safety_rules_desc: "If several players leave at once, they divide the path gems equally. The remainder stays for the next brave soul.",
+    incangold_final_stats: "Final Statistics",
+    incangold_rank: "Rank",
+    incangold_back_to_arcade: "BACK TO ARCADE",
+    incangold_in_hand: "In Hand",
+    incangold_chest_total: "Chest Total",
+    incangold_resting_camp: "Resting at Camp",
+    incangold_safe_reach: "Safe from the cave's reach",
+    incangold_expedition_result: "Expedition Result",
+    incangold_waiting_reveal: "Waiting for the reveal",
+    incangold_secret_choice: "A secret choice must be made",
+    incangold_risk_loot: "Risk the current loot",
+    incangold_bank_now: "Bank everything now",
+    incangold_on_path_bonus: "+{n} ON PATH",
     timeattack_title: "Time Attack",
     timeattack_desc:
       "Test your internal clock to the millisecond. 10 rounds of high-pressure rhythmic challenges.",
@@ -643,6 +777,73 @@ export const translations: Record<Language, TranslationSet> = {
     justone_pass: "PASSER",
     justone_correct: "CORRECT",
     justone_wrong: "ERREUR",
+    incangold_title: "Incan Gold",
+    incangold_desc: "Un jeu d'exploration de temple et de prise de risque. Jusqu'où irez-vous pour des gemmes ?",
+    incangold_round: "Manche {round} / 5",
+    incangold_path: "Chemin de l'Expédition",
+    incangold_stay: "CONTINUER",
+    incangold_leave: "RETRER",
+    incangold_gems: "GEMMES",
+    incangold_banked: "EN SÉCURITÉ",
+    incangold_in_temple: "DANS LE TEMPLE",
+    incangold_at_camp: "AU CAMP",
+    incangold_decide: "C'EST L'HEURE DE DÉCIDER !",
+    incangold_exploring: "Exploration en cours...",
+    incangold_results: "RÉSUMÉ DE L'EXPÉDITION",
+    incangold_expedition_complete: "Expédition Terminée",
+    incangold_hall_of_riches: "Le Temple des Richesses",
+    incangold_adventurer: "Aventurier",
+    incangold_cave_n: "Grotte {n}",
+    incangold_total_wealth: "Richesse Totale",
+    incangold_close_rules: "Fermer les Règles",
+    incangold_game_rules: "Règles du Jeu",
+    incangold_next_cave: "Prochaine Grotte →",
+    incangold_time_to_decide: "L'Heure du Choix",
+    incangold_continue_exploration: "Continuer l'Exploration",
+    incangold_enter_cave: "Entrer dans la Grotte",
+    incangold_venture_deeper: "S'aventurer Plus Loin",
+    incangold_expedition_ends: "Fin de l'Expédition",
+    incangold_wealth_found: "Trésors Découverts",
+    incangold_swallowed_by_cave: "Englouti par la Grotte",
+    incangold_danger: "Danger",
+    incangold_gems_label: "Gemmes",
+    incangold_left: "Restant:",
+    incangold_threat_level: "Niveau de Menace",
+    incangold_path_gems: "Gemmes du Chemin",
+    incangold_in_the_cave: "Dans la Grotte",
+    incangold_exit_bonus: "Bonus de Sortie: +{n}",
+    incangold_at_base_camp: "Au Camp de Base",
+    incangold_lost_gems: "{n} Gemmes Perdues",
+    incangold_the_dilemma: "Le Dilemme",
+    incangold_checking_fists: "Vérification des poings...",
+    incangold_locked: "VERROUILLÉ",
+    incangold_host_advances: "L'hôte avance après les choix",
+    incangold_rules_title: "Règles de l'Expédition",
+    incangold_goal_title: "L'Objectif",
+    incangold_goal_desc: "Rapportez le plus de rubis et de diamants de 5 expéditions. L'aventurier le plus riche gagne.",
+    incangold_gems_rules_title: "Diamants & Rubis",
+    incangold_gems_rules_desc: "Divisez les trésors également entre tous les aventuriers dans la grotte. Le reste reste sur la carte pour les suivants.",
+    incangold_dangers_rules_title: "Dangers",
+    incangold_dangers_rules_desc: "Une carte danger apparaissant pour la première fois est sans risque. Si le MÊME danger apparaît deux fois, tout le monde fuit les mains vides !",
+    incangold_dilemma_rules_title: "Le Dilemme",
+    incangold_dilemma_rules_desc: "Avant chaque carte, vous devez décider : CONTINUER pour plus de trésors, ou SORTIR pour rentrer au camp et mettre votre butin en sécurité.",
+    incangold_leaving_rules_title: "Quitter la Grotte",
+    incangold_leaving_rules_desc: "Si vous sortez, vous encaissez tout ce que vous avez trouvé ce tour-ci PLUS toutes les gemmes laissées sur le chemin.",
+    incangold_safety_rules_title: "La Sécurité d'Abord",
+    incangold_safety_rules_desc: "Si plusieurs joueurs sortent en même temps, they divisent les gemmes du chemin également. Le reste attend le prochain brave.",
+    incangold_final_stats: "Statistiques Finales",
+    incangold_rank: "Rang",
+    incangold_back_to_arcade: "RETOUR À L'ARCADE",
+    incangold_in_hand: "En Main",
+    incangold_chest_total: "Total du Coffre",
+    incangold_resting_camp: "Repos au Camp",
+    incangold_safe_reach: "À l'abri de la grotte",
+    incangold_expedition_result: "Résultat de l'Expédition",
+    incangold_waiting_reveal: "En attente du résultat",
+    incangold_secret_choice: "Un choix secret doit être fait",
+    incangold_risk_loot: "Risquer le butin actuel",
+    incangold_bank_now: "Tout encaisser maintenant",
+    incangold_on_path_bonus: "+{n} SUR LE CHEMIN",
     timeattack_title: "Time Attack",
     timeattack_desc:
       "Testez votre horloge interne à la milliseconde près. 10 manches de défis rythmiques sous haute pression.",
@@ -919,6 +1120,73 @@ export const translations: Record<Language, TranslationSet> = {
     justone_pass: "PASS",
     justone_correct: "RICHTIG",
     justone_wrong: "FALSCH",
+    incangold_title: "Incan Gold",
+    incangold_desc: "Ein Push-Your-Luck-Spiel zur Tempelexpedition. Wie tief wagst du dich für Edelsteine?",
+    incangold_round: "Runde {round} / 5",
+    incangold_path: "Expeditionspfad",
+    incangold_stay: "WEITER GEHEN",
+    incangold_leave: "ZURÜCKKEHREN",
+    incangold_gems: "JUWELEN",
+    incangold_banked: "GESICHERT",
+    incangold_in_temple: "IM TEMPEL",
+    incangold_at_camp: "IM LAGER",
+    incangold_decide: "ZEIT FÜR DIE ENTSCHEIDUNG!",
+    incangold_exploring: "Erkundung läuft...",
+    incangold_results: "EXPEDITIONS-ZUSAMMENFASSUNG",
+    incangold_expedition_complete: "Expedition Abgeschlossen",
+    incangold_hall_of_riches: "Die Halle der Reichtümer",
+    incangold_adventurer: "Abenteurer",
+    incangold_cave_n: "Höhle {n}",
+    incangold_total_wealth: "Gesamtvermögen",
+    incangold_close_rules: "Regeln Schließen",
+    incangold_game_rules: "Spielregeln",
+    incangold_next_cave: "Nächste Höhle →",
+    incangold_time_to_decide: "Zeit der Entscheidung",
+    incangold_continue_exploration: "Erkundung Fortsetzen",
+    incangold_enter_cave: "In die Höhle Gehen",
+    incangold_venture_deeper: "Tiefer Wagen",
+    incangold_expedition_ends: "Expedition Beendet",
+    incangold_wealth_found: "Gefundene Schätze",
+    incangold_swallowed_by_cave: "Verschlungen von der Höhle",
+    incangold_danger: "Gefahr",
+    incangold_gems_label: "Juwelen",
+    incangold_left: "Verbleibend:",
+    incangold_threat_level: "Bedrohungsstufe",
+    incangold_path_gems: "Pfad-Juwelen",
+    incangold_in_the_cave: "In der Höhle",
+    incangold_exit_bonus: "Ausgangs-Bonus: +{n}",
+    incangold_at_base_camp: "Im Basislager",
+    incangold_lost_gems: "{n} Juwelen Verloren",
+    incangold_the_dilemma: "Das Dilemma",
+    incangold_checking_fists: "Fäuste werden geprüft...",
+    incangold_locked: "GESPERRT",
+    incangold_host_advances: "Gastgeber fährt nach Wahl fort",
+    incangold_rules_title: "Expeditionsregeln",
+    incangold_goal_title: "Das Ziel",
+    incangold_goal_desc: "Bringe aus 5 Höhlenexpeditionen die meisten Rubine und Diamanten zurück. Der reichste Abenteurer gewinnt.",
+    incangold_gems_rules_title: "Diamanten & Rubine",
+    incangold_gems_rules_desc: "Teile Schätze gleichmäßig unter allen Abenteurern in der Höhle auf. Der Rest bleibt für Spätere auf der Karte.",
+    incangold_dangers_rules_title: "Gefahren",
+    incangold_dangers_rules_desc: "Eine zum ersten Mal erscheinende Gefahrenkarte ist sicher. Erscheint dieselbe Gefahr ein zweites Mal, fliehen alle mit leeren Händen!",
+    incangold_dilemma_rules_title: "Das Dilemma",
+    incangold_dilemma_rules_desc: "Vor jeder Karte musst du entscheiden: WEITERGEHEN für mehr Beute, oder ZURÜCKKEHREN ins Lager, um deinen Schatz zu sichern.",
+    incangold_leaving_rules_title: "Die Höhle Verlassen",
+    incangold_leaving_rules_desc: "Wenn du gehst, sicherst du alles aus dieser Runde PLUS alle auf dem Pfad verbliebenen Juwelen.",
+    incangold_safety_rules_title: "Sicherheit Zuerst",
+    incangold_safety_rules_desc: "Wenn mehrere Spieler gleichzeitig gehen, teilen sie die Pfad-Juwelen gleichmäßig auf. Der Rest bleibt für den Nächsten.",
+    incangold_final_stats: "Endgültige Statistiken",
+    incangold_rank: "Rang",
+    incangold_back_to_arcade: "ZURÜCK ZUR ARCADE",
+    incangold_in_hand: "In der Hand",
+    incangold_chest_total: "Truhen-Gesamt",
+    incangold_resting_camp: "Rasten im Lager",
+    incangold_safe_reach: "Sicher vor der Höhle",
+    incangold_expedition_result: "Expeditionsergebnis",
+    incangold_waiting_reveal: "Warten auf Enthüllung",
+    incangold_secret_choice: "Eine geheime Wahl muss getroffen werden",
+    incangold_risk_loot: "Die aktuelle Beute riskieren",
+    incangold_bank_now: "Alles jetzt sichern",
+    incangold_on_path_bonus: "+{n} AUF DEM PFAD",
     timeattack_title: "Time Attack",
     timeattack_desc:
       "Teste deine innere Uhr auf die Millisekunde genau. 10 Runden voller rhythmischer Herausforderungen.",
@@ -1196,6 +1464,73 @@ export const translations: Record<Language, TranslationSet> = {
     justone_pass: "رد شدن",
     justone_correct: "درست",
     justone_wrong: "اشتباه",
+    incangold_title: "طلای اینکا",
+    incangold_desc: "یک بازی هیجان‌انگیز از اکتشاف معبد و شانس. چقدر برای به دست آوردن جواهرات پیش می‌روید؟",
+    incangold_round: "دور {round} از ۵",
+    incangold_path: "مسیر اکتشاف",
+    incangold_stay: "ادامه اکتشاف",
+    incangold_leave: "بازگشت به کمپ",
+    incangold_gems: "جواهرات",
+    incangold_banked: "ذخیره شده",
+    incangold_in_temple: "داخل معبد",
+    incangold_at_camp: "در کمپ",
+    incangold_decide: "زمان تصمیم‌گیری!",
+    incangold_exploring: "در حال جستجو...",
+    incangold_results: "خلاصه اکتشاف",
+    incangold_expedition_complete: "اکتشاف به پایان رسید",
+    incangold_hall_of_riches: "تالار ثروت",
+    incangold_adventurer: "ماجراجو",
+    incangold_cave_n: "غار {n}",
+    incangold_total_wealth: "کل ثروت",
+    incangold_close_rules: "بستن قوانین",
+    incangold_game_rules: "قوانین بازی",
+    incangold_next_cave: "غار بعدی ←",
+    incangold_time_to_decide: "زمان تصمیم‌گیری",
+    incangold_continue_exploration: "ادامه اکتشاف",
+    incangold_enter_cave: "ورود به غار",
+    incangold_venture_deeper: "پیشروی بیشتر",
+    incangold_expedition_ends: "پایان اکتشاف",
+    incangold_wealth_found: "ثروت کشف شده",
+    incangold_swallowed_by_cave: "بلعیده شده توسط غار",
+    incangold_danger: "خطر",
+    incangold_gems_label: "جواهرات",
+    incangold_left: "باقیمانده:",
+    incangold_threat_level: "سطح تهدید",
+    incangold_path_gems: "جواهرات مسیر",
+    incangold_in_the_cave: "داخل غار",
+    incangold_exit_bonus: "امتیاز خروج: +{n}",
+    incangold_at_base_camp: "در کمپ اصلی",
+    incangold_lost_gems: "{n} جواهر از دست رفته",
+    incangold_the_dilemma: "دوراهی سرنوشت",
+    incangold_checking_fists: "در حال بررسی دست‌ها...",
+    incangold_locked: "نهایی شد",
+    incangold_host_advances: "میزبان پس از انتخاب‌ها ادامه می‌دهد",
+    incangold_rules_title: "قوانین اکتشاف",
+    incangold_goal_title: "هدف بازی",
+    incangold_goal_desc: "بیشترین یاقوت و الماس را از ۵ سفر اکتشافی به دست آورید. ثروتمندترین ماجراجو برنده است.",
+    incangold_gems_rules_title: "الماس‌ها و یاقوت‌ها",
+    incangold_gems_rules_desc: "گنجینه‌ها را به طور مساوی بین همه ماجراجویان در غار تقسیم کنید. باقیمانده روی کارت می‌ماند تا توسط کسانی که دیرتر خارج می‌شوند جمع‌آوری شود.",
+    incangold_dangers_rules_title: "خطرها",
+    incangold_dangers_rules_desc: "کارت خطری که برای اولین بار ظاهر می‌شود بی‌آزار است. اگر همان خطر برای بار دوم ظاهر شود، همه با دست خالی فرار می‌کنند!",
+    incangold_dilemma_rules_title: "دوراهی",
+    incangold_dilemma_rules_desc: "قبل از هر کارت، باید تصمیم بگیرید: ماندن برای غنیمت بیشتر، یا خروج برای بازگشت به کمپ و ذخیره گنجینه فعلی.",
+    incangold_leaving_rules_title: "خروج از غار",
+    incangold_leaving_rules_desc: "اگر خارج شوید، تمام آنچه در این دور پیدا کرده‌اید را ذخیره می‌کنید به علاوه تمام جواهرات باقیمانده در مسیر.",
+    incangold_safety_rules_title: "اول ایمنی",
+    incangold_safety_rules_desc: "اگر چندین بازیکن همزمان خارج شوند، جواهرات مسیر را مساوی تقسیم می‌کنند. باقیمانده برای نفر بعدی می‌ماند.",
+    incangold_final_stats: "آمار نهایی",
+    incangold_rank: "رتبه",
+    incangold_back_to_arcade: "بازگشت به آرکید",
+    incangold_in_hand: "در دست",
+    incangold_chest_total: "مجموع صندوق",
+    incangold_resting_camp: "استراحت در کمپ",
+    incangold_safe_reach: "ایمن از خطرات غار",
+    incangold_expedition_result: "نتیجه اکتشاف",
+    incangold_waiting_reveal: "در انتظار رونمایی",
+    incangold_secret_choice: "یک تصمیم مخفی باید گرفته شود",
+    incangold_risk_loot: "ریسک روی غنایم فعلی",
+    incangold_bank_now: "ذخیره همه غنایم",
+    incangold_on_path_bonus: "+{n} در مسیر",
     timeattack_title: "Time Attack",
     timeattack_desc:
       "ساعت درونی خود را تا میلی‌ثانیه به چالش بکشید. ۱۰ مرحله هیجان‌انگیز از چالش‌های ریتمیک.\u200F",
@@ -1455,3 +1790,4 @@ export function getLocalizedGameTitle(
 
   return tTitle || title;
 }
+

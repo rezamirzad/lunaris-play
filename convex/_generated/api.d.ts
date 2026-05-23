@@ -11,6 +11,8 @@
 import type * as dixit from "../dixit.js";
 import type * as dixit_deck from "../dixit_deck.js";
 import type * as engine from "../engine.js";
+import type * as incangold from "../incangold.js";
+import type * as incangold_deck from "../incangold_deck.js";
 import type * as justone from "../justone.js";
 import type * as justone_words from "../justone_words.js";
 import type * as pioupiou from "../pioupiou.js";
@@ -32,6 +34,8 @@ declare const fullApi: ApiFromModules<{
   dixit: typeof dixit;
   dixit_deck: typeof dixit_deck;
   engine: typeof engine;
+  incangold: typeof incangold;
+  incangold_deck: typeof incangold_deck;
   justone: typeof justone;
   justone_words: typeof justone_words;
   pioupiou: typeof pioupiou;

@@ -40,6 +40,9 @@ const JustOnePlayer = dynamic(() => import("./JustOne/JustOnePlayerView"));
 const TimeAttackBoard = dynamic(() => import("./TimeAttack/TimeAttackContainer"));
 const TimeAttackPlayer = dynamic(() => import("./TimeAttack/PlayerViewContainer"));
 
+const IncanGoldBoard = dynamic(() => import("./IncanGold/IncanGoldContainer"));
+const IncanGoldPlayer = dynamic(() => import("./IncanGold/PlayerViewContainer"));
+
 export const GAME_REGISTRY: Record<string, GameModule> = {
   dixit: {
     Board: DixitBoard as ComponentType<BoardProps>,
@@ -87,6 +90,13 @@ export const GAME_REGISTRY: Record<string, GameModule> = {
     Player: TimeAttackPlayer as ComponentType<PlayerProps>,
     visuals: {
       emoji: "⏱️",
+    },
+  },
+  incangold: {
+    Board: IncanGoldBoard as ComponentType<BoardProps>,
+    Player: IncanGoldPlayer as ComponentType<PlayerProps>,
+    visuals: {
+      emoji: "💎",
     },
   },
 };
