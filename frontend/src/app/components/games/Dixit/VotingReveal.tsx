@@ -14,14 +14,18 @@ interface VotingRevealProps {
 
 export default function VotingReveal({ roomData }: VotingRevealProps) {
   const { t } = useTranslation();
-  const board = roomData.gameBoard.gameType === "dixit" ? roomData.gameBoard : null;
+  const board =
+    roomData.gameBoard.gameType === "dixit" ? roomData.gameBoard : null;
 
   // Logic: Use the pre-shuffled cards from the board state to ensure consistency across all clients.
+  // If not available (SUBMITTING phase), use a stable sort by cardId to keep them randomized but consistent.
   const displayCards = useMemo(() => {
     if (!board) return [];
     const submittedCards = board.submittedCards || [];
-    if (board.phase === "SUBMITTING") return submittedCards;
-    return board.shuffledBoardCards || submittedCards;
+    if (board.shuffledBoardCards) return board.shuffledBoardCards;
+
+    // Stable "random" sort for SUBMITTING phase
+    return [...submittedCards].sort((a, b) => a.cardId.localeCompare(b.cardId));
   }, [board]);
 
   if (!board) return null;
@@ -31,56 +35,71 @@ export default function VotingReveal({ roomData }: VotingRevealProps) {
   const storytellerId = roomData.turnOrder[roomData.currentTurnIndex];
 
   return (
-    <div className="flex-1 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 pt-4">
+    <div className="flex-1 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 pt-4 w-full max-w-6xl">
       <AnimatePresence mode="popLayout">
-        {displayCards.map((submission: { cardId: string; playerId: Doc<"players">["_id"] }, index: number) => {
-          const isRevealed = board.phase === "VOTING" || isResults;
-          const cardVotes = votes.filter((v) => v.cardId === submission.cardId);
-          const owner = roomData.players.find((p) => p._id === submission.playerId);
-          const isSTCard = submission.playerId === storytellerId;
-          
-          // Get voter data for the cinematic tokens
-          const voterPlayers = cardVotes.map((v) => 
-            roomData.players.find((p) => p._id === v.voterId)
-          ).filter(Boolean) as Doc<"players">[];
+        {displayCards.map(
+          (
+            submission: { cardId: string; playerId: Doc<"players">["_id"] },
+            index: number,
+          ) => {
+            const isRevealed = board.phase === "VOTING" || isResults;
+            const cardVotes = votes.filter(
+              (v) => v.cardId === submission.cardId,
+            );
+            const owner = roomData.players.find(
+              (p) => p._id === submission.playerId,
+            );
+            const isSTCard = submission.playerId === storytellerId;
 
-          return (
-            <motion.div
-              key={submission.cardId}
-              initial={{ scale: 0.8, opacity: 0, y: 30 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              transition={{ 
-                delay: index * 0.15, 
-                type: "spring", 
-                stiffness: 300, 
-                damping: 20 
-              }}
-              className="relative"
-            >
-              <DixitCard
-                cardId={isRevealed ? submission.cardId : "BACK"}
-                isRevealed={isRevealed}
-                ownerName={isResults ? owner?.name : undefined}
-                isStorytellerCard={isResults && isSTCard}
-                voters={isResults ? voterPlayers : []}
-                disabled={board.phase === "SUBMITTING"}
-              />
-              
-              {/* Cinematic Entrance for the Storyteller Badge */}
-              {isResults && isSTCard && (
-                <motion.div
-                  initial={{ scale: 0, rotate: -20, y: 10 }}
-                  animate={{ scale: 1, rotate: 0, y: 0 }}
-                  transition={{ delay: 0.5, type: "spring", stiffness: 400, damping: 10 }}
-                  className="absolute -top-4 -right-4 z-30 bg-blue-500 text-white px-4 py-2 rounded-2xl shadow-[0_0_30px_rgba(59,130,246,0.6)] border-2 border-white/40 flex flex-col items-center"
-                >
-                  <span className="text-[7px] font-black uppercase tracking-[0.3em] opacity-80 mb-0.5">{t.storyteller}</span>
-                  <span className="text-[10px] font-black uppercase tracking-widest">{t.dixit_title}</span>
-                </motion.div>
-              )}
-            </motion.div>
-          );
-        })}
+            // Get voter data for the cinematic tokens
+            const voterPlayers = cardVotes
+              .map((v) => roomData.players.find((p) => p._id === v.voterId))
+              .filter(Boolean) as Doc<"players">[];
+
+            return (
+              <motion.div
+                key={submission.cardId}
+                initial={{ scale: 0.8, opacity: 0, y: 30 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                transition={{
+                  delay: index * 0.15,
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 20,
+                }}
+                className="relative"
+              >
+                <DixitCard
+                  cardId={isRevealed ? submission.cardId : "BACK"}
+                  isRevealed={isRevealed}
+                  ownerName={isResults ? owner?.name : undefined}
+                  isStorytellerCard={isResults && isSTCard}
+                  voters={isResults ? voterPlayers : []}
+                  disabled={board.phase === "SUBMITTING"}
+                />
+
+                {/* Cinematic Entrance for the Storyteller Badge */}
+                {isResults && isSTCard && (
+                  <motion.div
+                    initial={{ scale: 0, rotate: -20, y: 10 }}
+                    animate={{ scale: 1, rotate: 0, y: 0 }}
+                    transition={{
+                      delay: 0.5,
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 10,
+                    }}
+                    className="absolute -top-4 -right-4 z-30 bg-blue-500 text-white px-4 py-2 rounded-2xl shadow-[0_0_30px_rgba(59,130,246,0.6)] border-2 border-white/40 flex flex-col items-center"
+                  >
+                    <span className="text-[7px] font-black uppercase tracking-[0.3em] opacity-80 mb-0.5">
+                      {t.storyteller}
+                    </span>
+                  </motion.div>
+                )}
+              </motion.div>
+            );
+          },
+        )}
       </AnimatePresence>
     </div>
   );

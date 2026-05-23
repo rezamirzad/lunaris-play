@@ -83,11 +83,6 @@ export default function DixitPlayerView({
               </div>
 
               <div className="flex flex-col gap-1 mt-4">
-                {isST && (
-                  <span className="text-[8px] font-black text-blue-400 uppercase tracking-[0.4em] bg-blue-400/10 px-2 py-0.5 rounded w-fit mb-1 border border-blue-400/20">
-                    ⚡ {t.storyteller}
-                  </span>
-                )}
                 <div
                   className={`text-3xl font-black italic uppercase truncate ${isLeader ? "text-yellow-400" : "text-white"}`}
                 >

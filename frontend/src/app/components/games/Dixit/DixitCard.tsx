@@ -53,10 +53,11 @@ export default function DixitCard({
       }
       whileTap={selectable && !disabled ? { scale: 0.95 } : {}}
       onPointerDown={(e) => {
-        if (selectable && !disabled && e.pointerType === 'touch') onClick?.();
+        if (selectable && !disabled && e.pointerType === "touch") onClick?.();
       }}
       onClick={(e) => {
-        if (selectable && !disabled && (e as any).pointerType !== 'touch') onClick?.();
+        if (selectable && !disabled && (e as any).pointerType !== "touch")
+          onClick?.();
       }}
       className={`
         relative aspect-[2/3] w-full rounded-[2rem] overflow-hidden transition-all duration-700 border-2
@@ -93,7 +94,6 @@ export default function DixitCard({
                   animate={{ y: 0, opacity: 1 }}
                   className="bg-zinc-950/80 backdrop-blur-xl px-3 py-2 rounded-2xl border border-white/10 self-start shadow-xl"
                 >
-                  <span className="text-[7px] font-black uppercase text-zinc-500 tracking-[0.3em] block mb-1">{t.dixit_node_owner}</span>
                   <p className="text-[10px] font-black uppercase text-blue-400 tracking-[0.1em] leading-none">
                     {ownerName}
                   </p>
@@ -105,7 +105,13 @@ export default function DixitCard({
           {/* 🗳️ VOTER TOKENS */}
           <div className="flex flex-col items-end gap-1.5">
             {voters.length > 0 && (
-              <span className="text-[7px] font-black uppercase text-zinc-500 tracking-[0.3em] bg-black/40 px-2 py-0.5 rounded-full mb-1">{formatLog(t.dixit_received_guesses, { count: voters.length }, lang)}</span>
+              <span className="text-[7px] font-black uppercase  tracking-[0.3em] bg-black/40 px-2 py-0.5 rounded-full mb-1">
+                {formatLog(
+                  t.dixit_received_guesses,
+                  { count: voters.length },
+                  lang,
+                )}
+              </span>
             )}
             <div className="flex flex-col gap-1.5 items-end max-h-[60%] overflow-hidden">
               <AnimatePresence>

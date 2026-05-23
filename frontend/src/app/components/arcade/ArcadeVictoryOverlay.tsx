@@ -85,17 +85,17 @@ export default function ArcadeVictoryOverlay({
         <motion.span
           animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
           transition={{ repeat: Infinity, duration: 4 }}
-          className={`text-[5rem] lg:text-[7rem] block filter drop-shadow-[0_0_50px_${theme.glow}]`}
+          className={`text-[5rem] lg:text-[2rem] block filter drop-shadow-[0_0_50px_${theme.glow}]`}
         >
           {icon}
         </motion.span>
       </div>
 
-      <h2 className="text-5xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-zinc-500 tracking-tighter italic uppercase leading-none mb-3">
+      <h2 className="text-5xl lg:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-zinc-500 uppercase leading-none mb-3">
         {t.winner}
       </h2>
 
-      <p className="text-xl lg:text-3xl font-black text-white uppercase tracking-[0.3em] mb-12 italic border-b-2 ${theme.border} pb-2 px-12 max-w-3xl truncate drop-shadow-lg">
+      <p className="text-xl lg:text-5xl font-black text-yellow-500 uppercase  mb-12 italic  pb-2 px-12 max-w-3xl drop-shadow-lg">
         {winnerName || championLabel}
       </p>
 

@@ -116,7 +116,8 @@ export default function DixitContainer({ roomData }: BoardProps) {
                    <VotingReveal roomData={roomData} />
                 </motion.div>
               ) : board.phase === "RESULTS" ? (
-                <motion.div key="results" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="w-full flex justify-center">
+                <motion.div key="results" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="w-full flex flex-col items-center gap-12 overflow-y-auto no-scrollbar max-h-full py-8">
+                   <VotingReveal roomData={roomData} />
                    <RoundResultsPanel roomData={roomData} />
                 </motion.div>
               ) : null}
@@ -156,7 +157,8 @@ export default function DixitContainer({ roomData }: BoardProps) {
           renderStats={(player) => {
             const hasSubmitted = board.submittedCards?.some(sc => sc.playerId === player._id);
             const hasVoted = board.votes?.some((v) => v.voterId === player._id);
-            const actionComplete = (board.phase === "SUBMITTING" && hasSubmitted) || (board.phase === "VOTING" && hasVoted);
+            const isST = player._id === storytellerId;
+            const actionComplete = (board.phase === "SUBMITTING" && hasSubmitted) || (board.phase === "VOTING" && (hasVoted || isST));
             const playerState = player.state.gameType === "dixit" ? player.state : null;
             const rank = calculateRank(playerState?.score || 0, allScores);
 
@@ -166,10 +168,15 @@ export default function DixitContainer({ roomData }: BoardProps) {
                   state={playerState}
                   rank={rank}
                   totalPlayers={players.length}
-                  isST={player._id === storytellerId}
+                  isST={isST}
                 />
-                {actionComplete && board.phase !== "RESULTS" && (
-                   <span className="text-[8px] text-emerald-400 font-black animate-pulse uppercase tracking-tighter italic mt-2 block">{t.ready}</span>
+                {board.phase !== "RESULTS" && board.phase !== "CLUE" && (
+                  <div className="mt-3 flex items-center gap-2 px-3 py-1.5 bg-black/40 border border-white/5 rounded-full self-start">
+                    <div className={`w-1.5 h-1.5 rounded-full ${actionComplete ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "bg-zinc-700 animate-pulse"}`} />
+                    <span className={`text-[7px] font-black uppercase tracking-widest ${actionComplete ? "text-emerald-400" : "text-zinc-500"}`}>
+                      {actionComplete ? t.ready : t.waiting}
+                    </span>
+                  </div>
                 )}
               </>
             );

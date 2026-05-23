@@ -50,10 +50,10 @@ export default function DixitHand({
     if (board?.phase === "VOTING" && !isST) {
       // Logic: Use the pre-shuffled cards from the board state to ensure relative consistency across nodes.
       // We filter out the player's own card before displaying.
+      const submittedCards = board.submittedCards || [];
       const cardsToDisplay = (
         board.shuffledBoardCards ||
-        board.submittedCards ||
-        []
+        [...submittedCards].sort((a, b) => a.cardId.localeCompare(b.cardId))
       ).filter((c) => c.playerId !== player._id);
       return cardsToDisplay;
     }
