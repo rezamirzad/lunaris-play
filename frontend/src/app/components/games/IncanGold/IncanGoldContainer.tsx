@@ -24,8 +24,6 @@ const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData }) => {
   const [pendingAction, setPendingAction] = useState(false);
 
   const board = roomData.gameBoard;
-  if (board.gameType !== "incangold") return null;
-
   const players = roomData.players;
   const inTemple = players.filter(
     (p) => p.state.gameType === "incangold" && p.state.status === "IN_TEMPLE"
@@ -33,7 +31,9 @@ const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData }) => {
 
   useEffect(() => {
     setPendingAction(false);
-  }, [board.phase, board.path.length]);
+  }, [board.phase, (board as any).path?.length]);
+
+  if (board.gameType !== "incangold") return null;
 
   const handleDraw = async () => {
     if (pendingAction) return;
