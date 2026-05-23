@@ -11,11 +11,13 @@ export default function DixitPlayerStats({
   rank,
   totalPlayers,
   isST,
+  isGameEnd = false,
 }: {
   state?: { score?: number } | null;
   rank: number;
   totalPlayers: number;
   isST: boolean;
+  isGameEnd?: boolean;
 }) {
   const { t, lang } = useTranslation();
   const isFA = lang === "fa";
@@ -39,7 +41,7 @@ export default function DixitPlayerStats({
   return (
     <div className="flex flex-col gap-3 w-full font-mono relative">
       {/* STORYTELLER BADGE */}
-      {isST && (
+      {isST && !isGameEnd && (
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}

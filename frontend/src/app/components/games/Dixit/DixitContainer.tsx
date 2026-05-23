@@ -217,6 +217,7 @@ export default function DixitContainer({ roomData }: BoardProps) {
                   rank={rank}
                   totalPlayers={players.length}
                   isST={isST}
+                  isGameEnd={isFinished}
                 />
                 {board.phase !== "RESULTS" && board.phase !== "CLUE" && (
                   <div className="mt-3 flex items-center gap-2 px-3 py-1.5 bg-black/40 border border-white/5 rounded-full self-start">
