@@ -1,183 +1,172 @@
 "use client";
 
+import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "@/hooks/useTranslation";
+import { BoardProps } from "../registry";
 import PlayerCard from "../../shared/PlayerCard";
 import DixitPlayerStats from "./DixitPlayerStats";
 import MatchActivity from "../../shared/MatchActivity";
 import DixitLogMessage from "./MatchActivity";
-import DixitCard from "./DixitCard";
+import SharedArcadeLayout from "../../shared/SharedArcadeLayout";
 import VotingReveal from "./VotingReveal";
 import RoundResultsPanel from "./RoundResultsPanel";
-import { useTranslation } from "@/hooks/useTranslation";
-import { BoardProps } from "../registry";
-import { motion, AnimatePresence } from "framer-motion";
-import { calculateRank } from "@/lib/utils";
+import MissionBriefing from "../../arcade/MissionBriefing";
+import ArcadeVictoryOverlay from "../../arcade/ArcadeVictoryOverlay";
+import ArcadeHUD from "../../arcade/ArcadeHUD";
+import ArcadeStatusPanel from "../../arcade/ArcadeStatusPanel";
+import ArcadePlayerGrid from "../../arcade/ArcadePlayerGrid";
 
 export default function DixitContainer({ roomData }: BoardProps) {
   const { t } = useTranslation();
-
-  // Narrowing union: roomData.gameBoard
   const board =
     roomData.gameBoard.gameType === "dixit" ? roomData.gameBoard : null;
+  const players = roomData.players;
   const isLobby = roomData.status?.toUpperCase() === "LOBBY";
 
-  const submittedCards = board?.submittedCards || [];
-  const votes = board?.votes || [];
+  // 1. LOBBY MISSION BRIEFING
+  if (isLobby) {
+    return (
+      <MissionBriefing
+        title={t.dixit_title}
+        subtitle={t.dixit_awaiting_st}
+        briefingTitle={t.dixit_briefing_title}
+        briefingDesc={t.dixit_briefing_desc}
+        loadingText={t.dixit_wait_storyteller}
+        accentColor="blue"
+        background={
+          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_#3b82f6_0%,_transparent_70%)]" />
+        }
+      />
+    );
+  }
 
-  const allScores = roomData.players.map((p) =>
-    p.state.gameType === "dixit" ? p.state.score || 0 : 0,
-  );
-  const totalPlayers = roomData.players.length;
+  if (!board) return null;
+
+  const storytellerId = roomData.turnOrder[roomData.currentTurnIndex];
+  const stPlayer = players.find((p) => p._id === storytellerId);
+  const isFinished = roomData.status?.toUpperCase() === "FINISHED" || roomData.status?.toUpperCase() === "ARCHIVED";
 
   return (
-    <div className="game-container relative min-h-[calc(100vh-180px)] font-mono">
-      {/* Background Neuro-Grid for the board view */}
-      <div className="neuro-grid opacity-30" />
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 relative z-10 p-4 lg:p-8">
-        {/* PLAYER GRID AREA */}
-        <div className="lg:col-span-2 space-y-8">
-          <section>
-            <motion.div
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              className="flex items-center gap-4 mb-8"
-            >
-              <div className="h-2 w-2 bg-blue-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
-              <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em]">
-                {t.dixit_participants}
+    <SharedArcadeLayout
+      containerClassName="bg-[#05030a] text-blue-100 font-mono"
+      background={
+        <>
+          <div className="neuro-grid opacity-10" />
+          <div className="absolute inset-0 opacity-5 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/pinstriped-suit.png')]" />
+        </>
+      }
+      header={
+        <ArcadeHUD
+          title={t.dixit_title}
+          statusLabel={`${t.dixit_match_live} • ${t.dixit_current_phase}: ${t[`dixit_phase_${board.phase.toLowerCase()}` as keyof typeof t] || board.phase}`}
+          badgeContent={stPlayer ? `${t.storyteller}: ${stPlayer.name}` : t.dixit_awaiting_st}
+          accentColor="blue"
+        />
+      }
+      main={
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full relative overflow-hidden">
+          {/* LEFT: TACTICAL FEED */}
+          <div className="lg:col-span-3 flex flex-col h-full overflow-hidden">
+            <div className="flex-1 bg-black/40 rounded-[2rem] border border-white/5 p-6 overflow-hidden flex flex-col shadow-2xl relative">
+              <h3 className="text-[8px] font-black text-blue-500/60 uppercase tracking-[0.4em] mb-4 shrink-0">
+                {t.matchActivity}
               </h3>
-            </motion.div>
-
-            <div className="flex flex-col gap-4">
-              <AnimatePresence mode="popLayout">
-                {roomData.players.map((player, index) => {
-                  const storytellerId =
-                    roomData.turnOrder[roomData.currentTurnIndex];
-                  const isST = storytellerId === player._id;
-
-                  const playerState =
-                    player.state.gameType === "dixit" ? player.state : null;
-
-                  const score = playerState?.score || 0;
-                  const rank = calculateRank(score, allScores);
-
-                  return (
-                    <motion.div
-                      key={player._id}
-                      initial={{ x: -20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{
-                        delay: index * 0.1,
-                        type: "spring",
-                        stiffness: 260,
-                        damping: 20,
-                      }}
-                    >
-                      <PlayerCard
-                        name={player.name}
-                        isReady={player.isReady}
-                        isCurrentTurn={isST}
-                        statusOverride={isST ? t.storyteller : undefined}
-                        className="glass-card p-4"
-                      >
-                        <DixitPlayerStats
-                          state={playerState}
-                          rank={rank}
-                          totalPlayers={totalPlayers}
-                          isST={isST}
-                        />
-                      </PlayerCard>
-                    </motion.div>
-                  );
-                })}
-              </AnimatePresence>
+              <div className="flex-1 min-h-0">
+                <MatchActivity
+                  history={board.history}
+                  renderLog={(log) => <DixitLogMessage log={log} />}
+                />
+              </div>
             </div>
-          </section>
-        </div>
+          </div>
 
-        {/* 🖼️ CENTRAL TABLE: THE VISUAL MATRIX */}
-        <div className="lg:col-span-8 space-y-4">
-          <section className="min-h-[600px] flex flex-col">
-            {/* CURRENT CLUE READOUT: GIANT GLOWING TEXT */}
+          {/* CENTER: PRIMARY CANVAS */}
+          <div className="lg:col-span-6 flex flex-col items-center justify-center p-6 bg-blue-500/5 rounded-[3rem] border border-blue-500/10 shadow-2xl relative overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#3b82f6_0%,_transparent_70%)] opacity-[0.03]" />
+
             <AnimatePresence mode="wait">
-              {board?.currentClue ? (
-                <motion.div
-                  key="clue"
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.9, opacity: 0 }}
-                  className="mb-12 p-10 bg-blue-500/5 border border-blue-500/20 rounded-[3rem] text-center backdrop-blur-3xl shadow-[0_0_50px_rgba(59,130,246,0.1)]"
-                >
-                  <span className="text-[10px] tracking-[0.8em] text-blue-400 font-black mb-4 block uppercase opacity-50">
-                    {t.dixit_clue_received}
-                  </span>
-                  <h2 className="text-5xl lg:text-7xl font-black italic tracking-tighter text-blue-400 uppercase [text-shadow:0_0_30px_rgba(59,130,246,0.8)] leading-tight">
-                    {board.currentClue}
-                  </h2>
+              {board.phase === "CLUE" ? (
+                <motion.div key="clue" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center text-center">
+                  <div className="w-48 h-48 rounded-full border-2 border-blue-500/20 flex items-center justify-center relative mb-12">
+                    <div className="absolute inset-0 rounded-full border border-blue-500/10 animate-ping" />
+                    <span className="text-7xl">🔮</span>
+                  </div>
+                  <h2 className="text-3xl font-black text-blue-400 tracking-[0.4em] uppercase italic">{t.dixit_awaiting_st}</h2>
                 </motion.div>
-              ) : (
-                <motion.div
-                  key="waiting"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="mb-12 p-10 border border-zinc-800 rounded-[3rem] text-center bg-black/20"
-                >
-                  <p className=" text-[11px] uppercase tracking-[0.5em] animate-pulse">
-                    {t.dixit_awaiting_st}
-                  </p>
+              ) : board.phase === "SUBMITTING" ? (
+                <motion.div key="submit" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center text-center">
+                   <div className="px-8 py-4 bg-blue-500/10 border border-blue-500/30 rounded-2xl mb-8">
+                      <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.4em] block mb-2">{t.dixit_clue_received}</span>
+                      <h2 className="text-4xl font-black text-white italic tracking-tighter uppercase">"{board.currentClue}"</h2>
+                   </div>
+                   <span className="text-[8px] font-black text-zinc-500 uppercase tracking-[0.5em]">{t.dixit_phase_incubation}...</span>
                 </motion.div>
-              )}
+              ) : board.phase === "VOTING" ? (
+                <motion.div key="vote" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center text-center w-full">
+                   <div className="px-6 py-3 bg-blue-500/10 border border-blue-500/30 rounded-xl mb-12">
+                      <h2 className="text-2xl font-black text-white italic tracking-tighter uppercase">"{board.currentClue}"</h2>
+                   </div>
+                   <VotingReveal roomData={roomData} />
+                </motion.div>
+              ) : board.phase === "RESULTS" ? (
+                <motion.div key="results" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="w-full flex justify-center">
+                   <RoundResultsPanel roomData={roomData} />
+                </motion.div>
+              ) : null}
             </AnimatePresence>
 
-            {/* SUBMITTED CARDS GRID: THE VISUAL MATRIX REVEAL */}
-            <VotingReveal roomData={roomData} />
+            {isFinished && (
+              <ArcadeVictoryOverlay
+                winnerName={board.winner}
+                championLabel={t.champion}
+                accentColor="blue"
+              />
+            )}
+          </div>
 
-            {/* ROUND SUMMARY: THE SCORING DASHBOARD */}
-            <AnimatePresence>
-              {board?.phase === "RESULTS" && (
-                <RoundResultsPanel roomData={roomData} />
-              )}
-            </AnimatePresence>
-          </section>
+          {/* RIGHT: SYSTEM STATUS */}
+          <div className="lg:col-span-3 flex flex-col h-full gap-6">
+            <ArcadeStatusPanel
+              protocolLabel={t.dixit_integrity}
+              protocolValue={`${Math.round((players.filter(p => board.phase === "SUBMITTING" ? board.submittedCards?.some(sc => sc.playerId === p._id) : board.votes?.find(v => v.voterId === p._id)).length / players.length) * 100)}%`}
+              accentColor="blue"
+              rows={[
+                { label: t.shared_status, value: board.phase },
+                { label: t.dixit_participants, value: `${players.length} / 12`, valueColor: "text-zinc-300" },
+              ]}
+              title=""
+            />
+          </div>
         </div>
+      }
+      footer={
+        <ArcadePlayerGrid
+          players={players}
+          currentTurnId={storytellerId}
+          winnerId={board.winnerId}
+          isGameEnd={isFinished}
+          accentColor="blue"
+          renderStats={(player) => {
+            const hasSubmitted = board.submittedCards?.some(sc => sc.playerId === player._id);
+            const hasVoted = board.votes?.some((v) => v.voterId === player._id);
+            const actionComplete = (board.phase === "SUBMITTING" && hasSubmitted) || (board.phase === "VOTING" && hasVoted);
 
-        {/* SYSTEM STATUS & LOGS */}
-        <div className="lg:col-span-2 space-y-8">
-          <motion.section
-            initial={{ x: 20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            className="p-8 rounded-[2.5rem] border border-white/5 bg-zinc-900/40 backdrop-blur-3xl font-mono text-[10px]"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-zinc-500 font-black uppercase tracking-[0.3em] text-blue-500/50">
-                {t.game}
-              </h3>
-              <span className="bg-blue-500/10 text-blue-500 px-2 py-0.5 rounded border border-blue-500/20">
-                {t.statusLive}
-              </span>
-            </div>
-
-            <div className="space-y-3 text-zinc-500 border-t border-white/5 pt-6">
-              <div className="flex justify-between items-center">
-                <span className="uppercase tracking-widest">
-                  {t.dixit_current_phase}:
-                </span>
-                <span className="text-white font-black uppercase tracking-tighter shadow-blue-500/20">
-                  {board?.phase || "INIT"}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="uppercase tracking-widest">
-                  {t.dixit_integrity}:
-                </span>
-                <span className="text-teal-400/80 font-black tracking-tighter uppercase">
-                  {t.activeTurn}
-                </span>
-              </div>
-            </div>
-          </motion.section>
-        </div>
-      </div>
-    </div>
+            return (
+              <>
+                <DixitPlayerStats
+                  state={player.state.gameType === "dixit" ? player.state : null}
+                  rank={1}
+                  totalPlayers={players.length}
+                  isST={player._id === storytellerId}
+                />
+                {actionComplete && board.phase !== "RESULTS" && (
+                   <span className="text-[8px] text-emerald-400 font-black animate-pulse uppercase tracking-tighter italic mt-2 block">{t.ready}</span>
+                )}
+              </>
+            );
+          }}
+        />
+      }
+    />
   );
 }

@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as bots from "../bots.js";
 import type * as dixit from "../dixit.js";
 import type * as dixit_deck from "../dixit_deck.js";
 import type * as engine from "../engine.js";
@@ -31,6 +32,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  bots: typeof bots;
   dixit: typeof dixit;
   dixit_deck: typeof dixit_deck;
   engine: typeof engine;

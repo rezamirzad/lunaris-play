@@ -25,6 +25,7 @@ export interface TranslationSet {
   players: string;
   capacity: string;
   footer: string;
+  winner;
   noOngoing: string;
   host: string;
   startMatch: string;
@@ -144,6 +145,12 @@ export interface TranslationSet {
   incangold_risk_loot: string;
   incangold_bank_now: string;
   incangold_on_path_bonus: string;
+  incangold_artifacts: string;
+  incangold_choice_leave: string;
+  incangold_choice_stay: string;
+  incangold_title_alt: string;
+  shared_tech_group: string;
+  shared_waiting: string;
   timeattack_title: string;
   timeattack_desc: string;
   sushinode_title: string;
@@ -222,6 +229,21 @@ export interface TranslationSet {
   themind_terminal_locked: string;
   themind_miscalculated: string;
   themind_purged: string;
+  themind_link_integrity: string;
+  themind_stable: string;
+  themind_terminated: string;
+  themind_transmission_lives: string;
+  themind_briefing_title: string;
+  themind_briefing_desc: string;
+  themind_calibrating: string;
+  themind_uplink_active: string;
+  themind_frequency_refined: string;
+  themind_level_cleared: string;
+  themind_sync_next: string;
+  themind_uplink_request_sent: string;
+  themind_establishing_freq: string;
+  themind_system_purged: string;
+  themind_freq_stabilized: string;
 
   justone_guesser: string;
   justone_clue_submitted: string;
@@ -242,6 +264,13 @@ export interface TranslationSet {
   justone_decryption_input: string;
   justone_clue_input: string;
   justone_helper: string;
+  justone_briefing_title: string;
+  justone_briefing_desc: string;
+  justone_initializing_links: string;
+  justone_signal_stream: string;
+  justone_transmission_success: string;
+  justone_security_override: string;
+  justone_uplink_complete: string;
 
   dixit_participants: string;
   dixit_clue_received: string;
@@ -253,11 +282,24 @@ export interface TranslationSet {
   dixit_received_guesses: string;
   dixit_guessers: string;
   dixit_wait_others_action: string;
+  dixit_briefing_title: string;
+  dixit_briefing_desc: string;
+  dixit_phase_incubation: string;
+  dixit_phase_deciphering: string;
+  dixit_illusion_dissipated: string;
 
   pioupiou_match_telemetry: string;
   pioupiou_resolution: string;
   pioupiou_encryption: string;
   pioupiou_secure: string;
+  pioupiou_henhouse_integrity: string;
+  pioupiou_fox_infiltration: string;
+  pioupiou_champion_title: string;
+  pioupiou_analyzing_strategy: string;
+  pioupiou_tactical_feed: string;
+  pioupiou_henhouse_defense: string;
+  pioupiou_briefing_desc: string;
+  pioupiou_securing_perimeters: string;
 
   shared_status: string;
   shared_rank: string;
@@ -306,10 +348,29 @@ export interface TranslationSet {
   timeattack_final_results: string;
   timeattack_leave_game: string;
   timeattack_waiting_next_round: string;
-  timeattack_goal: string;
-  timeattack_how: string;
   timeattack_current_goal: string;
   timeattack_instructions: string;
+  timeattack_goal: string;
+  timeattack_how: string;
+  timeattack_briefing_title: string;
+  timeattack_briefing_desc: string;
+  timeattack_syncing_oscillators: string;
+  timeattack_masters: string;
+  timeattack_integrity_verified: string;
+  timeattack_global_champion: string;
+  timeattack_extraction_sequences: string;
+  timeattack_round_victor: string;
+  timeattack_transmission_decrypted: string;
+  timeattack_neural_link_readiness: string;
+  timeattack_sync_all_freq: string;
+  timeattack_objective_sequence: string;
+  timeattack_extraction_decrypted: string;
+  timeattack_calibrating: string;
+  timeattack_transmitting: string;
+  timeattack_transmission_locked: string;
+  timeattack_analyzing_variance: string;
+  timeattack_arcade_rankings: string;
+  timeattack_round_protocol: string;
   timeattack_round_1_name: string;
   timeattack_round_1_goal: string;
   timeattack_round_1_how: string;
@@ -500,6 +561,12 @@ export const translations: Record<Language, TranslationSet> = {
     incangold_risk_loot: "Risk the current loot",
     incangold_bank_now: "Bank everything now",
     incangold_on_path_bonus: "+{n} ON PATH",
+    incangold_artifacts: "Artifacts",
+    incangold_choice_leave: "Camp",
+    incangold_choice_stay: "Torch",
+    incangold_title_alt: "DIAMANT",
+    shared_tech_group: "LUNARIS TECH GROUP",
+    shared_waiting: "WAITING...",
     timeattack_title: "Time Attack",
     timeattack_desc:
       "Test your internal clock to the millisecond. 10 rounds of high-pressure rhythmic challenges.",
@@ -508,7 +575,7 @@ export const translations: Record<Language, TranslationSet> = {
       "The pick-and-pass card game. Build the best sushi plate by drafting the perfect combination of dishes.",
     dixit_score: "SCORE",
     dixit_clue_placeholder: "Your clue...",
-    dixit_phase_clue: "CHOOSE CARD & CLUE",
+    dixit_phase_clue: "CHOOSE CARTE & INDICE",
     dixit_phase_submit: "MATCH THE CLUE",
     dixit_phase_vote: "FIND THE TRUTH",
     dixit_wait_storyteller: "Wait for Storyteller",
@@ -561,6 +628,7 @@ export const translations: Record<Language, TranslationSet> = {
     madeBy: "Created by LUNARIS",
     unknown_predator: "A Predator",
     waiting_for_sequence: "AWAITING MOVE",
+
     themind_shurikens: "THROWING STARS",
     themind_team_stats: "PLAYER STATUS",
     themind_hand_size: "CARDS REMAINING",
@@ -578,6 +646,23 @@ export const translations: Record<Language, TranslationSet> = {
     themind_terminal_locked: "GAME OVER",
     themind_miscalculated: "MISCALCULATED",
     themind_purged: "DISCARDED",
+    themind_link_integrity: "Link Integrity",
+    themind_stable: "Stable",
+    themind_terminated: "Terminated",
+    themind_transmission_lives: "Transmission Lives",
+    themind_briefing_title: "Frequency Alignment",
+    themind_briefing_desc:
+      "Data transmission is restricted. You must synchronize your internal frequencies to play cards in ascending order without verbal cues. One misstep compromises the neural link. Trust the silence. Trust your team.",
+    themind_calibrating: "Calibrating psychic nodes...",
+    themind_uplink_active: "Uplink Active",
+    themind_frequency_refined: "Frequency Refined",
+    themind_level_cleared: "Level {level} Cleared",
+    themind_sync_next: "Sync Next Link",
+    themind_uplink_request_sent: "Uplink Request Signal Sent",
+    themind_establishing_freq: "Establishing Collective Frequency...",
+    themind_system_purged: "Neural System Purged",
+    themind_freq_stabilized: "Harmonic Frequency Achieved",
+
     justone_guesser: "GUESSER",
     justone_clue_submitted: "CLUE SUBMITTED",
     justone_awaiting_clues: "AWAITING CLUES...",
@@ -597,6 +682,15 @@ export const translations: Record<Language, TranslationSet> = {
     justone_decryption_input: "GUESS",
     justone_clue_input: "CLUE",
     justone_helper: "HELPER",
+    justone_briefing_title: "Hive Mind Protocol",
+    justone_briefing_desc:
+      "We must transmit the target concept to the Infiltrator without triggering the security overrides. Submit one word as a clue. If your clue matches another agent's, the system will delete both before transmission. Be original, but be precise.",
+    justone_initializing_links: "Initializing neural links...",
+    justone_signal_stream: "Signal Stream {round} / 13",
+    justone_transmission_success: "Transmission Successful",
+    justone_security_override: "Security Override",
+    justone_uplink_complete: "UPLINK COMPLETE",
+
     dixit_participants: "PLAYERS",
     dixit_clue_received: "THE CLUE IS",
     dixit_awaiting_st: "WAITING FOR STORYTELLER...",
@@ -607,10 +701,27 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_received_guesses: "GUESSES ({count})",
     dixit_guessers: "GUESSERS",
     dixit_wait_others_action: "Wait for others",
+    dixit_briefing_title: "The Art of Illusion",
+    dixit_briefing_desc:
+      "Words are blunt instruments. We communicate through imagery, metaphor, and intuition. As the Storyteller, craft a clue ambiguous enough to fool some, but precise enough to guide your true allies. As an Agent, decipher the vision to find the true source.",
+    dixit_phase_incubation: "Incubation",
+    dixit_phase_deciphering: "Deciphering",
+    dixit_illusion_dissipated: "Illusion Dissipated",
+
     pioupiou_match_telemetry: "GAME STATUS",
     pioupiou_resolution: "WINNER",
     pioupiou_encryption: "PHASE",
     pioupiou_secure: "ACTIVE",
+    pioupiou_henhouse_integrity: "Henhouse Integrity",
+    pioupiou_fox_infiltration: "Fox Infiltration!",
+    pioupiou_champion_title: "The Henhouse Champion",
+    pioupiou_analyzing_strategy: "Analyzing strategy...",
+    pioupiou_tactical_feed: "Tactical Feed",
+    pioupiou_henhouse_defense: "Henhouse Defense",
+    pioupiou_briefing_desc:
+      "The fox is lurking. You must gather resources—Roosters, Chickens, and Nests—to secure your eggs and hatch three chicks before your rivals. Deploy your defense strategies and protect the coop at all costs.",
+    pioupiou_securing_perimeters: "Securing nesting perimeters...",
+
     shared_status: "STATUS",
     shared_rank: "RANK",
     shared_score: "SCORE",
@@ -622,6 +733,7 @@ export const translations: Record<Language, TranslationSet> = {
     boot_starting: "STARTING",
     boot_ready: "READY",
     boot_loading: "LOADING",
+
     timeattack_victory_lap: "Victory Lap",
     timeattack_current_phase: "Current Phase",
     timeattack_round: "Round",
@@ -662,6 +774,26 @@ export const translations: Record<Language, TranslationSet> = {
     timeattack_instructions: "Instructions",
     timeattack_goal: "GOAL",
     timeattack_how: "HOW",
+    timeattack_briefing_title: "Temporal Precision",
+    timeattack_briefing_desc:
+      "Reaction time is the only currency in this simulation. You will be given target intervals. Synchronize your actions with the system clock to achieve absolute precision. Milliseconds determine the victor.",
+    timeattack_syncing_oscillators: "Syncing temporal oscillators...",
+    timeattack_masters: "The Time Masters",
+    timeattack_integrity_verified: "Simulation Integrity Verified",
+    timeattack_global_champion: "Global Champion",
+    timeattack_extraction_sequences: "Data Extraction Sequences",
+    timeattack_round_victor: "Round Victor",
+    timeattack_transmission_decrypted: "Transmission Decrypted",
+    timeattack_neural_link_readiness: "Neural Link Readiness",
+    timeattack_sync_all_freq: "Synchronize all frequencies to engage protocol",
+    timeattack_objective_sequence: "Objective Sequence",
+    timeattack_extraction_decrypted: "Transmission Decrypted",
+    timeattack_calibrating: "Calibrating...",
+    timeattack_transmitting: "TRANSMITTING...",
+    timeattack_transmission_locked: "TRANSMISSION LOCKED",
+    timeattack_analyzing_variance: "Analyzing temporal variance...",
+    timeattack_arcade_rankings: "Arcade Rankings",
+    timeattack_round_protocol: "Round {round} Protocol",
     timeattack_round_1_name: "The Warmup",
     timeattack_round_1_goal: "Record a duration of exactly 5.00 seconds.",
     timeattack_round_1_how:
@@ -730,7 +862,7 @@ export const translations: Record<Language, TranslationSet> = {
     maxLabel: "MAX",
     player: "Joueur",
     players: "JOUEURS",
-    capacity: "CAPACITÉ",
+    capacity: "CAPACITY",
     footer: "LUNARIS Arcade v1.0.4",
     noOngoing: "Aucune partie publique.",
     host: "HÉBERGER",
@@ -794,7 +926,7 @@ export const translations: Record<Language, TranslationSet> = {
     incangold_round: "Manche {round} / 5",
     incangold_path: "Chemin de l'Expédition",
     incangold_stay: "CONTINUER",
-    incangold_leave: "RETRER",
+    incangold_leave: "SORTIR",
     incangold_gems: "GEMMES",
     incangold_banked: "EN SÉCURITÉ",
     incangold_in_temple: "DANS LE TEMPLE",
@@ -802,7 +934,7 @@ export const translations: Record<Language, TranslationSet> = {
     incangold_decide: "C'EST L'HEURE DE DÉCIDER !",
     incangold_exploring: "Exploration en cours...",
     incangold_results: "RÉSUMÉ DE L'EXPÉDITION",
-    incangold_expedition_complete: "Expédition Terminée",
+    incangold_expedition_complete: "Expedition Terminée",
     incangold_hall_of_riches: "Le Temple des Richesses",
     incangold_adventurer: "Aventurier",
     incangold_cave_n: "Grotte {n}",
@@ -862,6 +994,12 @@ export const translations: Record<Language, TranslationSet> = {
     incangold_risk_loot: "Risquer le butin actuel",
     incangold_bank_now: "Tout encaisser maintenant",
     incangold_on_path_bonus: "+{n} SUR LE CHEMIN",
+    incangold_artifacts: "Artéfacts",
+    incangold_choice_leave: "Camp",
+    incangold_choice_stay: "Torche",
+    incangold_title_alt: "DIAMANT",
+    shared_tech_group: "GROUPE TECH LUNARIS",
+    shared_waiting: "EN ATTENTE...",
     timeattack_title: "Time Attack",
     timeattack_desc:
       "Testez votre horloge interne à la milliseconde près. 10 manches de défis rythmiques sous haute pression.",
@@ -923,9 +1061,10 @@ export const translations: Record<Language, TranslationSet> = {
     madeBy: "Créé par LUNARIS",
     unknown_predator: "Un Prédateur",
     waiting_for_sequence: "EN ATTENTE",
+
     themind_shurikens: "SHURIKENS",
     themind_team_stats: "ÉTAT DES JOUEURS",
-    themind_hand_size: "CARTES RESTANTES",
+    themind_hand_size: "CARDS REMAINING",
     themind_discard_pile: "DÉFAUSSE",
     themind_awaiting_play: "ATTENTE JEU",
     themind_secured_by: "JOUÉ PAR",
@@ -940,6 +1079,23 @@ export const translations: Record<Language, TranslationSet> = {
     themind_terminal_locked: "FIN DE PARTIE",
     themind_miscalculated: "ERREUR",
     themind_purged: "DÉFAUSSÉ",
+    themind_link_integrity: "Link Integrity",
+    themind_stable: "Stable",
+    themind_terminated: "Terminated",
+    themind_transmission_lives: "Transmission Lives",
+    themind_briefing_title: "Frequency Alignment",
+    themind_briefing_desc:
+      "Data transmission is restricted. You must synchronize your internal frequencies to play cards in ascending order without verbal cues. One misstep compromises the neural link. Trust the silence. Trust your team.",
+    themind_calibrating: "Calibrating psychic nodes...",
+    themind_uplink_active: "Uplink Active",
+    themind_frequency_refined: "Frequency Refined",
+    themind_level_cleared: "Level {level} Cleared",
+    themind_sync_next: "Sync Next Link",
+    themind_uplink_request_sent: "Uplink Request Signal Sent",
+    themind_establishing_freq: "Establishing Collective Frequency...",
+    themind_system_purged: "Neural System Purged",
+    themind_freq_stabilized: "Harmonic Frequency Achieved",
+
     justone_guesser: "DEVINEUR",
     justone_clue_submitted: "INDICE SOUMIS",
     justone_awaiting_clues: "ATTENTE INDICES...",
@@ -959,6 +1115,15 @@ export const translations: Record<Language, TranslationSet> = {
     justone_decryption_input: "RÉPONSE",
     justone_clue_input: "INDICE",
     justone_helper: "ASSISTANT",
+    justone_briefing_title: "Hive Mind Protocol",
+    justone_briefing_desc:
+      "We must transmit the target concept to the Infiltrator without triggering the security overrides. Submit one word as a clue. If your clue matches another agent's, the system will delete both before transmission. Be original, but be precise.",
+    justone_initializing_links: "Initializing neural links...",
+    justone_signal_stream: "Signal Stream {round} / 13",
+    justone_transmission_success: "Transmission Successful",
+    justone_security_override: "Security Override",
+    justone_uplink_complete: "UPLINK COMPLETE",
+
     dixit_participants: "JOUEURS",
     dixit_clue_received: "L'INDICE EST",
     dixit_awaiting_st: "ATTENTE DU CONTEUR...",
@@ -969,10 +1134,27 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_received_guesses: "VOTES ({count})",
     dixit_guessers: "VOTANTS",
     dixit_wait_others_action: "Attente joueurs",
+    dixit_briefing_title: "The Art of Illusion",
+    dixit_briefing_desc:
+      "Words are blunt instruments. We communicate through imagery, metaphor, and intuition. As the Storyteller, craft a clue ambiguous enough to fool some, but precise enough to guide your true allies. As an Agent, decipher the vision to find the true source.",
+    dixit_phase_incubation: "Incubation",
+    dixit_phase_deciphering: "Deciphering",
+    dixit_illusion_dissipated: "Illusion Dissipated",
+
     pioupiou_match_telemetry: "ÉTAT DU JEU",
     pioupiou_resolution: "GAGNANT",
     pioupiou_encryption: "PHASE",
     pioupiou_secure: "ACTIF",
+    pioupiou_henhouse_integrity: "Henhouse Integrity",
+    pioupiou_fox_infiltration: "Fox Infiltration!",
+    pioupiou_champion_title: "The Henhouse Champion",
+    pioupiou_analyzing_strategy: "Analyzing strategy...",
+    pioupiou_tactical_feed: "Tactical Feed",
+    pioupiou_henhouse_defense: "Henhouse Defense",
+    pioupiou_briefing_desc:
+      "The fox is lurking. You must gather resources—Roosters, Chickens, and Nests—to secure your eggs and hatch three chicks before your rivals. Deploy your defense strategies and protect the coop at all costs.",
+    pioupiou_securing_perimeters: "Securing nesting perimeters...",
+
     shared_status: "STATUT",
     shared_rank: "RANG",
     shared_score: "SCORE",
@@ -984,6 +1166,7 @@ export const translations: Record<Language, TranslationSet> = {
     boot_starting: "DÉMARRAGE",
     boot_ready: "PRÊT",
     boot_loading: "CHARGEMENT",
+
     timeattack_victory_lap: "Tour d'honneur",
     timeattack_current_phase: "Phase Actuelle",
     timeattack_round: "Tour",
@@ -1024,7 +1207,27 @@ export const translations: Record<Language, TranslationSet> = {
     timeattack_waiting_next_round: "Attente tour suivant...",
     timeattack_goal: "BUT",
     timeattack_how: "COMMENT",
-    timeattack_round_1_name: "L'Échauffement",
+    timeattack_briefing_title: "Temporal Precision",
+    timeattack_briefing_desc:
+      "Reaction time is the only currency in this simulation. You will be given target intervals. Synchronize your actions with the system clock to achieve absolute precision. Milliseconds determine the victor.",
+    timeattack_syncing_oscillators: "Syncing temporal oscillators...",
+    timeattack_masters: "The Time Masters",
+    timeattack_integrity_verified: "Simulation Integrity Verified",
+    timeattack_global_champion: "Global Champion",
+    timeattack_extraction_sequences: "Data Extraction Sequences",
+    timeattack_round_victor: "Round Victor",
+    timeattack_transmission_decrypted: "Transmission Decrypted",
+    timeattack_neural_link_readiness: "Neural Link Readiness",
+    timeattack_sync_all_freq: "Synchronize all frequencies to engage protocol",
+    timeattack_objective_sequence: "Objective Sequence",
+    timeattack_extraction_decrypted: "Transmission Decrypted",
+    timeattack_calibrating: "Calibrating...",
+    timeattack_transmitting: "TRANSMITTING...",
+    timeattack_transmission_locked: "TRANSMISSION LOCKED",
+    timeattack_analyzing_variance: "Analyzing temporal variance...",
+    timeattack_arcade_rankings: "Arcade Rankings",
+    timeattack_round_protocol: "Round {round} Protocol",
+    timeattack_round_1_name: "The Warmup",
     timeattack_round_1_goal: "Enregistrez exactement 5,00 secondes.",
     timeattack_round_1_how:
       "Appuyez sur START. Arrêtez à 5,00s. Le chrono TV disparaît après 2s.",
@@ -1082,7 +1285,7 @@ export const translations: Record<Language, TranslationSet> = {
     maxLabel: "MAX",
     player: "Spieler",
     players: "SPIELER",
-    capacity: "KAPAZITÄT",
+    capacity: "CAPACITY",
     footer: "LUNARIS Arcade v1.0.4",
     noOngoing: "Keine Spiele.",
     host: "HOSTEN",
@@ -1146,7 +1349,7 @@ export const translations: Record<Language, TranslationSet> = {
     incangold_round: "Runde {round} / 5",
     incangold_path: "Expeditionspfad",
     incangold_stay: "WEITER GEHEN",
-    incangold_leave: "ZURÜCKKEHREN",
+    incangold_leave: "SORTIR",
     incangold_gems: "JUWELEN",
     incangold_banked: "GESICHERT",
     incangold_in_temple: "IM TEMPEL",
@@ -1214,6 +1417,12 @@ export const translations: Record<Language, TranslationSet> = {
     incangold_risk_loot: "Die aktuelle Beute riskieren",
     incangold_bank_now: "Alles jetzt sichern",
     incangold_on_path_bonus: "+{n} AUF DEM PFAD",
+    incangold_artifacts: "Artefakte",
+    incangold_choice_leave: "Camp",
+    incangold_choice_stay: "Fackel",
+    incangold_title_alt: "DIAMANT",
+    shared_tech_group: "LUNARIS TECH GRUPPE",
+    shared_waiting: "WARTEN...",
     timeattack_title: "Time Attack",
     timeattack_desc:
       "Teste deine innere Uhr auf die Millisekunde genau. 10 Runden voller rhythmischer Herausforderungen.",
@@ -1292,6 +1501,23 @@ export const translations: Record<Language, TranslationSet> = {
     themind_terminal_locked: "ENDE",
     themind_miscalculated: "FEHLER",
     themind_purged: "ABGELEGT",
+    themind_link_integrity: "Link Integrity",
+    themind_stable: "Stable",
+    themind_terminated: "Terminated",
+    themind_transmission_lives: "Transmission Lives",
+    themind_briefing_title: "Frequency Alignment",
+    themind_briefing_desc:
+      "Data transmission is restricted. You must synchronize your internal frequencies to play cards in ascending order without verbal cues. One misstep compromises the neural link. Trust the silence. Trust your team.",
+    themind_calibrating: "Calibrating psychic nodes...",
+    themind_uplink_active: "Uplink Active",
+    themind_frequency_refined: "Frequency Refined",
+    themind_level_cleared: "Level {level} Cleared",
+    themind_sync_next: "Sync Next Link",
+    themind_uplink_request_sent: "Uplink Request Signal Sent",
+    themind_establishing_freq: "Establishing Collective Frequency...",
+    themind_system_purged: "Neural System Purged",
+    themind_freq_stabilized: "Harmonic Frequency Achieved",
+
     justone_guesser: "RATENDER",
     justone_clue_submitted: "BEREIT",
     justone_awaiting_clues: "WARTEN...",
@@ -1300,7 +1526,7 @@ export const translations: Record<Language, TranslationSet> = {
     justone_rejected: "NEIN",
     justone_total_score: "SCORE",
     justone_round_count: "RUNDE",
-    justone_ambiguity_detected: "UNKLEAR",
+    justone_ambiguity_detected: "AMBIGUÏTÉ DÉTECTÉE",
     justone_target_word: "DAS WORT WAR",
     justone_consensus_required: "STIMMT DAS?",
     justone_all_canceled: "ALLE GELÖSCHT",
@@ -1311,6 +1537,15 @@ export const translations: Record<Language, TranslationSet> = {
     justone_decryption_input: "ANTWORT",
     justone_clue_input: "HINWEIS",
     justone_helper: "HELFER",
+    justone_briefing_title: "Hive Mind Protocol",
+    justone_briefing_desc:
+      "We must transmit the target concept to the Infiltrator without triggering the security overrides. Submit one word as a clue. If your clue matches another agent's, the system will delete both before transmission. Be original, but be precise.",
+    justone_initializing_links: "Initializing neural links...",
+    justone_signal_stream: "Signal Stream {round} / 13",
+    justone_transmission_success: "Transmission Successful",
+    justone_security_override: "Security Override",
+    justone_uplink_complete: "UPLINK COMPLETE",
+
     dixit_participants: "SPIELER",
     dixit_clue_received: "HINWEIS",
     dixit_awaiting_st: "WARTEN...",
@@ -1321,10 +1556,27 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_received_guesses: "VOTES ({count})",
     dixit_guessers: "RATENDE",
     dixit_wait_others_action: "Warten...",
+    dixit_briefing_title: "The Art of Illusion",
+    dixit_briefing_desc:
+      "Words are blunt instruments. We communicate through imagery, metaphor, and intuition. As the Storyteller, craft a clue ambiguous enough to fool some, but precise enough to guide your true allies. As an Agent, decipher the vision to find the true source.",
+    dixit_phase_incubation: "Incubation",
+    dixit_phase_deciphering: "Deciphering",
+    dixit_illusion_dissipated: "Illusion Dissipated",
+
     pioupiou_match_telemetry: "STATUS",
     pioupiou_resolution: "GEWINNER",
     pioupiou_encryption: "PHASE",
     pioupiou_secure: "AKTIV",
+    pioupiou_henhouse_integrity: "Henhouse Integrity",
+    pioupiou_fox_infiltration: "Fox Infiltration!",
+    pioupiou_champion_title: "The Henhouse Champion",
+    pioupiou_analyzing_strategy: "Analyzing strategy...",
+    pioupiou_tactical_feed: "Tactical Feed",
+    pioupiou_henhouse_defense: "Henhouse Defense",
+    pioupiou_briefing_desc:
+      "The fox is lurking. You must gather resources—Roosters, Chickens, and Nests—to secure your eggs and hatch three chicks before your rivals. Deploy your defense strategies and protect the coop at all costs.",
+    pioupiou_securing_perimeters: "Securing nesting perimeters...",
+
     shared_status: "STATUS",
     shared_rank: "RANG",
     shared_score: "SCORE",
@@ -1356,13 +1608,11 @@ export const translations: Record<Language, TranslationSet> = {
     timeattack_sync_wave_v1: "Sync Wave v1.0",
     timeattack_s_and: "s und",
     timeattack_ms: "ms",
-    timeattack_personal_timer: "Persönlicher Timer",
+    timeattack_personal_timer: "Chrono Personnel",
     timeattack_locked: "GESPERRT",
     timeattack_waiting_reveal: "Warten auf Reveal...",
     timeattack_done: "FERTIG",
     timeattack_hold: "HALTEN",
-    timeattack_current_goal: "Aktuelles Ziel",
-    timeattack_instructions: "Anleitung",
     timeattack_release: "LOSLASSEN",
     timeattack_start: "START",
     timeattack_stop: "STOP",
@@ -1374,18 +1624,40 @@ export const translations: Record<Language, TranslationSet> = {
     timeattack_final_results: "Endergebnisse",
     timeattack_leave_game: "Spiel verlassen",
     timeattack_waiting_next_round: "Warten auf nächste Runde...",
+    timeattack_current_goal: "Aktuelles Ziel",
+    timeattack_instructions: "Anleitung",
     timeattack_goal: "ZIEL",
     timeattack_how: "WIE",
+    timeattack_briefing_title: "Temporal Precision",
+    timeattack_briefing_desc:
+      "Reaction time is the only currency in this simulation. You will be given target intervals. Synchronize your actions with the system clock to achieve absolute precision. Milliseconds determine the victor.",
+    timeattack_syncing_oscillators: "Syncing temporal oscillators...",
+    timeattack_masters: "The Time Masters",
+    timeattack_integrity_verified: "Simulation Integrity Verified",
+    timeattack_global_champion: "Global Champion",
+    timeattack_extraction_sequences: "Data Extraction Sequences",
+    timeattack_round_victor: "Round Victor",
+    timeattack_transmission_decrypted: "Transmission Decrypted",
+    timeattack_neural_link_readiness: "Neural Link Readiness",
+    timeattack_sync_all_freq: "Synchronize all frequencies to engage protocol",
+    timeattack_objective_sequence: "Objective Sequence",
+    timeattack_extraction_decrypted: "Transmission Decrypted",
+    timeattack_calibrating: "Calibrating...",
+    timeattack_transmitting: "TRANSMITTING...",
+    timeattack_transmission_locked: "TRANSMISSION LOCKED",
+    timeattack_analyzing_variance: "Analyzing temporal variance...",
+    timeattack_arcade_rankings: "Arcade Rankings",
+    timeattack_round_protocol: "Round {round} Protocol",
     timeattack_round_1_name: "Das Aufwärmen",
-    timeattack_round_1_goal: "Erfasse genau 5,00 Sekunden.",
+    timeattack_round_1_goal: "Enregistrez exactement 5,00 secondes.",
     timeattack_round_1_how:
       "Tippe auf START. Stoppe bei 5,00s. Der TV-Timer verschwindet nach 2s.",
     timeattack_round_2_name: "Mikro-Fraktion",
-    timeattack_round_2_goal: "Erfasse die zufällige Dauer.",
+    timeattack_round_2_goal: "Enregistrez la durée aléatoire.",
     timeattack_round_2_how: "START dann STOP. Kein TV-Timer.",
-    timeattack_round_3_name: "Das Metronom",
-    timeattack_round_3_goal: "Halte den Rhythmus.",
-    timeattack_round_3_how: "START dann STOP. Ignoriere TV-Ablenkungen.",
+    timeattack_round_3_name: "The Metronome",
+    timeattack_round_3_goal: "Suivez le rythme.",
+    timeattack_round_3_how: "START dann STOP. Ignorez les distractions TV.",
     timeattack_round_4_name: "Reaktions-Flash",
     timeattack_round_4_goal: "Reine Geschwindigkeit.",
     timeattack_round_4_how:
@@ -1435,7 +1707,7 @@ export const translations: Record<Language, TranslationSet> = {
     maxLabel: "حداکثر",
     player: "بازیکن",
     players: "بازیکن",
-    capacity: "ظرفیت",
+    capacity: "CAPACITY",
     footer: "LUNARIS نسخه ۱.۰.۴",
     noOngoing: "بازی فعالی وجود ندارد.\u200F",
     host: "ایجاد",
@@ -1567,6 +1839,12 @@ export const translations: Record<Language, TranslationSet> = {
     incangold_risk_loot: "ریسک روی غنایم فعلی",
     incangold_bank_now: "ذخیره همه غنایم",
     incangold_on_path_bonus: "+{n} در مسیر",
+    incangold_artifacts: "اشیاء باستانی",
+    incangold_choice_leave: "کمپ",
+    incangold_choice_stay: "مشعل",
+    incangold_title_alt: "دیامانت",
+    shared_tech_group: "گروه تکنولوژی لوناریس",
+    shared_waiting: "در انتظار...",
     timeattack_title: "Time Attack",
     timeattack_desc:
       "ساعت درونی خود را تا میلی‌ثانیه به چالش بکشید. ۱۰ مرحله هیجان‌انگیز از چالش‌های ریتمیک.\u200F",
@@ -1628,6 +1906,7 @@ export const translations: Record<Language, TranslationSet> = {
     madeBy: "ساخته شده توسط LUNARIS",
     unknown_predator: "یک شکارچی",
     waiting_for_sequence: "در انتظار حرکت",
+
     themind_shurikens: "ستاره‌ها",
     themind_team_stats: "وضعیت تیم",
     themind_hand_size: "کارت‌های باقی‌مانده",
@@ -1645,6 +1924,23 @@ export const translations: Record<Language, TranslationSet> = {
     themind_terminal_locked: "پایان",
     themind_miscalculated: "اشتباه",
     themind_purged: "سوخته",
+    themind_link_integrity: "Link Integrity",
+    themind_stable: "Stable",
+    themind_terminated: "Terminated",
+    themind_transmission_lives: "Transmission Lives",
+    themind_briefing_title: "Frequency Alignment",
+    themind_briefing_desc:
+      "Data transmission is restricted. You must synchronize your internal frequencies to play cards in ascending order without verbal cues. One misstep compromises the neural link. Trust the silence. Trust your team.",
+    themind_calibrating: "Calibrating psychic nodes...",
+    themind_uplink_active: "Uplink Active",
+    themind_frequency_refined: "Frequency Refined",
+    themind_level_cleared: "Level {level} Cleared",
+    themind_sync_next: "Sync Next Link",
+    themind_uplink_request_sent: "Uplink Request Signal Sent",
+    themind_establishing_freq: "Establishing Collective Frequency...",
+    themind_system_purged: "Neural System Purged",
+    themind_freq_stabilized: "Harmonic Frequency Achieved",
+
     justone_guesser: "حدس‌زننده",
     justone_clue_submitted: "سرنخ ثبت شد",
     justone_awaiting_clues: "انتظار سرنخ...",
@@ -1664,6 +1960,15 @@ export const translations: Record<Language, TranslationSet> = {
     justone_decryption_input: "حدس",
     justone_clue_input: "سرنخ",
     justone_helper: "یار کمکی",
+    justone_briefing_title: "Hive Mind Protocol",
+    justone_briefing_desc:
+      "We must transmit the target concept to the Infiltrator without triggering the security overrides. Submit one word as a clue. If your clue matches another agent's, the system will delete both before transmission. Be original, but be precise.",
+    justone_initializing_links: "Initializing neural links...",
+    justone_signal_stream: "Signal Stream {round} / 13",
+    justone_transmission_success: "Transmission Successful",
+    justone_security_override: "Security Override",
+    justone_uplink_complete: "UPLINK COMPLETE",
+
     dixit_participants: "بازیکنان",
     dixit_clue_received: "سرنخ این است\u200F",
     dixit_awaiting_st: "انتظار قصه‌گو...",
@@ -1674,10 +1979,27 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_received_guesses: "رای‌ها ({count})",
     dixit_guessers: "حدس‌زننده‌ها",
     dixit_wait_others_action: "انتظار بقیه",
+    dixit_briefing_title: "The Art of Illusion",
+    dixit_briefing_desc:
+      "Words are blunt instruments. We communicate through imagery, metaphor, and intuition. As the Storyteller, craft a clue ambiguous enough to fool some, but precise enough to guide your true allies. As an Agent, decipher the vision to find the true source.",
+    dixit_phase_incubation: "Incubation",
+    dixit_phase_deciphering: "Deciphering",
+    dixit_illusion_dissipated: "Illusion Dissipated",
+
     pioupiou_match_telemetry: "وضعیت",
     pioupiou_resolution: "برنده",
     pioupiou_encryption: "فاز",
     pioupiou_secure: "فعال",
+    pioupiou_henhouse_integrity: "Henhouse Integrity",
+    pioupiou_fox_infiltration: "Fox Infiltration!",
+    pioupiou_champion_title: "The Henhouse Champion",
+    pioupiou_analyzing_strategy: "Analyzing strategy...",
+    pioupiou_tactical_feed: "Tactical Feed",
+    pioupiou_henhouse_defense: "Henhouse Defense",
+    pioupiou_briefing_desc:
+      "The fox is lurking. You must gather resources—Roosters, Chickens, and Nests—to secure your eggs and hatch three chicks before your rivals. Deploy your defense strategies and protect the coop at all costs.",
+    pioupiou_securing_perimeters: "Securing nesting perimeters...",
+
     shared_status: "وضعیت",
     shared_rank: "رتبه",
     shared_score: "امتیاز",
@@ -1729,6 +2051,26 @@ export const translations: Record<Language, TranslationSet> = {
     timeattack_waiting_next_round: "در انتظار دور بعد...\u200F",
     timeattack_goal: "هدف",
     timeattack_how: "روش",
+    timeattack_briefing_title: "Temporal Precision",
+    timeattack_briefing_desc:
+      "Reaction time is the only currency in this simulation. You will be given target intervals. Synchronize your actions with the system clock to achieve absolute precision. Milliseconds determine the victor.",
+    timeattack_syncing_oscillators: "Syncing temporal oscillators...",
+    timeattack_masters: "The Time Masters",
+    timeattack_integrity_verified: "Simulation Integrity Verified",
+    timeattack_global_champion: "Global Champion",
+    timeattack_extraction_sequences: "Data Extraction Sequences",
+    timeattack_round_victor: "Round Victor",
+    timeattack_transmission_decrypted: "Transmission Decrypted",
+    timeattack_neural_link_readiness: "Neural Link Readiness",
+    timeattack_sync_all_freq: "Synchronize all frequencies to engage protocol",
+    timeattack_objective_sequence: "Objective Sequence",
+    timeattack_extraction_decrypted: "Transmission Decrypted",
+    timeattack_calibrating: "Calibrating...",
+    timeattack_transmitting: "TRANSMITTING...",
+    timeattack_transmission_locked: "TRANSMISSION LOCKED",
+    timeattack_analyzing_variance: "Analyzing temporal variance...",
+    timeattack_arcade_rankings: "Arcade Rankings",
+    timeattack_round_protocol: "Round {round} Protocol",
     timeattack_round_1_name: "گرم کردن",
     timeattack_round_1_goal: "دقیقاً ۵.۰۰ ثانیه را ثبت کنید.\u200F",
     timeattack_round_1_how:

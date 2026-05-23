@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface NeuralNodeProps {
   val: number | "BACK" | string;
@@ -19,6 +20,7 @@ export default function NeuralNode({
   onClick,
   className = "",
 }: NeuralNodeProps) {
+  const { t } = useTranslation();
   const isBack = val === "BACK";
   const num = typeof val === "number" ? val : parseInt(val as string) || 0;
 
@@ -85,7 +87,7 @@ export default function NeuralNode({
         <div className="flex flex-col items-center gap-4 opacity-20">
           <div className="text-4xl">⚡</div>
           <span className="text-[8px] font-black tracking-[0.5em] uppercase">
-            LUNARIS TECH GROUP
+            {t.shared_tech_group}
           </span>
         </div>
       )}
