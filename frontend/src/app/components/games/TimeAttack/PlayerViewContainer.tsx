@@ -106,23 +106,6 @@ export default function PlayerViewContainer({ player, roomData }: PlayerProps) {
             <div className="flex flex-col items-center gap-12 w-full">
               {/* LOCAL TIMER DISPLAY */}
               <div className="text-center h-20">
-                {hasStarted && !hasFinished && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="flex flex-col items-center"
-                  >
-                    <span
-                      dir={lang === "fa" ? "rtl" : "ltr"}
-                      className="text-5xl font-black italic text-teal-400 tabular-nums"
-                    >
-                      {lang === "fa"
-                        ? toPersianDigits((elapsed / 1000).toFixed(2))
-                        : (elapsed / 1000).toFixed(2)}
-                      s
-                    </span>
-                  </motion.div>
-                )}
                 {hasFinished && (
                   <motion.div
                     initial={{ opacity: 0 }}
