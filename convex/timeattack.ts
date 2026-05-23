@@ -2,6 +2,7 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { Id, Doc } from "./_generated/dataModel";
 import { ROUNDS_CONFIG, getRandomTarget } from "./timeattackPlugin";
+import { updateLeaderboardAtGameEnd } from "./transitions";
 
 type TimeAttackBoard = Extract<
   Doc<"rooms">["gameBoard"],
@@ -160,6 +161,10 @@ export const nextPhase = mutation({
           room.status = "FINISHED";
           gameBoard.winner = winner.name;
           gameBoard.winnerId = winner._id;
+
+          // PERSIST RESULTS
+          const updatedRoom = { ...room, gameBoard, status: "FINISHED" };
+          await updateLeaderboardAtGameEnd(ctx, updatedRoom as any, players);
         }
       } else {
         gameBoard.currentRound += 1;

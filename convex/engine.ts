@@ -251,6 +251,24 @@ export const joinRoom = mutation({
       return { roomId: room._id, playerId: existingPlayer._id };
     }
 
+    // ENSURE USER EXISTS for leaderboard tracking
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_name", (q) => q.eq("name", args.playerName))
+      .unique();
+
+    if (!user) {
+      await ctx.db.insert("users", {
+        name: args.playerName,
+        totalScore: 0,
+        wins: 0,
+        gamesPlayed: 0,
+        lastLogin: Date.now(),
+      });
+    } else {
+      await ctx.db.patch(user._id, { lastLogin: Date.now() });
+    }
+
     const plugin = getGamePlugin(room.currentGame);
     const { initialHand, initialState } = plugin.getInitialPlayerState(
       room.status,

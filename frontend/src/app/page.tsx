@@ -72,9 +72,9 @@ function HomeContent() {
       lang={lang}
       className={`min-h-[100dvh] bg-app text-content-base p-4 sm:p-8 md:p-12 transition-all duration-500 relative overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] ${lang === "fa" ? "fa-text-fix" : ""}`}
     >
-      <div className="pt-10 sm:pt-14">
+      {/* <div className="pt-10 sm:pt-14">
         <Navbar />
-      </div>
+      </div> */}
       {/* Cinematic Background FX */}
       <div className="neuro-grid" />
       <div className="scanline" />

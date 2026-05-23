@@ -38,6 +38,9 @@ export async function updateLeaderboardAtGameEnd(ctx: GameMutationCtx, room: Doc
       } else if (p.state.gameType === "incangold") {
         isThisPlayerWinner = p._id === board.winnerId;
         currentScore = p.state.bankedScore || 0;
+      } else if (p.state.gameType === "timeattack") {
+        isThisPlayerWinner = p._id === board.winnerId;
+        currentScore = p.state.score || 0;
       }
 
       await ctx.db.patch(user._id, {
