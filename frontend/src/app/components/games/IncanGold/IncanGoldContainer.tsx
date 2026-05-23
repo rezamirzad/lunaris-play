@@ -29,9 +29,12 @@ const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData }) => {
     (p) => p.state.gameType === "incangold" && p.state.status === "IN_TEMPLE"
   );
 
+  const boardPhase = (board as any).phase;
+  const pathLength = (board as any).path?.length || 0;
+
   useEffect(() => {
     setPendingAction(false);
-  }, [board.phase, (board as any).path?.length]);
+  }, [boardPhase, pathLength]);
 
   if (board.gameType !== "incangold") return null;
 
