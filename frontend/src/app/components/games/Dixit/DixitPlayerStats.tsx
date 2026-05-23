@@ -43,12 +43,12 @@ export default function DixitPlayerStats({
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="absolute -top-24 -right-16 bg-blue-600 border-2 border-blue-400 rounded-2xl py-1.5 px-4 shadow-[0_10px_30px_rgba(59,130,246,0.5)] rotate-[-4deg]"
+          className="absolute -top-24 -right-12 bg-blue-600 border-2 border-blue-400 rounded-2xl py-1.5 px-4 shadow-[0_10px_30px_rgba(59,130,246,0.5)] rotate-[-4deg]"
         >
           {/* <span className="text-[10px] font-black text-white uppercase tracking-[0.2em] whitespace-nowrap drop-shadow-md">
             ⚡ {t.storyteller}2
           </span> */}
-          {isST && <StorytellerBadge />}
+          <StorytellerBadge />
         </motion.div>
       )}
 
