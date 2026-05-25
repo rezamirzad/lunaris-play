@@ -3,8 +3,9 @@
 import { v } from "convex/values";
 import { internalAction } from "../_generated/server";
 import { internal } from "../_generated/api";
-import { Buffer } from "buffer";
+//import { Buffer } from "buffer";
 
+declare const Buffer: any;
 declare const process: any;
 
 // Use v1beta so the API correctly resolves the "gemini-1.5-flash" alias without throwing a 404
