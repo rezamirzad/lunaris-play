@@ -33,8 +33,13 @@ export default function SecurityLogsManager() {
                 animate={{ opacity: 1 }}
                 className="grid grid-cols-4 gap-4 px-8 py-4 items-center hover:bg-white/5 transition-colors"
               >
-                <div className="col-span-1 text-[10px] text-zinc-500 tabular-nums">
-                  {new Date(log.timestamp).toLocaleTimeString()}
+                <div className="col-span-1 text-[10px] text-zinc-500 tabular-nums flex flex-col leading-tight">
+                  <span className="font-bold text-zinc-400">
+                    {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                  </span>
+                  <span className="text-[8px] uppercase tracking-tighter opacity-60">
+                    {new Date(log.timestamp).toLocaleDateString([], { year: '2-digit', month: '2-digit', day: '2-digit' })}
+                  </span>
                 </div>
                 <div className="col-span-1">
                   <span

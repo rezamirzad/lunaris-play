@@ -1,9 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, createContext, useContext } from "react";
 import { useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
 import { motion, AnimatePresence } from "framer-motion";
+
+interface AdminContextType {
+  isAdmin: boolean;
+  pin: string;
+}
+
+const AdminContext = createContext<AdminContextType>({ isAdmin: false, pin: "" });
+
+export const useAdmin = () => useContext(AdminContext);
 
 export default function AdminGateway({
   children,
@@ -36,7 +45,11 @@ export default function AdminGateway({
   };
 
   if (isAuthorized) {
-    return <>{children}</>;
+    return (
+      <AdminContext.Provider value={{ isAdmin: true, pin }}>
+        {children}
+      </AdminContext.Provider>
+    );
   }
 
   return (

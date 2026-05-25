@@ -11,6 +11,7 @@ import {
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { GAME_REGISTRY } from "./games/registry";
 import Image from "next/image";
+import ArcadeBadge from "./shared/ArcadeBadge";
 
 interface Game {
   _id: string;
@@ -142,6 +143,19 @@ export default function GameCatalog({
                     {GAME_REGISTRY[game.slug]?.visuals.emoji || "🖼️"}
                   </div>
                 )}
+
+                {/* AI CAPABILITY BADGE */}
+                {(game.slug === "dixit" ||
+                  game.slug === "justone" ||
+                  game.slug === "pioupiou" ||
+                  game.slug === "incangold") && (
+                  <ArcadeBadge
+                    variant="ai"
+                    label=""
+                    className="!top-4 !right-auto !left-4 animate-pulse"
+                  />
+                )}
+
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(45,212,191,0.1),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
               </div>
 
@@ -160,12 +174,19 @@ export default function GameCatalog({
                             ? toPersianDigits(game.suggestedMax)
                             : game.suggestedMax}
                         </span>
-                        <span className={`text-zinc-50 font-black text-[10px] ${isFA ? 'tracking-normal' : 'tracking-tighter'}`}>
+                        <span
+                          className={`text-zinc-50 font-black text-[10px] ${isFA ? "tracking-normal" : "tracking-tighter"}`}
+                        >
                           {t.players}
                         </span>
                       </div>
-                      <span className={`text-zinc-500 font-black text-[9px] uppercase ml-2 opacity-60 ${isFA ? 'tracking-normal' : 'tracking-tighter'}`}>
-                        {t.maxLabel}: {isFA ? toPersianDigits(game.absoluteMax) : game.absoluteMax}
+                      <span
+                        className={`text-zinc-500 font-black text-[9px] uppercase ml-2 opacity-60 ${isFA ? "tracking-normal" : "tracking-tighter"}`}
+                      >
+                        {t.maxLabel}:{" "}
+                        {isFA
+                          ? toPersianDigits(game.absoluteMax)
+                          : game.absoluteMax}
                       </span>
                     </div>
                     <h3 className="text-3xl sm:text-4xl font-black italic uppercase  text-white leading-none group-hover:text-teal-400 transition-colors">
@@ -173,9 +194,9 @@ export default function GameCatalog({
                     </h3>
                   </div>
 
-                  <p 
+                  <p
                     dir={isFA ? "rtl" : "ltr"}
-                    className={`text-sm sm:text-sm font-black italic text-white leading-relaxed group-hover:text-teal-400 transition-colors ${isFA ? 'text-right tracking-normal' : 'tracking-tighter'}`}
+                    className={`text-sm sm:text-sm font-black italic text-white leading-relaxed group-hover:text-teal-400 transition-colors ${isFA ? "text-right tracking-normal" : "tracking-tighter"}`}
                   >
                     {displayDescription}
                   </p>

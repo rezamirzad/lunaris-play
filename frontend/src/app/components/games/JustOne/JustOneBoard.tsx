@@ -11,9 +11,15 @@ import ArcadeVictoryOverlay from "../../arcade/ArcadeVictoryOverlay";
 import ArcadeHUD from "../../arcade/ArcadeHUD";
 import ArcadeStatusPanel from "../../arcade/ArcadeStatusPanel";
 import ArcadePlayerGrid from "../../arcade/ArcadePlayerGrid";
+import { useAdmin } from "@/app/admin/AdminGateway";
+import { useMutation } from "convex/react";
+import { api } from "convex/_generated/api";
 
-export default function JustOneBoard({ roomData }: BoardProps) {
+export default function JustOneBoard({ roomId, roomData }: BoardProps) {
   const { t } = useTranslation();
+  const { isAdmin, pin: adminPin } = useAdmin();
+  const toggleHaltMutation = useMutation(api.engine.toggleBotsHalt);
+
   const board = roomData.gameBoard.gameType === "justone" ? roomData.gameBoard : null;
   const players = roomData.players;
   const isLobby = roomData.status?.toUpperCase() === "LOBBY";
@@ -52,6 +58,8 @@ export default function JustOneBoard({ roomData }: BoardProps) {
           statusLabel={t.justone_signal_stream.replace("{round}", String(board.round))}
           badgeContent={isFinished ? t.justone_session_ended : board.phase}
           accentColor="cyan"
+          onHaltToggle={isAdmin ? () => toggleHaltMutation({ roomId: roomId as any, adminPin }) : undefined}
+          isHalted={roomData.botsHalted}
         />
       }
       main={
@@ -155,8 +163,7 @@ export default function JustOneBoard({ roomData }: BoardProps) {
           renderStats={(player) => {
             const isTarget = player._id === board.activePlayerId;
             const hasSubmitted = board.clues?.[player._id];
-            const actionComplete = (board.phase === "CLUE_INPUT" && hasSubmitted) || (board.phase === "VALIDATION" && board.confirmedPlayers?.includes(player._id));
-
+            
             return (
               <div className="flex flex-col gap-2 mt-2">
                 <span className={`text-[8px] font-black uppercase tracking-widest ${isTarget ? 'text-cyan-400' : 'text-zinc-500'}`}>{isTarget ? t.justone_guesser : t.justone_helper}</span>

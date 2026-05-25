@@ -13,9 +13,14 @@ import ArcadeVictoryOverlay from "../../arcade/ArcadeVictoryOverlay";
 import ArcadeHUD from "../../arcade/ArcadeHUD";
 import ArcadeStatusPanel from "../../arcade/ArcadeStatusPanel";
 import ArcadePlayerGrid from "../../arcade/ArcadePlayerGrid";
+import { useAdmin } from "@/app/admin/AdminGateway";
+import { useMutation } from "convex/react";
+import { api } from "convex/_generated/api";
 
-export default function TimeAttackContainer({ roomData }: BoardProps) {
+export default function TimeAttackContainer({ roomId, roomData }: BoardProps) {
   const { t, lang } = useTranslation();
+  const { isAdmin, pin: adminPin } = useAdmin();
+  const toggleHaltMutation = useMutation(api.engine.toggleBotsHalt);
   const isFA = lang === "fa";
 
   const board =
@@ -59,6 +64,8 @@ export default function TimeAttackContainer({ roomData }: BoardProps) {
           statusLabel={formatLog(t.timeattack_round_protocol, { round: isFA ? toPersianDigits(board.currentRound) : board.currentRound }, lang)}
           badgeContent={board.phase === "ROUND_REVEAL" ? t.timeattack_round_victor : t.statusLive}
           accentColor="rose"
+          onHaltToggle={isAdmin ? () => toggleHaltMutation({ roomId: roomId as any, adminPin }) : undefined}
+          isHalted={roomData.botsHalted}
         />
       }
       main={

@@ -9,9 +9,15 @@ export function useGame(roomCode: string) {
 
   const playerName =
     typeof window !== "undefined" ? localStorage.getItem("playerName") : null;
+  const playerId =
+    typeof window !== "undefined" ? localStorage.getItem("playerId") : null;
 
   const players = (gameState?.players || []) as Doc<"players">[];
-  const me = players.find((p) => p.name === playerName);
+  
+  // Identify "me" primarily by playerId, fallback to playerName
+  const me = players.find((p) => 
+    (playerId && p._id === playerId) || (!playerId && p.name === playerName)
+  );
 
   // Derive turn information safely
   const turnOrder = gameState?.turnOrder || [];

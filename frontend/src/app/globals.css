@@ -122,6 +122,14 @@
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     @apply bg-teal-500/50;
   }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 @layer utilities {

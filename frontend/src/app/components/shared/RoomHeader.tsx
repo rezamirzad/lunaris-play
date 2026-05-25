@@ -55,27 +55,27 @@ export default function RoomHeader({
       {/* Background terminal scanline effect */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.02),rgba(0,255,0,0.01),rgba(0,0,255,0.02))] bg-[length:100%_4px,3px_100%] pointer-events-none" />
 
-      <div className="container mx-auto px-6 py-4 flex flex-col gap-4 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 py-4 flex flex-col gap-4 relative z-10">
         {/* TOP ROW: Primary Brand & Navigation Control */}
         <div className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-6">
-            <motion.div whileHover={{ x: -4 }} whileTap={{ scale: 0.9 }}>
+          <div className="flex items-center gap-3 sm:gap-6 min-w-0">
+            <motion.div whileHover={{ x: -4 }} whileTap={{ scale: 0.9 }} className="shrink-0">
               <BackButton />
             </motion.div>
-            <div className="flex items-baseline gap-4">
-              <h1 className="text-3xl lg:text-4xl font-black italic uppercase tracking-tighter text-white leading-none">
+            <div className="flex flex-col sm:flex-row sm:items-baseline gap-0 sm:gap-4 min-w-0">
+              <h1 className="text-xl sm:text-3xl lg:text-4xl font-black italic uppercase tracking-tighter text-white leading-none truncate">
                 {t.title}
               </h1>
               <h2 
                 dir={isFA ? "rtl" : "ltr"}
-                className={`text-[16px] lg:text-[20px] font-bold uppercase italic text-teal-400 ${isFA ? 'fa-text-fix' : 'tracking-[0.3em]'}`}
+                className={`text-[10px] sm:text-[16px] lg:text-[20px] font-bold uppercase italic text-teal-400 truncate ${isFA ? 'fa-text-fix' : 'tracking-[0.2em] sm:tracking-[0.3em]'}`}
               >
                 {gameTitle?.toUpperCase() || t.lobby}
               </h2>
             </div>
           </div>
 
-          <div className="hidden lg:block">
+          <div className="scale-75 sm:scale-100 origin-right shrink-0">
             <LanguageSelector />
           </div>
         </div>
@@ -84,10 +84,10 @@ export default function RoomHeader({
         <div className="flex items-center justify-between w-full border-t border-white/5 pt-4">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className={`font-bold text-[12px] uppercase ${lang === 'fa' ? 'tracking-normal' : 'tracking-[0.5em]'}`}>
+              <span className={`font-bold text-[10px] sm:text-[12px] uppercase ${lang === 'fa' ? 'tracking-normal' : 'tracking-[0.5em]'}`}>
                 {t.roomPlaceholder}:
               </span>
-              <span className="text-white font-black tracking-widest bg-zinc-900 px-3 py-1 rounded border border-zinc-800 text-[12px] lg:text-xs shadow-inner">
+              <span className="text-white font-black tracking-widest bg-zinc-900 px-3 py-1 rounded border border-zinc-800 text-[10px] sm:text-[12px] lg:text-xs shadow-inner">
                 {roomCode}
               </span>
             </div>
@@ -109,15 +109,11 @@ export default function RoomHeader({
               </div>
               <span
                 dir={isFA ? "rtl" : "ltr"}
-                className={`text-[9px] font-black uppercase ${statusConfig.color} ${isFA ? 'fa-text-fix' : 'tracking-[0.3em]'}`}
+                className={`text-[8px] sm:text-[9px] font-black uppercase ${statusConfig.color} ${isFA ? 'fa-text-fix' : 'tracking-[0.3em]'}`}
               >
                 {statusConfig.label}
               </span>
             </div>
-          </div>
-
-          <div className="lg:hidden scale-90 origin-right">
-            <LanguageSelector />
           </div>
         </div>
       </div>

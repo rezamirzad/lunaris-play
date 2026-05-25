@@ -17,7 +17,7 @@ export default function WinnerBadge() {
     >
       <div className="flex flex-col items-end">
         <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white font-mono leading-none">
-          {t.winner || "WINNER"}
+          {t.champion || "WINNER"}321
         </span>
       </div>
       <div className="text-xl filter drop-shadow-[0_0_8px_rgba(234,179,8,0.8)]">

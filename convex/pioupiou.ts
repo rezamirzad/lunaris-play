@@ -10,6 +10,13 @@ export const getRandomCard = () => {
   return cards[Math.floor(Math.random() * cards.length)];
 };
 
+const INITIAL_DECK = [
+  ...Array(15).fill("CHICKEN"),
+  ...Array(15).fill("ROOSTER"),
+  ...Array(10).fill("NEST"),
+  ...Array(7).fill("FOX"),
+];
+
 export const pioupiouPlugin: GamePlugin = {
   gameType: "pioupiou",
 
@@ -20,15 +27,7 @@ export const pioupiouPlugin: GamePlugin = {
   },
 
   getInitialPlayerState(status: string) {
-    let initialHand: string[] = [];
-    let initialState: any = { gameType: "none" };
-
-    if (status === "PLAYING") {
-      initialHand = Array.from({ length: 4 }, () => getRandomCard());
-      initialState = { gameType: "pioupiou", eggs: 0, chicks: 0 };
-    }
-
-    return { initialHand, initialState };
+    return { initialHand: [], initialState: { gameType: "none" } };
   },
 
   async onStart(
@@ -36,17 +35,15 @@ export const pioupiouPlugin: GamePlugin = {
     roomId: Doc<"rooms">["_id"],
     players: Doc<"players">[],
   ) {
+    let deck = shuffle([...INITIAL_DECK]);
+
     for (const player of players) {
-      const initialHand = [
-        getRandomCard(),
-        getRandomCard(),
-        getRandomCard(),
-        getRandomCard(),
-      ];
+      const initialHand = deck.splice(0, 4);
 
       await ctx.db.patch(player._id, {
         gameHand: initialHand,
         state: { gameType: "pioupiou", eggs: 0, chicks: 0 },
+        persona: player.isBot ? "balanced" : undefined,
       });
     }
 
@@ -55,38 +52,68 @@ export const pioupiouPlugin: GamePlugin = {
         gameType: "pioupiou",
         history: [{ key: "LOG_GAME_STARTED", data: { time: Date.now() } }],
         pendingAttack: null,
+        deck: deck,
+        discardPile: [],
       },
+    });
+
+    // Trigger initial bot turn if starting player is a bot
+    await ctx.scheduler.runAfter(0, (internal as any).bots.manager.dispatchBotTurn, {
+      roomId,
     });
   },
 };
 
-export const startMatch = mutation({
-  args: { roomId: v.id("rooms") },
-  handler: async (ctx, args) => {
-    const room = await ctx.db.get(args.roomId);
-    if (!room) throw new Error("Room not found");
+/**
+ * Core turn refilling logic with discard-pile recycling.
+ */
+async function refillHand(
+  ctx: any,
+  room: Doc<"rooms">,
+  player: Doc<"players">,
+  indicesToRemove: number[],
+  extraDiscards: string[] = [],
+) {
+  if (room.gameBoard.gameType !== "pioupiou") return;
 
-    const players = await ctx.db
-      .query("players")
-      .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
-      .collect();
+  const board = room.gameBoard;
+  let deck = [...board.deck];
+  let discardPile = [...board.discardPile, ...extraDiscards];
 
-    if (players.length < 2) throw new Error("At least 2 players required.");
+  // 1. Identify removed cards and add them to discard pile
+  const removedCards = player.gameHand.filter((_, i) =>
+    indicesToRemove.includes(i),
+  );
+  discardPile.push(...removedCards);
 
-    const turnOrder = players.map((p) => p._id);
+  // 2. Remove cards from hand
+  let newHand = player.gameHand.filter((_, i) => !indicesToRemove.includes(i));
 
-    // Delegate to the plugin logic for consistency
-    await pioupiouPlugin.onStart(ctx, args.roomId, players);
+  // 3. Draw until hand is full (4 cards)
+  while (newHand.length < 4) {
+    if (deck.length === 0) {
+      if (discardPile.length === 0) break; // Should never happen
+      deck = shuffle([...discardPile]);
+      discardPile = [];
+    }
+    const card = deck.pop();
+    if (card) newHand.push(card);
+  }
 
-    await ctx.db.patch(args.roomId, {
-      status: "PLAYING",
-      turnOrder: turnOrder,
-      currentTurnIndex: 0,
-    });
+  await ctx.db.patch(player._id, { gameHand: newHand });
+  await ctx.db.patch(room._id, {
+    gameBoard: { ...board, deck, discardPile },
+  });
+}
 
-    return { success: true };
-  },
-});
+function shuffle<T>(array: T[]): T[] {
+  const newArray = [...array];
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  }
+  return newArray;
+}
 
 async function handleActionCore(ctx: any, args: any) {
   const player = await ctx.db.get(args.playerId);
@@ -146,8 +173,12 @@ async function handleActionCore(ctx: any, args: any) {
     if (roosterIndices.length < 2) throw new Error("Insufficient Roosters");
 
     logPayload = { key: "LOG_FOX_BLOCKED", data: { target: player.name } };
-    await refillPlayer(ctx, attack.attackerId, attacker!, attack.indices);
 
+    // IMPORTANT: Defending player loses 2 roosters. Attacker loses fox.
+    // Attacker refill (attacker already played Fox, it's stored in attack.indices)
+    if (attacker) await refillHand(ctx, room, attacker, attack.indices);
+
+    // Defender refill (the player who just called DEFEND)
     return await finalizePiouPiouTurn(
       ctx,
       room,
@@ -182,7 +213,10 @@ async function handleActionCore(ctx: any, args: any) {
       data: { player: attacker.name, target: player.name },
     };
 
-    await refillPlayer(ctx, attack.attackerId, attacker, attack.indices);
+    // Attacker refill
+    await refillHand(ctx, room, attacker, attack.indices);
+
+    // Victim refill (no cards removed from hand)
     return await finalizePiouPiouTurn(
       ctx,
       room,
@@ -197,6 +231,9 @@ async function handleActionCore(ctx: any, args: any) {
   // --- 3. ATTACK ---
   if (isFoxAttack) {
     if (!args.targetPlayerId) throw new Error("Target required");
+    if (String(args.playerId) === String(args.targetPlayerId))
+      throw new Error("Cannot attack yourself!");
+
     const victim = await ctx.db.get(args.targetPlayerId);
     if (
       !victim ||
@@ -218,6 +255,12 @@ async function handleActionCore(ctx: any, args: any) {
         },
       },
     });
+
+    // TRIGGER BOT DISPATCHER: The victim might be a bot!
+    await ctx.scheduler.runAfter(0, (internal as any).bots.manager.dispatchBotTurn, {
+      roomId: room._id,
+    });
+
     return { success: true };
   }
 
@@ -235,6 +278,22 @@ async function handleActionCore(ctx: any, args: any) {
       data: { player: player.name, card: cards[0].toLowerCase() },
     };
   } else {
+    // FALLBACK: If move is invalid and it's a bot, force a discard to prevent deadlock
+    if (player.isBot) {
+      console.error(`Bot ${player.name} made invalid move, forcing discard.`);
+      return await finalizePiouPiouTurn(
+        ctx,
+        room,
+        player,
+        [0],
+        {
+          key: "LOG_DISCARD",
+          data: { player: player.name, card: player.gameHand[0].toLowerCase() },
+        },
+        eggs,
+        chicks,
+      );
+    }
     return { error: "INVALID" };
   }
 
@@ -262,17 +321,6 @@ export const handleAction = mutation({
   },
 });
 
-async function refillPlayer(
-  ctx: any,
-  pId: any,
-  pDoc: Doc<"players">,
-  indicesToRemove: number[],
-) {
-  const newHand = pDoc.gameHand.filter((_, i) => !indicesToRemove.includes(i));
-  while (newHand.length < 4) newHand.push(getRandomCard());
-  await ctx.db.patch(pId, { gameHand: newHand });
-}
-
 async function finalizePiouPiouTurn(
   ctx: GameMutationCtx,
   room: Doc<"rooms">,
@@ -282,19 +330,20 @@ async function finalizePiouPiouTurn(
   eggs: number,
   chicks: number,
 ) {
-  const newHand = player.gameHand.filter(
-    (_, i) => !indicesToRemove.includes(i),
-  );
-  while (newHand.length < 4) newHand.push(getRandomCard());
-
+  // Update local player state
   await ctx.db.patch(player._id, {
-    gameHand: newHand,
     state: { gameType: "pioupiou", eggs, chicks },
   });
 
+  // Refill hand using new logic
+  await refillHand(ctx, room, player, indicesToRemove);
+
+  // Re-fetch room to get updated deck/discard state from refillHand
+  const updatedRoom = await ctx.db.get(room._id);
+
   return await finishTurn({
     ctx,
-    room,
+    room: updatedRoom!,
     logPayload: log,
     advanceTurn: true,
     winnerName: chicks >= 3 ? player.name : undefined,
@@ -302,6 +351,14 @@ async function finalizePiouPiouTurn(
     gameBoardPatch: {
       gameType: "pioupiou",
       pendingAttack: null,
+      deck:
+        updatedRoom!.gameBoard.gameType === "pioupiou"
+          ? updatedRoom!.gameBoard.deck
+          : [],
+      discardPile:
+        updatedRoom!.gameBoard.gameType === "pioupiou"
+          ? updatedRoom!.gameBoard.discardPile
+          : [],
     },
   });
 }

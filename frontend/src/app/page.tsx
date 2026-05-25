@@ -31,10 +31,11 @@ import { useTranslation } from "@/hooks/useTranslation";
 function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { playerName, setPlayerName } = useUser();
+  const { playerName, setPlayerName, playerId, setPlayerId } = useUser();
   const { t, lang, setLanguage } = useTranslation();
   const [nameInput, setNameInput] = useState(playerName);
   const [roomCode, setRoomCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const ongoingRooms = useQuery(api.engine.getOngoingRooms);
   const availableGames = useQuery(api.engine.listGames);
@@ -45,16 +46,39 @@ function HomeContent() {
     setNameInput(playerName);
   }, [playerName]);
 
+  useEffect(() => {
+    const joinCode = searchParams.get("join");
+    if (joinCode) {
+      setRoomCode(joinCode.toUpperCase());
+    }
+  }, [searchParams]);
+
   const handleJoin = async () => {
     if (!nameInput || !roomCode) return;
     const cleanCode = roomCode.toUpperCase();
+    setError(null);
     try {
       await getOrCreateUser({ name: nameInput });
-      await joinRoom({ roomCode: cleanCode, playerName: nameInput });
+      const result = await joinRoom({ 
+        roomCode: cleanCode, 
+        playerName: nameInput,
+        playerId: (playerId || undefined) as any
+      });
       setPlayerName(nameInput);
+      setPlayerId(result.playerId);
       router.push(`/room/${cleanCode}?lang=${lang}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Join failed:", error);
+      if (error.message.includes("NAME_TAKEN")) {
+        setError((t as any).nameTaken || "Name already taken in this room");
+      } else if (error.message.includes("GAME_ALREADY_STARTED")) {
+        setError((t as any).gameStarted || "Game already started");
+      } else if (error.message.includes("ROOM_FULL")) {
+        setError((t as any).roomFull || "Room is full");
+      } else {
+        setError((t as any).invalidRoomCode || "Invalid room code");
+      }
+
     }
   };
 
@@ -164,6 +188,11 @@ function HomeContent() {
                 onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
                 className="w-full bg-black/40 border border-border-subtle rounded-2xl px-6 py-4 text-xl font-bold focus:border-brand-accent outline-none transition-all text-center tracking-[0.2em] text-content-strong shadow-inner text-base"
               />
+              {error && (
+                <div className="text-rose-500 text-[10px] font-black uppercase tracking-widest text-center animate-pulse">
+                  {error}
+                </div>
+              )}
               <motion.button
                 whileHover={{
                   scale: 1.02,

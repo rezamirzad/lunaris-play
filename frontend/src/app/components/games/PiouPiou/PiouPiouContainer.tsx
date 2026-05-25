@@ -13,9 +13,15 @@ import ArcadeHUD from "../../arcade/ArcadeHUD";
 import ArcadeStatusPanel from "../../arcade/ArcadeStatusPanel";
 import ArcadePlayerGrid from "../../arcade/ArcadePlayerGrid";
 import ArcadeVictoryOverlay from "../../arcade/ArcadeVictoryOverlay";
+import { useAdmin } from "@/app/admin/AdminGateway";
+import { useMutation } from "convex/react";
+import { api } from "convex/_generated/api";
 
-export default function PiouPiouContainer({ roomData }: BoardProps) {
+export default function PiouPiouContainer({ roomId, roomData }: BoardProps) {
   const { t } = useTranslation();
+  const { isAdmin, pin: adminPin } = useAdmin();
+  const toggleHaltMutation = useMutation(api.engine.toggleBotsHalt);
+
   const isGameEnd =
     roomData.status?.toUpperCase() === "FINISHED" ||
     roomData.status?.toUpperCase() === "ARCHIVED";
@@ -60,12 +66,42 @@ export default function PiouPiouContainer({ roomData }: BoardProps) {
         <ArcadeHUD
           title={t.pioupiou_title}
           statusLabel={`${t.shared_status}: ${isGameEnd ? t.statusArchived : t.pioupiou_henhouse_integrity}`}
-          badgeContent={board?.winnerId ? t.winner : t.statusLive}
+          badgeContent={board?.winnerId ? t.statusArchived : t.statusLive}
           accentColor="orange"
+          onHaltToggle={isAdmin ? () => toggleHaltMutation({ roomId: roomId as any, adminPin }) : undefined}
+          isHalted={roomData.botsHalted}
         />
       }
       main={
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full relative overflow-hidden">
+          {/* BOT STUCK OVERLAY */}
+          <AnimatePresence>
+            {roomData.botStuck && (
+              <motion.div
+                initial={{ y: -100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -100, opacity: 0 }}
+                className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] w-full max-w-xl px-4"
+              >
+                <div className="bg-rose-500/10 border-2 border-rose-500/50 backdrop-blur-xl p-6 rounded-3xl flex items-center gap-6 shadow-[0_0_50px_rgba(244,63,94,0.3)]">
+                  <div className="w-12 h-12 rounded-2xl bg-rose-500 flex items-center justify-center animate-pulse">
+                    <span className="text-2xl">⚠️</span>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-rose-500 font-black uppercase tracking-widest text-sm">
+                      Bot Analysis Lag
+                    </h4>
+                    <p className="text-[10px] text-zinc-400 uppercase font-bold tracking-widest mt-1">
+                      System is recalculating optimal move for{" "}
+                      {roomData.players[roomData.currentTurnIndex]?.name}...
+                    </p>
+                  </div>
+                  <div className="w-1 h-8 bg-rose-500/20 rounded-full" />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* LEFT: MATCH ACTIVITY LOG */}
           <div className="lg:col-span-3 flex flex-col h-full overflow-hidden">
             <div className="flex-1 bg-black/40 rounded-[2rem] border border-white/5 p-6 overflow-hidden flex flex-col shadow-2xl relative">
@@ -169,6 +205,21 @@ export default function PiouPiouContainer({ roomData }: BoardProps) {
               state={player.state.gameType === "pioupiou" ? player.state : null}
             />
           )}
+          renderBadge={(player) => {
+            if (player.state.gameType !== "pioupiou") return null;
+            const isNearlyWinning = player.state.chicks === 2 && player.state.eggs >= 1;
+            if (!isNearlyWinning || isGameEnd) return null;
+
+            return (
+              <motion.div
+                initial={{ scale: 0, x: 20 }}
+                animate={{ scale: 1, x: 0 }}
+                className="bg-teal-500 text-white text-[7px] font-black px-2 py-1 rounded-md shadow-lg uppercase tracking-tighter ring-2 ring-black flex items-center gap-1"
+              >
+                <span>🔥</span> {t.nearlyWinning}
+              </motion.div>
+            );
+          }}
         />
       }
     />

@@ -1,6 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { getGamePlugin } from "./registry";
+import { internal } from "./_generated/api";
 
 /**
  * Standard Fisher-Yates Shuffle
@@ -230,7 +231,11 @@ export const createRoom = mutation({
 });
 
 export const joinRoom = mutation({
-  args: { roomCode: v.string(), playerName: v.string() },
+  args: { 
+    roomCode: v.string(), 
+    playerName: v.string(),
+    playerId: v.optional(v.id("players")) // For session persistence
+  },
   handler: async (ctx, args) => {
     const room = await ctx.db
       .query("rooms")
@@ -241,14 +246,44 @@ export const joinRoom = mutation({
 
     if (!room) throw new Error("Room not found");
 
-    const existingPlayer = await ctx.db
+    // 1. Session Re-connection Check
+    if (args.playerId) {
+      const player = await ctx.db.get(args.playerId);
+      if (player && player.roomId === room._id) {
+        return { roomId: room._id, playerId: player._id };
+      }
+    }
+
+    // 2. Name Availability Check (within room)
+    const existingPlayerWithName = await ctx.db
       .query("players")
       .withIndex("by_room", (q) => q.eq("roomId", room._id))
       .filter((q) => q.eq(q.field("name"), args.playerName))
       .unique();
 
-    if (existingPlayer) {
-      return { roomId: room._id, playerId: existingPlayer._id };
+    if (existingPlayerWithName) {
+      // If we don't have the matching playerId but the name is taken, it's a conflict
+      throw new Error("NAME_TAKEN");
+    }
+
+    // 3. Status Check
+    if (room.status !== "LOBBY") {
+      throw new Error("GAME_ALREADY_STARTED");
+    }
+
+    // 4. Player Limit Check
+    const players = await ctx.db
+      .query("players")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .collect();
+    
+    const game = await ctx.db
+      .query("games")
+      .filter((q) => q.eq(q.field("slug"), room.currentGame))
+      .unique();
+
+    if (game && players.length >= game.absoluteMax) {
+      throw new Error("ROOM_FULL");
     }
 
     // ENSURE USER EXISTS for leaderboard tracking
@@ -275,25 +310,7 @@ export const joinRoom = mutation({
       room,
     );
 
-    // If we're playing Dixit, we might need to update the pool (side-effect from engine)
-    if (
-      room.status === "PLAYING" &&
-      room.currentGame === "dixit" &&
-      room.gameBoard.gameType === "dixit"
-    ) {
-      const pool = room.gameBoard.availableCards || [];
-      if (pool.length >= initialHand.length) {
-        await ctx.db.patch(room._id, {
-          gameBoard: {
-            ...room.gameBoard,
-            gameType: "dixit",
-            availableCards: pool.slice(initialHand.length),
-          },
-        });
-      }
-    }
-
-    const playerId = await ctx.db.insert("players", {
+    const newPlayerId = await ctx.db.insert("players", {
       roomId: room._id,
       name: args.playerName,
       gameHand: initialHand,
@@ -301,34 +318,155 @@ export const joinRoom = mutation({
       isReady: false,
     });
 
-    if (room.status === "PLAYING") {
-      const newTurnOrder = [...(room.turnOrder || []), playerId];
-      const log = { key: "LOG_JOINED", data: { player: args.playerName } };
+    return { roomId: room._id, playerId: newPlayerId };
+  },
+});
 
-      if (room.gameBoard.gameType !== "none") {
-        const history = [log as any, ...(room.gameBoard.history || [])].slice(
-          0,
-          8,
-        );
-        await ctx.db.patch(room._id, {
-          turnOrder: newTurnOrder,
-          gameBoard: {
-            ...room.gameBoard,
-            history,
-          } as any,
-        });
-      } else {
-        await ctx.db.patch(room._id, { turnOrder: newTurnOrder });
-      }
+export const addBot = mutation({
+  args: { 
+    roomCode: v.string(), 
+    adminPin: v.string() 
+  },
+  handler: async (ctx, args) => {
+    // 1. Verify Admin Access
+    const isAuthorized = args.adminPin === "0000";
+    if (!isAuthorized) throw new Error("UNAUTHORIZED");
+
+    const room = await ctx.db
+      .query("rooms")
+      .withIndex("by_roomCode", (q) =>
+        q.eq("roomCode", args.roomCode.toUpperCase()),
+      )
+      .unique();
+
+    if (!room) throw new Error("Room not found");
+    if (room.status !== "LOBBY") throw new Error("NOT_IN_LOBBY");
+
+    // 2. Player Limit Check
+    const players = await ctx.db
+      .query("players")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .collect();
+    
+    const game = await ctx.db
+      .query("games")
+      .filter((q) => q.eq(q.field("slug"), room.currentGame))
+      .unique();
+
+    if (game && players.length >= game.absoluteMax) {
+      throw new Error("ROOM_FULL");
     }
 
-    return { roomId: room._id, playerId };
+    // Playful, Kid-friendly Game-specific themed bot names (50+ per category)
+    const themedNames: Record<string, string[]> = {
+      pioupiou: [
+        "Fluffy", "Pip", "Muffin", "Popcorn", "Nugget", "Daisy", "Sunshine", "Peep",
+        "Honey", "Cookie", "Bubbles", "Tiny", "Feathers", "Chirpy", "Goldie", "Ginger",
+        "Bessie", "Cornelius", "Eggbert", "Yolk", "Sunny-Side", "Benedict", "Quack", "Beaky",
+        "Wattle", "Doodle", "Scratch", "Grain", "Seed", "Barley", "Wheat", "Harvest",
+        "Flora", "Fauna", "Meadow", "Pasture", "Stable", "Barny", "Farmer-Ted", "Misty",
+        "Clover", "Bluebell", "Buttercup", "Apple", "Berry", "Cherry", "Pickle", "Sprout",
+        "Tippy", "Toes", "Waddle", "Puff", "Snuggles"
+      ],
+      incangold: [
+        "Sparky", "Dusty", "Indy-Junior", "Lucky", "Rocky", "Shiny", "Glimmer", "Tracker",
+        "Brave", "Scout", "Hero", "Buddy", "Pathfinder", "Jewel", "Ruby", "Emerald",
+        "Sapphire", "Goldie", "Silver", "Pearl", "Crystal", "Sparkle", "Bling", "Charm",
+        "Canyon", "River", "Cavern", "Grotto", "Relic", "Idol", "Totem", "Scepter",
+        "Crown", "Gemmy", "Topaz", "Quartz", "Amber", "Onyx", "Diamond", "Pioneer",
+        "Nomad", "Wanderer", "Rover", "Vagabond", "Voyager", "Mariner", "Sailor", "Captain-Jack",
+        "Chief", "Rex", "Dino", "Stomp", "Zippy"
+      ],
+      dixit: [
+        "Dreamer", "Spark", "Magic", "Wonder", "Starlight", "Moonbeam", "Cloud", "Rainbow",
+        "Fairytale", "Story", "Tale", "Myth", "Legend", "Fable", "Poem", "Verse",
+        "Ink", "Paint", "Color", "Canvas", "Palette", "Brush", "Stroke", "Hue",
+        "Shade", "Tint", "Glow", "Light", "Shadow", "Spirit", "Soul", "Heart",
+        "Idea", "Vision", "Mirage", "Aura", "Nebula", "Vesper", "Lune", "Celeste",
+        "Ether", "Echo", "Phantom", "Imagine", "Fantasy", "Rhyme", "Lyric", "Ode",
+        "Sonnets", "Prose", "Script", "Scroll", "Secret"
+      ],
+      justone: [
+        "Wordy", "Echo", "Hinty", "Link", "Unit", "One", "Buddy", "Voice",
+        "Sound", "Tone", "Note", "Chord", "Harmony", "Melody", "Rhythm", "Beat",
+        "Tempo", "Word", "Term", "Phrase", "Clause", "Sentence", "Speech", "Synonym",
+        "Antonym", "Analogy", "Metaphor", "Simile", "Idiom", "Pun", "Joke", "Riddle",
+        "Puzzle", "Logic", "Reason", "Sense", "Meaning", "Definition", "Index", "Entry",
+        "Chapter", "Volume", "Book", "Library", "Archive", "Vault", "Safe", "Key",
+        "Lock", "Clue", "Trace", "Whiz", "Brainy"
+      ],
+      themind: [
+        "Zenny", "Calm", "Peace", "Quiet", "Still", "Pulse", "Wave", "Flow",
+        "Stream", "Current", "Tide", "Ocean", "Sea", "River", "Spring", "Well",
+        "Star", "Moon", "Sun", "Sky", "Air", "Breath", "Whisper", "Hush",
+        "Silent", "Sensei", "Master", "Guru", "Sage", "Seer", "Oracle", "Prophet",
+        "Medium", "Channel", "Connection", "Bond", "Union", "Balance", "Harmony", "Whole",
+        "Source", "Root", "Aura", "Focus", "Monk", "Humble", "Kind", "Soft",
+        "Pure", "Deep", "Clear", "Bright", "True"
+      ],
+      timeattack: [
+        "Zippy", "Flash", "Turbo", "Sonic", "Bolt", "Dash", "Rush", "Swift",
+        "Fast", "Quick", "Brisk", "Fleet", "Nimble", "Agile", "Sharp", "Keen",
+        "Alert", "Watch", "Clock", "Timer", "Second", "Milli", "Nano", "Pico",
+        "Femto", "Atto", "Zepto", "Yocto", "Quantum", "Light", "Warp", "Hyper",
+        "Super", "Ultra", "Mega", "Giga", "Boost", "Nitro", "Gear", "Shift",
+        "Clutch", "Engine", "Motor", "Race", "Track", "Lap", "Circuit", "Sprint",
+        "Vector", "Apex", "Top-Speed", "Mach", "Zoom"
+      ],
+    };
+
+    const namePool = themedNames[room.currentGame.toLowerCase()] || ["Alpha", "Beta", "Gamma", "Delta", "Epsilon"];
+    const existingNames = new Set(players.map(p => p.name));
+    const botName = namePool.find(n => !existingNames.has(n)) || `Bot ${players.length + 1}`;
+
+    const personas: ("balanced" | "aggressive" | "cautious")[] = ["balanced", "aggressive", "cautious"];
+    const randomPersona = personas[Math.floor(Math.random() * personas.length)];
+
+    const plugin = getGamePlugin(room.currentGame);
+    const { initialHand, initialState } = plugin.getInitialPlayerState("LOBBY", room);
+
+    await ctx.db.insert("players", {
+      roomId: room._id,
+      name: botName,
+      isBot: true,
+      persona: randomPersona,
+      gameHand: initialHand,
+      state: initialState,
+      isReady: true, // Bots are always ready
+    });
+  },
+});
+
+export const removePlayer = mutation({
+  args: { 
+    playerId: v.id("players"), 
+    adminPin: v.string() 
+  },
+  handler: async (ctx, args) => {
+    // 1. Verify Admin Access
+    const isAuthorized = args.adminPin === "0000";
+    if (!isAuthorized) throw new Error("UNAUTHORIZED");
+
+    const player = await ctx.db.get(args.playerId);
+    if (!player) return;
+
+    const room = await ctx.db.get(player.roomId);
+    if (!room || room.status !== "LOBBY") throw new Error("NOT_IN_LOBBY");
+
+    await ctx.db.delete(args.playerId);
   },
 });
 
 export const startGame = mutation({
-  args: { roomId: v.id("rooms") },
+  args: { 
+    roomId: v.id("rooms"),
+    adminPin: v.string()
+  },
   handler: async (ctx, args) => {
+    // 1. Verify Admin Access
+    const isAuthorized = args.adminPin === "0000";
+    if (!isAuthorized) throw new Error("UNAUTHORIZED");
+
     const room = await ctx.db.get(args.roomId);
     if (!room) return;
 
@@ -349,6 +487,30 @@ export const startGame = mutation({
       turnOrder: randomizedOrder,
       currentTurnIndex: 0,
     });
+  },
+});
+
+export const toggleBotsHalt = mutation({
+  args: { 
+    roomId: v.id("rooms"),
+    adminPin: v.string()
+  },
+  handler: async (ctx, args) => {
+    const isAuthorized = args.adminPin === "0000";
+    if (!isAuthorized) throw new Error("UNAUTHORIZED");
+
+    const room = await ctx.db.get(args.roomId);
+    if (!room) return;
+
+    const nextHaltState = !room.botsHalted;
+    await ctx.db.patch(args.roomId, { botsHalted: nextHaltState });
+
+    // If we are resuming (halted -> active), trigger bot turns immediately
+    if (!nextHaltState && room.status === "PLAYING") {
+        await ctx.scheduler.runAfter(0, (internal as any).bots.manager.dispatchBotTurn, {
+            roomId: args.roomId
+        });
+    }
   },
 });
 

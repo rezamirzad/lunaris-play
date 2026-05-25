@@ -35,18 +35,29 @@ export default defineSchema({
     roomCode: v.string(),
     status: v.union(v.literal("LOBBY"), v.literal("PLAYING"), v.literal("FINISHED"), v.literal("CANCELLED")),
     currentGame: v.string(),
+    botsHalted: v.optional(v.boolean()),
     currentTurnIndex: v.number(),
     turnOrder: v.array(v.id("players")),
+    botStuck: v.optional(v.boolean()),
+    lastMoveTime: v.optional(v.number()),
     gameBoard: v.union(
       // Lobby state
       v.object({
         gameType: v.literal("none"),
+        ruleset: v.optional(v.union(v.literal("CLASSIC"), v.literal("ODYSSEY"))),
       }),
       // Dixit state
       v.object({
         gameType: v.literal("dixit"),
         phase: v.union(v.literal("CLUE"), v.literal("SUBMITTING"), v.literal("VOTING"), v.literal("RESULTS")),
+        ruleset: v.optional(v.union(v.literal("CLASSIC"), v.literal("ODYSSEY"))),
         currentClue: v.optional(v.string()),
+        currentClues: v.optional(v.object({
+          en: v.string(),
+          fr: v.string(),
+          de: v.string(),
+          fa: v.string(),
+        })),
         availableCards: v.array(v.string()),
         usedCards: v.array(v.string()),
         submittedCards: v.array(v.object({ playerId: v.id("players"), cardId: v.string() })),
@@ -61,6 +72,7 @@ export default defineSchema({
         history: v.array(HistoryEvent),
         winner: v.optional(v.string()),
         winnerId: v.optional(v.id("players")),
+        winnerIds: v.optional(v.array(v.id("players"))),
       }),
       // Piou Piou state
       v.object({
@@ -74,6 +86,8 @@ export default defineSchema({
             indices: v.array(v.number()),
           })
         ),
+        deck: v.array(v.string()),
+        discardPile: v.array(v.string()),
         history: v.array(HistoryEvent),
         winner: v.optional(v.string()),
         winnerId: v.optional(v.id("players")),
@@ -201,6 +215,9 @@ export default defineSchema({
   players: defineTable({
     roomId: v.id("rooms"),
     name: v.string(),
+    isBot: v.optional(v.boolean()),
+    aiError: v.optional(v.boolean()),
+    persona: v.optional(v.union(v.literal("balanced"), v.literal("aggressive"), v.literal("cautious"))),
     gameHand: v.array(v.string()),
     isReady: v.boolean(),
     state: v.union(

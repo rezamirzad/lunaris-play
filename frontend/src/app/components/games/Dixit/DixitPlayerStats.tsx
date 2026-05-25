@@ -11,12 +11,14 @@ export default function DixitPlayerStats({
   rank,
   totalPlayers,
   isST,
+  isBot = false,
   isGameEnd = false,
 }: {
   state?: { score?: number } | null;
   rank: number;
   totalPlayers: number;
   isST: boolean;
+  isBot?: boolean;
   isGameEnd?: boolean;
 }) {
   const { t, lang } = useTranslation();
@@ -40,20 +42,6 @@ export default function DixitPlayerStats({
 
   return (
     <div className="flex flex-col gap-3 w-full font-mono relative">
-      {/* STORYTELLER BADGE */}
-      {isST && !isGameEnd && (
-        <motion.div
-          initial={{ scale: 0.5, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="absolute -top-24 -right-12 bg-blue-600 border-2 border-blue-400 rounded-2xl py-1.5 px-4 shadow-[0_10px_30px_rgba(59,130,246,0.5)] rotate-[-4deg]"
-        >
-          {/* <span className="text-[10px] font-black text-white uppercase tracking-[0.2em] whitespace-nowrap drop-shadow-md">
-            ⚡ {t.storyteller}2
-          </span> */}
-          <StorytellerBadge />
-        </motion.div>
-      )}
-
       <div className="flex justify-between items-end w-full">
         <motion.div
           initial={{ x: -10, opacity: 0 }}
@@ -69,9 +57,18 @@ export default function DixitPlayerStats({
             >
               {isFA ? toPersianDigits(score) : score}
             </span>
-            <span className="text-[10px] font-black text-zinc-600 tracking-widest">
-              {t.shared_points}
-            </span>
+            <div className="flex items-center gap-1.5">
+                <span className="text-[10px] font-black text-zinc-600 tracking-widest">
+                {t.shared_points}
+                </span>
+                {isBot && (
+                    <img 
+                        src="/assets/general/artificial-intelligence-design-png.webp" 
+                        alt="AI" 
+                        className="w-3.5 h-3.5 opacity-80" 
+                    />
+                )}
+            </div>
           </div>
         </motion.div>
 
@@ -84,10 +81,11 @@ export default function DixitPlayerStats({
             {t.rank}
           </span>
           <span
-            className={`text-[10px] font-black uppercase tracking-[0.1em] px-2 py-1 rounded border ${isLeader ? "text-yellow-400 bg-yellow-400/10 border-yellow-400/20" : "text-white bg-blue-500/10 border-blue-500/20"}`}
+            dir={isFA ? "rtl" : "ltr"}
+            className={`text-[10px] font-black uppercase ${isFA ? "" : "tracking-[0.1em]"} px-2 py-1 rounded border ${isLeader ? "text-yellow-400 bg-yellow-400/10 border-yellow-400/20" : "text-white bg-blue-500/10 border-blue-500/20"}`}
           >
             {rankString}
-            {isLeader && <span className="ml-1">👑</span>}
+            {isLeader && <span className={isFA ? "mr-1" : "ml-1"}>👑</span>}
           </span>
         </motion.div>
       </div>

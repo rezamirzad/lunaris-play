@@ -2127,6 +2127,16 @@ export function toPersianDigits(num: string | number): string {
 }
 
 /**
+ * Surgical fix for punctuation detachment in RTL text within LTR containers.
+ */
+export function fixPersianPunctuation(text: string, lang: Language): string {
+  if (lang === "fa" && text && !text.endsWith("\u200F")) {
+    return text + "\u200F";
+  }
+  return text;
+}
+
+/**
  * Replaces placeholders like {player} in translation strings with actual data.
  */
 export function formatLog(
@@ -2145,10 +2155,7 @@ export function formatLog(
     result = result.replace(`{${key}}`, String(value));
   }
   // Surgical fix for punctuation detachment in RTL text within LTR containers
-  if (lang === "fa" && !result.endsWith("\u200F")) {
-    result += "\u200F";
-  }
-  return result;
+  return fixPersianPunctuation(result, lang || "en");
 }
 
 /**

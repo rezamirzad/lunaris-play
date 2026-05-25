@@ -7,6 +7,8 @@ interface ArcadeHUDProps {
   statusLabel: string;
   badgeContent: ReactNode;
   accentColor: "orange" | "teal" | "blue" | "cyan" | "amber" | "rose";
+  onHaltToggle?: () => void;
+  isHalted?: boolean;
 }
 
 const THEME_MAP = {
@@ -17,7 +19,7 @@ const THEME_MAP = {
     sub: "text-orange-600",
     badgeBg: "bg-orange-500/10",
     badgeText: "text-orange-400",
-    badgeBorder: "border-blue-500/20", // Thematic contrast[cite: 3]
+    badgeBorder: "border-blue-500/20",
   },
   teal: {
     bg: "bg-teal-950/20",
@@ -71,6 +73,8 @@ export default function ArcadeHUD({
   statusLabel,
   badgeContent,
   accentColor,
+  onHaltToggle,
+  isHalted = false,
 }: ArcadeHUDProps) {
   const theme = THEME_MAP[accentColor];
 
@@ -88,6 +92,14 @@ export default function ArcadeHUD({
       </div>
 
       <div className="flex items-center gap-4">
+        {onHaltToggle && (
+            <button 
+                onClick={onHaltToggle}
+                className={`text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-xl border transition-all ${isHalted ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400' : 'bg-rose-500/20 border-rose-500/50 text-rose-400'}`}
+            >
+                {isHalted ? '▶ Resume AI' : '⏹ Halt AI'}
+            </button>
+        )}
         <div className={`text-[10px] ${theme.badgeBg} ${theme.badgeText} px-4 py-1.5 rounded-full uppercase tracking-widest border ${theme.badgeBorder} font-black shadow-inner`}>
           {badgeContent}
         </div>

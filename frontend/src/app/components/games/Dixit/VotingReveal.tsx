@@ -4,15 +4,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Doc } from "convex/_generated/dataModel";
 import DixitCard from "./DixitCard";
 import { useMemo } from "react";
-import { shuffle } from "@/lib/utils";
-
 import { useTranslation } from "@/hooks/useTranslation";
+import StorytellerBadge from "./StorytellerBadge";
 
 interface VotingRevealProps {
   roomData: Doc<"rooms"> & { players: Doc<"players">[] };
+  onCardClick?: (cardId: string) => void;
 }
 
-export default function VotingReveal({ roomData }: VotingRevealProps) {
+export default function VotingReveal({ roomData, onCardClick }: VotingRevealProps) {
   const { t } = useTranslation();
   const board =
     roomData.gameBoard.gameType === "dixit" ? roomData.gameBoard : null;
@@ -34,8 +34,15 @@ export default function VotingReveal({ roomData }: VotingRevealProps) {
   const isResults = board.phase === "RESULTS";
   const storytellerId = roomData.turnOrder[roomData.currentTurnIndex];
 
+  // Smart Grid Balancing: e.g., 8 items = 4x2 grid
+  const itemCount = displayCards.length;
+  const optimalCols = itemCount > 6 ? Math.ceil(itemCount / 2) : itemCount;
+
   return (
-    <div className="flex-1 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 pt-4 w-full max-w-6xl">
+    <div 
+      className="w-full max-w-4xl mx-auto grid gap-6 pt-4 items-start content-start justify-center"
+      style={{ gridTemplateColumns: `repeat(${optimalCols}, minmax(0, 1fr))` }}
+    >
       <AnimatePresence mode="popLayout">
         {displayCards.map(
           (
@@ -73,29 +80,16 @@ export default function VotingReveal({ roomData }: VotingRevealProps) {
                   cardId={isRevealed ? submission.cardId : "BACK"}
                   isRevealed={isRevealed}
                   ownerName={isResults ? owner?.name : undefined}
+                  isOwnerBot={isResults && owner?.isBot}
                   isStorytellerCard={isResults && isSTCard}
                   voters={isResults ? voterPlayers : []}
                   disabled={board.phase === "SUBMITTING"}
+                  selectable={isRevealed}
+                  onClick={isRevealed ? () => onCardClick?.(submission.cardId) : undefined}
                 />
 
-                {/* Cinematic Entrance for the Storyteller Badge */}
-                {isResults && isSTCard && (
-                  <motion.div
-                    initial={{ scale: 0, rotate: -20, y: 10 }}
-                    animate={{ scale: 1, rotate: 0, y: 0 }}
-                    transition={{
-                      delay: 0.5,
-                      type: "spring",
-                      stiffness: 400,
-                      damping: 10,
-                    }}
-                    className="absolute -top-4 -right-4 z-30 bg-blue-500 text-white px-4 py-2 rounded-2xl shadow-[0_0_30px_rgba(59,130,246,0.6)] border-2 border-white/40 flex flex-col items-center"
-                  >
-                    <span className="text-[7px] font-black uppercase tracking-[0.3em] opacity-80 mb-0.5">
-                      {t.storyteller}
-                    </span>
-                  </motion.div>
-                )}
+                {/* Unified Storyteller Badge (Dark/Gold component) */}
+                {isResults && isSTCard && <StorytellerBadge />}
               </motion.div>
             );
           },

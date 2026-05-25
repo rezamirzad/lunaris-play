@@ -1,18 +1,22 @@
 "use client";
 
 import { ReactNode } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import PlayerCard from "../shared/PlayerCard";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Doc, Id } from "convex/_generated/dataModel";
+import ArcadeBadge from "../shared/ArcadeBadge";
 
 interface ArcadePlayerGridProps {
   players: Doc<"players">[];
   currentTurnId?: Id<"players">;
   winnerId?: Id<"players">;
+  winnerIds?: Id<"players">[];
   isGameEnd: boolean;
   accentColor: "orange" | "teal" | "blue" | "cyan" | "amber" | "rose";
   renderStats: (player: Doc<"players">) => ReactNode;
+  renderBadge?: (player: Doc<"players">) => ReactNode;
+  hideTurnBadge?: boolean;
 }
 
 const THEME_MAP = {
@@ -76,26 +80,43 @@ export default function ArcadePlayerGrid({
   players,
   currentTurnId,
   winnerId,
+  winnerIds,
   isGameEnd,
   accentColor,
   renderStats,
+  renderBadge,
+  hideTurnBadge = false,
 }: ArcadePlayerGridProps) {
   const { t } = useTranslation();
   const theme = THEME_MAP[accentColor];
 
+  // Smart Grid Balancing: e.g., 8 items = 4x2 grid
+  const itemCount = players.length;
+  const optimalCols = itemCount > 6 ? Math.ceil(itemCount / 2) : itemCount;
+
   return (
     <div className="bg-gradient-to-b from-black/40 to-black rounded-[2.5rem] border-4 border-white/5 p-6 relative">
       <div className="flex justify-center items-center h-full relative z-10">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full max-w-7xl">
+        <div 
+            className="grid gap-6 w-full"
+            style={{ gridTemplateColumns: `repeat(${optimalCols}, minmax(0, 1fr))` }}
+        >
           {players.map((player) => {
-            const isWinner = winnerId ? player._id === winnerId : false;
+            const isWinner = winnerIds?.includes(player._id) || (winnerId && player._id === winnerId) || false;
             const isCurrentTurn = !isGameEnd && player._id === currentTurnId;
 
             return (
               <motion.div
                 key={player._id}
+                layout
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
+                transition={{ 
+                  type: "spring", 
+                  stiffness: 300, 
+                  damping: 30,
+                  opacity: { duration: 0.2 } 
+                }}
                 className={`rounded-[2rem] p-5 border-2 transition-all duration-500 relative group ${
                   isCurrentTurn
                     ? `${theme.activeBg} ${theme.activeBorder} ${theme.activeShadow} scale-105 z-20`
@@ -116,29 +137,34 @@ export default function ArcadePlayerGrid({
                   isGameFinished={isGameEnd}
                   isWinner={isWinner}
                   isCurrentTurn={isCurrentTurn}
+                  isAiError={player.aiError}
                   className="bg-transparent border-none p-0 shadow-none relative z-10"
                 >
                   {renderStats(player)}
                 </PlayerCard>
 
-                {/* Status Indicator Badge */}
-                <div className="absolute -top-3 -right-3 z-30 flex flex-col items-end gap-1.5">
-                  {isCurrentTurn ? (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className={`w-8 h-8 rounded-full ${theme.badge} flex items-center justify-center text-sm text-white shadow-xl ring-2 ring-black font-black animate-pulse`}
-                    >
-                      ✓
-                    </motion.div>
-                  ) : (
-                    <div
-                      className={`w-4 h-4 rounded-full border-2 border-black ${
-                        player.isReady
-                          ? "bg-teal-500 animate-pulse"
-                          : "bg-slate-700"
-                      }`}
+                {/* Unified Badge System */}
+                <div className="absolute top-0 right-0 z-30">
+                  {renderBadge && renderBadge(player)}
+                  
+                  {isCurrentTurn && !hideTurnBadge ? (
+                    <ArcadeBadge 
+                      variant="status" 
+                      label="turn" 
+                      icon="✓" 
+                      pulse 
+                      className="!bg-teal-500 !text-white !border-teal-400/50"
                     />
+                  ) : isWinner ? (
+                    <ArcadeBadge 
+                      variant="winner" 
+                      label="Champion" 
+                      icon="👑" 
+                    />
+                  ) : (
+                    <div className="absolute top-0 right-0 translate-x-2 -translate-y-2">
+                      <div className={`w-3 h-3 rounded-full border-2 border-black ${player.isReady ? "bg-teal-500 animate-pulse" : "bg-slate-700"}`} />
+                    </div>
                   )}
                 </div>
               </motion.div>

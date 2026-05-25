@@ -8,6 +8,8 @@ import { Doc } from "convex/_generated/dataModel";
 interface UserContextType {
   playerName: string;
   setPlayerName: (name: string) => void;
+  playerId: string | undefined;
+  setPlayerId: (id: string | undefined) => void;
   user: Doc<"users"> | null | undefined;
 }
 
@@ -15,12 +17,13 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [playerName, setPlayerNameState] = useState<string>("");
+  const [playerId, setPlayerIdState] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const savedName = localStorage.getItem("playerName");
-    if (savedName) {
-      setPlayerNameState(savedName);
-    }
+    const savedId = localStorage.getItem("playerId");
+    if (savedName) setPlayerNameState(savedName);
+    if (savedId) setPlayerIdState(savedId);
   }, []);
 
   // Authoritative sync with backend
@@ -31,8 +34,17 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("playerName", name);
   };
 
+  const setPlayerId = (id: string | undefined) => {
+    setPlayerIdState(id);
+    if (id) {
+      localStorage.setItem("playerId", id);
+    } else {
+      localStorage.removeItem("playerId");
+    }
+  };
+
   return (
-    <UserContext.Provider value={{ playerName, setPlayerName, user }}>
+    <UserContext.Provider value={{ playerName, setPlayerName, playerId, setPlayerId, user }}>
       {children}
     </UserContext.Provider>
   );

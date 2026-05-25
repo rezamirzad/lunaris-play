@@ -1,5 +1,6 @@
 import { Doc, Id } from "./_generated/dataModel";
 import { GameMutationCtx } from "./types";
+import { internal } from "./_generated/api";
 
 export interface TransitionParams {
   ctx: GameMutationCtx;
@@ -7,6 +8,7 @@ export interface TransitionParams {
   logPayload?: any; 
   winnerName?: string;
   winnerId?: Id<"players">;
+  winnerIds?: Id<"players">[];
   advanceTurn: boolean;
   gameBoardPatch: any; // Game specific updates
 }
@@ -24,7 +26,7 @@ export async function updateLeaderboardAtGameEnd(ctx: GameMutationCtx, room: Doc
       let currentScore = 0;
 
       if (p.state.gameType === "dixit") {
-        isThisPlayerWinner = p._id === board.winnerId;
+        isThisPlayerWinner = board.winnerIds?.includes(p._id) || p._id === board.winnerId;
         currentScore = p.state.score || 0;
       } else if (p.state.gameType === "pioupiou") {
         isThisPlayerWinner = p._id === board.winnerId;
@@ -57,7 +59,7 @@ export async function updateLeaderboardAtGameEnd(ctx: GameMutationCtx, room: Doc
  * Ensures the 'gameBoard' maintains its discriminated union integrity.
  */
 export async function finishTurn(params: TransitionParams) {
-  const { ctx, room, logPayload, winnerName, winnerId, advanceTurn, gameBoardPatch } = params;
+  const { ctx, room, logPayload, winnerName, winnerId, winnerIds, advanceTurn, gameBoardPatch } = params;
 
   const isWinner = !!winnerName;
   const newStatus = isWinner ? "FINISHED" : room.status;
@@ -79,6 +81,7 @@ export async function finishTurn(params: TransitionParams) {
     history,
     winner: isWinner ? winnerName : (room.gameBoard as any).winner,
     winnerId: isWinner ? winnerId : (room.gameBoard as any).winnerId,
+    ...(winnerIds ? { winnerIds } : {}),
   };
 
   // 3. Patch Room State
@@ -88,7 +91,14 @@ export async function finishTurn(params: TransitionParams) {
     gameBoard: patchedGameBoard as any,
   });
 
-  // 4. Update Global Leaderboard if the game is finished
+  // 4. Bot Dispatcher Hook
+  if (newStatus === "PLAYING") {
+    await ctx.scheduler.runAfter(0, (internal as any).bots.manager.dispatchBotTurn, {
+      roomId: room._id,
+    });
+  }
+
+  // 5. Update Global Leaderboard if the game is finished
   if (isWinner || newStatus === "FINISHED") {
     const players = await ctx.db
       .query("players")

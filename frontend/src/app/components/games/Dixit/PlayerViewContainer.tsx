@@ -4,11 +4,12 @@ import { useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
 import PlayerController from "../../shared/PlayerController";
 import { useTranslation } from "@/hooks/useTranslation";
-import { toPersianDigits, formatLog } from "@/lib/translations";
+import { toPersianDigits, formatLog, fixPersianPunctuation } from "@/lib/translations";
 import MatchActivity from "./MatchActivity";
 import { PlayerProps, GAME_REGISTRY } from "../registry";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import DixitHand from "./DixitHand";
+import StorytellerBadge from "./StorytellerBadge";
 import { calculateRank, getOrdinal } from "@/lib/utils";
 
 export default function DixitPlayerView({
@@ -19,15 +20,11 @@ export default function DixitPlayerView({
   const { t, lang } = useTranslation();
   const isFA = lang === "fa";
 
-  const dixitAction = useMutation(api.dixit.handleAction);
-
-  // Narrowing union: roomData.gameBoard
   const board =
     roomData.gameBoard.gameType === "dixit" ? roomData.gameBoard : null;
   const storytellerId = roomData.turnOrder[roomData.currentTurnIndex];
   const isST = storytellerId === player._id;
 
-  // Narrowing union: player.state
   const playerState = player.state.gameType === "dixit" ? player.state : null;
 
   const allScores = roomData.players.map((p) =>
@@ -38,7 +35,6 @@ export default function DixitPlayerView({
   const isLeader = rank === 1;
 
   const rankDisplay = isFA ? toPersianDigits(rank) : getOrdinal(rank);
-
   const totalDisplay = isFA ? toPersianDigits(totalPlayers) : totalPlayers;
 
   const rankString = formatLog(
@@ -50,9 +46,14 @@ export default function DixitPlayerView({
     lang,
   );
 
+  // Localized clue logic for the player's device
+  const activeClue = board?.currentClues
+    ? board.currentClues[lang as keyof typeof board.currentClues] ||
+      board.currentClue
+    : board?.currentClue;
+
   return (
-    <div className="relative min-h-[calc(100vh-180px)] bg-zinc-950/50 rounded-[3rem] overflow-hidden flex flex-col font-mono">
-      {/* Background scanline effect specific to the player view */}
+    <div className="relative min-h-0 bg-zinc-950/50 rounded-[2.5rem] sm:rounded-[3rem] flex flex-col font-mono">
       <div className="scanline opacity-20" />
 
       <PlayerController
@@ -60,20 +61,18 @@ export default function DixitPlayerView({
         roomData={roomData}
         isMyTurn={isMyTurn}
         className="flex-grow"
-        history={board?.history || []}
-        renderLog={(log) => <MatchActivity log={log} />}
         statsSlot={
-          <div className="flex flex-col gap-6 w-full lg:w-80">
-            {/* PLAYER HUD */}
+          <div className="flex flex-col gap-3 sm:gap-6 w-full lg:w-80">
             <motion.div
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              className={`backdrop-blur-xl border border-white/5 p-6 rounded-[2.5rem] shadow-2xl relative overflow-hidden ${isLeader ? "bg-yellow-500/10" : "bg-zinc-900/80"}`}
+              className={`backdrop-blur-xl border border-white/5 p-4 sm:p-6 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl relative overflow-hidden ${isLeader ? "bg-yellow-500/10" : "bg-zinc-900/80"}`}
             >
-              <div className="absolute top-0 right-0 p-4 opacity-60 text-4xl">
+              {isST && <StorytellerBadge />}
+              <div className="absolute top-0 right-0 p-4 opacity-60 text-3xl sm:text-4xl">
                 {isLeader ? "👑" : GAME_REGISTRY.dixit.visuals.emoji}
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <div
                   className={`h-2 w-2 rounded-full ${isST ? "bg-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.8)] animate-pulse" : "bg-zinc-700"}`}
                 />
@@ -82,28 +81,28 @@ export default function DixitPlayerView({
                 </span>
               </div>
 
-              <div className="flex flex-col gap-1 mt-4">
+              <div className="flex flex-col gap-1 mt-3 sm:mt-4">
                 <div
-                  className={`text-3xl font-black italic uppercase truncate ${isLeader ? "text-yellow-400" : "text-white"}`}
+                  className={`text-2xl sm:text-3xl font-black italic uppercase truncate ${isLeader ? "text-yellow-400" : "text-white"}`}
                 >
                   {player.name}
                 </div>
               </div>
 
-              <div className="mt-6 border-t border-white/5 pt-6 flex justify-between items-end">
+              <div className="mt-4 sm:mt-6 border-t border-white/5 pt-4 sm:pt-6 flex justify-between items-end">
                 <div className="flex flex-col">
                   <span className="text-[8px] uppercase tracking-[0.2em] text-zinc-500 mb-1 font-black">
                     {t.dixit_score}
                   </span>
                   <div className="flex items-baseline gap-1">
                     <span
-                      className={`text-3xl font-black tracking-tighter tabular-nums ${isLeader ? "text-yellow-400" : "text-blue-500"}`}
+                      className={`text-2xl sm:text-3xl font-black tracking-tighter tabular-nums ${isLeader ? "text-yellow-400" : "text-blue-500"}`}
                     >
                       {isFA
                         ? toPersianDigits(playerState?.score || 0)
                         : playerState?.score || 0}
                     </span>
-                    <span className="text-xs opacity-50 font-black">
+                    <span className="text-[10px] sm:text-xs opacity-50 font-black">
                       / {isFA ? toPersianDigits(30) : 30}
                     </span>
                   </div>
@@ -113,7 +112,8 @@ export default function DixitPlayerView({
                     {t.rank}
                   </span>
                   <span
-                    className={`text-[10px] font-black uppercase tracking-widest ${isLeader ? "text-yellow-400" : "text-white"}`}
+                    dir={isFA ? "rtl" : "ltr"}
+                    className={`text-[9px] sm:text-[10px] font-black uppercase ${isFA ? "" : "tracking-widest"} ${isLeader ? "text-yellow-400" : "text-white"}`}
                   >
                     {rankString}
                   </span>
@@ -121,48 +121,30 @@ export default function DixitPlayerView({
               </div>
             </motion.div>
 
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="space-y-4"
-            >
-              <h3 className="text-zinc-600 text-[9px] font-black uppercase tracking-[0.4em] px-2">
-                {t.dixit_current_phase}
-              </h3>
-              <div className="flex flex-col gap-3">
-                {/* Board Phase Telemetry */}
-                <div className="bg-black/40 border border-white/5 p-4 rounded-2xl">
-                  <div className="flex justify-between items-center text-[8px] text-zinc-500 mb-2">
-                    <span>{t.dixit_current_phase}</span>
-                    <span className="text-blue-500 font-black">
-                      {board?.phase}
-                    </span>
+            {/* LOCALIZED ACTIVE CLUE HUD (For Player Hand) - Hidden on mobile to save space as it is in the hand */}
+            {activeClue &&
+              (board?.phase === "SUBMITTING" || board?.phase === "VOTING") && (
+                <motion.div
+                  initial={{ y: 10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  className="hidden lg:block bg-blue-500/10 border border-blue-500/30 p-4 sm:p-5 rounded-[1.5rem] sm:rounded-[2rem] backdrop-blur-md"
+                >
+                  <span className="text-[7px] sm:text-[8px] font-black text-blue-400 uppercase tracking-widest block mb-1 sm:mb-2">
+                    {t.dixit_clue_received}
+                  </span>
+                  <div
+                    className={`text-lg sm:text-xl font-black text-white italic tracking-tighter uppercase leading-tight`}
+                    dir={lang === 'fa' ? 'rtl' : 'ltr'}
+                  >
+                    {fixPersianPunctuation(activeClue, lang)}
                   </div>
-                  <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{
-                        width:
-                          board?.phase === "RESULTS"
-                            ? "100%"
-                            : board?.phase === "VOTING"
-                              ? "75%"
-                              : board?.phase === "SUBMITTING"
-                                ? "50%"
-                                : "25%",
-                      }}
-                      className="h-full bg-blue-500"
-                    />
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+                </motion.div>
+              )}
           </div>
         }
         actionsSlot={
-          <div className="flex-grow overflow-hidden">
-            <DixitHand room={roomData} player={player} initialLang={lang} />
+          <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+            <DixitHand room={roomData} player={player} />
           </div>
         }
       />

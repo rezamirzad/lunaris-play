@@ -3,9 +3,10 @@
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/hooks/useTranslation";
+import Image from "next/image";
 
 interface ArcadeVictoryOverlayProps {
-  winnerName?: string;
+  winnerName?: ReactNode;
   championLabel: string;
   accentColor: "orange" | "teal" | "blue" | "cyan" | "amber" | "rose";
   onExit?: () => void;
@@ -95,9 +96,9 @@ export default function ArcadeVictoryOverlay({
         {championLabel}
       </h2>
 
-      <p className="text-xl lg:text-5xl font-black text-yellow-500 uppercase  mb-12 italic  pb-2 px-12 max-w-3xl drop-shadow-lg">
+      <div className="flex items-center justify-center gap-4 text-xl lg:text-5xl font-black text-yellow-500 uppercase mb-12 italic pb-2 px-12 max-w-3xl drop-shadow-lg">
         {winnerName || championLabel}
-      </p>
+      </div>
 
       <button
         onClick={handleExit}

@@ -14,6 +14,8 @@ interface SharedArcadeLayoutProps {
   containerClassName?: string;
   /** Determines if the layout is bounded to screen height (mobile) or fluid (TV) */
   isMobile?: boolean;
+  /** Extra full-screen elements (e.g., overlays, lightboxes) */
+  extra?: React.ReactNode;
 }
 
 /**
@@ -34,12 +36,13 @@ export default function SharedArcadeLayout({
   footer,
   containerClassName = "bg-[#0a0500] text-amber-50",
   isMobile = false,
+  extra,
 }: SharedArcadeLayoutProps) {
   return (
     <div
-      className={`relative flex flex-col overflow-hidden ${
-        isMobile ? "h-[100dvh] max-h-screen p-3.5" : "h-full min-h-[80vh] p-6"
-      } ${containerClassName} font-serif select-none`}
+      className={`relative flex flex-col ${
+        isMobile ? "min-h-[100dvh] p-3.5 overflow-y-auto no-scrollbar" : "h-full min-h-[80vh] p-6 overflow-hidden"
+      } ${containerClassName} font-mono select-none`}
     >
       {/* 1. Base Layer: Thematic Backgrounds */}
       {background}
@@ -61,6 +64,9 @@ export default function SharedArcadeLayout({
           </div>
         )}
       </div>
+
+      {/* 3. Global Extra Layer (Overlays, Lightboxes) */}
+      {extra}
     </div>
   );
 }

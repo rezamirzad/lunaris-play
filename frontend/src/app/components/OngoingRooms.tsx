@@ -3,6 +3,7 @@
 import React from "react";
 import { Doc } from "../../../../convex/_generated/dataModel";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 interface OngoingRoomsProps {
   rooms: (Doc<"rooms"> & { isJoinable: boolean })[] | undefined;
@@ -67,9 +68,16 @@ export default function OngoingRooms({
                           {winnerName === "FAILURE" ? "⚠️" : "🏆"}
                         </span>
                         <span
-                          className={`text-[9px] font-black italic uppercase truncate max-w-[80px] ${winnerName === "FAILURE" ? "text-rose-500" : "text-teal-500"}`}
+                          className={`text-[9px] font-black italic uppercase truncate max-w-[120px] flex items-center gap-1 ${winnerName === "FAILURE" ? "text-rose-500" : "text-teal-500"}`}
                         >
-                          {winnerName === "FAILURE" ? "TEAM" : winnerName}
+                          {winnerName === "FAILURE" ? "TEAM" : (
+                            winnerName.includes("🤖") ? (
+                                <>
+                                    <span className="truncate">{winnerName.replace(" 🤖", "").replace("🤖", "")}</span>
+                                    <Image src="/assets/general/artificial-intelligence-design-png.webp" alt="bot" width={10} height={10} className="inline-block shrink-0" />
+                                </>
+                            ) : winnerName
+                          )}
                         </span>
                       </div>
                     )}
