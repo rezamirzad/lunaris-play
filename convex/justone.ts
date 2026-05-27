@@ -203,9 +203,19 @@ export async function handleActionInternal(ctx: GameMutationCtx, args: {
           if (clueCounts[c.toLowerCase()] > 1) canceledClues.push(pId as Id<"players">);
         });
 
+        // SCENARIO LOGIC: 
+        // If there is at least one HUMAN among the clue givers, go to VALIDATION phase.
+        // If there are ONLY bots giving clues, auto-validate and skip to GUESSING.
+        const anyHumanClueGiver = nonActivePlayers.some(p => !p.isBot);
+        const nextPhase = anyHumanClueGiver ? "VALIDATION" : "GUESSING";
+
         await ctx.db.patch(room._id, {
-          gameBoard: { ...board, clues: newClues, canceledClues, confirmedPlayers: [], phase: "VALIDATION" },
+          gameBoard: { ...board, clues: newClues, canceledClues, confirmedPlayers: [], phase: nextPhase },
         });
+
+        if (nextPhase === "GUESSING") {
+           await ctx.scheduler.runAfter(0, internal.bots.manager.dispatchBotTurn, { roomId: room._id });
+        }
       } else {
         await ctx.db.patch(room._id, { gameBoard: { ...board, clues: newClues } });
       }

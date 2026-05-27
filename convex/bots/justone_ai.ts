@@ -23,29 +23,25 @@ export const processJustOneLocalAITurn = internalAction({
 
         if (args.phase === "CLUE_INPUT" && args.targetWord) {
             // Find word entry (case insensitive)
-            const wordEntry = CLUES_DATA.find(e => 
+            const wordEntry = CLUES_DATA.find((e: any) => 
                 (e[lang] && e[lang].toLowerCase() === args.targetWord?.toLowerCase()) || 
                 (e.en && e.en.toLowerCase() === args.targetWord?.toLowerCase())
             );
 
             if (wordEntry && wordEntry.clues && wordEntry.clues[lang]) {
                 const possibleClues = wordEntry.clues[lang];
+                // High Quality Randomness: 15-25 clues available per word
                 const selectedClue = possibleClues[Math.floor(Math.random() * possibleClues.length)];
                 result = { clue: selectedClue };
             } else {
-                // Fallback: Pick a very generic word if not in dictionary
-                const fallbacks = {
-                    en: "CONCEPT",
-                    fr: "CONCEPT",
-                    de: "KONZEPT",
-                    fa: "مفهوم"
-                };
-                result = { clue: fallbacks[lang] || "HELP" };
+                result = { clue: "???" };
             }
         } 
         else if (args.phase === "GUESSING" && args.providedClues) {
-            // GUESSING LOGIC:
-            // For each word in the dictionary, count how many of the 'providedClues' are in its 'clues' list.
+            // PROBABILISTIC GUESSING LOGIC:
+            // 1. We look at ALL clues provided.
+            // 2. We rank words in the dictionary by how many of the provided clues match their dataset.
+            
             let bestMatches: { word: string, score: number }[] = [];
 
             for (const entry of CLUES_DATA) {
@@ -59,11 +55,27 @@ export const processJustOneLocalAITurn = internalAction({
                 }
             }
 
-            // Sort by score descending
+            // Sort by match count descending
             bestMatches.sort((a, b) => b.score - a.score);
             
-            // Result is the top match
-            result = { guess: bestMatches.length > 0 ? bestMatches[0].word : "???" };
+            // LOGIC: If we have multiple matches, we only guess if the top match is significantly better,
+            // or if we have at least 2 clues pointing to it. Otherwise, we might pass.
+            if (bestMatches.length > 0) {
+                const top = bestMatches[0];
+                const runnerUp = bestMatches[1];
+                
+                // Confidence Check
+                const confidence = runnerUp ? top.score - runnerUp.score : top.score;
+                
+                if (confidence >= 1 || top.score >= 2) {
+                    result = { guess: top.word };
+                } else {
+                    // Too unsure, simulate a 'Pass'
+                    result = { guess: "" }; 
+                }
+            } else {
+                result = { guess: "" };
+            }
         }
 
         await ctx.runMutation((internal as any).bots.manager.applyAIResult, {
@@ -79,7 +91,7 @@ export const processJustOneLocalAITurn = internalAction({
             roomId: args.roomId,
             playerId: args.playerId,
             gameType: "justone",
-            result: args.phase === "CLUE_INPUT" ? { clue: "HELP" } : { guess: "UNKNOWN" },
+            result: args.phase === "CLUE_INPUT" ? { clue: "ERROR" } : { guess: "" },
         });
     }
   },
