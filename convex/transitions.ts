@@ -13,6 +13,14 @@ export interface TransitionParams {
   gameBoardPatch: any; // Game specific updates
 }
 
+export async function logHistoryEvent(ctx: GameMutationCtx, roomId: Id<"rooms">, event: any) {
+  await ctx.db.insert("game_history", {
+    roomId,
+    event,
+    timestamp: Date.now(),
+  });
+}
+
 export async function updateLeaderboardAtGameEnd(ctx: GameMutationCtx, room: Doc<"rooms">, players: Doc<"players">[]) {
   const board = room.gameBoard as any;
   for (const p of players) {
@@ -64,10 +72,9 @@ export async function finishTurn(params: TransitionParams) {
   const isWinner = !!winnerName;
   const newStatus = isWinner ? "FINISHED" : room.status;
   
-  // 1. Calculate History
-  let history = (room.gameBoard as any).history || [];
+  // 1. Log History (to cold table)
   if (logPayload) {
-    history = [logPayload, ...history].slice(0, 8);
+    await logHistoryEvent(ctx, room._id, logPayload);
   }
 
   // 2. Calculate Next Turn
@@ -78,7 +85,6 @@ export async function finishTurn(params: TransitionParams) {
   const patchedGameBoard = {
     ...room.gameBoard,
     ...gameBoardPatch,
-    history,
     winner: isWinner ? winnerName : (room.gameBoard as any).winner,
     winnerId: isWinner ? winnerId : (room.gameBoard as any).winnerId,
     ...(winnerIds ? { winnerIds } : {}),
@@ -111,4 +117,3 @@ export async function finishTurn(params: TransitionParams) {
 
   return { success: true, won: isWinner };
 }
-

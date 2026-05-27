@@ -1,4 +1,4 @@
-import { mutation, query } from "./_generated/server";
+import { mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { Id, Doc } from "./_generated/dataModel";
 import { ROUNDS_CONFIG, getRandomTarget } from "./timeattackPlugin";
@@ -17,25 +17,17 @@ function assertTimeAttack(
   }
 }
 
-export const syncClock = query({
-  args: { clientTime: v.number() },
-  handler: async (ctx, args) => {
-    return {
-      serverTime: Date.now(),
-      clientTime: args.clientTime,
-    };
-  },
-});
-
-export const submitInput = mutation({
+/**
+ * submitResult: The device sends the total elapsed time measured locally.
+ * Minimal Convex usage - only one call at the end of the action.
+ */
+export const submitResult = mutation({
   args: {
     roomId: v.id("rooms"),
     playerId: v.id("players"),
-    clientTimestamp: v.optional(v.number()),
-    type: v.union(v.literal("TAP"), v.literal("PRESS"), v.literal("RELEASE")),
+    durationMs: v.number(), // Precise to 0.001 of seconds
   },
   handler: async (ctx, args) => {
-    const serverReceivedTime = Date.now();
     const room = await ctx.db.get(args.roomId);
     if (!room || room.status !== "PLAYING")
       throw new Error("Invalid room state");
@@ -48,23 +40,14 @@ export const submitInput = mutation({
     }
 
     const playerIdStr = args.playerId.toString();
-    const playerSubmission = gameBoard.submissions[playerIdStr] || {
-      inputs: [],
+    
+    // Simply record the duration provided by the device
+    gameBoard.submissions[playerIdStr] = {
+      ...gameBoard.submissions[playerIdStr],
+      actualMs: args.durationMs,
+      inputs: [], // Kept for schema compatibility
     };
 
-    const timestamp = args.clientTimestamp ?? serverReceivedTime;
-
-    // Logic: First input sets personalStartTime, second input (or release) is stored in inputs array
-    if (!playerSubmission.personalStartTime) {
-      playerSubmission.personalStartTime = timestamp;
-    } else {
-      playerSubmission.inputs.push({
-        timestamp,
-        type: args.type,
-      });
-    }
-
-    gameBoard.submissions[playerIdStr] = playerSubmission;
     await ctx.db.patch(args.roomId, { gameBoard });
   },
 });
@@ -91,22 +74,9 @@ export const nextPhase = mutation({
       const results: Record<string, number> = {};
 
       for (const [pidStr, sub] of Object.entries(gameBoard.submissions)) {
-        if (sub.inputs.length > 0 && sub.personalStartTime) {
+        if (sub.actualMs !== undefined) {
           let points = 0;
-
-          // Use the correct input for timing
-          const relevantInput =
-            config.interaction === "PRESS_RELEASE"
-              ? sub.inputs.find((i) => i.type === "RELEASE")
-              : sub.inputs[sub.inputs.length - 1];
-
-          if (!relevantInput) {
-            // Failed to complete the action
-            results[pidStr] = 0;
-            continue;
-          }
-
-          const elapsed = relevantInput.timestamp - sub.personalStartTime;
+          const elapsed = sub.actualMs;
           const delta = Math.abs(gameBoard.targetMs - elapsed);
 
           if (config.scoring === "PRECISION") {
@@ -125,7 +95,6 @@ export const nextPhase = mutation({
             }
           }
 
-          sub.actualMs = elapsed;
           sub.finalDeltaMs = delta;
           sub.pointsEarned = Math.floor(points);
           results[pidStr] = sub.pointsEarned;
@@ -146,7 +115,6 @@ export const nextPhase = mutation({
       if (gameBoard.currentRound >= 10) {
         gameBoard.phase = "FINAL_LEADERBOARD";
 
-        // Calculate Final Winner
         const players = await ctx.db
           .query("players")
           .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
@@ -162,7 +130,6 @@ export const nextPhase = mutation({
           gameBoard.winner = winner.name;
           gameBoard.winnerId = winner._id;
 
-          // PERSIST RESULTS
           const updatedRoom = { ...room, gameBoard, status: "FINISHED" };
           await updateLeaderboardAtGameEnd(ctx, updatedRoom as any, players);
         }

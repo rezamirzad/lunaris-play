@@ -17,7 +17,7 @@ import { useAdmin } from "@/app/admin/AdminGateway";
 import { useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
 
-export default function TimeAttackContainer({ roomId, roomData }: BoardProps) {
+export default function TimeAttackContainer({ roomId, roomData, history = [] }: BoardProps) {
   const { t, lang } = useTranslation();
   const { isAdmin, pin: adminPin } = useAdmin();
   const toggleHaltMutation = useMutation(api.engine.toggleBotsHalt);
@@ -26,6 +26,7 @@ export default function TimeAttackContainer({ roomId, roomData }: BoardProps) {
   const board =
     roomData.gameBoard.gameType === "timeattack" ? roomData.gameBoard : null;
   const isLobby = roomData.status?.toUpperCase() === "LOBBY";
+  const players = roomData.players;
 
   // 1. LOBBY MISSION BRIEFING
   if (isLobby) {
@@ -40,6 +41,8 @@ export default function TimeAttackContainer({ roomId, roomData }: BoardProps) {
         background={
           <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_#e11d48_0%,_transparent_70%)]" />
         }
+        room={roomData}
+        players={players}
       />
     );
   }
@@ -47,7 +50,6 @@ export default function TimeAttackContainer({ roomId, roomData }: BoardProps) {
   if (!board) return null;
 
   const isFinished = roomData.status?.toUpperCase() === "FINISHED" || roomData.status?.toUpperCase() === "ARCHIVED";
-  const players = roomData.players;
 
   return (
     <SharedArcadeLayout
@@ -78,7 +80,7 @@ export default function TimeAttackContainer({ roomId, roomData }: BoardProps) {
                 </h3>
                 <div className="flex-1 min-h-0">
                    <MatchActivity 
-                     history={board.history}
+                     history={history}
                      renderLog={(log) => (
                         <div className="flex items-center gap-2">
                            <span className="text-rose-500/50">›</span>

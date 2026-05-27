@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import { mutation, internalMutation } from "./_generated/server";
 import { Doc, Id } from "./_generated/dataModel";
 import { GamePlugin, GameMutationCtx } from "./types";
-import { finishTurn } from "./transitions";
+import { finishTurn, logHistoryEvent } from "./transitions";
 import { DIXIT_DECK } from "./dixit_deck";
 import { internal } from "./_generated/api";
 
@@ -71,6 +71,8 @@ export const dixitPlugin: GamePlugin = {
     const lobbyRuleset = (room?.gameBoard as any).ruleset;
     const defaultRuleset = lobbyRuleset || (players.length > 6 ? "ODYSSEY" : "CLASSIC");
 
+    await logHistoryEvent(ctx, roomId, { key: "LOG_GAME_STARTED", data: { time: Date.now() } });
+
     await ctx.db.patch(roomId, {
       gameBoard: {
         gameType: "dixit",
@@ -80,8 +82,7 @@ export const dixitPlugin: GamePlugin = {
         usedCards: [],
         submittedCards: [],
         votes: [],
-        history: [{ key: "LOG_GAME_STARTED", data: { time: Date.now() } }],
-      },
+      } as any,
     });
 
     // Trigger initial bot turn if starting player is a bot

@@ -69,7 +69,6 @@ export default defineSchema({
             pointsEarned: v.record(v.string(), v.number()),
           })
         ),
-        history: v.array(HistoryEvent),
         winner: v.optional(v.string()),
         winnerId: v.optional(v.id("players")),
         winnerIds: v.optional(v.array(v.id("players"))),
@@ -88,7 +87,6 @@ export default defineSchema({
         ),
         deck: v.array(v.string()),
         discardPile: v.array(v.string()),
-        history: v.array(HistoryEvent),
         winner: v.optional(v.string()),
         winnerId: v.optional(v.id("players")),
       }),
@@ -105,7 +103,6 @@ export default defineSchema({
         hands: v.record(v.string(), v.array(v.number())),
         empVotes: v.array(v.id("players")),
         phase: v.union(v.literal("SYNCING"), v.literal("PLAYING"), v.literal("GAME_OVER"), v.literal("VICTORY"), v.literal("AWAITING_NEXT_LEVEL")),
-        history: v.array(HistoryEvent),
         winner: v.optional(v.string()),
         winnerId: v.optional(v.id("players")),
       }),
@@ -137,7 +134,6 @@ export default defineSchema({
           v.literal("ROUND_RESULTS"),
           v.literal("GAME_OVER")
         ),
-        history: v.array(HistoryEvent),
         winner: v.optional(v.string()),
         winnerId: v.optional(v.id("players")),
       }),
@@ -167,7 +163,6 @@ export default defineSchema({
           pointsEarned: v.optional(v.number())
         })),
         roundResults: v.optional(v.record(v.string(), v.number())),
-        history: v.array(HistoryEvent),
         winner: v.optional(v.string()),
         winnerId: v.optional(v.id("players")),
       }),
@@ -205,12 +200,17 @@ export default defineSchema({
             status: v.union(v.literal("SAFE"), v.literal("CRASHED"))
           }))
         }))),
-        history: v.array(HistoryEvent),
         winner: v.optional(v.string()),
         winnerId: v.optional(v.id("players")),
       })
     ),
   }).index("by_roomCode", ["roomCode"]),
+
+  game_history: defineTable({
+    roomId: v.id("rooms"),
+    event: HistoryEvent,
+    timestamp: v.number(),
+  }).index("by_room", ["roomId"]),
 
   players: defineTable({
     roomId: v.id("rooms"),
@@ -252,6 +252,14 @@ export default defineSchema({
       })
     ),
   }).index("by_room", ["roomId"]),
+
+  submissions: defineTable({
+    roomId: v.id("rooms"),
+    playerId: v.id("players"),
+    gameType: v.string(),
+    data: v.any(), // Game-specific submission data
+    timestamp: v.number(),
+  }).index("by_room_player", ["roomId", "playerId"]),
 
   users: defineTable({
     name: v.string(),

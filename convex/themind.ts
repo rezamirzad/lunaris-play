@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import { mutation } from "./_generated/server";
 import { Doc } from "./_generated/dataModel";
 import { GamePlugin, GameMutationCtx } from "./types";
-import { finishTurn, updateLeaderboardAtGameEnd } from "./transitions";
+import { finishTurn, logHistoryEvent, updateLeaderboardAtGameEnd } from "./transitions";
 
 /**
  * Standard Fisher-Yates Shuffle
@@ -49,6 +49,8 @@ export const themindPlugin: GamePlugin = {
       });
     }
 
+    await logHistoryEvent(ctx, roomId, { key: "LOG_GAME_STARTED", data: { time: Date.now() } });
+
     await ctx.db.patch(roomId, {
       gameBoard: {
         gameType: "themind",
@@ -62,8 +64,7 @@ export const themindPlugin: GamePlugin = {
         hands: hands,
         empVotes: [],
         phase: "PLAYING",
-        history: [{ key: "LOG_GAME_STARTED", data: { time: Date.now() } }],
-      },
+      } as any,
     });
   },
 };
@@ -128,6 +129,15 @@ export const handleAction = mutation({
 
         const isFailure = nextPhase === "GAME_OVER";
 
+        await logHistoryEvent(ctx, room._id, { 
+          key: "LOG_MISTAKE", 
+          data: { 
+            player: player.name, 
+            played: String(card),
+            discarded: lowerCards.map(String) 
+          } 
+        });
+
         const patchedGameBoard = {
           ...board,
           lives: newLives,
@@ -137,17 +147,6 @@ export const handleAction = mutation({
           lastPlayedBy: player._id,
           discardPile: newDiscardPile,
           winner: isFailure ? "FAILURE" : board.winner,
-          history: [
-            ...board.history,
-            { 
-              key: "LOG_MISTAKE", 
-              data: { 
-                player: player.name, 
-                played: String(card),
-                discarded: lowerCards.map(String) 
-              } 
-            },
-          ] as any,
         };
 
         await ctx.db.patch(room._id, {
@@ -171,6 +170,8 @@ export const handleAction = mutation({
         newHands[player._id] = playerHand.filter((c) => c !== card);
         const newDiscardPile = [...(board.discardPile || []), card].sort((a, b) => a - b);
 
+        await logHistoryEvent(ctx, room._id, { key: "LOG_DISCARD", data: { player: player.name, card: String(card) } });
+
         await ctx.db.patch(room._id, {
           gameBoard: {
             ...board,
@@ -178,11 +179,7 @@ export const handleAction = mutation({
             topCard: card,
             lastPlayedBy: player._id,
             discardPile: newDiscardPile,
-            history: [
-              ...board.history,
-              { key: "LOG_DISCARD", data: { player: player.name, card: String(card) } }
-            ] as any,
-          },
+          } as any,
         });
 
         await checkLevelWin(ctx, room._id, newHands);
@@ -249,15 +246,13 @@ async function checkLevelWin(ctx: GameMutationCtx, roomId: Doc<"rooms">["_id"], 
     if (!room || room.gameBoard.gameType !== "themind") return;
     const board = room.gameBoard;
 
+    await logHistoryEvent(ctx, roomId, { key: "LOG_LEVEL_CLEARED", data: { level: board.level } });
+
     await ctx.db.patch(roomId, {
       gameBoard: {
         ...board,
         phase: "AWAITING_NEXT_LEVEL",
-        history: [
-          ...board.history,
-          { key: "LOG_LEVEL_CLEARED", data: { level: board.level } }
-        ] as any,
-      },
+      } as any,
     });
   }
 }

@@ -3,35 +3,57 @@
 import { useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
 import { Doc, Id } from "convex/_generated/dataModel";
-import { useTimeSync } from "./useTimeSync";
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 
 export type TimeAttackBoard = Extract<Doc<"rooms">["gameBoard"], { gameType: "timeattack" }>;
 
 export function useTimeAttack(roomData: Doc<"rooms">, player: Doc<"players">) {
-  const submitInput = useMutation(api.timeattack.submitInput);
+  const submitResult = useMutation(api.timeattack.submitResult);
   const nextPhase = useMutation(api.timeattack.nextPhase);
-  const { getSyncedTime, latency } = useTimeSync();
+  
+  // Local state to track timing without hitting Convex
+  const startTimeRef = useRef<number | null>(null);
 
   const gameBoard = roomData.gameBoard as TimeAttackBoard;
 
   const handleAction = useCallback((type: "TAP" | "PRESS" | "RELEASE") => {
     if (gameBoard.phase !== "ACTIVE_PLAY") return;
 
-    const syncedTimestamp = getSyncedTime();
-    
-    submitInput({
-      roomId: roomData._id,
-      playerId: player._id,
-      clientTimestamp: syncedTimestamp,
-      type
-    });
+    const now = performance.now(); // Use performance.now() for high precision
+
+    if (gameBoard.interaction === "TAP") {
+      if (startTimeRef.current === null) {
+        // First tap: Start timing
+        startTimeRef.current = now;
+      } else {
+        // Second tap: End timing and submit
+        const duration = now - startTimeRef.current;
+        submitResult({
+          roomId: roomData._id,
+          playerId: player._id,
+          durationMs: duration,
+        });
+        startTimeRef.current = null;
+      }
+    } else if (gameBoard.interaction === "PRESS_RELEASE") {
+      if (type === "PRESS") {
+        startTimeRef.current = now;
+      } else if (type === "RELEASE" && startTimeRef.current !== null) {
+        const duration = now - startTimeRef.current;
+        submitResult({
+          roomId: roomData._id,
+          playerId: player._id,
+          durationMs: duration,
+        });
+        startTimeRef.current = null;
+      }
+    }
 
     // Provide haptic feedback
     if (typeof window !== "undefined" && window.navigator.vibrate) {
       window.navigator.vibrate(50);
     }
-  }, [gameBoard.phase, getSyncedTime, submitInput, roomData._id, player._id]);
+  }, [gameBoard.phase, gameBoard.interaction, submitResult, roomData._id, player._id]);
 
   const advance = useCallback(() => {
       nextPhase({ roomId: roomData._id });
@@ -41,7 +63,7 @@ export function useTimeAttack(roomData: Doc<"rooms">, player: Doc<"players">) {
     gameBoard,
     handleAction,
     advance,
-    latency,
-    isMyTurn: true, // In Time Attack, everyone plays simultaneously
+    latency: 0, // Latency sync disabled for local timing
+    isMyTurn: true,
   };
 }

@@ -19,7 +19,7 @@ export default function RoomPage() {
   const roomCode = String(roomId).toUpperCase();
   const isBoardView = searchParams.get("view") === "board";
 
-  const { room, players, me, isLoading, gameMetadata } = useGame(roomCode);
+  const { room, players, me, isLoading, gameMetadata, history, submissions } = useGame(roomCode);
   const [isBooting, setIsBooting] = useState(false);
   const prevStatusRef = useRef<string | null>(null);
 
@@ -153,6 +153,8 @@ export default function RoomPage() {
         roomData={room as any} 
         player={me as any} 
         isMyTurn={String(room.turnOrder[room.currentTurnIndex]) === String(me?._id)} 
+        history={history}
+        submissions={submissions}
       />
     );
   };

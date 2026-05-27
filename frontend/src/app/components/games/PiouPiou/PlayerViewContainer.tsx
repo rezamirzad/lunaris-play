@@ -15,7 +15,11 @@ import { PlayerProps, GAME_REGISTRY } from "../registry";
 import { motion, AnimatePresence } from "framer-motion";
 import { Doc } from "convex/_generated/dataModel";
 
-export default function PiouPiouPlayerView({ player, roomData }: PlayerProps) {
+export default function PiouPiouPlayerView({
+  player,
+  roomData,
+  history = [],
+}: PlayerProps) {
   const { t, lang } = useTranslation();
   const isFA = lang === "fa";
 
@@ -261,7 +265,7 @@ export default function PiouPiouPlayerView({ player, roomData }: PlayerProps) {
         roomData={roomData}
         isMyTurn={isMyTurn && !isGameFinished}
         className="flex-grow"
-        history={board?.history || []}
+        history={history}
         renderLog={(log) => <PiouPiouMatchActivity log={log} />}
         statsSlot={
           <div className="flex flex-col gap-6 w-full lg:w-80">

@@ -17,7 +17,7 @@ import { useAdmin } from "@/app/admin/AdminGateway";
 import { useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
 
-export default function PiouPiouContainer({ roomId, roomData }: BoardProps) {
+export default function PiouPiouContainer({ roomId, roomData, history = [] }: BoardProps) {
   const { t } = useTranslation();
   const { isAdmin, pin: adminPin } = useAdmin();
   const toggleHaltMutation = useMutation(api.engine.toggleBotsHalt);
@@ -43,6 +43,8 @@ export default function PiouPiouContainer({ roomId, roomData }: BoardProps) {
         background={
           <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')]" />
         }
+        room={roomData}
+        players={roomData.players}
       />
     );
   }
@@ -110,7 +112,7 @@ export default function PiouPiouContainer({ roomId, roomData }: BoardProps) {
               </h3>
               <div className="flex-1 min-h-0">
                 <MatchActivity
-                  history={board?.history || []}
+                  history={history}
                   renderLog={(log) => <PiouPiouMatchActivity log={log} />}
                 />
               </div>

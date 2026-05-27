@@ -15,7 +15,7 @@ import ArcadePlayerGrid from "../../arcade/ArcadePlayerGrid";
 import MissionBriefing from "../../arcade/MissionBriefing";
 import { useAdmin } from "@/app/admin/AdminGateway";
 
-const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData }) => {
+const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData, history = [] }) => {
   const { t } = useTranslation();
   const { isAdmin, pin: adminPin } = useAdmin();
   const incanApi = (api as any).incangold;
@@ -42,6 +42,8 @@ const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData }) => {
         briefingDesc={t.incangold_desc}
         loadingText={t.incangold_exploring}
         accentColor="amber"
+        room={roomData}
+        players={roomData.players}
       />
     );
   }

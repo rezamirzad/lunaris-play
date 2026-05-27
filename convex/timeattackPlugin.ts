@@ -122,7 +122,6 @@ export const timeattackPlugin: GamePlugin = {
       interaction: config.interaction,
       serverStartTime: 0,
       submissions: {},
-      history: [],
     };
   },
 

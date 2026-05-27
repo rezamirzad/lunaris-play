@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import { mutation, internalMutation } from "./_generated/server";
 import { Id, Doc } from "./_generated/dataModel";
 import { GamePlugin, GameMutationCtx } from "./types";
-import { finishTurn } from "./transitions";
+import { finishTurn, logHistoryEvent } from "./transitions";
 import {
   getIncanGoldDeck,
   INCANGOLD_TREASURES,
@@ -74,6 +74,8 @@ export const incangoldPlugin: GamePlugin = {
       });
     }
 
+    await logHistoryEvent(ctx, roomId, { key: "LOG_GAME_STARTED", data: { time: Date.now() } });
+
     await ctx.db.patch(roomId, {
       gameBoard: {
         gameType: "incangold",
@@ -88,8 +90,7 @@ export const incangoldPlugin: GamePlugin = {
         decisions: {},
         eliminatedHazards: [],
         roundHistory: [],
-        history: [{ key: "LOG_GAME_STARTED", data: { time: Date.now() } }],
-      },
+      } as any,
     });
   },
 };
@@ -215,7 +216,7 @@ export const drawCard = mutation({
         roundHistory,
         lastDrawnCard: cardId,
         decisions: {},
-      },
+      } as any,
     });
 
     return { success: true };
@@ -241,7 +242,7 @@ export const startDecision = mutation({
         ...room.gameBoard,
         phase: "DECISION_PHASE",
         decisions: {},
-      },
+      } as any,
     });
 
     // TRIGGER BOT DISPATCHER: All bots IN_TEMPLE must now vote
@@ -306,7 +307,7 @@ async function submitDecisionInternal(
       gameBoard: {
         ...board,
         decisions: newDecisions,
-      },
+      } as any,
     });
   }
 
@@ -381,7 +382,7 @@ async function resolveDecisions(
       artifactsOnPath,
       collectedArtifactsCount,
       decisions,
-    },
+    } as any,
   });
 }
 
@@ -444,13 +445,13 @@ export const finishVoteReveal = mutation({
           phase: "ROUND_RESULTS",
           roundHistory,
           decisions: {},
-        },
+        } as any,
       });
       return;
     }
 
     await ctx.db.patch(room._id, {
-      gameBoard: { ...board, phase: "EXPEDITION_PHASE", decisions: {} },
+      gameBoard: { ...board, phase: "EXPEDITION_PHASE", decisions: {} } as any,
     });
   },
 });
@@ -560,7 +561,7 @@ export const nextRound = mutation({
         cardGems: {},
         artifactsOnPath: [],
         decisions: {},
-      },
+      } as any,
     });
 
     return { success: true };

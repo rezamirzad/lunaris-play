@@ -22,7 +22,7 @@ import { api } from "convex/_generated/api";
 import Image from "next/image";
 import { fixPersianPunctuation } from "@/lib/translations";
 
-export default function DixitContainer({ roomId, roomData }: BoardProps) {
+export default function DixitContainer({ roomId, roomData, history = [], submissions = [] }: BoardProps) {
   const { t, lang } = useTranslation();
   const { isAdmin, pin: adminPin } = useAdmin();
   const handleActionMutation = useMutation(api.dixit.handleAction);
@@ -84,6 +84,8 @@ export default function DixitContainer({ roomId, roomData }: BoardProps) {
         background={
           <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_#3b82f6_0%,_transparent_70%)]" />
         }
+        room={roomData}
+        players={players}
       />
     );
   }

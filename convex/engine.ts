@@ -58,7 +58,18 @@ export const getRoomState = query({
       .filter((q) => q.eq(q.field("slug"), room.currentGame))
       .unique();
 
-    return { ...room, players, gameMetadata: game };
+    const history = await ctx.db
+      .query("game_history")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .order("desc")
+      .take(8);
+
+    const submissions = await ctx.db
+      .query("submissions")
+      .withIndex("by_room_player", (q) => q.eq("roomId", room._id))
+      .collect();
+
+    return { ...room, players, gameMetadata: game, history: history.map(h => h.event), submissions };
   },
 });
 

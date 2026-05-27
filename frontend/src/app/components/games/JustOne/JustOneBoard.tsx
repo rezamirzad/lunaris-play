@@ -15,7 +15,7 @@ import { useAdmin } from "@/app/admin/AdminGateway";
 import { useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
 
-export default function JustOneBoard({ roomId, roomData }: BoardProps) {
+export default function JustOneBoard({ roomId, roomData, history = [] }: BoardProps) {
   const { t } = useTranslation();
   const { isAdmin, pin: adminPin } = useAdmin();
   const toggleHaltMutation = useMutation(api.engine.toggleBotsHalt);
@@ -35,6 +35,8 @@ export default function JustOneBoard({ roomId, roomData }: BoardProps) {
         loadingText={t.justone_waiting_sync}
         accentColor="cyan"
         background={<div className="neuro-grid opacity-20" />}
+        room={roomData}
+        players={players}
       />
     );
   }
@@ -72,7 +74,7 @@ export default function JustOneBoard({ roomId, roomData }: BoardProps) {
                 </h3>
                 <div className="flex-1 min-h-0">
                    <MatchActivity 
-                     history={board.history}
+                     history={history}
                      renderLog={(log) => <JustOneMatchActivity log={log} />}
                    />
                 </div>
@@ -111,10 +113,10 @@ export default function JustOneBoard({ roomId, roomData }: BoardProps) {
                  ) : board.phase === "ROUND_RESULTS" ? (
                     <motion.div key="results" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center p-6">
                        <span className="text-[8rem] filter drop-shadow-[0_0_50px_rgba(255,255,255,0.2)] block mb-4">
-                          {(board.history[board.history.length - 1]?.data as any)?.card === "Correct" ? "✨" : "💀"}
+                          {(history[0]?.data as any)?.card === "Correct" ? "✨" : "💀"}
                        </span>
-                       <h2 className={`text-6xl font-black tracking-tighter uppercase italic mb-2 ${ (board.history[board.history.length - 1]?.data as any)?.card === "Correct" ? "text-cyan-400" : "text-rose-500" }`}>
-                          {(board.history[board.history.length - 1]?.data as any)?.card === "Correct" ? t.justone_transmission_success : t.justone_security_override}
+                       <h2 className={`text-6xl font-black tracking-tighter uppercase italic mb-2 ${ (history[0]?.data as any)?.card === "Correct" ? "text-cyan-400" : "text-rose-500" }`}>
+                          {(history[0]?.data as any)?.card === "Correct" ? t.justone_transmission_success : t.justone_security_override}
                        </h2>
                        
                        {isFinished && (

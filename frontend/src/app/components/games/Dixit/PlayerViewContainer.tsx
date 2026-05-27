@@ -16,6 +16,7 @@ export default function DixitPlayerView({
   player,
   roomData,
   isMyTurn,
+  history = [],
 }: PlayerProps) {
   const { t, lang } = useTranslation();
   const isFA = lang === "fa";

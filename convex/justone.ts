@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import { mutation, internalMutation } from "./_generated/server";
 import { Doc, Id } from "./_generated/dataModel";
 import { GamePlugin, GameMutationCtx } from "./types";
-import { updateLeaderboardAtGameEnd } from "./transitions";
+import { logHistoryEvent, updateLeaderboardAtGameEnd } from "./transitions";
 import { justoneDictionary, NexusWord } from "./justone_words";
 import { internal } from "./_generated/api";
 
@@ -35,6 +35,8 @@ export const justonePlugin: GamePlugin = {
     const mysteryWord = justoneDictionary[Math.floor(Math.random() * justoneDictionary.length)];
     const activePlayerId = players[Math.floor(Math.random() * players.length)]._id;
 
+    await logHistoryEvent(ctx, roomId, { key: "LOG_GAME_STARTED", data: { time: Date.now() } });
+
     await ctx.db.patch(roomId, {
       gameBoard: {
         gameType: "justone",
@@ -49,8 +51,7 @@ export const justonePlugin: GamePlugin = {
         confirmedPlayers: [],
         lenientVotes: {},
         phase: "CLUE_INPUT",
-        history: [{ key: "LOG_GAME_STARTED", data: { time: Date.now() } }],
-      },
+      } as any,
     });
 
     await ctx.scheduler.runAfter(0, internal.bots.manager.dispatchBotTurn, {
@@ -83,6 +84,8 @@ export const startJustOneMatch = mutation({
     const activePlayerId = players[Math.floor(Math.random() * players.length)]._id;
     const turnOrder = players.map((p) => p._id);
 
+    await logHistoryEvent(ctx, args.roomId, { key: "LOG_GAME_STARTED", data: { time: Date.now() } });
+
     await ctx.db.patch(args.roomId, {
       status: "PLAYING",
       turnOrder,
@@ -100,8 +103,7 @@ export const startJustOneMatch = mutation({
         confirmedPlayers: [],
         lenientVotes: {},
         phase: "CLUE_INPUT",
-        history: [{ key: "LOG_GAME_STARTED", data: { time: Date.now() } }],
-      },
+      } as any,
     });
 
     await ctx.scheduler.runAfter(0, internal.bots.manager.dispatchBotTurn, {
@@ -238,14 +240,16 @@ export async function handleActionInternal(ctx: GameMutationCtx, args: {
     if (args.actionType === "SUBMIT_GUESS") {
       if (board.phase !== "GUESSING") throw new Error("Not in guessing phase");
       if (args.isPass) {
-        await ctx.db.patch(room._id, { gameBoard: { ...board, phase: "ROUND_RESULTS", history: [...board.history, { key: "LOG_DISCARD", data: { player: player.name, card: "Passed" } }] as any } });
+        await logHistoryEvent(ctx, room._id, { key: "LOG_DISCARD", data: { player: player.name, card: "Passed" } });
+        await ctx.db.patch(room._id, { gameBoard: { ...board, phase: "ROUND_RESULTS" } as any });
         return { success: true };
       }
       const guess = args.guess?.toLowerCase().trim() || "";
       const isExactMatch = Object.values(board.mysteryWord).some((val) => val.toLowerCase().trim() === guess);
 
       if (isExactMatch) {
-        await ctx.db.patch(room._id, { gameBoard: { ...board, score: board.score + 1, phase: "ROUND_RESULTS", history: [...board.history, { key: "LOG_DISCARD", data: { player: player.name, card: "Correct" } }] as any } });
+        await logHistoryEvent(ctx, room._id, { key: "LOG_DISCARD", data: { player: player.name, card: "Correct" } });
+        await ctx.db.patch(room._id, { gameBoard: { ...board, score: board.score + 1, phase: "ROUND_RESULTS" } as any });
       } else {
         await ctx.db.patch(room._id, { gameBoard: { ...board, lastGuess: args.guess, lenientVotes: {}, phase: "LENIENT_VALIDATION" } });
       }
@@ -261,7 +265,8 @@ export async function handleActionInternal(ctx: GameMutationCtx, args: {
       if (allVoted) {
         const allCorrect = nonActivePlayers.every((p) => newVotes[p._id] === true);
         const newScore = allCorrect ? board.score + 1 : board.score;
-        await ctx.db.patch(room._id, { gameBoard: { ...board, score: newScore, phase: "ROUND_RESULTS", lenientVotes: newVotes, history: [...board.history, { key: "LOG_DISCARD", data: { player: player.name, card: allCorrect ? "Correct" : "Wrong" } }] as any } });
+        await logHistoryEvent(ctx, room._id, { key: "LOG_DISCARD", data: { player: player.name, card: allCorrect ? "Correct" : "Wrong" } });
+        await ctx.db.patch(room._id, { gameBoard: { ...board, score: newScore, phase: "ROUND_RESULTS", lenientVotes: newVotes } as any });
       } else {
         await ctx.db.patch(room._id, { gameBoard: { ...board, lenientVotes: newVotes } });
       }

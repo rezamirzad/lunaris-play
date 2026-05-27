@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import { mutation, internalMutation } from "./_generated/server";
 import { Doc } from "./_generated/dataModel";
 import { GamePlugin, GameMutationCtx } from "./types";
-import { finishTurn } from "./transitions";
+import { finishTurn, logHistoryEvent } from "./transitions";
 import { internal } from "./_generated/api";
 
 export const getRandomCard = () => {
@@ -47,14 +47,15 @@ export const pioupiouPlugin: GamePlugin = {
       });
     }
 
+    await logHistoryEvent(ctx, roomId, { key: "LOG_GAME_STARTED", data: { time: Date.now() } });
+
     await ctx.db.patch(roomId, {
       gameBoard: {
         gameType: "pioupiou",
-        history: [{ key: "LOG_GAME_STARTED", data: { time: Date.now() } }],
         pendingAttack: null,
         deck: deck,
         discardPile: [],
-      },
+      } as any,
     });
 
     // Trigger initial bot turn if starting player is a bot

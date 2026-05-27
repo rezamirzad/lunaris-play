@@ -26,14 +26,18 @@ export function useGame(roomCode: string) {
 
   // Narrow the game board and state for easier consumption
   const gameBoard = gameState?.gameBoard;
+  const history = gameState?.history || [];
+  const submissions = gameState?.submissions || [];
   const myState = me?.state;
 
   return {
-    room: gameState as (Doc<"rooms"> & { players: Doc<"players">[], gameMetadata: Doc<"games"> | null }) | null | undefined,
+    room: gameState as (Doc<"rooms"> & { players: Doc<"players">[], gameMetadata: Doc<"games"> | null, history: any[], submissions: any[] }) | null | undefined,
     players,
     me: me as Doc<"players"> | undefined,
     myState,
     gameBoard,
+    history,
+    submissions,
     isMyTurn,
     isLoading: gameState === undefined,
     gameMetadata: gameState?.gameMetadata,

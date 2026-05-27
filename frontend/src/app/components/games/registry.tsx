@@ -6,6 +6,8 @@ import { Doc } from "convex/_generated/dataModel";
 export interface BoardProps {
   roomId: string;
   roomData: Doc<"rooms"> & { players: Doc<"players">[] };
+  history?: any[];
+  submissions?: any[];
 }
 
 // Define the interface for Player Views
@@ -13,6 +15,8 @@ export interface PlayerProps {
   player: Doc<"players">;
   roomData: Doc<"rooms"> & { players: Doc<"players">[] };
   isMyTurn: boolean;
+  history?: any[];
+  submissions?: any[];
 }
 
 export interface GameModule {

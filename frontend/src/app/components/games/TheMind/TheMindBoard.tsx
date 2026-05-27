@@ -15,7 +15,7 @@ import { useAdmin } from "@/app/admin/AdminGateway";
 import { useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
 
-export default function NeuralSyncBoard({ roomId, roomData }: BoardProps) {
+export default function NeuralSyncBoard({ roomId, roomData, history = [] }: BoardProps) {
   const { t } = useTranslation();
   const { isAdmin, pin: adminPin } = useAdmin();
   const toggleHaltMutation = useMutation(api.engine.toggleBotsHalt);
@@ -35,6 +35,8 @@ export default function NeuralSyncBoard({ roomId, roomData }: BoardProps) {
         loadingText={(t as any).themind_syncing_waves}
         accentColor="teal"
         background={<div className="neuro-grid opacity-20" />}
+        room={roomData}
+        players={players}
       />
     );
   }
@@ -67,7 +69,7 @@ export default function NeuralSyncBoard({ roomId, roomData }: BoardProps) {
                 </h3>
                 <div className="flex-1 min-h-0">
                    <MatchActivity 
-                     history={board.history}
+                     history={history}
                      renderLog={(log) => <TheMindLogMessage log={log} />}
                    />
                 </div>

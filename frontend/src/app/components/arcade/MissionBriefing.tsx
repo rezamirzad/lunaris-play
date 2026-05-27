@@ -2,6 +2,8 @@
 
 import { ReactNode } from "react";
 import SharedArcadeLayout from "../shared/SharedArcadeLayout";
+import LobbyInitialization from "../shared/LobbyInitialization";
+import { Doc } from "convex/_generated/dataModel";
 
 interface MissionBriefingProps {
   title: string;
@@ -11,6 +13,9 @@ interface MissionBriefingProps {
   loadingText: string;
   accentColor: "orange" | "teal" | "blue" | "cyan" | "amber" | "rose";
   background?: ReactNode;
+  room: Doc<"rooms">;
+  players: any[];
+  me?: any;
 }
 
 const COLOR_MAP = {
@@ -78,38 +83,56 @@ export default function MissionBriefing({
   loadingText,
   accentColor,
   background,
+  room,
+  players,
+  me,
 }: MissionBriefingProps) {
   const theme = COLOR_MAP[accentColor];
 
   return (
-    <SharedArcadeLayout
-      containerClassName={`${theme.bg} ${theme.text}`}
-      background={background}
-      header={
-        <div className="text-center pt-10">
-          <h1 className={`text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b ${theme.gradient} tracking-tighter uppercase italic`}>
-            {title}
-          </h1>
-          <p className={`text-[10px] ${theme.sub} font-bold uppercase tracking-[0.5em] mt-2`}>
-            {subtitle}
-          </p>
+    <div className={`${theme.bg} ${theme.text} min-h-screen w-full flex flex-col relative overflow-hidden`}>
+      {background && <div className="absolute inset-0 z-0">{background}</div>}
+      
+      <div className="flex-1 min-h-0 flex flex-col items-center justify-center p-8 lg:p-12 relative z-10 overflow-y-auto no-scrollbar">
+        <div className="max-w-7xl w-full space-y-12">
+            {/* 1. CINEMATIC HEADER */}
+            <div className="text-center">
+                <h1 className={`text-5xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b ${theme.gradient} tracking-tighter uppercase italic leading-tight`}>
+                    {title}
+                </h1>
+                <p className={`text-[10px] md:text-xs ${theme.sub} font-bold uppercase tracking-[0.6em] mt-2`}>
+                    {subtitle}
+                </p>
+            </div>
+
+            {/* 2. BRIEFING PANEL & LOBBY LOGIC */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                <div className="lg:col-span-5 space-y-8">
+                    <div className={`p-10 rounded-[3rem] border ${theme.panel} shadow-2xl backdrop-blur-xl bg-black/40`}>
+                        <h2 className={`text-2xl font-black ${theme.innerTitle} mb-4 italic uppercase tracking-tight`}>
+                            {briefingTitle}
+                        </h2>
+                        <p className="text-lg text-slate-300 leading-relaxed italic opacity-80">
+                            &quot;{briefingDesc}&quot;
+                        </p>
+                        <div className={`text-[10px] ${theme.loading} uppercase tracking-[0.4em] animate-pulse mt-10`}>
+                            {loadingText}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="lg:col-span-7">
+                    <LobbyInitialization 
+                        room={room}
+                        players={players}
+                        me={me}
+                        isBoardView={true}
+                        localizedGameTitle={title}
+                    />
+                </div>
+            </div>
         </div>
-      }
-      main={
-        <div className="flex flex-col items-center justify-center h-full max-w-4xl mx-auto text-center space-y-12">
-          <div className={`p-12 rounded-[3rem] border ${theme.panel} shadow-2xl`}>
-            <h2 className={`text-3xl font-black ${theme.innerTitle} mb-6 italic uppercase`}>
-              {briefingTitle}
-            </h2>
-            <p className="text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto">
-              &quot;{briefingDesc}&quot;
-            </p>
-          </div>
-          <div className={`text-[10px] ${theme.loading} uppercase tracking-[0.4em] animate-pulse`}>
-            {loadingText}
-          </div>
-        </div>
-      }
-    />
+      </div>
+    </div>
   );
 }

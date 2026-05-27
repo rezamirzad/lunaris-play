@@ -12,6 +12,7 @@ export default function JustOnePlayerView({
   player,
   roomData,
   isMyTurn,
+  history = [],
 }: PlayerProps) {
   const { lang, t } = useTranslation();
   const isFA = lang === "fa";
@@ -28,7 +29,7 @@ export default function JustOnePlayerView({
         roomData={roomData}
         isMyTurn={isMyTurn}
         className="flex-grow"
-        history={board?.history || []}
+        history={history}
         renderLog={(log) => <JustOneLogMessage log={log} />}
         statsSlot={
           <div className="flex flex-col gap-6 w-full lg:w-80">
