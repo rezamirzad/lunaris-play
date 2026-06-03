@@ -18,6 +18,9 @@ const shuffle = <T>(array: T[]) => {
   return newArray;
 };
 
+const DIXIT_HAND_SIZE = 6;
+const DIXIT_HAND_SIZE_3P = 7;
+
 export const dixitPlugin: GamePlugin = {
   gameType: "dixit",
 
@@ -33,29 +36,26 @@ export const dixitPlugin: GamePlugin = {
 
     if (status === "LOBBY") {
       const playerCount = (room.turnOrder?.length || 0) + 1;
-      const handSize = playerCount === 3 ? 7 : 6;
+      const handSize = playerCount === 3 ? DIXIT_HAND_SIZE_3P : DIXIT_HAND_SIZE;
       initialHand = Array(handSize).fill("BACK");
     } else if (status === "PLAYING") {
-      if (room.gameBoard.gameType === "dixit") {
-        const pool = (room.gameBoard as any).availableCards || [];
-        const handSize = (room.turnOrder?.length || 0) === 3 ? 7 : 6;
-        if (pool.length >= handSize) {
-          initialHand = pool.slice(0, handSize);
-        }
-        initialState = { gameType: "dixit", score: 0 };
-      }
+      // IMPORTANT: Do not draw from the pool here, as it doesn't remove the cards from the database.
+      // Late joiners get an empty hand and must be handled by game-specific logic or wait for next round.
+      initialHand = []; 
+      initialState = { gameType: "dixit", score: 0 };
     }
 
     return { initialHand, initialState };
   },
 
   async onStart(ctx: GameMutationCtx, roomId: Doc<"rooms">["_id"], players: Doc<"players">[]) {
-    // Dynamically retrieve deck from manifest
+    // 1. Initialize the deck: Use a clean copy of the manifest
     const dixitPool = shuffle([...DIXIT_DECK]);
     const personas: ("balanced" | "aggressive" | "cautious")[] = ["balanced", "aggressive", "cautious"];
 
-    const startingHandSize = players.length === 3 ? 7 : 6;
+    const startingHandSize = players.length === 3 ? DIXIT_HAND_SIZE_3P : DIXIT_HAND_SIZE;
 
+    // 2. Distribute initial hands and remove from pool
     for (const player of players) {
       const initialHand = dixitPool.splice(0, startingHandSize);
       await ctx.db.patch(player._id, {
@@ -65,20 +65,19 @@ export const dixitPlugin: GamePlugin = {
       });
     }
 
-    // Odyssey Default: If players > 6, default to ODYSSEY, else CLASSIC
-    // Use manual override from lobby if present
     const room = await ctx.db.get(roomId);
     const lobbyRuleset = (room?.gameBoard as any).ruleset;
     const defaultRuleset = lobbyRuleset || (players.length > 6 ? "ODYSSEY" : "CLASSIC");
 
     await logHistoryEvent(ctx, roomId, { key: "LOG_GAME_STARTED", data: { time: Date.now() } });
 
+    // 3. Initialize board with the REMAINING cards in the pool
     await ctx.db.patch(roomId, {
       gameBoard: {
         gameType: "dixit",
         phase: "CLUE",
         ruleset: defaultRuleset,
-        availableCards: dixitPool,
+        availableCards: dixitPool, // Remaining cards after distribution
         usedCards: [],
         submittedCards: [],
         votes: [],
@@ -408,16 +407,29 @@ async function calculateScores(
 
     roundPoints[p._id] = scoreGain;
 
+    // STEP 4: Draw back to full hand size
+    const targetHandSize = (players.length === 3) ? DIXIT_HAND_SIZE_3P : DIXIT_HAND_SIZE;
     let newHand = [...p.gameHand];
-    const drawCount = (players.length === 3 && !isST) ? 2 : 1;
     
-    for (let i = 0; i < drawCount; i++) {
+    // Calculate how many cards this player needs to draw
+    const cardsNeeded = targetHandSize - newHand.length;
+    
+    for (let i = 0; i < cardsNeeded; i++) {
       if (deck.length === 0 && used.length > 0) {
         deck = shuffle(used);
         used = [];
+        console.log(`[DIXIT] 🔄 Reshuffled ${deck.length} cards back into the deck.`);
       }
+      
       if (deck.length > 0) {
-        newHand.push(deck.shift()!);
+        const drawnCard = deck.shift()!;
+        // Final safety check: ensure we aren't adding a duplicate that somehow got in
+        if (!newHand.includes(drawnCard)) {
+            newHand.push(drawnCard);
+        } else {
+            console.warn(`[DIXIT] ⚠️ Attempted to draw duplicate card ${drawnCard}. Skipping.`);
+            i--; // Try to draw another one instead
+        }
       }
     }
 

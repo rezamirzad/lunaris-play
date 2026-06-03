@@ -39,11 +39,11 @@ function calculateCrashProbability(board: any) {
 }
 
 const DIXIT_PROMPT_REQUIREMENTS = "IMPORTANT: You MUST return a VALID JSON object and nothing else. NO MARKDOWN CODE BLOCKS. Return only the JSON.";
-const DIXIT_GLOBAL_CONSTRAINT = "CRITICAL DIXIT RULE: NEVER describe the main subject, characters, or obvious action of the image. Literal summaries are forbidden. Your clue must relate to a background detail, a mood, an idiom, or a tangential concept.";
+const DIXIT_GLOBAL_CONSTRAINT = "STORYTELLER RULE: You are a whimsical Dream-Weaver. You MUST NOT mention any characters, animals, or main objects in the picture. Literal descriptions are forbidden. Instead, use clues about FEELINGS (e.g. 'lonely', 'excited'), COLORS (e.g. 'sunset glow'), or NONSENSE RIDDLES. Think like a child telling a secret about a dream.";
 
 export const PERSONAS: Record<string, BotPersona> = {
   balanced: {
-    name: "The Poet",
+    name: "The Dreamer",
     decidePiouPiou(myId, hand, eggs, chicks, players, board) {
       const counts: Record<string, number[]> = { CHICKEN: [], ROOSTER: [], NEST: [], FOX: [] };
       hand.forEach((card, idx) => counts[card]?.push(idx));
@@ -75,36 +75,35 @@ export const PERSONAS: Record<string, BotPersona> = {
     },
     generateDixitPrompt(phase, clue, ruleset) {
       if (phase === "CLUE") {
-        return `${DIXIT_GLOBAL_CONSTRAINT} You are THE POET. Look at these surreal images.
-        1. Pick ONE image. DO NOT describe what is physically happening.
-        2. What emotion, proverb, or abstract concept does this image evoke?
-        3. Create a poetic, metaphorical clue (MAX 5 WORDS) based ONLY on the mood/concept.
-        4. Translate this clue into English, French, German, and Persian.
+        return `${DIXIT_GLOBAL_CONSTRAINT} You are THE DREAMER. 
+        1. Pick ONE image. Look at the background or the 'air' in the picture.
+        2. Create a whimsical, poetic clue (MAX 4 WORDS) that sounds like a line from a children's book.
+        3. Translate this clue into English, French, German, and Persian.
         Return ONLY a JSON object: { \"selectedIndex\": 1, \"clues\": { \"en\": \"...\", \"fr\": \"...\", \"de\": \"...\", \"fa\": \"...\" } }
         ${DIXIT_PROMPT_REQUIREMENTS}`;
       }
       if (phase === "SUBMITTING") {
-        return `${DIXIT_GLOBAL_CONSTRAINT} The Storyteller's clue is: \"${clue}\". 
-        Pick the image index (1-6) that matches this concept's mood or vibe to trick others.
+        return `${DIXIT_GLOBAL_CONSTRAINT} The Dream-Clue is: \"${clue}\". 
+        Pick the image that feels most like this dream, even if it looks different. Be tricky like a magician!
         Return ONLY a JSON object: { \"selectedIndex\": 1 }
         ${DIXIT_PROMPT_REQUIREMENTS}`;
       }
       if (phase === "VOTING") {
         const isOdyssey = ruleset === "ODYSSEY";
         const odysseyInstruction = isOdyssey 
-            ? "Since this is ODYSSEY mode, you can return ONE index for a +4 Risk Bonus if correct, or TWO indices for a safer +3 points if either matches. Choose strategically based on your confidence."
-            : "Identify the ORIGINAL image index (1-N) played by the storyteller.";
+            ? "You have two magical guesses! Use them wisely to find the original dream-card."
+            : "Identify the ORIGINAL dream-card played by the storyteller.";
             
         return `${odysseyInstruction} Clue: \"${clue}\". 
-        Identify the ORIGINAL one played by the storyteller based on mood and subtext. 
-        Return ONLY a JSON object: ${isOdyssey ? '{ \"selectedIndices\": [1, 2] } or { \"selectedIndices\": [1] }' : '{ \"selectedIndex\": 1 }'}
+        Find the card that fits the 'feeling' of the words, not the literal objects.
+        Return ONLY a JSON object: ${isOdyssey ? '{ \"selectedIndices\": [1, 2] }' : '{ \"selectedIndex\": 1 }'}
         ${DIXIT_PROMPT_REQUIREMENTS}`;
       }
       return "";
     }
   },
   aggressive: {
-    name: "The Trickster",
+    name: "The Mad Hatter",
     decidePiouPiou(myId, hand, eggs, chicks, players, board) {
       const counts: Record<string, number[]> = { CHICKEN: [], ROOSTER: [], NEST: [], FOX: [] };
       hand.forEach((card, idx) => counts[card]?.push(idx));
@@ -134,27 +133,28 @@ export const PERSONAS: Record<string, BotPersona> = {
     },
     generateDixitPrompt(phase, clue, ruleset) {
       if (phase === "CLUE") {
-        return `${DIXIT_GLOBAL_CONSTRAINT} You are THE TRICKSTER. Look at these images.
-        1. Pick ONE image. Look for a shape, color, or minor element common to multiple pictures.
-        2. Give a clue (MAX 5 WORDS) using a pun, idiom, or double-meaning relating to that specific element.
-        3. Translate this clue into English, French, German, and Persian.
+        return `${DIXIT_GLOBAL_CONSTRAINT} You are THE MAD HATTER.
+        1. Pick ONE image. Find a funny shape or a silly color.
+        2. Create a clue (MAX 4 WORDS) that is a silly pun, a funny rhyme, or pure nonsense logic. 
+        3. Make it so abstract that only a very clever child would guess it!
+        4. Translate this clue into English, French, German, and Persian.
         Return ONLY a JSON object: { \"selectedIndex\": 1, \"clues\": { \"en\": \"...\", \"fr\": \"...\", \"de\": \"...\", \"fa\": \"...\" } }
         ${DIXIT_PROMPT_REQUIREMENTS}`;
       }
       if (phase === "SUBMITTING") {
-        return `${DIXIT_GLOBAL_CONSTRAINT} Clue: \"${clue}\". 
-        Pick the image index (1-6) that fits a double-meaning or secondary interpretation of the clue to lead players astray.
+        return `${DIXIT_GLOBAL_CONSTRAINT} The Nonsense-Clue is: \"${clue}\". 
+        Pick a card that matches the silly logic or the colors of the clue to confuse everyone.
         Return ONLY a JSON object: { \"selectedIndex\": 1 }
         ${DIXIT_PROMPT_REQUIREMENTS}`;
       }
       if (phase === "VOTING") {
         const isOdyssey = ruleset === "ODYSSEY";
         const odysseyInstruction = isOdyssey 
-            ? "ODYSSEY mode active: Return ONE index (1-N) for a +4 Risk Bonus, or TWO indices for a safer +3 points. As a Trickster, prioritize finding the correct card to gain points."
-            : "Identify the ORIGINAL storyteller card index (1-N).";
+            ? "Silly mode! You get two guesses to find the Hatter's original card."
+            : "Identify the ORIGINAL silly card index (1-N).";
 
         return `${odysseyInstruction} Clue: \"${clue}\". 
-        Look past the obvious decoys and find the subtle connection.
+        Don't be fooled by boring cards! Find the one that has the secret silly logic.
         Return ONLY a JSON object: ${isOdyssey ? '{ \"selectedIndices\": [1, 2] }' : '{ \"selectedIndex\": 1 }'}
         ${DIXIT_PROMPT_REQUIREMENTS}`;
       }
@@ -162,7 +162,7 @@ export const PERSONAS: Record<string, BotPersona> = {
     }
   },
   cautious: {
-    name: "The Sniper",
+    name: "The Owl",
     decidePiouPiou(myId, hand, eggs, chicks, players, board) {
       const counts: Record<string, number[]> = { CHICKEN: [], ROOSTER: [], NEST: [], FOX: [] };
       hand.forEach((card, idx) => counts[card]?.push(idx));
@@ -192,28 +192,28 @@ export const PERSONAS: Record<string, BotPersona> = {
     },
     generateDixitPrompt(phase, clue, ruleset) {
       if (phase === "CLUE") {
-        return `${DIXIT_GLOBAL_CONSTRAINT} You are THE SNIPER. Look at these images.
-        1. Pick ONE image. Ignore the main subject entirely.
-        2. Find the smallest, most easily missed background detail or secondary object.
-        3. Provide a literal, simple description (1-3 words) of ONLY that tiny detail.
+        return `${DIXIT_GLOBAL_CONSTRAINT} You are THE WISE OWL. 
+        1. Pick ONE image. Look for a tiny, tiny detail in the corner or the sky.
+        2. Give a simple, wise clue (1-3 words) about that tiny detail.
+        3. Make it so tiny that others might miss it!
         4. Translate this clue into English, French, German, and Persian.
         Return ONLY a JSON object: { \"selectedIndex\": 1, \"clues\": { \"en\": \"...\", \"fr\": \"...\", \"de\": \"...\", \"fa\": \"...\" } }
         ${DIXIT_PROMPT_REQUIREMENTS}`;
       }
       if (phase === "SUBMITTING") {
-        return `${DIXIT_GLOBAL_CONSTRAINT} Clue: \"${clue}\". 
-        Find an image in your hand that contains a similar tiny background detail.
+        return `${DIXIT_GLOBAL_CONSTRAINT} The Wise-Clue is: \"${clue}\". 
+        Look for a tiny detail in your cards that matches. Be very careful!
         Return ONLY a JSON object: { \"selectedIndex\": 1 }
         ${DIXIT_PROMPT_REQUIREMENTS}`;
       }
       if (phase === "VOTING") {
         const isOdyssey = ruleset === "ODYSSEY";
         const odysseyInstruction = isOdyssey 
-            ? "ODYSSEY mode active: As a Sniper, you are cautious. Return TWO indices (1-N) to maximize your chances of getting the +3 points."
-            : "Which card index (1-N) contains this specific micro-detail?";
+            ? "Use your wisdom to make two guesses. Look for the tiny details!"
+            : "Which card index (1-N) has the tiny detail the Owl saw?";
 
         return `${odysseyInstruction} Clue: \"${clue}\". 
-        Identify the Storyteller's card based on the micro-detail.
+        Look very closely at all the pictures. The answer is hidden in a small place.
         Return ONLY a JSON object: ${isOdyssey ? '{ \"selectedIndices\": [1, 2] }' : '{ \"selectedIndex\": 1 }'}
         ${DIXIT_PROMPT_REQUIREMENTS}`;
       }
