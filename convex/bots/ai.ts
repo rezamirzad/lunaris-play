@@ -205,38 +205,38 @@ export const processDixitBatchAITurn = internalAction({
           prompt = `You are a Grandmaster of Abstract Metaphor. You are controlling ${args.bots.length} independent Dixit players.
 The Storyteller has provided the clue: "${args.clue}".
 
-YOUR OBJECTIVE: For EACH player, select the single best card from their private hand that aligns with this clue.
+YOUR OBJECTIVE: For EACH player, select the single best card from their private hand that aligns with this clue to trick others.
 
 CRITICAL ARCHITECTURAL CONSTRAINTS:
-1. TOTAL ISOLATION: You are acting as ${args.bots.length} separate consciousnesses. Player A's hand is invisible to Player B. Do NOT compare hands.
-2. SUBTLETY OVER LITERALISM: Dixit is about abstract connections. Avoid the most obvious literal matches unless no other option exists. 
+1. TOTAL ISOLATION: Each player's hand is PRIVATE. Player A does not know what is in Player B's hand. Do NOT compare cards across different packs. Evaluate each pack independently against the clue.
+2. SUBTLETY OVER LITERALISM: Dixit is about abstract connections. Avoid the most obvious literal matches. Pick cards that evoke the "vibe" or "mood" of the clue.
 
 DATA STRUCTURE:
-Below are labeled "Packs" of images. Each pack belongs to one player.
+Below are labeled "Packs" of images. Each pack belongs to ONE player.
 `;
           let globalCardIdx = 0;
           args.bots.forEach((bot, botIdx) => {
             const packId = botIdx + 1;
             prompt += `\n[PACK ${packId} - Player: ${bot.playerId}]\n`;
             bot.hand?.forEach((card, cardIdx) => {
-              prompt += `- Image ${globalCardIdx + 1}: (Pack ${packId}, Card ${cardIdx + 1})\n`;
+              prompt += `- Image ${globalCardIdx + 1}: (This is Card ${cardIdx + 1} of Pack ${packId})\n`;
               globalCardIdx++;
             });
           });
 
           prompt += `\nRETURN FORMAT:
-Return a strict JSON object with a 'results' array. Each element must contain 'playerId' and 'selectedIndex' (the index 1-6 WITHIN THEIR OWN PACK).
+Return a strict JSON object with a 'results' array. Each element must contain 'playerId' and 'selectedIndex' (the 1-based index of the card WITHIN THEIR OWN PACK, usually 1-6).
 Example: {"results": [{"playerId": "...", "selectedIndex": 3}, ...]}`;
 
         } else if (isVoting) {
           prompt = `You are a Master of Psychological Deduction. You are controlling ${args.bots.length} independent Dixit players.
-The Storyteller's clue is: "${args.clue}". One card is the Storyteller's. The others are traps.
+The Storyteller's clue is: "${args.clue}". One card is the Storyteller's. The others are traps from other players.
 
-YOUR OBJECTIVE: For EACH player, identify the Storyteller's card.
+YOUR OBJECTIVE: For EACH player, identify the index of the card you believe was played by the Storyteller.
 
 CRITICAL ARCHITECTURAL CONSTRAINTS:
-1. NO SELF-VOTING: A player is FORBIDDEN from voting for their own card index.
-2. INDEPENDENT DEDUCTION: Each player makes their own guess. 
+1. NO SELF-VOTING: A player is FORBIDDEN from voting for their own card. I will specify which image index belongs to which player.
+2. INDEPENDENT DEDUCTION: Each player makes their own guess based on subtext and mood. 
 
 DATA STRUCTURE:
 Below are the ${args.tableCards?.length} cards on the table:
@@ -245,10 +245,10 @@ Below are the ${args.tableCards?.length} cards on the table:
             prompt += `- Image ${idx + 1}: (Card ID: ${card.id})\n`;
           });
 
-          prompt += `\nPLAYER RESTRICTIONS:\n`;
+          prompt += `\nPLAYER RESTRICTIONS (DO NOT VOTE FOR THESE): \n`;
           args.bots.forEach((bot) => {
             const myIdx = args.tableCards?.findIndex(c => c.id === bot.myCardId);
-            prompt += `- Player ${bot.playerId}: Their card is Image ${myIdx !== undefined ? myIdx + 1 : 'N/A'}. THEY CANNOT VOTE FOR THIS.\n`;
+            prompt += `- Player ${bot.playerId}: Their card is Image ${myIdx !== undefined ? myIdx + 1 : 'N/A'}. THEY ARE PROHIBITED FROM SELECTING THIS INDEX.\n`;
           });
 
           prompt += `\nRETURN FORMAT:

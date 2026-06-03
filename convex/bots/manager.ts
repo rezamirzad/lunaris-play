@@ -21,15 +21,49 @@ export const dispatchBotTurn = internalMutation({
       const players = (await ctx.db.query("players").withIndex("by_room", q => q.eq("roomId", room._id)).collect()) as any[];
       targetPlayerIds = players.filter(p => p.isBot && p.state.gameType === "incangold" && p.state.status === "IN_TEMPLE" && !board.decisions[p._id]).map(p => p._id);
     } else if (board.gameType === "dixit") {
-      const players = (await ctx.db.query("players").withIndex("by_room", q => q.eq("roomId", room._id)).collect()) as any[];
+      const players = (await ctx.db.query("players").withIndex("by_room", (q) => q.eq("roomId", room._id)).collect()) as any[];
       if (board.phase === "CLUE") {
         const storytellerId = room.turnOrder[room.currentTurnIndex];
         targetPlayerIds = [storytellerId];
-      } else if (board.phase === "SUBMITTING") {
-        targetPlayerIds = players.filter(p => p.isBot && !board.submittedCards.some((s: any) => s.playerId === p._id)).map(p => p._id);
-      } else if (board.phase === "VOTING") {
-        const storytellerId = room.turnOrder[room.currentTurnIndex];
-        targetPlayerIds = players.filter(p => p.isBot && p._id !== storytellerId && !board.votes.some((v: any) => v.voterId === p._id)).map(p => p._id);
+      } else if (board.phase === "SUBMITTING" || board.phase === "VOTING") {
+        const dixitBots = players.filter(p => p.isBot && (
+          board.phase === "SUBMITTING" 
+            ? !board.submittedCards.some((s: any) => s.playerId === p._id)
+            : (p._id !== room.turnOrder[room.currentTurnIndex] && !board.votes.some((v: any) => v.voterId === p._id))
+        ));
+
+        if (dixitBots.length > 0) {
+          const baseUrl = "https://lunaris-play.vercel.app";
+          const tableCards = board.phase === "VOTING" 
+            ? (board.shuffledBoardCards || []).map((c: any) => ({ 
+                id: c.cardId, 
+                url: `${baseUrl}/assets/games/dixit/cards/${c.cardId}.png` 
+              }))
+            : undefined;
+
+          const batchData = dixitBots.map(bot => ({
+            playerId: bot._id,
+            persona: bot.persona || "balanced",
+            hand: board.phase === "SUBMITTING" 
+              ? bot.gameHand.map((id: string) => ({ id, url: `${baseUrl}/assets/games/dixit/cards/${id}.png` }))
+              : undefined,
+            myCardId: board.phase === "VOTING" 
+              ? board.submittedCards.find((s: any) => s.playerId === bot._id)?.cardId
+              : undefined,
+          }));
+
+          // Trigger Batch AI (No staggering needed as it's one call)
+          await ctx.scheduler.runAfter(5000, (internal as any).bots.ai.processDixitBatchAITurn, {
+            roomId: room._id,
+            phase: board.phase,
+            clue: board.currentClue,
+            ruleset: board.ruleset,
+            bots: batchData,
+            tableCards,
+          });
+          
+          return; // Skip individual logic
+        }
       }
     } else if (board.gameType === "justone") {
         const players = (await ctx.db.query("players").withIndex("by_room", q => q.eq("roomId", room._id)).collect()) as any[];
