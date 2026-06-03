@@ -171,7 +171,7 @@ export default function PlayerViewContainer({ player, roomData }: PlayerProps) {
                           ? t.timeattack_release
                           : t.timeattack_hold
                         : hasStarted
-                          ? t.timeattack_stop
+                          ? t.timeattack_done // Changed from t.timeattack_stop
                           : t.timeattack_start}
                   </span>
                 </div>

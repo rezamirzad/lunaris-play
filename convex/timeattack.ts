@@ -48,7 +48,22 @@ export const submitResult = mutation({
       inputs: [], // Kept for schema compatibility
     };
 
+    const players = await ctx.db
+      .query("players")
+      .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
+      .collect();
+    
+    const submissionCount = Object.keys(gameBoard.submissions).length;
+    const allPlayersDone = submissionCount >= players.length;
+
     await ctx.db.patch(args.roomId, { gameBoard });
+
+    if (allPlayersDone) {
+        // Auto-advance to reveal
+        await ctx.scheduler.runAfter(0, (internal as any).timeattack.nextPhase, {
+            roomId: args.roomId
+        });
+    }
   },
 });
 

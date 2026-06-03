@@ -25,7 +25,7 @@ export default function RoomPage() {
 
   // Detect if I was kicked: I have a playerId in localStorage but 'me' is undefined while room exists
   const hasSessionId = typeof window !== "undefined" && !!localStorage.getItem("playerId");
-  const isKicked = !isLoading && !!room && room.status === "LOBBY" && !me && hasSessionId;
+  const isKicked = !isBoardView && !isLoading && !!room && room.status === "LOBBY" && !me && hasSessionId;
 
   useEffect(() => {
     if (room?.status === "PLAYING" && prevStatusRef.current === "LOBBY") {

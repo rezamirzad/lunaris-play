@@ -109,24 +109,50 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
                       initial={{ opacity: 0, y: 20 }} 
                       animate={{ opacity: 1, y: 0 }} 
                       exit={{ opacity: 0, scale: 0.95 }}
-                      className="flex flex-col items-center text-center max-w-xl"
+                      className="flex flex-col items-center text-center max-w-xl w-full"
                     >
-                       <div className="w-24 h-24 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mb-8">
-                          <span className="text-4xl">📡</span>
+                       <div className="flex items-center gap-6 mb-8">
+                          <div className="w-20 h-20 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center shadow-[0_0_30px_rgba(244,63,94,0.1)]">
+                             <span className="text-3xl">
+                                {currentRoundConfig?.scoring === "SURVIVAL" ? "☢️" : 
+                                 currentRoundConfig?.visuals === "DISTRACTED" ? "🌀" : "🎯"}
+                             </span>
+                          </div>
+                          <div className="flex flex-col items-start">
+                             <span className="text-[10px] font-black text-rose-500 uppercase tracking-[0.4em]">
+                                {currentRoundConfig?.scoring === "SURVIVAL" ? "Survival Protocol" : "Precision Uplink"}
+                             </span>
+                             <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter">
+                                {currentRoundConfig?.name}
+                             </h2>
+                          </div>
                        </div>
-                       <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter mb-4">
-                          {currentRoundConfig?.name}
-                       </h2>
-                       <p className="text-zinc-400 text-sm leading-relaxed mb-12 whitespace-pre-wrap">
-                          {currentRoundConfig?.description}
-                       </p>
+
+                       <div className="w-full bg-black/40 border border-white/5 rounded-[2rem] p-8 mb-10 relative overflow-hidden group">
+                          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                             <span className="text-6xl font-black italic">{(board.targetMs / 1000).toFixed(3)}s</span>
+                          </div>
+                          
+                          <div className="relative z-10 space-y-6">
+                             <div className="flex flex-col items-center gap-2">
+                                <span className="text-[8px] font-black text-zinc-500 uppercase tracking-[0.6em]">Target Interval</span>
+                                <span className="text-6xl font-black text-rose-500 italic drop-shadow-[0_0_20px_rgba(244,63,94,0.4)]">
+                                   {isFA ? toPersianDigits((board.targetMs / 1000).toFixed(2)) : (board.targetMs / 1000).toFixed(2)}s
+                                </span>
+                             </div>
+
+                             <p className="text-zinc-400 text-sm leading-relaxed whitespace-pre-wrap px-4">
+                                {currentRoundConfig?.description}
+                             </p>
+                          </div>
+                       </div>
 
                        {isAdmin && (
                           <motion.button
                             whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(244,63,94,0.3)" }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => nextPhase({ roomId: roomData._id })}
-                            className="bg-white text-black px-12 py-4 rounded-2xl font-black uppercase italic tracking-widest shadow-2xl"
+                            className="bg-white text-black px-16 py-5 rounded-2xl font-black uppercase italic tracking-widest shadow-2xl transition-all"
                           >
                              {t.timeattack_start_protocol || "START PROTOCOL"}
                           </motion.button>
@@ -140,26 +166,91 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
                        <span className="text-sm font-black text-rose-500/40 uppercase tracking-[1em] mt-8">{t.timeattack_calibrating}</span>
                     </motion.div>
                  ) : board.phase === "ACTIVE_PLAY" ? (
-                    <motion.div key="input" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center text-center">
-                       <div className="w-64 h-64 rounded-full border-4 border-rose-500/20 flex items-center justify-center relative mb-12">
+                    <motion.div key="input" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center text-center w-full relative">
+                       {/* 🎯 VISUAL OVERLAYS BASED ON CONFIG */}
+                       {board.visuals === "DISTRACTED" && (
+                          <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-[3rem]">
+                             <motion.div 
+                               animate={{ 
+                                 opacity: [0, 0.2, 0, 0.4, 0],
+                                 backgroundColor: ["#f43f5e", "transparent", "#3b82f6", "transparent", "#10b981"]
+                               }}
+                               transition={{ duration: 0.2, repeat: Infinity, repeatType: "mirror" }}
+                               className="absolute inset-0 z-0"
+                             />
+                             <div className="scanline opacity-30" />
+                             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-20" />
+                          </div>
+                       )}
+
+                       {board.visuals === "FULL" && board.currentRound === 1 && (
+                          <div className="mb-12">
+                             <motion.div 
+                               initial={{ opacity: 1 }}
+                               animate={{ opacity: 0 }}
+                               transition={{ delay: 2, duration: 1 }}
+                               className="flex flex-col items-center"
+                             >
+                                <span className="text-[10px] font-black text-rose-500/60 uppercase tracking-[0.5em] mb-4">Calibration Uplink</span>
+                                <div className="flex gap-4">
+                                   {[...Array(5)].map((_, i) => (
+                                      <motion.div 
+                                        key={i}
+                                        initial={{ scale: 0.8, opacity: 0.3 }}
+                                        animate={{ scale: 1.2, opacity: 1 }}
+                                        transition={{ duration: 1, delay: i, repeat: Infinity }}
+                                        className="w-4 h-4 bg-rose-500 rounded-full shadow-[0_0_15px_rgba(244,63,94,0.5)]"
+                                      />
+                                   ))}
+                                </div>
+                             </motion.div>
+                          </div>
+                       )}
+
+                       {board.visuals === "BLIND" && (
+                          <div className="absolute inset-0 bg-black/80 backdrop-blur-3xl z-[-1] rounded-[3rem] transition-opacity duration-1000" />
+                       )}
+
+                       {/* 📡 CORE TRANSMISSION ANIMATION */}
+                       <div className="w-64 h-64 rounded-full border-4 border-rose-500/20 flex items-center justify-center relative mb-12 z-10">
                           <div className="absolute inset-0 rounded-full border-2 border-rose-500/40 animate-ping" />
                           <div className="w-48 h-48 rounded-full border border-rose-500/10 animate-[spin_10s_linear_infinite] flex items-center justify-center">
                              <div className="w-1 h-24 bg-rose-500/40 origin-bottom" />
                           </div>
-                          <span className="absolute text-4xl font-black text-rose-500">{t.timeattack_transmitting}</span>
+                          
+                          {/* 🔢 GLITCHY COUNTER FOR DISTRACTED MODE */}
+                          {board.visuals === "DISTRACTED" ? (
+                             <motion.span 
+                               animate={{ 
+                                 scale: [1, 1.2, 0.9, 1.1],
+                                 x: [0, 5, -5, 0]
+                               }}
+                               transition={{ duration: 0.1, repeat: Infinity }}
+                               className="absolute text-5xl font-black text-rose-600/50 blur-[1px]"
+                             >
+                                ERR_707
+                             </motion.span>
+                          ) : (
+                             <span className="absolute text-4xl font-black text-rose-500">{t.timeattack_transmitting}</span>
+                          )}
                        </div>
-                       <h2 className="text-2xl font-black text-rose-400 tracking-[0.5em] uppercase italic mb-12">{t.timeattack_eyes_on_phone}</h2>
+                       
+                       <h2 className="text-2xl font-black text-rose-400 tracking-[0.5em] uppercase italic mb-12 z-10">
+                          {board.visuals === "BLIND" ? "SENSORY DEPRIVATION ACTIVE" : t.timeattack_eyes_on_phone}
+                       </h2>
 
-                       {isAdmin && (
-                          <motion.button
-                            whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(244,63,94,0.3)" }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => nextPhase({ roomId: roomData._id })}
-                            className="bg-white/10 hover:bg-white text-white hover:text-black border border-white/20 px-8 py-3 rounded-2xl font-black uppercase italic tracking-widest transition-all"
-                          >
-                             {t.timeattack_extract_data || "EXTRACT DATA"}
-                          </motion.button>
-                       )}
+                       {/* 👤 PLAYER READINESS SLOTS */}
+                       <div className="flex gap-4 z-10">
+                          {players.map(p => {
+                             const isDone = !!board.submissions[p._id];
+                             return (
+                                <div key={p._id} className="flex flex-col items-center gap-2">
+                                   <div className={`w-3 h-3 rounded-full transition-all duration-500 ${isDone ? 'bg-teal-400 shadow-[0_0_10px_rgba(45,212,191,1)]' : 'bg-zinc-800'}`} />
+                                   <span className={`text-[8px] font-black uppercase ${isDone ? 'text-teal-400' : 'text-zinc-600'}`}>{p.name}</span>
+                                </div>
+                             );
+                          })}
+                       </div>
                     </motion.div>
                  ) : board.phase === "ROUND_REVEAL" ? (
                     <motion.div key="results" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center w-full max-w-2xl">
