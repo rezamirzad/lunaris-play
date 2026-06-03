@@ -1,5 +1,6 @@
 import { mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
 import { Id, Doc } from "./_generated/dataModel";
 import { ROUNDS_CONFIG, getRandomTarget } from "./timeattackPlugin";
 import { updateLeaderboardAtGameEnd } from "./transitions";
