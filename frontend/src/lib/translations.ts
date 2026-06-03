@@ -403,6 +403,9 @@ export interface TranslationSet {
   timeattack_round_10_goal: string;
   timeattack_round_10_how: string;
   timeattack_round_10_penalty: string;
+  timeattack_start_protocol: string;
+  timeattack_extract_data: string;
+  timeattack_next_sequence: string;
 }
 
 export const translations: Record<Language, TranslationSet> = {
@@ -839,6 +842,9 @@ export const translations: Record<Language, TranslationSet> = {
       "PRESS AND HOLD. The TV will glitch violently. Make it count!",
     timeattack_round_10_penalty:
       "If you release LATE, you lose 30% of your total score.",
+    timeattack_start_protocol: "START PROTOCOL",
+    timeattack_extract_data: "EXTRACT DATA",
+    timeattack_next_sequence: "NEXT SEQUENCE",
   },
   fr: {
     title: "LUNARIS",
@@ -1263,6 +1269,9 @@ export const translations: Record<Language, TranslationSet> = {
     timeattack_round_10_goal: "DÉFI FINAL. Maintenez 4,04s.",
     timeattack_round_10_how: "MAINTENEZ. Glitch violent. Ne ratez pas !",
     timeattack_round_10_penalty: "En cas de retard, -30% du score total.",
+    timeattack_start_protocol: "LANCER LE PROTOCOLE",
+    timeattack_extract_data: "EXTRACTION DES DONNÉES",
+    timeattack_next_sequence: "SÉQUENCE SUIVANTE",
   },
   de: {
     title: "LUNARIS",
@@ -1686,6 +1695,9 @@ export const translations: Record<Language, TranslationSet> = {
     timeattack_round_10_goal: "FINALE. Halte 4,04s.",
     timeattack_round_10_how: "HALTEN. Heftige Glitches. Nicht verpassen!",
     timeattack_round_10_penalty: "Bei Verspätung -30% Gesamtpunktzahl.",
+    timeattack_start_protocol: "PROTOKOLL STARTEN",
+    timeattack_extract_data: "DATEN EXTRAHIEREN",
+    timeattack_next_sequence: "NÄCHSTE SEQUENZ",
   },
   fa: {
     title: "LUNARIS",
@@ -2115,6 +2127,9 @@ export const translations: Record<Language, TranslationSet> = {
     timeattack_round_10_how: "نگه دارید. اختلالات شدید. اشتباه نکنید!\u200F",
     timeattack_round_10_penalty:
       "در صورت تاخیر، ۳۰٪ از کل امتیاز کسر می‌شود.\u200F",
+    timeattack_start_protocol: "شروع پروتکل",
+    timeattack_extract_data: "استخراج داده‌ها",
+    timeattack_next_sequence: "توالی بعدی",
   },
 };
 

@@ -28,6 +28,8 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
   const isLobby = roomData.status?.toUpperCase() === "LOBBY";
   const players = roomData.players;
 
+  const nextPhase = useMutation(api.timeattack.nextPhase);
+
   // 1. LOBBY MISSION BRIEFING
   if (isLobby) {
     return (
@@ -50,6 +52,8 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
   if (!board) return null;
 
   const isFinished = roomData.status?.toUpperCase() === "FINISHED" || roomData.status?.toUpperCase() === "ARCHIVED";
+
+  const currentRoundConfig = ROUNDS_CONFIG[board.currentRound];
 
   return (
     <SharedArcadeLayout
@@ -99,7 +103,36 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#f43f5e_0%,_transparent_70%)] opacity-[0.03]" />
 
               <AnimatePresence mode="wait">
-                 {board.phase === "ACTIVE_PLAY" && board.serverStartTime === 0 ? (
+                 {board.phase === "ROUND_INTRO" ? (
+                    <motion.div 
+                      key="intro" 
+                      initial={{ opacity: 0, y: 20 }} 
+                      animate={{ opacity: 1, y: 0 }} 
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      className="flex flex-col items-center text-center max-w-xl"
+                    >
+                       <div className="w-24 h-24 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mb-8">
+                          <span className="text-4xl">📡</span>
+                       </div>
+                       <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter mb-4">
+                          {currentRoundConfig?.name}
+                       </h2>
+                       <p className="text-zinc-400 text-sm leading-relaxed mb-12 whitespace-pre-wrap">
+                          {currentRoundConfig?.description}
+                       </p>
+
+                       {isAdmin && (
+                          <motion.button
+                            whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(244,63,94,0.3)" }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => nextPhase({ roomId: roomId as any })}
+                            className="bg-white text-black px-12 py-4 rounded-2xl font-black uppercase italic tracking-widest shadow-2xl"
+                          >
+                             {t.timeattack_start_protocol || "START PROTOCOL"}
+                          </motion.button>
+                       )}
+                    </motion.div>
+                 ) : board.phase === "ACTIVE_PLAY" && board.serverStartTime === 0 ? (
                     <motion.div key="countdown" initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center">
                        <span className="text-[12rem] font-black text-rose-500 italic leading-none animate-pulse">
                           ⚠️
@@ -115,7 +148,18 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
                           </div>
                           <span className="absolute text-4xl font-black text-rose-500">{t.timeattack_transmitting}</span>
                        </div>
-                       <h2 className="text-2xl font-black text-rose-400 tracking-[0.5em] uppercase italic">{t.timeattack_eyes_on_phone}</h2>
+                       <h2 className="text-2xl font-black text-rose-400 tracking-[0.5em] uppercase italic mb-12">{t.timeattack_eyes_on_phone}</h2>
+
+                       {isAdmin && (
+                          <motion.button
+                            whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(244,63,94,0.3)" }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => nextPhase({ roomId: roomId as any })}
+                            className="bg-white/10 hover:bg-white text-white hover:text-black border border-white/20 px-8 py-3 rounded-2xl font-black uppercase italic tracking-widest transition-all"
+                          >
+                             {t.timeattack_extract_data || "EXTRACT DATA"}
+                          </motion.button>
+                       )}
                     </motion.div>
                  ) : board.phase === "ROUND_REVEAL" ? (
                     <motion.div key="results" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center w-full max-w-2xl">
@@ -153,6 +197,19 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
                                 })}
                           </div>
                        </div>
+
+                       {isAdmin && !isFinished && (
+                          <motion.button
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(244,63,94,0.3)" }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => nextPhase({ roomId: roomId as any })}
+                            className="mt-8 bg-white text-black px-12 py-4 rounded-2xl font-black uppercase italic tracking-widest shadow-2xl"
+                          >
+                             {t.timeattack_next_sequence || "NEXT SEQUENCE"}
+                          </motion.button>
+                       )}
                     </motion.div>
                  ) : null}
               </AnimatePresence>
