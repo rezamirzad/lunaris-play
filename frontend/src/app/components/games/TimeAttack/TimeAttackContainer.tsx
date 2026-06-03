@@ -100,7 +100,7 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
 
            {/* CENTER: PRIMARY PULSE AREA */}
            <div className="lg:col-span-6 flex flex-col items-center justify-center p-6 bg-rose-500/5 rounded-[3rem] border border-rose-500/10 shadow-2xl relative overflow-hidden">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#f43f5e_0%,_transparent_70%)] opacity-[0.03]" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#f43f5e_0%,_transparent_70%)] opacity-[0.03] pointer-events-none" />
 
               <AnimatePresence mode="wait">
                  {board.phase === "ROUND_INTRO" ? (
@@ -125,7 +125,7 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
                           <motion.button
                             whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(244,63,94,0.3)" }}
                             whileTap={{ scale: 0.95 }}
-                            onClick={() => nextPhase({ roomId: roomId as any })}
+                            onClick={() => nextPhase({ roomId: roomData._id })}
                             className="bg-white text-black px-12 py-4 rounded-2xl font-black uppercase italic tracking-widest shadow-2xl"
                           >
                              {t.timeattack_start_protocol || "START PROTOCOL"}
@@ -154,7 +154,7 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
                           <motion.button
                             whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(244,63,94,0.3)" }}
                             whileTap={{ scale: 0.95 }}
-                            onClick={() => nextPhase({ roomId: roomId as any })}
+                            onClick={() => nextPhase({ roomId: roomData._id })}
                             className="bg-white/10 hover:bg-white text-white hover:text-black border border-white/20 px-8 py-3 rounded-2xl font-black uppercase italic tracking-widest transition-all"
                           >
                              {t.timeattack_extract_data || "EXTRACT DATA"}
@@ -204,7 +204,7 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
                             animate={{ opacity: 1 }}
                             whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(244,63,94,0.3)" }}
                             whileTap={{ scale: 0.95 }}
-                            onClick={() => nextPhase({ roomId: roomId as any })}
+                            onClick={() => nextPhase({ roomId: roomData._id })}
                             className="mt-8 bg-white text-black px-12 py-4 rounded-2xl font-black uppercase italic tracking-widest shadow-2xl"
                           >
                              {t.timeattack_next_sequence || "NEXT SEQUENCE"}

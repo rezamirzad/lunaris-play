@@ -63,21 +63,24 @@ export const nextPhase = mutation({
     const gameBoard = room.gameBoard;
     assertTimeAttack(gameBoard);
 
-    if (gameBoard.phase === "ROUND_INTRO") {
-      gameBoard.phase = "ACTIVE_PLAY";
-      gameBoard.serverStartTime = Date.now();
-      gameBoard.submissions = {};
-    } else if (gameBoard.phase === "ACTIVE_PLAY") {
-      gameBoard.phase = "ROUND_REVEAL";
+    let nextBoard = { ...gameBoard };
 
-      const config = ROUNDS_CONFIG[gameBoard.currentRound];
+    if (nextBoard.phase === "ROUND_INTRO") {
+      nextBoard.phase = "ACTIVE_PLAY";
+      nextBoard.serverStartTime = Date.now();
+      nextBoard.submissions = {};
+    } else if (nextBoard.phase === "ACTIVE_PLAY") {
+      nextBoard.phase = "ROUND_REVEAL";
+
+      const config = ROUNDS_CONFIG[nextBoard.currentRound];
       const results: Record<string, number> = {};
+      const updatedSubmissions = { ...nextBoard.submissions };
 
-      for (const [pidStr, sub] of Object.entries(gameBoard.submissions)) {
+      for (const [pidStr, sub] of Object.entries(updatedSubmissions)) {
         if (sub.actualMs !== undefined) {
           let points = 0;
           const elapsed = sub.actualMs;
-          const delta = Math.abs(gameBoard.targetMs - elapsed);
+          const delta = Math.abs(nextBoard.targetMs - elapsed);
 
           if (config.scoring === "PRECISION") {
             points = Math.max(0, 1000 - delta);
@@ -88,32 +91,36 @@ export const nextPhase = mutation({
                 ? player.state.score
                 : 0;
 
-            if (elapsed > gameBoard.targetMs) {
+            if (elapsed > nextBoard.targetMs) {
               points = -Math.floor(currentScore * 0.2);
             } else {
               points = Math.max(0, 1000 - delta);
             }
           }
 
-          sub.finalDeltaMs = delta;
-          sub.pointsEarned = Math.floor(points);
-          results[pidStr] = sub.pointsEarned;
+          updatedSubmissions[pidStr] = {
+            ...sub,
+            finalDeltaMs: delta,
+            pointsEarned: Math.floor(points),
+          };
+          results[pidStr] = updatedSubmissions[pidStr].pointsEarned!;
 
           const player = await ctx.db.get(pidStr as Id<"players">);
           if (player && player.state.gameType === "timeattack") {
             await ctx.db.patch(player._id, {
               state: {
                 ...player.state,
-                score: Math.max(0, player.state.score + sub.pointsEarned),
+                score: Math.max(0, player.state.score + updatedSubmissions[pidStr].pointsEarned!),
               },
             });
           }
         }
       }
-      gameBoard.roundResults = results;
-    } else if (gameBoard.phase === "ROUND_REVEAL") {
-      if (gameBoard.currentRound >= 10) {
-        gameBoard.phase = "FINAL_LEADERBOARD";
+      nextBoard.submissions = updatedSubmissions;
+      nextBoard.roundResults = results;
+    } else if (nextBoard.phase === "ROUND_REVEAL") {
+      if (nextBoard.currentRound >= 10) {
+        nextBoard.phase = "FINAL_LEADERBOARD";
 
         const players = await ctx.db
           .query("players")
@@ -126,29 +133,31 @@ export const nextPhase = mutation({
               ((b.state as any).score || 0) - ((a.state as any).score || 0),
           );
           const winner = sortedPlayers[0];
-          room.status = "FINISHED";
-          gameBoard.winner = winner.name;
-          gameBoard.winnerId = winner._id;
+          
+          await ctx.db.patch(args.roomId, { status: "FINISHED" });
+          nextBoard.winner = winner.name;
+          nextBoard.winnerId = winner._id;
 
-          const updatedRoom = { ...room, gameBoard, status: "FINISHED" };
+          const updatedRoom = { ...room, gameBoard: nextBoard, status: "FINISHED" };
           await updateLeaderboardAtGameEnd(ctx, updatedRoom as any, players);
         }
       } else {
-        gameBoard.currentRound += 1;
-        const nextConfig = ROUNDS_CONFIG[gameBoard.currentRound];
+        nextBoard.currentRound += 1;
+        const nextConfig = ROUNDS_CONFIG[nextBoard.currentRound];
         let target = nextConfig.targetMs;
         if (nextConfig.targetRange) {
           target = getRandomTarget(nextConfig.targetRange);
         }
-        gameBoard.phase = "ROUND_INTRO";
-        gameBoard.targetMs = target;
-        gameBoard.visuals = nextConfig.visuals;
-        gameBoard.interaction = nextConfig.interaction;
+        nextBoard.phase = "ROUND_INTRO";
+        nextBoard.targetMs = target;
+        nextBoard.visuals = nextConfig.visuals;
+        nextBoard.interaction = nextConfig.interaction;
+        nextBoard.submissions = {};
       }
-    } else if (gameBoard.phase === "FINAL_LEADERBOARD") {
-      room.status = "FINISHED";
+    } else if (nextBoard.phase === "FINAL_LEADERBOARD") {
+      await ctx.db.patch(args.roomId, { status: "FINISHED" });
     }
 
-    await ctx.db.patch(args.roomId, { gameBoard, status: room.status });
+    await ctx.db.patch(args.roomId, { gameBoard: nextBoard });
   },
 });
