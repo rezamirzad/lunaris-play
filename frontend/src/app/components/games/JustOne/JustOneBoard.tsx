@@ -17,6 +17,7 @@ import ArcadePlayerGrid from "../../arcade/ArcadePlayerGrid";
 import { useAdmin } from "@/app/admin/AdminGateway";
 import { useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
+import DataPacket from "./DataPacket";
 
 export default function JustOneBoard({ roomId, roomData, history = [] }: BoardProps) {
   const { t } = useTranslation();
@@ -122,16 +123,33 @@ export default function JustOneBoard({ roomId, roomData, history = [] }: BoardPr
                        </div>
                     </motion.div>
                  ) : board.phase === "ROUND_RESULTS" ? (
-                    <motion.div key="results" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center p-6">
+                    <motion.div key="results" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center p-6 w-full flex flex-col items-center">
                        <span className="text-[8rem] filter drop-shadow-[0_0_50px_rgba(255,255,255,0.2)] block mb-4">
                           {(history[0]?.data as any)?.card === "Correct" ? "✨" : "💀"}
                        </span>
-                       <h2 className={`text-6xl font-black tracking-tighter uppercase italic mb-2 ${ (history[0]?.data as any)?.card === "Correct" ? "text-cyan-400" : "text-rose-500" }`}>
+                       <h2 className={`text-6xl font-black tracking-tighter uppercase italic mb-8 ${ (history[0]?.data as any)?.card === "Correct" ? "text-cyan-400" : "text-rose-500" }`}>
                           {(history[0]?.data as any)?.card === "Correct" ? t.justone_transmission_success : t.justone_security_override}
                        </h2>
+
+                       <div className="flex flex-wrap gap-4 justify-center mt-4 max-w-4xl">
+                         {Object.entries(board.clues || {}).map(([pId, clue]) => {
+                           const authorName = players.find(p => p._id === pId)?.name || "Unknown";
+                           const isCanceled = board.canceledClues?.includes(pId as any);
+                           return (
+                             <div key={pId} className="w-48">
+                               <DataPacket 
+                                 clue={clue as string} 
+                                 playerName={authorName} 
+                                 isCanceled={isCanceled} 
+                                 isInteractable={false}
+                               />
+                             </div>
+                           );
+                         })}
+                       </div>
                        
                        {isFinished && (
-                          <div className="mt-10">
+                          <div className="mt-12">
                              <button onClick={() => (window.location.href = "/")} className="px-16 py-6 bg-cyan-500 text-cyan-950 font-black text-2xl uppercase italic rounded-3xl shadow-[0_10px_40px_rgba(6,182,212,0.3)] hover:scale-105 active:scale-95 transition-all">
                                {t.exit}
                              </button>

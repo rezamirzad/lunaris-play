@@ -237,14 +237,15 @@ export async function handleActionInternal(ctx: GameMutationCtx, args: {
       if (currentConfirmed.includes(player._id)) return { success: true };
       const newConfirmed = [...currentConfirmed, player._id];
       const players = await ctx.db.query("players").withIndex("by_room", q => q.eq("roomId", room._id)).collect();
-      const nonActivePlayers = players.filter((p) => p._id !== board.activePlayerId);
-      const allConfirmed = nonActivePlayers.every((p) => newConfirmed.includes(p._id));
+      
+      const humanClueGivers = players.filter((p) => p._id !== board.activePlayerId && !p.isBot);
+      const allHumansConfirmed = humanClueGivers.every((p) => newConfirmed.includes(p._id));
 
       await ctx.db.patch(room._id, {
-        gameBoard: { ...board, confirmedPlayers: newConfirmed, phase: allConfirmed ? "GUESSING" : "VALIDATION" },
+        gameBoard: { ...board, confirmedPlayers: newConfirmed, phase: allHumansConfirmed ? "GUESSING" : "VALIDATION" },
       });
 
-      if (allConfirmed) {
+      if (allHumansConfirmed) {
         await ctx.scheduler.runAfter(0, internal.bots.manager.dispatchBotTurn, { roomId: room._id });
       }
     }
@@ -263,7 +264,16 @@ export async function handleActionInternal(ctx: GameMutationCtx, args: {
         await logHistoryEvent(ctx, room._id, { key: "LOG_DISCARD", data: { player: player.name, card: "Correct" } });
         await ctx.db.patch(room._id, { gameBoard: { ...board, score: board.score + 1, phase: "ROUND_RESULTS" } as any });
       } else {
-        await ctx.db.patch(room._id, { gameBoard: { ...board, lastGuess: args.guess, lenientVotes: {}, phase: "LENIENT_VALIDATION" } });
+        const players = await ctx.db.query("players").withIndex("by_room", q => q.eq("roomId", room._id)).collect();
+        const humanVoters = players.filter(p => !p.isBot && p._id !== board.activePlayerId);
+
+        if (humanVoters.length === 0) {
+          // If no humans exist to judge the typo, it's considered wrong automatically
+          await logHistoryEvent(ctx, room._id, { key: "LOG_DISCARD", data: { player: player.name, card: "Wrong" } });
+          await ctx.db.patch(room._id, { gameBoard: { ...board, lastGuess: args.guess, phase: "ROUND_RESULTS" } as any });
+        } else {
+          await ctx.db.patch(room._id, { gameBoard: { ...board, lastGuess: args.guess, lenientVotes: {}, phase: "LENIENT_VALIDATION" } });
+        }
       }
     }
 
@@ -271,13 +281,14 @@ export async function handleActionInternal(ctx: GameMutationCtx, args: {
       if (board.phase !== "LENIENT_VALIDATION") throw new Error("Not in lenient validation phase");
       const newVotes = { ...board.lenientVotes, [player._id]: !!args.isCorrect };
       const players = await ctx.db.query("players").withIndex("by_room", q => q.eq("roomId", room._id)).collect();
-      const nonActivePlayers = players.filter((p) => p._id !== board.activePlayerId);
-      const allVoted = nonActivePlayers.every((p) => newVotes[p._id] !== undefined);
+      const humanVoters = players.filter((p) => !p.isBot && p._id !== board.activePlayerId);
+      const allVoted = humanVoters.every((p) => newVotes[p._id] !== undefined);
 
       if (allVoted) {
-        const allCorrect = nonActivePlayers.every((p) => newVotes[p._id] === true);
+        // Require unanimous human consensus to accept a typo
+        const allCorrect = humanVoters.every((p) => newVotes[p._id] === true);
         const newScore = allCorrect ? board.score + 1 : board.score;
-        await logHistoryEvent(ctx, room._id, { key: "LOG_DISCARD", data: { player: player.name, card: allCorrect ? "Correct" : "Wrong" } });
+        await logHistoryEvent(ctx, room._id, { key: "LOG_DISCARD", data: { player: board.activePlayerId === player._id ? player.name : "Team", card: allCorrect ? "Correct" : "Wrong" } });
         await ctx.db.patch(room._id, { gameBoard: { ...board, score: newScore, phase: "ROUND_RESULTS", lenientVotes: newVotes } as any });
       } else {
         await ctx.db.patch(room._id, { gameBoard: { ...board, lenientVotes: newVotes } });

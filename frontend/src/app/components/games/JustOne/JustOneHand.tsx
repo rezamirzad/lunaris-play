@@ -267,17 +267,22 @@ export default function JustOneHand({
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1 overflow-y-auto no-scrollbar pb-32">
-                {Object.entries(board.clues).map(([pId, clue]) => (
-                  <DataPacket
-                    key={pId}
-                    clue={clue}
-                    isCanceled={board.canceledClues.includes(
-                      pId as Doc<"players">["_id"],
-                    )}
-                    isInteractable={true}
-                    onClick={() => handleToggleCancel(pId)}
-                  />
-                ))}
+                {Object.entries(board.clues).map(([pId, clue]) => {
+                  const authorName =
+                    room.players.find((p) => p._id === pId)?.name || "Unknown";
+                  return (
+                    <DataPacket
+                      key={pId}
+                      clue={clue as string}
+                      playerName={authorName}
+                      isCanceled={board.canceledClues.includes(
+                        pId as Doc<"players">["_id"],
+                      )}
+                      isInteractable={true}
+                      onClick={() => handleToggleCancel(pId)}
+                    />
+                  );
+                })}
               </div>
 
               <div className="absolute bottom-8 left-8 right-8 z-[100]">

@@ -252,8 +252,7 @@ export const applyAIResult = internalMutation({
         const { handleActionInternal } = (require as any)("../justone");
         await handleActionInternal(ctx, {
             playerId: args.playerId,
-            actionType: board.phase === "CLUE_INPUT" ? "SUBMIT_CLUE" : 
-                        board.phase === "VALIDATION" ? "FINISH_VALIDATION" : "SUBMIT_GUESS",
+            actionType: board.phase === "CLUE_INPUT" ? "SUBMIT_CLUE" : "SUBMIT_GUESS",
             clue: args.result.clue,
             clues: args.result.clues,
             guess: args.result.guess
