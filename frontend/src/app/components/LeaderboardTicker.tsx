@@ -106,7 +106,7 @@ export default function LeaderboardTicker() {
     });
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 bg-zinc-950/80 border border-white/10 backdrop-blur-2xl overflow-hidden py-3.5 rounded-[2rem] z-[100] group shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+    <div className="w-full bg-zinc-900/40 border border-white/5 backdrop-blur-md overflow-hidden py-3 rounded-2xl relative z-50 group">
       <motion.div
         className="flex w-max whitespace-nowrap"
         animate={{
@@ -132,12 +132,9 @@ export default function LeaderboardTicker() {
         </div>
       </motion.div>
 
-      {/* Decorative Edges with deeper gradients for the "lock" feel */}
-      <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-zinc-950 to-transparent pointer-events-none z-10" />
-      <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-zinc-950 to-transparent pointer-events-none z-10" />
-      
-      {/* Visual Indicator of 'Full Lock' status */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 h-[1px] bg-gradient-to-r from-transparent via-teal-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      {/* Decorative Edges */}
+      <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#050505] to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#050505] to-transparent pointer-events-none z-10" />
     </div>
   );
 }

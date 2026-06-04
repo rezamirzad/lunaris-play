@@ -62,10 +62,10 @@ function HomeContent() {
     setError(null);
     try {
       await getOrCreateUser({ name: nameInput });
-      const result = await joinRoom({ 
-        roomCode: cleanCode, 
+      const result = await joinRoom({
+        roomCode: cleanCode,
         playerName: nameInput,
-        playerId: (playerId || undefined) as any
+        playerId: (playerId || undefined) as any,
       });
       setPlayerName(nameInput);
       setPlayerId(result.playerId);
@@ -81,7 +81,6 @@ function HomeContent() {
       } else {
         setError((t as any).invalidRoomCode || "Invalid room code");
       }
-
     }
   };
 
@@ -97,7 +96,7 @@ function HomeContent() {
   return (
     <main
       lang={lang}
-      className={`min-h-[100dvh] bg-app text-content-base p-4 sm:p-8 md:p-12 transition-all duration-500 relative overflow-hidden pt-[env(safe-area-inset-top)] pb-32 sm:pb-40 ${lang === "fa" ? "fa-text-fix" : ""}`}
+      className={`min-h-[100dvh] bg-app text-content-base p-4 sm:p-8 md:p-12 transition-all duration-500 relative overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] ${lang === "fa" ? "fa-text-fix" : ""}`}
     >
       <AnimatePresence>
         {isChanging && (
@@ -165,10 +164,17 @@ function HomeContent() {
             </button>
           ))}
         </motion.div>
-      </header>
 
-      {/* Global Leaderboard Ticker (Fixed Bottom via 'Full Lock' pattern) */}
-      <LeaderboardTicker />
+        {/* Repositioned Hall of Fame Ticker */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="w-full"
+        >
+          <LeaderboardTicker />
+        </motion.div>
+      </header>
 
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 relative z-10">
         <div className="lg:col-span-4 space-y-10">
