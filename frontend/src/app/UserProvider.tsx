@@ -10,7 +10,7 @@ interface UserContextType {
   setPlayerName: (name: string) => void;
   playerId: string | undefined;
   setPlayerId: (id: string | undefined) => void;
-  user: Doc<"profiles"> | null | undefined;
+  user: Doc<"users"> | null | undefined;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);

@@ -19,7 +19,7 @@ export default function Leaderboard() {
 
   // Filter out any admin nodes
   const leaderboard = rawLeaderboard?.filter(
-    (u) => u.name.toUpperCase() !== "ADMIN_NODE"
+    (u) => u.name && u.name.toUpperCase() !== "ADMIN_NODE"
   );
 
   if (!leaderboard || leaderboard.length === 0) return null;
@@ -44,23 +44,23 @@ export default function Leaderboard() {
               <div className="w-10 text-[10px] font-black text-zinc-700 group-hover:text-teal-400 transition-colors">
                 {ordinalRank}
               </div>
-              <NodeGlyph name={user.name} size="sm" />
+              <NodeGlyph name={user.name || "Unknown"} size="sm" />
               <div className="flex flex-col">
                 <span className="text-sm font-black italic text-white uppercase tracking-tight">
                   {user.name}
                 </span>
                 <span className="text-[7px] text-zinc-600 font-bold uppercase tracking-widest">
                   {t.game}:{" "}
-                  {isFA ? toPersianDigits(user.gamesPlayed) : user.gamesPlayed}{" "}
+                  {isFA ? toPersianDigits(user.gamesPlayed || 0) : (user.gamesPlayed || 0)}{" "}
                   {" // "} {t.wins}: {" "}
-                  {isFA ? toPersianDigits(user.wins) : user.wins}
+                  {isFA ? toPersianDigits(user.wins || 0) : (user.wins || 0)}
                 </span>
               </div>
             </div>
 
             <div className="flex flex-col items-end">
               <span className="text-lg font-black italic tracking-tighter text-teal-400 shadow-teal-500/20">
-                {isFA ? toPersianDigits(user.totalScore) : user.totalScore}
+                {isFA ? toPersianDigits(user.totalScore || 0) : (user.totalScore || 0)}
               </span>
               <span className="text-[6px] text-zinc-600 font-black uppercase tracking-widest">
                 {t.shared_score}

@@ -25,7 +25,7 @@ export async function updateLeaderboardAtGameEnd(ctx: GameMutationCtx, room: Doc
   const board = room.gameBoard as any;
   for (const p of players) {
     const profile = await ctx.db
-      .query("profiles")
+      .query("users")
       .withIndex("by_name", (q) => q.eq("name", p.name))
       .unique();
 
@@ -54,9 +54,9 @@ export async function updateLeaderboardAtGameEnd(ctx: GameMutationCtx, room: Doc
       }
 
       await ctx.db.patch(profile._id, {
-        wins: profile.wins + (isThisPlayerWinner ? 1 : 0),
-        gamesPlayed: profile.gamesPlayed + 1,
-        totalScore: profile.totalScore + currentScore,
+        wins: (profile.wins || 0) + (isThisPlayerWinner ? 1 : 0),
+        gamesPlayed: (profile.gamesPlayed || 0) + 1,
+        totalScore: (profile.totalScore || 0) + currentScore,
       });
     }
   }

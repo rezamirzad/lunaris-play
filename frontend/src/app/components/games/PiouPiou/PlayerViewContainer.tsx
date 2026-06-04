@@ -96,7 +96,7 @@ export default function PiouPiouPlayerView({
       const indices = selectedCards.map((k) => parseInt(k.split("-")[1]));
       const cards = selectedCards.map((k) => k.split("-")[0].toUpperCase());
 
-      await playAction({
+      const response = await playAction({
         playerId: player._id,
         indices,
         cards,
@@ -106,6 +106,11 @@ export default function PiouPiouPlayerView({
           : undefined,
       });
 
+      if (response && (response as any).error) {
+        console.error("[LUMZ_CRITICAL]: Action rejected by server:", (response as any).error);
+        return; // Preserve selection if action was invalid
+      }
+
       setSelectedCards([]);
       setTargetId(null);
     } catch (error) {
@@ -114,8 +119,22 @@ export default function PiouPiouPlayerView({
   };
 
   const isTargetRequired = protocol === "STEAL_EGG";
-  const canExecute =
-    isMyTurn && protocol && (!isTargetRequired || targetId) && !isGameFinished;
+  const canExecute = useMemo(() => {
+    if (!isMyTurn || !protocol || isGameFinished) return false;
+    if (isTargetRequired && !targetId) return false;
+
+    // Enforce game rules strictly on the client
+    if (protocol === "HATCH" && (playerState?.eggs || 0) < 1) return false;
+
+    return true;
+  }, [
+    isMyTurn,
+    protocol,
+    isTargetRequired,
+    targetId,
+    isGameFinished,
+    playerState?.eggs,
+  ]);
   const otherPlayers = roomData.players.filter(
     (p) => String(p._id) !== String(player._id),
   );

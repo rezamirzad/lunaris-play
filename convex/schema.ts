@@ -30,7 +30,11 @@ export default defineSchema({
     lastLogin: v.optional(v.number()),
     totalScore: v.optional(v.number()),
     wins: v.optional(v.number()),
-  }).index("by_email", ["email"]),
+    isAdmin: v.optional(v.boolean()),
+  })
+    .index("by_email", ["email"])
+    .index("by_name", ["name"])
+    .index("by_totalScore", ["totalScore"]),
 
   games: defineTable({
     slug: v.string(),
@@ -280,18 +284,6 @@ export default defineSchema({
     data: v.any(), // Game-specific submission data
     timestamp: v.number(),
   }).index("by_room_player", ["roomId", "playerId"]),
-
-  profiles: defineTable({
-    name: v.string(),
-    totalScore: v.number(),
-    wins: v.number(),
-    gamesPlayed: v.number(),
-    lastLogin: v.number(),
-    userId: v.optional(v.string()), // To link with auth user ID later
-    isAdmin: v.optional(v.boolean()), // RBAC Role
-  }).index("by_name", ["name"])
-    .index("by_totalScore", ["totalScore"])
-    .index("by_userId", ["userId"]),
 
   security_logs: defineTable({
     event: v.string(),

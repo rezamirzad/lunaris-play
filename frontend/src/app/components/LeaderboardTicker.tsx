@@ -15,7 +15,7 @@ export default function LeaderboardTicker() {
 
   // Filter out any admin nodes that might have slipped through the backend
   const leaderboard = rawLeaderboard?.filter(
-    (u) => u.name.toUpperCase() !== "ADMIN_NODE"
+    (u) => u.name && u.name.toUpperCase() !== "ADMIN_NODE"
   );
 
   if (!leaderboard || leaderboard.length === 0) return null;

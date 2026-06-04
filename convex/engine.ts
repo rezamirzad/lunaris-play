@@ -84,9 +84,9 @@ export const getRoomState = query({
 export const getLeaderboard = query({
   args: {},
   handler: async (ctx) => {
-    const profiles = await ctx.db.query("profiles").collect();
-    return profiles
-      .filter((p) => p.name.toUpperCase() !== "ADMIN_NODE" && !p.isAdmin)
+    const users = await ctx.db.query("users").collect();
+    return users
+      .filter((u) => u.name && u.name.toUpperCase() !== "ADMIN_NODE" && !u.isAdmin)
       .sort((a, b) => (b.wins || 0) - (a.wins || 0))
       .slice(0, 10);
   },
@@ -96,7 +96,7 @@ export const getUser = query({
   args: { name: v.string() },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query("profiles")
+      .query("users")
       .withIndex("by_name", (q) => q.eq("name", args.name))
       .unique();
   },
@@ -107,7 +107,7 @@ export const getOrCreateUser = mutation({
   handler: async (ctx, args) => {
     // Fallback to name-based lookup (legacy/guest)
     const existingByName = await ctx.db
-      .query("profiles")
+      .query("users")
       .withIndex("by_name", (q) => q.eq("name", args.name))
       .unique();
 
@@ -116,7 +116,7 @@ export const getOrCreateUser = mutation({
       return existingByName._id;
     }
 
-    return await ctx.db.insert("profiles", {
+    return await ctx.db.insert("users", {
       name: args.name,
       totalScore: 0,
       wins: 0,
@@ -306,12 +306,12 @@ export const joinRoom = mutation({
 
     // ENSURE PROFILE EXISTS for leaderboard tracking
     const profile = await ctx.db
-      .query("profiles")
+      .query("users")
       .withIndex("by_name", (q) => q.eq("name", args.playerName))
       .unique();
 
       if (!profile) {
-      await ctx.db.insert("profiles", {
+      await ctx.db.insert("users", {
         name: args.playerName,
         totalScore: 0,
         wins: 0,
