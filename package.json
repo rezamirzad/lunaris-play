@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "cd frontend && npx convex codegen && npx next build"
+    "build": "npx convex deploy && cd frontend && npx convex codegen && npx next build"
   },
   "dependencies": {
     "@auth/core": "^0.37.0",
