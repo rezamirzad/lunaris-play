@@ -172,6 +172,29 @@ export const executeMove = internalMutation({
         cardImages
       });
     }
+    else if (room.currentGame === "justone") {
+      const language = board.language || "en";
+      
+      let targetWord: string | undefined;
+      let providedClues: string[] | undefined;
+
+      if (board.phase === "CLUE_INPUT") {
+        targetWord = board.mysteryWord[language as keyof typeof board.mysteryWord] || board.mysteryWord.en;
+      } else if (board.phase === "GUESSING") {
+        providedClues = Object.entries(board.clues || {})
+          .filter(([pId]) => !(board.canceledClues || []).includes(pId))
+          .map(([_, clue]) => clue as string);
+      }
+
+      await ctx.scheduler.runAfter(0, (internal as any).bots.justone_ai.processJustOneLocalAITurn, {
+        roomId: room._id,
+        playerId: player._id,
+        phase: board.phase,
+        language,
+        targetWord,
+        providedClues
+      });
+    }
   },
 });
 
@@ -229,7 +252,8 @@ export const applyAIResult = internalMutation({
         const { handleActionInternal } = (require as any)("../justone");
         await handleActionInternal(ctx, {
             playerId: args.playerId,
-            actionType: board.phase === "CLUE_INPUT" ? "SUBMIT_CLUE" : "SUBMIT_GUESS",
+            actionType: board.phase === "CLUE_INPUT" ? "SUBMIT_CLUE" : 
+                        board.phase === "VALIDATION" ? "FINISH_VALIDATION" : "SUBMIT_GUESS",
             clue: args.result.clue,
             clues: args.result.clues,
             guess: args.result.guess
