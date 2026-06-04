@@ -96,6 +96,36 @@ export const getUser = query({
   },
 });
 
+export const promoteToAdmin = mutation({
+  args: { email: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("email"), args.email))
+      .unique();
+    if (!user) throw new Error("User not found");
+
+    const profile = await ctx.db
+      .query("profiles")
+      .withIndex("by_userId", (q) => q.eq("userId", user._id))
+      .unique();
+
+    if (profile) {
+      await ctx.db.patch(profile._id, { isAdmin: true });
+    } else {
+      await ctx.db.insert("profiles", {
+        name: user.name || args.email.split("@")[0],
+        totalScore: 0,
+        wins: 0,
+        gamesPlayed: 0,
+        lastLogin: Date.now(),
+        userId: user._id,
+        isAdmin: true,
+      });
+    }
+  },
+});
+
 export const getOrCreateUser = mutation({
   args: { name: v.string() },
   handler: async (ctx, args) => {

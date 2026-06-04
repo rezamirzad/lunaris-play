@@ -25,6 +25,7 @@ export default function AdminGateway({
   const isAdmin = useQuery(api.engine.checkAdminStatus);
   const isCheckingAdmin = isAdmin === undefined;
 
+  const [flow, setFlow] = useState<"signIn" | "signUp">("signIn");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,15 +39,15 @@ export default function AdminGateway({
     );
   }
 
-  const handleSignIn = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
     try {
-      await signIn("password", { email, password, flow: "signIn" });
+      await signIn("password", { email, password, flow });
     } catch (err: any) {
-      console.error("Sign in failed:", err);
-      setError("Invalid email or password");
+      console.error("Auth failed:", err);
+      setError(flow === "signIn" ? "Invalid email or password" : "Could not create account");
     } finally {
       setIsSubmitting(false);
     }
@@ -65,11 +66,11 @@ export default function AdminGateway({
               Access Restricted
             </span>
             <h1 className="text-2xl font-black text-white uppercase tracking-tighter italic">
-              ADMIN LOGIN
+              ADMIN {flow === "signIn" ? "LOGIN" : "SETUP"}
             </h1>
           </div>
 
-          <form onSubmit={handleSignIn} className="flex flex-col gap-4 text-left">
+          <form onSubmit={handleAuth} className="flex flex-col gap-4 text-left">
             <div className="space-y-2">
               <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">
                 Email Address
@@ -108,7 +109,15 @@ export default function AdminGateway({
               disabled={isSubmitting}
               className="w-full py-4 bg-white text-black font-black uppercase rounded-xl tracking-widest hover:bg-brand-accent hover:text-white transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed mt-4"
             >
-              {isSubmitting ? "Uplinking..." : "Establish Link"}
+              {isSubmitting ? "Uplinking..." : flow === "signIn" ? "Establish Link" : "Initialize Admin"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setFlow(flow === "signIn" ? "signUp" : "signIn")}
+              className="text-xs font-black text-zinc-400 uppercase tracking-widest text-center hover:text-white transition-colors border-b border-white/10 pb-1 mt-2 mx-auto"
+            >
+              {flow === "signIn" ? "Need to create an account?" : "Already have an account?"}
             </button>
           </form>
 
@@ -138,15 +147,24 @@ export default function AdminGateway({
           </div>
 
           <p className="text-sm text-zinc-400 leading-relaxed italic opacity-80">
-            &quot;Your profile does not have administrative privileges. Please contact the mainframe administrator.&quot;
+            &quot;Your profile does not have administrative privileges. If you just created this account, you must be promoted via the CLI.&quot;
           </p>
 
-          <button
-            onClick={() => signOut()}
-            className="w-full py-4 bg-white/5 border border-white/10 text-zinc-400 font-black uppercase rounded-xl tracking-widest hover:bg-rose-500 hover:text-white transition-all shadow-2xl"
-          >
-            TERMINATE SESSION
-          </button>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => signOut()}
+              className="w-full py-4 bg-white text-black font-black uppercase rounded-xl tracking-widest hover:bg-brand-accent transition-all shadow-2xl"
+            >
+              LOGOUT & TRY AGAIN
+            </button>
+            
+            <button
+              onClick={() => (window.location.href = "/")}
+              className="text-[10px] font-black text-zinc-500 uppercase tracking-widest hover:text-white transition-colors"
+            >
+              Return to Arcade
+            </button>
+          </div>
         </motion.div>
       </div>
     );
