@@ -452,11 +452,11 @@ export function toPersianDigits(num: string | number): string {
 /**
  * Surgical fix for punctuation detachment in RTL text within LTR containers.
  */
-export function fixRTLPunctuation(text: string): string {
-  if (!text) return text;
+export function fixRTLPunctuation(text: string, lang?: Language): string {
+  if (!text || (lang && lang !== "fa")) return text;
   // If text ends with ! or ?, move it to the start for RTL appearance in LTR boxes
   if (text.endsWith("!")) return "!" + text.slice(0, -1);
-  if (text.endsWith("؟")) return "?" + text.slice(0, -1);
+  if (text.endsWith("؟")) return "؟" + text.slice(0, -1);
   return text;
 }
 
