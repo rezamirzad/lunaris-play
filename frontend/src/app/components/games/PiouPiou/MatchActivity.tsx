@@ -34,31 +34,31 @@ export default function MatchActivity({ log }: { log: ActivityLog }) {
     case "LOG_VICTORY":
       return (
         <span className="text-yellow-500 font-black italic">
-          🏆 {formatLog(template, log.data, lang)}
+          🏆 {formatLog(template, log.data)}
         </span>
       );
     case "LOG_HATCH":
       return (
         <span className="text-emerald-400 font-bold">
-          {formatLog(template, log.data, lang)}
+          {formatLog(template, log.data)}
         </span>
       );
     case "LOG_LAY_EGG":
       return (
         <span className="text-zinc-200">
-          {formatLog(template, log.data, lang)}
+          {formatLog(template, log.data)}
         </span>
       );
     case "LOG_FOX_SUCCESS":
       return (
         <span className="text-orange-500 font-bold">
-          {formatLog(template, log.data, lang)}
+          {formatLog(template, log.data)}
         </span>
       );
     case "LOG_FOX_BLOCKED":
       return (
         <span className="text-blue-400 font-bold">
-          🛡️ {formatLog(template, log.data, lang)}
+          🛡️ {formatLog(template, log.data)}
         </span>
       );
     case "LOG_DISCARD":
@@ -68,8 +68,7 @@ export default function MatchActivity({ log }: { log: ActivityLog }) {
           <span className="text-white tracking-tighter">
             {formatLog(
               template,
-              { ...log.data, card: `${asset.icon} ${translatedCardName}` },
-              lang,
+              { ...log.data, card: `${asset.icon} ${translatedCardName}` }
             )}
           </span>
         </span>

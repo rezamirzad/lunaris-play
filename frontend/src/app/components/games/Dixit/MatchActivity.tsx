@@ -25,7 +25,7 @@ export default function MatchActivity({ log }: { log: ActivityLog }) {
        <span className="text-[8px] font-black text-zinc-600 tabular-nums shrink-0 mt-1">[{formatTime()}]</span>
        <div className="flex flex-col">
           <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-tight">
-             {t[log.key as keyof TranslationSet] ? formatLog(t[log.key as keyof TranslationSet], log.data, lang) : log.key}
+             {t[log.key as keyof TranslationSet] ? formatLog(t[log.key as keyof TranslationSet], log.data) : log.key}
           </span>
        </div>
     </div>

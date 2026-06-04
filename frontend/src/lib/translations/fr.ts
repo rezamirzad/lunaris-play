@@ -435,5 +435,12 @@ export const fr: TranslationSet = {
     accept: "DONNER OEUF",
     unknown_predator: "Prédateur Inconnu",
     storyteller: "Conteur",
+    matchActivity: "Activité du match",
+    boot_preparing: "Préparation",
+    boot_syncing: "Synchronisation",
+    boot_loading: "Chargement",
+    boot_starting: "Démarrage",
+    boot_ready: "Prêt",
+    lobby: "SALON",
     rank_out_of: "Rang {rank} / {total}",
 };

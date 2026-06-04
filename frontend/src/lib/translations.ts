@@ -431,7 +431,13 @@ export interface TranslationSet {
   accept: string;
   unknown_predator: string;
   storyteller: string;
-  ready: string;
+  matchActivity: string;
+  boot_preparing: string;
+  boot_syncing: string;
+  boot_loading: string;
+  boot_starting: string;
+  boot_ready: string;
+  lobby: string;
   rank_out_of: string;
 }
 

@@ -77,7 +77,7 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
       header={
         <ArcadeHUD
           title={t.timeattack_title}
-          statusLabel={formatLog(t.timeattack_round_protocol, { round: isFA ? toPersianDigits(board.currentRound) : board.currentRound }, lang)}
+          statusLabel={formatLog(t.timeattack_round_protocol, { round: isFA ? toPersianDigits(board.currentRound) : board.currentRound })}
           badgeContent={board.phase === "ROUND_REVEAL" ? t.timeattack_round_victor : t.statusLive}
           accentColor="rose"
           onHaltToggle={isAdmin && adminPassword ? () => toggleHaltMutation({ roomId: roomId as any, adminPassword }) : undefined}
@@ -100,7 +100,7 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
                         <div className="flex items-center gap-2">
                            <span className="text-rose-500/50">›</span>
                            <span className={log.key.includes("VICTORY") ? "text-rose-400 font-black italic" : "text-zinc-500"}>
-                              {t[log.key as keyof typeof t] ? formatLog(t[log.key as keyof typeof t] as string, log.data, lang) : log.key}
+                              {t[log.key as keyof typeof t] ? formatLog(t[log.key as keyof typeof t] as string, log.data) : log.key}
                            </span>
                         </div>
                      )}

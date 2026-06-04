@@ -435,5 +435,12 @@ export const en: TranslationSet = {
     accept: "GIVE EGG",
     unknown_predator: "Unknown Predator",
     storyteller: "Storyteller",
+    matchActivity: "Match Activity",
+    boot_preparing: "Preparing",
+    boot_syncing: "Syncing",
+    boot_loading: "Loading",
+    boot_starting: "Starting",
+    boot_ready: "Ready",
+    lobby: "LOBBY",
     rank_out_of: "Rank {rank} / {total}",
 };

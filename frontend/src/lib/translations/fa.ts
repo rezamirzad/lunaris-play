@@ -435,5 +435,12 @@ export const fa: TranslationSet = {
     accept: "تسلیم تخم",
     unknown_predator: "شکارچی ناشناخته",
     storyteller: "داستان‌گو",
+    matchActivity: "فعالیت بازی",
+    boot_preparing: "در حال آماده‌سازی",
+    boot_syncing: "در حال همگام‌سازی",
+    boot_loading: "در حال بارگذاری",
+    boot_starting: "در حال شروع",
+    boot_ready: "آماده",
+    lobby: "لابی",
     rank_out_of: "رتبه {rank} از {total}",
 };

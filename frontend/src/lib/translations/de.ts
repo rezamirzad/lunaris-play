@@ -435,5 +435,12 @@ export const de: TranslationSet = {
     accept: "EI GEBEN",
     unknown_predator: "Unbekannter Räuber",
     storyteller: "Erzähler",
+    matchActivity: "Spielverlauf",
+    boot_preparing: "Vorbereitung",
+    boot_syncing: "Synchronisierung",
+    boot_loading: "Laden",
+    boot_starting: "Starten",
+    boot_ready: "Bereit",
+    lobby: "LOBBY",
     rank_out_of: "Rang {rank} / {total}",
 };
