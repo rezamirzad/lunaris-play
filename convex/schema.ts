@@ -17,6 +17,21 @@ const HistoryEvent = v.union(
 
 export default defineSchema({
   ...authTables,
+  users: defineTable({
+    name: v.optional(v.string()),
+    image: v.optional(v.string()),
+    email: v.optional(v.string()),
+    emailVerificationTime: v.optional(v.number()),
+    phone: v.optional(v.string()),
+    phoneVerificationTime: v.optional(v.number()),
+    isAnonymous: v.optional(v.boolean()),
+    // Custom stats fields found in the database
+    gamesPlayed: v.optional(v.number()),
+    lastLogin: v.optional(v.number()),
+    totalScore: v.optional(v.number()),
+    wins: v.optional(v.number()),
+  }).index("by_email", ["email"]),
+
   games: defineTable({
     slug: v.string(),
     title: v.string(),
