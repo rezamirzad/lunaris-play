@@ -435,4 +435,5 @@ export const en: TranslationSet = {
     accept: "GIVE EGG",
     unknown_predator: "Unknown Predator",
     storyteller: "Storyteller",
+    rank_out_of: "Rank {rank} / {total}",
 };

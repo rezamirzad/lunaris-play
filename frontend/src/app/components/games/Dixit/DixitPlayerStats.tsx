@@ -37,8 +37,7 @@ export default function DixitPlayerStats({
     {
       rank: rankDisplay,
       total: totalDisplay,
-    },
-    lang,
+    }
   );
 
   return (

@@ -432,6 +432,7 @@ export interface TranslationSet {
   unknown_predator: string;
   storyteller: string;
   ready: string;
+  rank_out_of: string;
 }
 
 export const translations: Record<Language, TranslationSet> = {

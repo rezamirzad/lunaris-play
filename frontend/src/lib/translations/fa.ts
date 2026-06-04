@@ -435,4 +435,5 @@ export const fa: TranslationSet = {
     accept: "تسلیم تخم",
     unknown_predator: "شکارچی ناشناخته",
     storyteller: "داستان‌گو",
+    rank_out_of: "رتبه {rank} از {total}",
 };

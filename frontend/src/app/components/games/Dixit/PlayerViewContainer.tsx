@@ -43,8 +43,7 @@ export default function DixitPlayerView({
     {
       rank: rankDisplay,
       total: totalDisplay,
-    },
-    lang,
+    }
   );
 
   // Localized clue logic for the player's device

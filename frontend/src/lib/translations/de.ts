@@ -435,4 +435,5 @@ export const de: TranslationSet = {
     accept: "EI GEBEN",
     unknown_predator: "Unbekannter Räuber",
     storyteller: "Erzähler",
+    rank_out_of: "Rang {rank} / {total}",
 };
