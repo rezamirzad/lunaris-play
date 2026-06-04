@@ -15,6 +15,14 @@ const shuffle = <T>(array: T[]) => {
   return newArray;
 };
 
+/**
+ * Internal helper to validate admin access
+ */
+const validateAdmin = (password: string) => {
+  const adminPass = process.env.ADMIN_PASSWORD || "LUNARIS2026";
+  return password === adminPass;
+};
+
 // --- QUERIES ---
 
 export const listGames = query({
@@ -46,7 +54,7 @@ export const getRoomState = query({
       )
       .unique();
 
-    if (!room) return null;
+          if (!room) return null;
 
     const players = await ctx.db
       .query("players")
@@ -76,11 +84,9 @@ export const getRoomState = query({
 export const getLeaderboard = query({
   args: {},
   handler: async (ctx) => {
-    const profiles = await ctx.db
-      .query("profiles")
-      .filter((q) => q.neq(q.field("name"), "ADMIN_NODE"))
-      .collect();
+    const profiles = await ctx.db.query("profiles").collect();
     return profiles
+      .filter((p) => p.name.toUpperCase() !== "ADMIN_NODE" && !p.isAdmin)
       .sort((a, b) => (b.wins || 0) - (a.wins || 0))
       .slice(0, 10);
   },
@@ -96,67 +102,17 @@ export const getUser = query({
   },
 });
 
-export const promoteToAdmin = mutation({
-  args: { email: v.string() },
-  handler: async (ctx, args) => {
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("email"), args.email))
-      .unique();
-    if (!user) throw new Error("User not found");
-
-    const profile = await ctx.db
-      .query("profiles")
-      .withIndex("by_userId", (q) => q.eq("userId", user._id))
-      .unique();
-
-    if (profile) {
-      await ctx.db.patch(profile._id, { isAdmin: true });
-    } else {
-      await ctx.db.insert("profiles", {
-        name: user.name || args.email.split("@")[0],
-        totalScore: 0,
-        wins: 0,
-        gamesPlayed: 0,
-        lastLogin: Date.now(),
-        userId: user._id,
-        isAdmin: true,
-      });
-    }
-  },
-});
-
 export const getOrCreateUser = mutation({
   args: { name: v.string() },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    const userId = identity?.subject;
-
-    // Try to find by authenticated userId first
-    if (userId) {
-      const existingByUser = await ctx.db
-        .query("profiles")
-        .filter((q) => q.eq(q.field("userId"), userId))
-        .unique();
-      if (existingByUser) {
-        await ctx.db.patch(existingByUser._id, { lastLogin: Date.now() });
-        return existingByUser._id;
-      }
-    }
-
     // Fallback to name-based lookup (legacy/guest)
     const existingByName = await ctx.db
       .query("profiles")
       .withIndex("by_name", (q) => q.eq("name", args.name))
       .unique();
 
-    if (existingByName) {
-      // If we are authenticated but this profile doesn't have a userId, link it!
-      if (userId && !existingByName.userId) {
-        await ctx.db.patch(existingByName._id, { userId, lastLogin: Date.now() });
-      } else {
-        await ctx.db.patch(existingByName._id, { lastLogin: Date.now() });
-      }
+      if (existingByName) {
+      await ctx.db.patch(existingByName._id, { lastLogin: Date.now() });
       return existingByName._id;
     }
 
@@ -166,7 +122,6 @@ export const getOrCreateUser = mutation({
       wins: 0,
       gamesPlayed: 0,
       lastLogin: Date.now(),
-      userId: userId,
     });
   },
 });
@@ -307,12 +262,12 @@ export const joinRoom = mutation({
       )
       .unique();
 
-    if (!room) throw new Error("Room not found");
+          if (!room) throw new Error("Room not found");
 
     // 1. Session Re-connection Check
-    if (args.playerId) {
+      if (args.playerId) {
       const player = await ctx.db.get(args.playerId);
-      if (player && player.roomId === room._id) {
+        if (player && player.roomId === room._id) {
         return { roomId: room._id, playerId: player._id };
       }
     }
@@ -324,14 +279,14 @@ export const joinRoom = mutation({
       .filter((q) => q.eq(q.field("name"), args.playerName))
       .unique();
 
-    if (existingPlayerWithName) {
+      if (existingPlayerWithName) {
       // If we don't have the matching playerId but the name is taken, it's a conflict
-      throw new Error("NAME_TAKEN");
+ throw new Error("NAME_TAKEN");
     }
 
     // 3. Status Check
-    if (room.status !== "LOBBY") {
-      throw new Error("GAME_ALREADY_STARTED");
+          if (room.status !== "LOBBY") {
+ throw new Error("GAME_ALREADY_STARTED");
     }
 
     // 4. Player Limit Check
@@ -345,8 +300,8 @@ export const joinRoom = mutation({
       .filter((q) => q.eq(q.field("slug"), room.currentGame))
       .unique();
 
-    if (game && players.length >= game.absoluteMax) {
-      throw new Error("ROOM_FULL");
+      if (game && players.length >= game.absoluteMax) {
+ throw new Error("ROOM_FULL");
     }
 
     // ENSURE PROFILE EXISTS for leaderboard tracking
@@ -355,15 +310,13 @@ export const joinRoom = mutation({
       .withIndex("by_name", (q) => q.eq("name", args.playerName))
       .unique();
 
-    if (!profile) {
-      const identity = await ctx.auth.getUserIdentity();
+      if (!profile) {
       await ctx.db.insert("profiles", {
         name: args.playerName,
         totalScore: 0,
         wins: 0,
         gamesPlayed: 0,
         lastLogin: Date.now(),
-        userId: identity?.subject,
       });
     } else {
       await ctx.db.patch(profile._id, { lastLogin: Date.now() });
@@ -388,209 +341,60 @@ export const joinRoom = mutation({
 });
 
 export const addBot = mutation({
-  args: { 
-    roomCode: v.string(), 
-  },
+  args: { roomCode: v.string(), adminPassword: v.string() },
   handler: async (ctx, args) => {
-    // 1. Verify Admin Access
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("UNAUTHORIZED");
-    const profile = await ctx.db
-      .query("profiles")
-      .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
-      .unique();
-    if (!profile?.isAdmin) throw new Error("UNAUTHORIZED");
-
-    const room = await ctx.db
-      .query("rooms")
-      .withIndex("by_roomCode", (q) =>
-        q.eq("roomCode", args.roomCode.toUpperCase()),
-      )
-      .unique();
-
+    if (!validateAdmin(args.adminPassword)) throw new Error("UNAUTHORIZED");
+    const room = await ctx.db.query("rooms").withIndex("by_roomCode", (q) => q.eq("roomCode", args.roomCode.toUpperCase())).unique();
     if (!room) throw new Error("Room not found");
     if (room.status !== "LOBBY") throw new Error("NOT_IN_LOBBY");
-
-    // 2. Player Limit Check
-    const players = await ctx.db
-      .query("players")
-      .withIndex("by_room", (q) => q.eq("roomId", room._id))
-      .collect();
-    
-    const game = await ctx.db
-      .query("games")
-      .filter((q) => q.eq(q.field("slug"), room.currentGame))
-      .unique();
-
-    if (game && players.length >= game.absoluteMax) {
-      throw new Error("ROOM_FULL");
-    }
-
-    // Playful, Kid-friendly Game-specific themed bot names (50+ per category)
-    const themedNames: Record<string, string[]> = {
-      pioupiou: [
-        "Fluffy", "Pip", "Muffin", "Popcorn", "Nugget", "Daisy", "Sunshine", "Peep",
-        "Honey", "Cookie", "Bubbles", "Tiny", "Feathers", "Chirpy", "Goldie", "Ginger",
-        "Bessie", "Cornelius", "Eggbert", "Yolk", "Sunny-Side", "Benedict", "Quack", "Beaky",
-        "Wattle", "Doodle", "Scratch", "Grain", "Seed", "Barley", "Wheat", "Harvest",
-        "Flora", "Fauna", "Meadow", "Pasture", "Stable", "Barny", "Farmer-Ted", "Misty",
-        "Clover", "Bluebell", "Buttercup", "Apple", "Berry", "Cherry", "Pickle", "Sprout",
-        "Tippy", "Toes", "Waddle", "Puff", "Snuggles"
-      ],
-      incangold: [
-        "Sparky", "Dusty", "Indy-Junior", "Lucky", "Rocky", "Shiny", "Glimmer", "Tracker",
-        "Brave", "Scout", "Hero", "Buddy", "Pathfinder", "Jewel", "Ruby", "Emerald",
-        "Sapphire", "Goldie", "Silver", "Pearl", "Crystal", "Sparkle", "Bling", "Charm",
-        "Canyon", "River", "Cavern", "Grotto", "Relic", "Idol", "Totem", "Scepter",
-        "Crown", "Gemmy", "Topaz", "Quartz", "Amber", "Onyx", "Diamond", "Pioneer",
-        "Nomad", "Wanderer", "Rover", "Vagabond", "Voyager", "Mariner", "Sailor", "Captain-Jack",
-        "Chief", "Rex", "Dino", "Stomp", "Zippy"
-      ],
-      dixit: [
-        "Dreamer", "Spark", "Magic", "Wonder", "Starlight", "Moonbeam", "Cloud", "Rainbow",
-        "Fairytale", "Story", "Tale", "Myth", "Legend", "Fable", "Poem", "Verse",
-        "Ink", "Paint", "Color", "Canvas", "Palette", "Brush", "Stroke", "Hue",
-        "Shade", "Tint", "Glow", "Light", "Shadow", "Spirit", "Soul", "Heart",
-        "Idea", "Vision", "Mirage", "Aura", "Nebula", "Vesper", "Lune", "Celeste",
-        "Ether", "Echo", "Phantom", "Imagine", "Fantasy", "Rhyme", "Lyric", "Ode",
-        "Sonnets", "Prose", "Script", "Scroll", "Secret"
-      ],
-      justone: [
-        "Wordy", "Echo", "Hinty", "Link", "Unit", "One", "Buddy", "Voice",
-        "Sound", "Tone", "Note", "Chord", "Harmony", "Melody", "Rhythm", "Beat",
-        "Tempo", "Word", "Term", "Phrase", "Clause", "Sentence", "Speech", "Synonym",
-        "Antonym", "Analogy", "Metaphor", "Simile", "Idiom", "Pun", "Joke", "Riddle",
-        "Puzzle", "Logic", "Reason", "Sense", "Meaning", "Definition", "Index", "Entry",
-        "Chapter", "Volume", "Book", "Library", "Archive", "Vault", "Safe", "Key",
-        "Lock", "Clue", "Trace", "Whiz", "Brainy"
-      ],
-      themind: [
-        "Zenny", "Calm", "Peace", "Quiet", "Still", "Pulse", "Wave", "Flow",
-        "Stream", "Current", "Tide", "Ocean", "Sea", "River", "Spring", "Well",
-        "Star", "Moon", "Sun", "Sky", "Air", "Breath", "Whisper", "Hush",
-        "Silent", "Sensei", "Master", "Guru", "Sage", "Seer", "Oracle", "Prophet",
-        "Medium", "Channel", "Connection", "Bond", "Union", "Balance", "Harmony", "Whole",
-        "Source", "Root", "Aura", "Focus", "Monk", "Humble", "Kind", "Soft",
-        "Pure", "Deep", "Clear", "Bright", "True"
-      ],
-      timeattack: [
-        "Zippy", "Flash", "Turbo", "Sonic", "Bolt", "Dash", "Rush", "Swift",
-        "Fast", "Quick", "Brisk", "Fleet", "Nimble", "Agile", "Sharp", "Keen",
-        "Alert", "Watch", "Clock", "Timer", "Second", "Milli", "Nano", "Pico",
-        "Femto", "Atto", "Zepto", "Yocto", "Quantum", "Light", "Warp", "Hyper",
-        "Super", "Ultra", "Mega", "Giga", "Boost", "Nitro", "Gear", "Shift",
-        "Clutch", "Engine", "Motor", "Race", "Track", "Lap", "Circuit", "Sprint",
-        "Vector", "Apex", "Top-Speed", "Mach", "Zoom"
-      ],
-    };
-
-    const namePool = themedNames[room.currentGame.toLowerCase()] || ["Alpha", "Beta", "Gamma", "Delta", "Epsilon"];
-    const existingNames = new Set(players.map(p => p.name));
-    const botName = namePool.find(n => !existingNames.has(n)) || `Bot ${players.length + 1}`;
-
-    const personas: ("balanced" | "aggressive" | "cautious")[] = ["balanced", "aggressive", "cautious"];
-    const randomPersona = personas[Math.floor(Math.random() * personas.length)];
-
+    const players = await ctx.db.query("players").withIndex("by_room", (q) => q.eq("roomId", room._id)).collect();
+    const game = await ctx.db.query("games").filter((q) => q.eq(q.field("slug"), room.currentGame)).unique();
+    if (game && players.length >= game.absoluteMax) throw new Error("ROOM_FULL");
+    const themedNames: Record<string, string[]> = { pioupiou: ["Pip", "Chirpy"], incangold: ["Lucky", "Rocky"], dixit: ["Dreamer", "Ink"], justone: ["Wordy", "Link"], themind: ["Zenny", "Sage"], timeattack: ["Turbo", "Dash"] };
+    const namePool = themedNames[room.currentGame.toLowerCase()] || ["Alpha", "Beta"];
+    const botName = namePool.find(n => !players.some(p => p.name === n)) || `Bot ${players.length + 1}`;
     const plugin = getGamePlugin(room.currentGame);
     const { initialHand, initialState } = plugin.getInitialPlayerState("LOBBY", room);
-
-    await ctx.db.insert("players", {
-      roomId: room._id,
-      name: botName,
-      isBot: true,
-      persona: randomPersona,
-      gameHand: initialHand,
-      state: initialState,
-      isReady: true, // Bots are always ready
-    });
+    await ctx.db.insert("players", { roomId: room._id, name: botName, isBot: true, persona: "balanced", gameHand: initialHand, state: initialState, isReady: true });
   },
 });
 
 export const removePlayer = mutation({
-  args: { 
-    playerId: v.id("players"), 
-  },
+  args: { playerId: v.id("players"), adminPassword: v.string() },
   handler: async (ctx, args) => {
-    // 1. Verify Admin Access
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("UNAUTHORIZED");
-    const profile = await ctx.db
-      .query("profiles")
-      .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
-      .unique();
-    if (!profile?.isAdmin) throw new Error("UNAUTHORIZED");
-
+    if (!validateAdmin(args.adminPassword)) throw new Error("UNAUTHORIZED");
     const player = await ctx.db.get(args.playerId);
     if (!player) return;
-
     const room = await ctx.db.get(player.roomId);
     if (!room || room.status !== "LOBBY") throw new Error("NOT_IN_LOBBY");
-
     await ctx.db.delete(args.playerId);
   },
 });
 
 export const startGame = mutation({
-  args: { 
-    roomId: v.id("rooms"),
-  },
+  args: { roomId: v.id("rooms"), adminPassword: v.string() },
   handler: async (ctx, args) => {
-    // 1. Verify Admin Access
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("UNAUTHORIZED");
-    const profile = await ctx.db
-      .query("profiles")
-      .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
-      .unique();
-    if (!profile?.isAdmin) throw new Error("UNAUTHORIZED");
-
+    if (!validateAdmin(args.adminPassword)) throw new Error("UNAUTHORIZED");
     const room = await ctx.db.get(args.roomId);
     if (!room) return;
-
-    const players = await ctx.db
-      .query("players")
-      .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
-      .collect();
-
+    const players = await ctx.db.query("players").withIndex("by_room", (q) => q.eq("roomId", args.roomId)).collect();
     if (players.length === 0) return;
-
-    const randomizedOrder = shuffle(players.map((p) => p._id));
     const plugin = getGamePlugin(room.currentGame);
-
     await plugin.onStart(ctx, room._id, players);
-
-    await ctx.db.patch(args.roomId, {
-      status: "PLAYING",
-      turnOrder: randomizedOrder,
-      currentTurnIndex: 0,
-    });
+    await ctx.db.patch(args.roomId, { status: "PLAYING", turnOrder: shuffle(players.map((p) => p._id)), currentTurnIndex: 0 });
   },
 });
 
 export const toggleBotsHalt = mutation({
-  args: { 
-    roomId: v.id("rooms"),
-  },
+  args: { roomId: v.id("rooms"), adminPassword: v.string() },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("UNAUTHORIZED");
-    const profile = await ctx.db
-      .query("profiles")
-      .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
-      .unique();
-    if (!profile?.isAdmin) throw new Error("UNAUTHORIZED");
-
+    if (!validateAdmin(args.adminPassword)) throw new Error("UNAUTHORIZED");
     const room = await ctx.db.get(args.roomId);
     if (!room) return;
-
     const nextHaltState = !room.botsHalted;
     await ctx.db.patch(args.roomId, { botsHalted: nextHaltState });
-
-    // If we are resuming (halted -> active), trigger bot turns immediately
     if (!nextHaltState && room.status === "PLAYING") {
-        await ctx.scheduler.runAfter(0, (internal as any).bots.manager.dispatchBotTurn, {
-            roomId: args.roomId
-        });
+      await ctx.scheduler.runAfter(0, (internal as any).bots.manager.dispatchBotTurn, { roomId: args.roomId });
     }
   },
 });
@@ -599,7 +403,7 @@ export const toggleReady = mutation({
   args: { playerId: v.id("players") },
   handler: async (ctx, args) => {
     const player = await ctx.db.get(args.playerId);
-    if (!player) return;
+          if (!player) return;
     await ctx.db.patch(player._id, { isReady: !player.isReady });
   },
 });
@@ -608,7 +412,7 @@ export const updatePlayerName = mutation({
   args: { playerId: v.id("players"), newName: v.string() },
   handler: async (ctx, args) => {
     const player = await ctx.db.get(args.playerId);
-    if (!player) throw new Error("Player not found");
+          if (!player) throw new Error("Player not found");
     await ctx.db.patch(player._id, { name: args.newName });
   },
 });
@@ -625,48 +429,24 @@ export const getSecurityLogs = query({
 });
 
 export const resetRoom = mutation({
-  args: { roomId: v.id("rooms") },
+  args: { roomId: v.id("rooms"), adminPassword: v.string() },
   handler: async (ctx, args) => {
+    if (!validateAdmin(args.adminPassword)) throw new Error("UNAUTHORIZED");
     const room = await ctx.db.get(args.roomId);
     if (!room) return;
-
     const plugin = getGamePlugin(room.currentGame);
-
-    // Reset all players to ready=false and initial state
-    const players = await ctx.db
-      .query("players")
-      .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
-      .collect();
-
+    const players = await ctx.db.query("players").withIndex("by_room", (q) => q.eq("roomId", args.roomId)).collect();
     for (const player of players) {
       const { initialHand, initialState } = plugin.getInitialPlayerState("LOBBY", room);
-      await ctx.db.patch(player._id, {
-        isReady: false,
-        gameHand: initialHand,
-        state: initialState,
-      });
+      await ctx.db.patch(player._id, { isReady: false, gameHand: initialHand, state: initialState });
     }
-
-    await ctx.db.patch(args.roomId, {
-      status: "LOBBY",
-      currentTurnIndex: 0,
-      turnOrder: [],
-      gameBoard: plugin.getInitialBoard(),
-    });
+    await ctx.db.patch(args.roomId, { status: "LOBBY", currentTurnIndex: 0, turnOrder: [], gameBoard: plugin.getInitialBoard() });
   },
 });
 
-export const checkAdminStatus = query({
-  args: {},
-  handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return false;
-
-    const profile = await ctx.db
-      .query("profiles")
-      .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
-      .unique();
-
-    return !!profile?.isAdmin;
+export const verifyAdminPassword = query({
+  args: { password: v.string() },
+  handler: async (ctx, args) => {
+    return validateAdmin(args.password);
   },
 });

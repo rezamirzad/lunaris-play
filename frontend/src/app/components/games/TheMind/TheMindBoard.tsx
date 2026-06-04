@@ -20,7 +20,7 @@ import { api } from "convex/_generated/api";
 
 export default function NeuralSyncBoard({ roomId, roomData, history = [] }: BoardProps) {
   const { t } = useTranslation();
-  const { isAdmin, } = useAdmin();
+  const { isAdmin, adminPassword } = useAdmin();
   const toggleHaltMutation = useMutation(api.engine.toggleBotsHalt);
   const [showRules, setShowRules] = useState(false);
 
@@ -65,7 +65,7 @@ export default function NeuralSyncBoard({ roomId, roomData, history = [] }: Boar
           statusLabel={(t as any).themind_level_status ? (t as any).themind_level_status.replace("{level}", String(board.level)) : `LEVEL ${board.level}`}
           badgeContent={isFinished ? "SESSION_TERMINATED" : "SYNC_ACTIVE"}
           accentColor="teal"
-          onHaltToggle={isAdmin ? () => toggleHaltMutation({ roomId: roomId as any }) : undefined}
+          onHaltToggle={isAdmin && adminPassword ? () => toggleHaltMutation({ roomId: roomId as any, adminPassword }) : undefined}
           isHalted={roomData.botsHalted}
           onRulesClick={() => setShowRules(true)}
         />

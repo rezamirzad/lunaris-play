@@ -11,7 +11,7 @@ import OngoingRooms from "./components/OngoingRooms";
 import LeaderboardTicker from "./components/LeaderboardTicker";
 import Leaderboard from "./components/Leaderboard";
 import Navbar from "./components/shared/Navbar";
-import { motion, Variants } from "framer-motion";
+import { motion, Variants, AnimatePresence } from "framer-motion";
 
 const titleVariants: Variants = {
   hidden: { skewX: 20, opacity: 0, scale: 0.9 },
@@ -29,11 +29,13 @@ const titleVariants: Variants = {
 
 import { useTranslation } from "@/hooks/useTranslation";
 
+import AdminGateway from "./admin/AdminGateway";
+
 function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { playerName, setPlayerName, playerId, setPlayerId } = useUser();
-  const { t, lang, setLanguage } = useTranslation();
+  const { t, lang, setLanguage, isChanging } = useTranslation();
   const [nameInput, setNameInput] = useState(playerName);
   const [roomCode, setRoomCode] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -95,8 +97,26 @@ function HomeContent() {
   return (
     <main
       lang={lang}
-      className={`min-h-[100dvh] bg-app text-content-base p-4 sm:p-8 md:p-12 transition-all duration-500 relative overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] ${lang === "fa" ? "fa-text-fix" : ""}`}
+      className={`min-h-[100dvh] bg-app text-content-base p-4 sm:p-8 md:p-12 transition-all duration-500 relative overflow-hidden pt-[env(safe-area-inset-top)] pb-32 sm:pb-40 ${lang === "fa" ? "fa-text-fix" : ""}`}
     >
+      <AnimatePresence>
+        {isChanging && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9999] flex items-center justify-center pointer-events-none"
+          >
+             <div className="flex flex-col items-center gap-4">
+                <div className="w-8 h-8 border-2 border-brand-accent/20 border-t-brand-accent rounded-full animate-spin" />
+                <span className="text-[8px] font-black tracking-[0.4em] text-brand-accent animate-pulse uppercase">
+                   Re-Syncing UI...
+                </span>
+             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* <div className="pt-10 sm:pt-14">
         <Navbar />
       </div> */}
@@ -145,17 +165,10 @@ function HomeContent() {
             </button>
           ))}
         </motion.div>
-
-        {/* Repositioned Hall of Fame Ticker */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="w-full"
-        >
-          <LeaderboardTicker />
-        </motion.div>
       </header>
+
+      {/* Global Leaderboard Ticker (Fixed Bottom via 'Full Lock' pattern) */}
+      <LeaderboardTicker />
 
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 relative z-10">
         <div className="lg:col-span-4 space-y-10">
@@ -233,8 +246,6 @@ function HomeContent() {
               lang={lang}
             />
           </motion.section>
-
-          <Leaderboard />
         </div>
 
         <motion.div
@@ -297,7 +308,9 @@ function HomeContent() {
 export default function Home() {
   return (
     <Suspense fallback={<div className="min-h-[100dvh] bg-app" />}>
-      <HomeContent />
+      <AdminGateway>
+        <HomeContent />
+      </AdminGateway>
     </Suspense>
   );
 }

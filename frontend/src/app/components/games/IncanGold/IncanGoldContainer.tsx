@@ -21,7 +21,7 @@ import { useAdmin } from "@/app/admin/AdminGateway";
 const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData, history = [] }) => {
   const { t, lang } = useTranslation();
   const isFA = lang === "fa";
-  const { isAdmin, } = useAdmin();
+  const { isAdmin, adminPassword } = useAdmin();
   const incanApi = (api as any).incangold;
 
   const drawCard = useMutation(incanApi.drawCard);
@@ -102,7 +102,7 @@ const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData, history = [] }
           statusLabel={formatLog(t.incangold_round, { round: isFA ? toPersianDigits(board.currentRound) : board.currentRound })}
           badgeContent={board.phase === "DECISION_PHASE" ? "VOTING ACTIVE" : t.statusLive}
           accentColor="amber"
-          onHaltToggle={isAdmin ? () => toggleHaltMutation({ roomId: roomId as any }) : undefined}
+          onHaltToggle={isAdmin && adminPassword ? () => toggleHaltMutation({ roomId: roomId as any, adminPassword }) : undefined}
           isHalted={roomData.botsHalted}
           onRulesClick={() => setShowRules(true)}
         />

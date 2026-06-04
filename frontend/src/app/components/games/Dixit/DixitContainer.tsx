@@ -26,7 +26,7 @@ import { fixPersianPunctuation } from "@/lib/translations";
 
 export default function DixitContainer({ roomId, roomData, history = [], submissions = [] }: BoardProps) {
   const { t, lang } = useTranslation();
-  const { isAdmin, } = useAdmin();
+  const { isAdmin, adminPassword } = useAdmin();
   const handleActionMutation = useMutation(api.dixit.handleAction);
   const toggleHaltMutation = useMutation(api.engine.toggleBotsHalt);
 
@@ -186,7 +186,7 @@ export default function DixitContainer({ roomId, roomData, history = [], submiss
               : t.dixit_awaiting_st
           }
           accentColor="blue"
-          onHaltToggle={isAdmin ? () => toggleHaltMutation({ roomId: roomId as any }) : undefined}
+          onHaltToggle={isAdmin && adminPassword ? () => toggleHaltMutation({ roomId: roomId as any, adminPassword }) : undefined}
           isHalted={roomData.botsHalted}
           onRulesClick={() => setShowRules(true)}
           />

@@ -20,7 +20,7 @@ import { api } from "convex/_generated/api";
 
 export default function JustOneBoard({ roomId, roomData, history = [] }: BoardProps) {
   const { t } = useTranslation();
-  const { isAdmin, } = useAdmin();
+  const { isAdmin, adminPassword } = useAdmin();
   const toggleHaltMutation = useMutation(api.engine.toggleBotsHalt);
   const [showRules, setShowRules] = useState(false);
 
@@ -70,7 +70,7 @@ export default function JustOneBoard({ roomId, roomData, history = [] }: BoardPr
           statusLabel={t.justone_signal_stream.replace("{round}", String(board.round))}
           badgeContent={isFinished ? t.justone_session_ended : board.phase}
           accentColor="cyan"
-          onHaltToggle={isAdmin ? () => toggleHaltMutation({ roomId: roomId as any }) : undefined}
+          onHaltToggle={isAdmin && adminPassword ? () => toggleHaltMutation({ roomId: roomId as any, adminPassword }) : undefined}
           isHalted={roomData.botsHalted}
           onRulesClick={() => setShowRules(true)}
         />

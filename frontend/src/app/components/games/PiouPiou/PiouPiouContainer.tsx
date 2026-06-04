@@ -22,7 +22,7 @@ import { api } from "convex/_generated/api";
 
 export default function PiouPiouContainer({ roomId, roomData, history = [] }: BoardProps) {
   const { t } = useTranslation();
-  const { isAdmin, } = useAdmin();
+  const { isAdmin, adminPassword } = useAdmin();
   const toggleHaltMutation = useMutation(api.engine.toggleBotsHalt);
   const [showRules, setShowRules] = useState(false);
 
@@ -80,7 +80,7 @@ export default function PiouPiouContainer({ roomId, roomData, history = [] }: Bo
           statusLabel={`${t.shared_status}: ${isGameEnd ? t.statusArchived : t.pioupiou_henhouse_integrity}`}
           badgeContent={board?.winnerId ? t.statusArchived : t.statusLive}
           accentColor="orange"
-          onHaltToggle={isAdmin ? () => toggleHaltMutation({ roomId: roomId as any }) : undefined}
+          onHaltToggle={isAdmin && adminPassword ? () => toggleHaltMutation({ roomId: roomId as any, adminPassword }) : undefined}
           isHalted={roomData.botsHalted}
           onRulesClick={() => setShowRules(true)}
         />

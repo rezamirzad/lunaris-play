@@ -4,8 +4,6 @@ import { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/hooks/useTranslation";
 import Image from "next/image";
-import { useConvexAuth } from "convex/react";
-import { useAuthActions } from "@convex-dev/auth/react";
 
 interface ArcadeVictoryOverlayProps {
   winnerName?: ReactNode;
@@ -74,8 +72,6 @@ export default function ArcadeVictoryOverlay({
   icon = "👑",
 }: ArcadeVictoryOverlayProps) {
   const { t } = useTranslation();
-  const { isAuthenticated } = useConvexAuth();
-  const { signIn } = useAuthActions();
   const theme = THEME_MAP[accentColor];
 
   const handleExit = onExit || (() => (window.location.href = "/"));

@@ -32,7 +32,7 @@ export default function LobbyInitialization({
 }: LobbyInitializationProps) {
   const { t, lang } = useTranslation();
   const isFA = lang === "fa";
-  const { isAdmin } = useAdmin();
+  const { isAdmin, adminPassword } = useAdmin();
 
   const toggleReady = useMutation(api.engine.toggleReady);
   const startGame = useMutation(api.engine.startGame);
@@ -66,31 +66,31 @@ export default function LobbyInitialization({
   };
 
   const handleStartGame = async () => {
-    if (!isAdmin) return;
+    if (!isAdmin || !adminPassword) return;
     if (room.currentGame === "justone") {
       await startJustOneMatch({
         roomId: room._id,
         language: justoneLang,
-        
+        adminPassword,
       });
     } else {
-      await startGame({ roomId: room._id });
+      await startGame({ roomId: room._id, adminPassword });
     }
   };
 
   const handleAddBot = async () => {
-    if (!isAdmin) return;
+    if (!isAdmin || !adminPassword) return;
     try {
-      await addBot({ roomCode: room.roomCode });
+      await addBot({ roomCode: room.roomCode, adminPassword });
     } catch (e) {
       console.error("Add bot failed", e);
     }
   };
 
   const handleKick = async (playerId: string) => {
-    if (!isAdmin) return;
+    if (!isAdmin || !adminPassword) return;
     try {
-      await removePlayer({ playerId: playerId as any });
+      await removePlayer({ playerId: playerId as any, adminPassword });
     } catch (e) {
       console.error("Kick failed", e);
     }
@@ -106,6 +106,7 @@ export default function LobbyInitialization({
         playerId: me._id,
         actionType: "SET_RULESET",
         ruleset: nextRuleset,
+        adminPin: adminPassword,
       });
     } catch (e) {
       console.error("Ruleset toggle failed", e);

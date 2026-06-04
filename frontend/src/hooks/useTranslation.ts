@@ -13,23 +13,29 @@ export function useTranslation() {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [lang, setLangState] = useState<Language>("en");
+  const [isChanging, setIsChanging] = useState(false);
 
   const updateLang = useCallback((newLang: Language, updateUrl = true) => {
     if (!VALID_LANGUAGES.includes(newLang)) return;
     
-    setLangState(newLang);
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY, newLang);
-      document.documentElement.lang = newLang;
-      
-      if (updateUrl) {
-        const params = new URLSearchParams(window.location.search);
-        if (params.get("lang") !== newLang) {
-          params.set("lang", newLang);
-          router.replace(`${pathname}?${params.toString()}`);
+    setIsChanging(true);
+    setTimeout(() => {
+      setLangState(newLang);
+      if (typeof window !== "undefined") {
+        localStorage.setItem(STORAGE_KEY, newLang);
+        document.documentElement.lang = newLang;
+        
+        if (updateUrl) {
+          const params = new URLSearchParams(window.location.search);
+          if (params.get("lang") !== newLang) {
+            params.set("lang", newLang);
+            router.replace(`${pathname}?${params.toString()}`);
+          }
         }
       }
-    }
+      // Brief delay after state update to allow React to reconcile before fading back in
+      setTimeout(() => setIsChanging(false), 50);
+    }, 150);
   }, [pathname, router]);
 
   // Initial Sync
@@ -73,6 +79,7 @@ export function useTranslation() {
   return { 
     t, 
     lang, 
+    isChanging,
     isMounted: mounted,
     setLanguage: (l: Language) => updateLang(l, true)
   };

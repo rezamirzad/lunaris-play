@@ -13,9 +13,14 @@ import { calculateRank, getOrdinal } from "@/lib/utils";
  * Leaderboard: Cinematic 'Hall of Fame' Continuous Ticker
  */
 export default function Leaderboard() {
-  const leaderboard = useQuery(api.engine.getLeaderboard);
+  const rawLeaderboard = useQuery(api.engine.getLeaderboard);
   const { t, lang } = useTranslation();
   const isFA = lang === "fa";
+
+  // Filter out any admin nodes
+  const leaderboard = rawLeaderboard?.filter(
+    (u) => u.name.toUpperCase() !== "ADMIN_NODE"
+  );
 
   if (!leaderboard || leaderboard.length === 0) return null;
 

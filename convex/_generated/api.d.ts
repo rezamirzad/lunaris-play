@@ -8,7 +8,6 @@
  * @module
  */
 
-import type * as auth from "../auth.js";
 import type * as bots_ai from "../bots/ai.js";
 import type * as bots_justone_ai from "../bots/justone_ai.js";
 import type * as bots_justone_clues from "../bots/justone_clues.js";
@@ -40,7 +39,6 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
-  auth: typeof auth;
   "bots/ai": typeof bots_ai;
   "bots/justone_ai": typeof bots_justone_ai;
   "bots/justone_clues": typeof bots_justone_clues;

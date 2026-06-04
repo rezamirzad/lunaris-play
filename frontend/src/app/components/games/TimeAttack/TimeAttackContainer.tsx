@@ -22,7 +22,7 @@ import { api } from "convex/_generated/api";
 
 export default function TimeAttackContainer({ roomId, roomData, history = [] }: BoardProps) {
   const { t, lang } = useTranslation();
-  const { isAdmin, } = useAdmin();
+  const { isAdmin, adminPassword } = useAdmin();
   const toggleHaltMutation = useMutation(api.engine.toggleBotsHalt);
   const isFA = lang === "fa";
 
@@ -80,7 +80,7 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
           statusLabel={formatLog(t.timeattack_round_protocol, { round: isFA ? toPersianDigits(board.currentRound) : board.currentRound }, lang)}
           badgeContent={board.phase === "ROUND_REVEAL" ? t.timeattack_round_victor : t.statusLive}
           accentColor="rose"
-          onHaltToggle={isAdmin ? () => toggleHaltMutation({ roomId: roomId as any }) : undefined}
+          onHaltToggle={isAdmin && adminPassword ? () => toggleHaltMutation({ roomId: roomId as any, adminPassword }) : undefined}
           isHalted={roomData.botsHalted}
           onRulesClick={() => setShowRules(true)}
         />
