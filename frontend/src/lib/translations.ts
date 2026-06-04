@@ -1,490 +1,447 @@
 export type Language = "en" | "fr" | "de" | "fa";
 
 export interface TranslationSet {
-  title: string;
-  subtitle: string;
-  game: string;
-  wins: string;
-  rank: string;
-  board: string;
-  namePlaceholder: string;
-  roomPlaceholder: string;
-  enterLobby: string;
-  lobbyInitiation: string;
-  matchInitiation: string;
-  arcade: string;
-  ongoingGames: string;
-  howToPlay: string;
-  hallOfFame: string;
-  step1: string;
-  step2: string;
-  step3: string;
-  capacityLabel: string;
-  maxLabel: string;
-  player: string;
-  players: string;
-  capacity: string;
-  footer: string;
-  noOngoing: string;
-  host: string;
-  startMatch: string;
-  activeTurn: string;
-  matchActivity: string;
-  availableMoves: string;
-  hintLayEgg: string;
-  hintHatch: string;
-  hintSteal: string;
-  eggs: string;
-  chicks: string;
-  targetPlayer: string;
-  discard: string;
-  invalidCombo: string;
-  attack: string;
-  waiting: string;
-  defend: string;
-  noRoosters: string;
+  LOG_DISCARD: string;
+  LOG_FOX_BLOCKED: string;
+  LOG_FOX_SUCCESS: string;
+  LOG_HATCH: string;
+  LOG_INVALID: string;
+  LOG_LAY_EGG: string;
   accept: string;
-  gameOver: string;
-  winner: string;
-  victory: string;
+  action: string;
+  activeTurn: string;
+  arcade: string;
+  attack: string;
+  authenticating: string;
+  available: string;
+  availableMoves: string;
+  board: string;
+  boot_loading: string;
+  boot_preparing: string;
+  boot_ready: string;
+  boot_starting: string;
+  boot_syncing: string;
+  capacity: string;
+  capacityLabel: string;
   champion: string;
-  exit: string;
-  lobby: string;
-  results: string;
-  storyteller: string;
-  dixit_round_summary: string;
-  dixit_title: string;
-  dixit_desc: string;
-  pioupiou_title: string;
-  pioupiou_desc: string;
-  themind_title: string;
-  themind_desc: string;
-  themind_level: string;
-  themind_lives: string;
-  themind_emps: string;
-  themind_syncing: string;
-  themind_playing: string;
-  themind_victory: string;
-  themind_game_over: string;
-  justone_title: string;
-  justone_desc: string;
-  justone_mystery_word: string;
-  justone_clue_placeholder: string;
-  justone_guess_placeholder: string;
-  justone_standby: string;
-  justone_validation: string;
-  justone_confirm_data: string;
-  justone_pass: string;
-  justone_correct: string;
-  justone_wrong: string;
-  incangold_title: string;
-  incangold_desc: string;
-  incangold_round: string;
-  incangold_path: string;
-  incangold_stay: string;
-  incangold_leave: string;
-  incangold_gems: string;
-  incangold_banked: string;
-  incangold_in_temple: string;
-  incangold_at_camp: string;
-  incangold_decide: string;
-  incangold_exploring: string;
-  incangold_results: string;
-  incangold_expedition_complete: string;
-  incangold_hall_of_riches: string;
-  incangold_adventurer: string;
-  incangold_cave_n: string;
-  incangold_total_wealth: string;
-  incangold_close_rules: string;
-  incangold_game_rules: string;
-  incangold_briefing_title: string;
-  incangold_briefing_desc: string;
-  incangold_waiting_sync: string;
-  incangold_next_cave: string;
-  incangold_time_to_decide: string;
-  incangold_continue_exploration: string;
-  incangold_enter_cave: string;
-  incangold_venture_deeper: string;
-  incangold_expedition_ends: string;
-  incangold_wealth_found: string;
-  incangold_swallowed_by_cave: string;
-  incangold_danger: string;
-  incangold_gems_label: string;
-  incangold_left: string;
-  incangold_threat_level: string;
-  incangold_path_gems: string;
-  incangold_in_the_cave: string;
-  incangold_exit_bonus: string;
-  incangold_at_base_camp: string;
-  incangold_lost_gems: string;
-  incangold_the_dilemma: string;
-  incangold_checking_fists: string;
-  incangold_locked: string;
-  incangold_host_advances: string;
-  incangold_rules_title: string;
-  incangold_goal_title: string;
-  incangold_goal_desc: string;
-  incangold_gems_rules_title: string;
-  incangold_gems_rules_desc: string;
-  incangold_dangers_rules_title: string;
-  incangold_dangers_rules_desc: string;
-  incangold_dilemma_rules_title: string;
-  incangold_dilemma_rules_desc: string;
-  incangold_leaving_rules_title: string;
-  incangold_leaving_rules_desc: string;
-  incangold_safety_rules_title: string;
-  incangold_safety_rules_desc: string;
-  incangold_final_stats: string;
-  incangold_rank: string;
-  incangold_back_to_arcade: string;
-  incangold_in_hand: string;
-  incangold_chest_total: string;
-  incangold_resting_camp: string;
-  incangold_safe_reach: string;
-  incangold_expedition_result: string;
-  incangold_waiting_reveal: string;
-  incangold_secret_choice: string;
-  incangold_risk_loot: string;
-  incangold_bank_now: string;
-  incangold_on_path_bonus: string;
-  incangold_artifacts: string;
-  incangold_choice_leave: string;
-  incangold_choice_stay: string;
-  incangold_title_alt: string;
-  shared_tech_group: string;
-  shared_waiting: string;
-  timeattack_title: string;
-  timeattack_desc: string;
-  sushinode_title: string;
-  sushinode_desc: string;
-  dixit_score: string;
+  chicken: string;
+  chicks: string;
+  connectedPlayers: string;
+  defend: string;
+  discard: string;
+  dixit_all_or_none: string;
+  dixit_awaiting_st: string;
+  dixit_briefing_desc: string;
+  dixit_briefing_title: string;
+  dixit_champion_title: string;
   dixit_clue_placeholder: string;
+  dixit_clue_received: string;
+  dixit_confirm_vote: string;
+  dixit_current_phase: string;
+  dixit_desc: string;
+  dixit_found_original: string;
+  dixit_found_original_all: string;
+  dixit_found_original_none: string;
+  dixit_guess_card: string;
+  dixit_guessers: string;
+  dixit_illusion_dissipated: string;
+  dixit_integrity: string;
+  dixit_label_failed: string;
+  dixit_label_guess: string;
+  dixit_label_risk: string;
+  dixit_label_safe: string;
+  dixit_label_success: string;
+  dixit_label_traps: string;
+  dixit_match_live: string;
+  dixit_next_round: string;
+  dixit_node_owner: string;
+  dixit_others_fooled: string;
+  dixit_participants: string;
   dixit_phase_clue: string;
+  dixit_phase_deciphering: string;
+  dixit_phase_incubation: string;
   dixit_phase_submit: string;
   dixit_phase_vote: string;
-  dixit_wait_storyteller: string;
-  dixit_wait_others: string;
-  dixit_guess_card: string;
-  dixit_who_voted: string;
+  dixit_pts_label: string;
+  dixit_received_guesses: string;
+  dixit_risk_bonus_msg: string;
+  dixit_round_summary: string;
+  dixit_round_summary_title: string;
+  dixit_score: string;
+  dixit_select_up_to_2: string;
+  dixit_send_clue: string;
   dixit_st_bonus: string;
   dixit_st_fail: string;
   dixit_st_fail_all: string;
   dixit_st_fail_none: string;
-  dixit_found_original: string;
-  dixit_found_original_all: string;
-  dixit_found_original_none: string;
-  dixit_others_fooled: string;
-  dixit_all_or_none: string;
-  dixit_select_up_to_2: string;
-  dixit_risk_bonus_msg: string;
-  dixit_next_round: string;
-  dixit_send_clue: string;
   dixit_submit_card: string;
-  dixit_confirm_vote: string;
-  dixit_round_summary_title: string;
-  dixit_pts_label: string;
-  dixit_label_success: string;
-  dixit_label_failed: string;
-  dixit_label_safe: string;
-  dixit_label_guess: string;
-  dixit_label_traps: string;
-  dixit_label_risk: string;
-  dixit_clue_received: string;
+  dixit_title: string;
+  dixit_wait_others: string;
   dixit_wait_others_action: string;
-  timeattack_objective_sequence: string;
-  timeattack_extraction_decrypted: string;
-  timeattack_calibrating: string;
-  timeattack_transmitting: string;
-  timeattack_transmission_locked: string;
-  timeattack_analyzing_variance: string;
-  timeattack_arcade_rankings: string;
-  timeattack_round_protocol: string;
-  timeattack_target_interval: string;
-  timeattack_recording: string;
-  timeattack_release_now: string;
-  timeattack_survival_protocol: string;
-  timeattack_precision_uplink: string;
-  timeattack_sensory_deprivation: string;
-  timeattack_calibration_uplink: string;
-  timeattack_round_1_name: string;
-  timeattack_round_1_desc: string;
-  timeattack_round_2_name: string;
-  timeattack_round_2_desc: string;
-  timeattack_round_3_name: string;
-  timeattack_round_3_desc: string;
-  timeattack_round_4_name: string;
-  timeattack_round_4_desc: string;
-  timeattack_round_5_name: string;
-  timeattack_round_5_desc: string;
-  timeattack_round_6_name: string;
-  timeattack_round_6_desc: string;
-  timeattack_round_7_name: string;
-  timeattack_round_7_desc: string;
-  timeattack_round_8_name: string;
-  timeattack_round_8_desc: string;
-  timeattack_round_9_name: string;
-  timeattack_round_9_desc: string;
-  timeattack_round_10_name: string;
-  timeattack_round_10_desc: string;
-  timeattack_round: string;
-  timeattack_target: string;
-  timeattack_locked: string;
-  timeattack_waiting_reveal: string;
-  timeattack_release: string;
-  timeattack_hold: string;
-  timeattack_done: string;
-  timeattack_start: string;
-  timeattack_hold_to_start: string;
-  timeattack_tap_to_start: string;
-  timeattack_release_at_target: string;
-  timeattack_tap_to_stop: string;
-  timeattack_time_recorded: string;
-  timeattack_final_results: string;
-  timeattack_leave_game: string;
-  timeattack_waiting_next_round: string;
-  timeattack_round_victor: string;
-  timeattack_eyes_on_phone: string;
-  timeattack_syncing_oscillators: string;
-  timeattack_extraction_sequences: string;
-  timeattack_briefing_desc: string;
-  waiting_for_protocol: string;
-  rank_out_of: string;
-  LOG_LAY_EGG: string;
-  LOG_HATCH: string;
-  LOG_DISCARD: string;
-  LOG_INVALID: string;
-  LOG_FOX_SUCCESS: string;
-  LOG_FOX_BLOCKED: string;
+  dixit_wait_storyteller: string;
+  dixit_who_voted: string;
+  eggs: string;
+  enterLobby: string;
+  exit: string;
   finalHand: string;
-  waitingPlayers: string;
-  minPlayersRequired: string;
-  testingNote: string;
-  action: string;
-  nearlyWinning: string;
-  noEggsToSteal: string;
-  yourTurn: string;
-  chicken: string;
-  rooster: string;
+  footer: string;
   fox: string;
-  nest: string;
-  lastEvents: string;
-  noEvents: string;
-  ready: string;
-  notReady: string;
+  game: string;
+  gameOver: string;
+  hallOfFame: string;
   hand: string;
-  room: string;
-  statusLive: string;
-  statusArchived: string;
-  statusLobby: string;
+  hintHatch: string;
+  hintLayEgg: string;
+  hintSteal: string;
+  host: string;
+  howToPlay: string;
+  incangold_adventurer: string;
+  incangold_artifacts: string;
+  incangold_at_base_camp: string;
+  incangold_at_camp: string;
+  incangold_back_to_arcade: string;
+  incangold_bank_now: string;
+  incangold_banked: string;
+  incangold_briefing_desc: string;
+  incangold_briefing_title: string;
+  incangold_cave_n: string;
+  incangold_checking_fists: string;
+  incangold_chest_total: string;
+  incangold_choice_leave: string;
+  incangold_choice_stay: string;
+  incangold_close_rules: string;
+  incangold_continue_exploration: string;
+  incangold_danger: string;
+  incangold_dangers_rules_desc: string;
+  incangold_dangers_rules_title: string;
+  incangold_decide: string;
+  incangold_desc: string;
+  incangold_dilemma_rules_desc: string;
+  incangold_dilemma_rules_title: string;
+  incangold_enter_cave: string;
+  incangold_exit_bonus: string;
+  incangold_expedition_complete: string;
+  incangold_expedition_ends: string;
+  incangold_expedition_result: string;
+  incangold_exploring: string;
+  incangold_final_stats: string;
+  incangold_game_rules: string;
+  incangold_gems: string;
+  incangold_gems_label: string;
+  incangold_gems_rules_desc: string;
+  incangold_gems_rules_title: string;
+  incangold_goal_desc: string;
+  incangold_goal_title: string;
+  incangold_hall_of_riches: string;
+  incangold_host_advances: string;
+  incangold_in_hand: string;
+  incangold_in_temple: string;
+  incangold_in_the_cave: string;
+  incangold_leave: string;
+  incangold_leaving_rules_desc: string;
+  incangold_leaving_rules_title: string;
+  incangold_left: string;
+  incangold_locked: string;
+  incangold_lost_gems: string;
+  incangold_next_cave: string;
+  incangold_on_path_bonus: string;
+  incangold_path: string;
+  incangold_path_gems: string;
+  incangold_rank: string;
+  incangold_resting_camp: string;
+  incangold_results: string;
+  incangold_risk_loot: string;
+  incangold_round: string;
+  incangold_rules_title: string;
+  incangold_safe_reach: string;
+  incangold_safety_rules_desc: string;
+  incangold_safety_rules_title: string;
+  incangold_secret_choice: string;
+  incangold_stay: string;
+  incangold_swallowed_by_cave: string;
+  incangold_the_dilemma: string;
+  incangold_threat_level: string;
+  incangold_time_to_decide: string;
+  incangold_title: string;
+  incangold_title_alt: string;
+  incangold_total_wealth: string;
+  incangold_venture_deeper: string;
+  incangold_waiting_reveal: string;
+  incangold_waiting_sync: string;
+  incangold_wealth_found: string;
+  invalidCombo: string;
   invalidSession: string;
-  authenticating: string;
-  available: string;
-  connectedPlayers: string;
-  readyPlayers: string;
-  waitingForPlayers: string;
-  madeBy: string;
-  unknown_predator: string;
-  waiting_for_sequence: string;
-
-  // Game specific (organic themes)
-  themind_shurikens: string;
-  themind_team_stats: string;
-  themind_hand_size: string;
-  themind_discard_pile: string;
-  themind_awaiting_play: string;
-  themind_secured_by: string;
-  themind_ready_for_next: string;
-  themind_start_level: string;
-  themind_level_progress: string;
-  themind_shuriken_request: string;
-  themind_shuriken_vote: string;
-  themind_shuriken_confirm: string;
-  themind_sector_stabilized: string;
-  themind_concentrating: string;
-  themind_terminal_locked: string;
-  themind_miscalculated: string;
-  themind_purged: string;
-  themind_link_integrity: string;
-  themind_stable: string;
-  themind_terminated: string;
-  themind_transmission_lives: string;
-  themind_briefing_title: string;
-  themind_briefing_desc: string;
-  themind_calibrating: string;
-  themind_uplink_active: string;
-  themind_frequency_refined: string;
-  themind_level_cleared: string;
-  themind_sync_next: string;
-  themind_uplink_request_sent: string;
-  themind_establishing_freq: string;
-  themind_system_purged: string;
-  themind_freq_stabilized: string;
-
-  justone_guesser: string;
-  justone_clue_submitted: string;
-  justone_awaiting_clues: string;
-  justone_validated: string;
   justone_accepted: string;
-  justone_rejected: string;
-  justone_total_score: string;
-  justone_round_count: string;
-  justone_ambiguity_detected: string;
-  justone_target_word: string;
-  justone_consensus_required: string;
   justone_all_canceled: string;
-  justone_session_ended: string;
-  justone_submit_clue: string;
-  justone_execute_guess: string;
-  justone_waiting_sync: string;
-  justone_decryption_input: string;
-  justone_clue_input: string;
-  justone_helper: string;
-  justone_briefing_title: string;
+  justone_ambiguity_detected: string;
+  justone_awaiting_clues: string;
   justone_briefing_desc: string;
+  justone_briefing_title: string;
+  justone_clue_input: string;
+  justone_clue_placeholder: string;
+  justone_clue_submitted: string;
+  justone_confirm_data: string;
+  justone_consensus_required: string;
+  justone_correct: string;
+  justone_decryption_input: string;
+  justone_desc: string;
+  justone_execute_guess: string;
+  justone_guess_placeholder: string;
+  justone_guesser: string;
+  justone_helper: string;
   justone_initializing_links: string;
-  justone_signal_stream: string;
-  justone_transmission_success: string;
+  justone_mystery_word: string;
+  justone_pass: string;
+  justone_rejected: string;
+  justone_round_count: string;
   justone_security_override: string;
+  justone_session_ended: string;
+  justone_signal_stream: string;
+  justone_standby: string;
+  justone_submit_clue: string;
+  justone_target_word: string;
+  justone_title: string;
+  justone_total_score: string;
+  justone_transmission_success: string;
   justone_uplink_complete: string;
-
-  dixit_participants: string;
-  dixit_clue_received: string;
-  dixit_awaiting_st: string;
-  dixit_match_live: string;
-  dixit_current_phase: string;
-  dixit_integrity: string;
-  dixit_node_owner: string;
-  dixit_received_guesses: string;
-  dixit_guessers: string;
-  dixit_wait_others_action: string;
-  dixit_briefing_title: string;
-  dixit_briefing_desc: string;
-  dixit_phase_incubation: string;
-  dixit_phase_deciphering: string;
-  dixit_champion_title: string;
-  dixit_illusion_dissipated: string;
-
+  justone_validated: string;
+  justone_validation: string;
+  justone_waiting_sync: string;
+  justone_wrong: string;
+  lastEvents: string;
+  lobby: string;
+  lobbyInitiation: string;
+  madeBy: string;
+  matchActivity: string;
+  matchInitiation: string;
+  maxLabel: string;
+  minPlayersRequired: string;
+  namePlaceholder: string;
+  nearlyWinning: string;
+  nest: string;
+  noEggsToSteal: string;
+  noEvents: string;
+  noOngoing: string;
+  noRoosters: string;
+  notReady: string;
+  ongoingGames: string;
+  pioupiou_analyzing_strategy: string;
+  pioupiou_briefing_desc: string;
+  pioupiou_champion_title: string;
+  pioupiou_desc: string;
+  pioupiou_encryption: string;
+  pioupiou_fox_infiltration: string;
+  pioupiou_henhouse_defense: string;
+  pioupiou_henhouse_integrity: string;
   pioupiou_match_telemetry: string;
   pioupiou_resolution: string;
-  pioupiou_encryption: string;
   pioupiou_secure: string;
-  pioupiou_henhouse_integrity: string;
-  pioupiou_fox_infiltration: string;
-  pioupiou_champion_title: string;
-  pioupiou_analyzing_strategy: string;
-  pioupiou_tactical_feed: string;
-  pioupiou_henhouse_defense: string;
-  pioupiou_briefing_desc: string;
   pioupiou_securing_perimeters: string;
-
-  shared_status: string;
+  pioupiou_tactical_feed: string;
+  pioupiou_title: string;
+  player: string;
+  players: string;
+  rank: string;
+  rank_out_of: string;
+  ready: string;
+  readyPlayers: string;
+  results: string;
+  room: string;
+  roomPlaceholder: string;
+  rooster: string;
+  rules_goal: string;
+  rules_how_to_play: string;
+  rules_notes: string;
+  shared_language: string;
+  shared_players: string;
+  shared_points: string;
   shared_rank: string;
   shared_score: string;
-  shared_players: string;
-  shared_language: string;
-  shared_points: string;
-  boot_preparing: string;
-  boot_syncing: string;
-  boot_starting: string;
-  boot_ready: string;
-  boot_loading: string;
-  timeattack_victory_lap: string;
-  timeattack_current_phase: string;
-  timeattack_round: string;
-  timeattack_target: string;
-  timeattack_eyes_on_phone: string;
-  timeattack_end_input_window: string;
-  timeattack_round_results: string;
-  timeattack_target_duration: string;
+  shared_status: string;
+  shared_tech_group: string;
+  shared_waiting: string;
+  startMatch: string;
+  statusArchived: string;
+  statusLive: string;
+  statusLobby: string;
+  step1: string;
+  step2: string;
+  step3: string;
+  storyteller: string;
+  subtitle: string;
+  sushinode_desc: string;
+  sushinode_title: string;
+  targetPlayer: string;
+  testingNote: string;
+  themind_awaiting_play: string;
+  themind_briefing_desc: string;
+  themind_briefing_title: string;
+  themind_calibrating: string;
+  themind_concentrating: string;
+  themind_desc: string;
+  themind_discard_pile: string;
+  themind_emps: string;
+  themind_establishing_freq: string;
+  themind_freq_stabilized: string;
+  themind_frequency_refined: string;
+  themind_game_over: string;
+  themind_hand_size: string;
+  themind_level: string;
+  themind_level_cleared: string;
+  themind_level_progress: string;
+  themind_link_integrity: string;
+  themind_lives: string;
+  themind_miscalculated: string;
+  themind_playing: string;
+  themind_purged: string;
+  themind_ready_for_next: string;
+  themind_sector_stabilized: string;
+  themind_secured_by: string;
+  themind_shuriken_confirm: string;
+  themind_shuriken_request: string;
+  themind_shuriken_vote: string;
+  themind_shurikens: string;
+  themind_stable: string;
+  themind_start_level: string;
+  themind_sync_next: string;
+  themind_syncing: string;
+  themind_system_purged: string;
+  themind_team_stats: string;
+  themind_terminal_locked: string;
+  themind_terminated: string;
+  themind_title: string;
+  themind_transmission_lives: string;
+  themind_uplink_active: string;
+  themind_uplink_request_sent: string;
+  themind_victory: string;
   timeattack_actual: string;
-  timeattack_delta: string;
-  timeattack_reward: string;
-  timeattack_next_round: string;
-  timeattack_final_ranking: string;
-  timeattack_sync_wave_masters: string;
-  timeattack_return_to_arcade: string;
-  timeattack_back_to_main_menu: string;
-  timeattack_start_round: string;
-  timeattack_sync_wave_v1: string;
-  timeattack_s_and: string;
-  timeattack_ms: string;
-  timeattack_personal_timer: string;
-  timeattack_locked: string;
-  timeattack_waiting_reveal: string;
-  timeattack_done: string;
-  timeattack_hold: string;
-  timeattack_release: string;
-  timeattack_start: string;
-  timeattack_stop: string;
-  timeattack_hold_to_start: string;
-  timeattack_tap_to_start: string;
-  timeattack_release_at_target: string;
-  timeattack_tap_to_stop: string;
-  timeattack_time_recorded: string;
-  timeattack_final_results: string;
-  timeattack_leave_game: string;
-  timeattack_waiting_next_round: string;
-  timeattack_current_goal: string;
-  timeattack_instructions: string;
-  timeattack_goal: string;
-  timeattack_how: string;
-  timeattack_briefing_title: string;
-  timeattack_briefing_desc: string;
-  timeattack_syncing_oscillators: string;
-  timeattack_masters: string;
-  timeattack_integrity_verified: string;
-  timeattack_global_champion: string;
-  timeattack_extraction_sequences: string;
-  timeattack_round_victor: string;
-  timeattack_transmission_decrypted: string;
-  timeattack_neural_link_readiness: string;
-  timeattack_sync_all_freq: string;
-  timeattack_objective_sequence: string;
-  timeattack_extraction_decrypted: string;
-  timeattack_calibrating: string;
-  timeattack_transmitting: string;
-  timeattack_transmission_locked: string;
   timeattack_analyzing_variance: string;
   timeattack_arcade_rankings: string;
-  timeattack_round_protocol: string;
-  timeattack_round_1_name: string;
-  timeattack_round_1_goal: string;
-  timeattack_round_1_how: string;
-  timeattack_round_2_name: string;
-  timeattack_round_2_goal: string;
-  timeattack_round_2_how: string;
-  timeattack_round_3_name: string;
-  timeattack_round_3_goal: string;
-  timeattack_round_3_how: string;
-  timeattack_round_4_name: string;
-  timeattack_round_4_goal: string;
-  timeattack_round_4_how: string;
-  timeattack_round_5_name: string;
-  timeattack_round_5_goal: string;
-  timeattack_round_5_how: string;
-  timeattack_round_6_name: string;
-  timeattack_round_6_goal: string;
-  timeattack_round_6_how: string;
-  timeattack_round_7_name: string;
-  timeattack_round_7_goal: string;
-  timeattack_round_7_how: string;
-  timeattack_round_7_warning: string;
-  timeattack_round_8_name: string;
-  timeattack_round_8_goal: string;
-  timeattack_round_8_how: string;
-  timeattack_round_9_name: string;
-  timeattack_round_9_goal: string;
-  timeattack_round_9_how: string;
-  timeattack_round_10_name: string;
+  timeattack_back_to_main_menu: string;
+  timeattack_briefing_desc: string;
+  timeattack_briefing_title: string;
+  timeattack_calibrating: string;
+  timeattack_calibration_uplink: string;
+  timeattack_current_goal: string;
+  timeattack_current_phase: string;
+  timeattack_delta: string;
+  timeattack_desc: string;
+  timeattack_done: string;
+  timeattack_end_input_window: string;
+  timeattack_extract_data: string;
+  timeattack_extraction_decrypted: string;
+  timeattack_extraction_sequences: string;
+  timeattack_eyes_on_phone: string;
+  timeattack_final_ranking: string;
+  timeattack_final_results: string;
+  timeattack_global_champion: string;
+  timeattack_goal: string;
+  timeattack_hold: string;
+  timeattack_hold_to_start: string;
+  timeattack_how: string;
+  timeattack_instructions: string;
+  timeattack_integrity_verified: string;
+  timeattack_leave_game: string;
+  timeattack_locked: string;
+  timeattack_masters: string;
+  timeattack_ms: string;
+  timeattack_neural_link_readiness: string;
+  timeattack_next_round: string;
+  timeattack_next_sequence: string;
+  timeattack_objective_sequence: string;
+  timeattack_personal_timer: string;
+  timeattack_precision_uplink: string;
+  timeattack_recording: string;
+  timeattack_release: string;
+  timeattack_release_at_target: string;
+  timeattack_release_now: string;
+  timeattack_return_to_arcade: string;
+  timeattack_reward: string;
+  timeattack_round: string;
+  timeattack_round_10_desc: string;
   timeattack_round_10_goal: string;
   timeattack_round_10_how: string;
+  timeattack_round_10_name: string;
   timeattack_round_10_penalty: string;
+  timeattack_round_1_desc: string;
+  timeattack_round_1_goal: string;
+  timeattack_round_1_how: string;
+  timeattack_round_1_name: string;
+  timeattack_round_2_desc: string;
+  timeattack_round_2_goal: string;
+  timeattack_round_2_how: string;
+  timeattack_round_2_name: string;
+  timeattack_round_3_desc: string;
+  timeattack_round_3_goal: string;
+  timeattack_round_3_how: string;
+  timeattack_round_3_name: string;
+  timeattack_round_4_desc: string;
+  timeattack_round_4_goal: string;
+  timeattack_round_4_how: string;
+  timeattack_round_4_name: string;
+  timeattack_round_5_desc: string;
+  timeattack_round_5_goal: string;
+  timeattack_round_5_how: string;
+  timeattack_round_5_name: string;
+  timeattack_round_6_desc: string;
+  timeattack_round_6_goal: string;
+  timeattack_round_6_how: string;
+  timeattack_round_6_name: string;
+  timeattack_round_7_desc: string;
+  timeattack_round_7_goal: string;
+  timeattack_round_7_how: string;
+  timeattack_round_7_name: string;
+  timeattack_round_7_warning: string;
+  timeattack_round_8_desc: string;
+  timeattack_round_8_goal: string;
+  timeattack_round_8_how: string;
+  timeattack_round_8_name: string;
+  timeattack_round_9_desc: string;
+  timeattack_round_9_goal: string;
+  timeattack_round_9_how: string;
+  timeattack_round_9_name: string;
+  timeattack_round_protocol: string;
+  timeattack_round_results: string;
+  timeattack_round_victor: string;
+  timeattack_s_and: string;
+  timeattack_sensory_deprivation: string;
+  timeattack_start: string;
   timeattack_start_protocol: string;
-  timeattack_extract_data: string;
-  timeattack_next_sequence: string;
+  timeattack_start_round: string;
+  timeattack_stop: string;
+  timeattack_survival_protocol: string;
+  timeattack_sync_all_freq: string;
+  timeattack_sync_wave_masters: string;
+  timeattack_sync_wave_v1: string;
+  timeattack_syncing_oscillators: string;
+  timeattack_tap_to_start: string;
+  timeattack_tap_to_stop: string;
+  timeattack_target: string;
+  timeattack_target_duration: string;
+  timeattack_target_interval: string;
+  timeattack_time_recorded: string;
+  timeattack_title: string;
+  timeattack_transmission_decrypted: string;
+  timeattack_transmission_locked: string;
+  timeattack_transmitting: string;
+  timeattack_victory_lap: string;
+  timeattack_waiting_next_round: string;
+  timeattack_waiting_reveal: string;
+title: string;
+unknown_predator: string;
+victory: string;
+waiting: string;
+waitingForPlayers: string;
+waitingPlayers: string;
+waiting_for_protocol: string;
+waiting_for_sequence: string;
+winner: string;
+wins: string;
+yourTurn: string;
 }
 
 export const translations: Record<Language, TranslationSet> = {
+
   en: {
     title: "LUNARIS",
     subtitle: "ARCADE HUB",
@@ -932,6 +889,31 @@ export const translations: Record<Language, TranslationSet> = {
     timeattack_round_10_name: "SYSTEM MELTDOWN",
     timeattack_round_10_desc:
       "FINAL CHALLENGE: Hold for exactly 4.44s.\n\nULTIMATE RISK: PRESS AND HOLD. Visuals are failing. If you release LATE, 30% of your TOTAL SCORE is purged. MAKE IT COUNT.",
+    timeattack_round_1_goal: "Sync with the 5.00s baseline.",
+    timeattack_round_1_how: "Tapping and holding the system clock.",
+    timeattack_round_2_goal: "Record exactly 0.88s.",
+    timeattack_round_2_how: "Quick start, quick stop.",
+    timeattack_round_3_goal: "Match the 0.50s frequency.",
+    timeattack_round_3_how: "Ignore visual distractions.",
+    timeattack_round_4_goal: "Record exactly 3.333s.",
+    timeattack_round_4_how: "Hold non-standard rhythmic intervals.",
+    timeattack_round_5_goal: "Record the randomized long-form duration.",
+    timeattack_round_5_how: "TV will go dark. Rely on muscle memory.",
+    timeattack_round_6_goal: "Hold for exactly the target time.",
+    timeattack_round_6_how: "PRESS AND HOLD to start the fuse.",
+    timeattack_round_7_goal: "Record exactly 1.01s.",
+    timeattack_round_7_how: "Do not let the screen flicker alter your perception.",
+    timeattack_round_7_warning: "20% SCORE PENALTY if you overshoot!",
+    timeattack_round_8_goal: "Zero-latency response.",
+    timeattack_round_8_how: "Tap START then STOP as fast as possible.",
+    timeattack_round_9_goal: "Match the 12.00s cycle.",
+    timeattack_round_9_how: "Stay centered despite holographic data.",
+    timeattack_round_10_goal: "Hold for exactly 4.44s.",
+    timeattack_round_10_how: "MAKE IT COUNT.",
+    timeattack_round_10_penalty: "30% of TOTAL SCORE purged if late!",
+    timeattack_start_protocol: "START PROTOCOL",
+    timeattack_extract_data: "EXTRACT DATA",
+    timeattack_next_sequence: "NEXT SEQUENCE",
   },
   fr: {
     title: "LUNARIS",
@@ -1118,6 +1100,9 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_found_original_none: "VOUS SEUL AVEZ TROUVÉ",
     dixit_others_fooled: "VOTES SUR VOTRE CARTE",
     dixit_all_or_none: "TOUS OU PERSONNE N'A TROUVÉ",
+    rules_goal: "OBJECTIF",
+    rules_how_to_play: "COMMENT JOUER",
+    rules_notes: "NOTES TACTIQUES",
     rank_out_of: "{rank} sur {total}",
     LOG_LAY_EGG: "{player} a pondu ! 🥚",
     LOG_HATCH: "{player} a fait éclore ! 🐣",
@@ -1359,6 +1344,41 @@ export const translations: Record<Language, TranslationSet> = {
     timeattack_start_protocol: "LANCER LE PROTOCOLE",
     timeattack_extract_data: "EXTRACTION DES DONNÉES",
     timeattack_next_sequence: "SÉQUENCE SUIVANTE",
+    dixit_confirm_vote: "CONFIRMER LE VOTE",
+    dixit_label_failed: "Échoué",
+    dixit_label_guess: "Deviner",
+    dixit_label_risk: "Bonus de Risque",
+    dixit_label_safe: "Sûr",
+    dixit_label_success: "Succès",
+    dixit_label_traps: "Pièges",
+    dixit_next_round: "PROCHAINE MANCHE",
+    dixit_pts_label: "Pts",
+    dixit_risk_bonus_msg: "BONUS DE RISQUE : +1 PT SI CORRECT !",
+    dixit_round_summary_title: "RÉSUMÉ DU TOUR",
+    dixit_select_up_to_2: "SÉLECTIONNER JUSQU'À 2 CARTES",
+    dixit_send_clue: "ENVOYER L'INDICE",
+    dixit_submit_card: "SOUMETTRE LA CARTE",
+    incangold_briefing_desc: "Préparez-vous à entrer dans les ruines. N'oubliez pas, plus vous allez loin, plus vous risquez de trouver des gemmes... mais un danger en double et vous perdez tout ce que vous avez collecté ce tour-ci.",
+    incangold_briefing_title: "BRIEFING DE L'EXPÉDITION",
+    incangold_waiting_sync: "EN ATTENTE DES CHEFS D'EXPÉDITION...",
+    timeattack_calibration_uplink: "Liaison de Calibration",
+    timeattack_precision_uplink: "Liaison de Précision",
+    timeattack_recording: "ENREGISTREMENT...",
+    timeattack_release_now: "RELÂCHEZ MAINTENANT !",
+    timeattack_round_10_desc: "DÉFI FINAL : Maintenez 4,04s.",
+    timeattack_round_1_desc: "Échauffement : Enregistrez exactement 5,00 secondes.",
+    timeattack_round_2_desc: "Micro-Fraction : Enregistrez la durée aléatoire.",
+    timeattack_round_3_desc: "Le Métronome : Suivez le rythme.",
+    timeattack_round_4_desc: "Flash Réaction : Vitesse pure.",
+    timeattack_round_5_desc: "Le Tiers Parfait : Exactement 3,33 secondes.",
+    timeattack_round_6_desc: "Le Long Courrier : Cible longue durée.",
+    timeattack_round_7_desc: "Bombe à Retardement : Maintenez jusqu'à la cible.",
+    timeattack_round_8_desc: "Le Battement : Pulsation de 0,75 secondes.",
+    timeattack_round_9_desc: "Pouls Binaire : Exactement 1,01 secondes.",
+    timeattack_sensory_deprivation: "PRIVATION SENSORIELLE ACTIVE",
+    timeattack_survival_protocol: "Protocole de Survie",
+    timeattack_target_interval: "Intervalle Cible",
+    waiting_for_protocol: "En attente du protocole...",
   },
   de: {
     title: "LUNARIS",
@@ -1545,6 +1565,9 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_found_original_none: "NIEMAND GEFUNDEN",
     dixit_others_fooled: "VOTES AUF DEINE KARTE",
     dixit_all_or_none: "ALLE ODER NIEMAND HAT GERRATEN",
+    rules_goal: "ZIEL",
+    rules_how_to_play: "SO WIRD GESPIELT",
+    rules_notes: "TAKTIK-HINWEISE",
     rank_out_of: "{rank} von {total}",
     LOG_LAY_EGG: "{player} hat gelegt! 🥚",
     LOG_HATCH: "{player} ist geschlüpft! 🐣",
@@ -1785,6 +1808,41 @@ export const translations: Record<Language, TranslationSet> = {
     timeattack_start_protocol: "PROTOKOLL STARTEN",
     timeattack_extract_data: "DATEN EXTRAHIEREN",
     timeattack_next_sequence: "NÄCHSTE SEQUENZ",
+    dixit_confirm_vote: "VOTE BESTÄTIGEN",
+    dixit_label_failed: "Fehlgeschlagen",
+    dixit_label_guess: "Raten",
+    dixit_label_risk: "Risikobonus",
+    dixit_label_safe: "Sicher",
+    dixit_label_success: "Erfolg",
+    dixit_label_traps: "Fallen",
+    dixit_next_round: "NÄCHSTE RUNDE",
+    dixit_pts_label: "Pkt",
+    dixit_risk_bonus_msg: "RISIKOBONUS: +1 PKT BEI RICHTIG!",
+    dixit_round_summary_title: "RUNDEN-ZUSAMMENFASSUNG",
+    dixit_select_up_to_2: "WÄHLE BIS ZU 2 KARTEN",
+    dixit_send_clue: "HINWEIS SENDEN",
+    dixit_submit_card: "KARTE BESTÄTIGEN",
+    incangold_briefing_desc: "Bereite dich darauf vor, die Ruinen zu betreten. Denke daran: Je tiefer du gehst, desto mehr Edelsteine kannst du finden... aber eine doppelte Gefahr und du verlierst alles, was du in dieser Runde gesammelt hast.",
+    incangold_briefing_title: "EXPEDITIONS-BRIEFING",
+    incangold_waiting_sync: "WARTE AUF EXPEDITIONSLEITER...",
+    timeattack_calibration_uplink: "Kalibrierungs-Uplink",
+    timeattack_precision_uplink: "Präzisions-Uplink",
+    timeattack_recording: "AUFZEICHNUNG...",
+    timeattack_release_now: "JETZT LOSLASSEN!",
+    timeattack_round_10_desc: "Kernschmelze : FINALE. Halte 4,04s.",
+    timeattack_round_1_desc: "Das Aufwärmen : Enregistrez exactement 5,00 secondes.",
+    timeattack_round_2_desc: "Mikro-Fraktion : Enregistrez la durée aléatoire.",
+    timeattack_round_3_desc: "The Metronome : Suivez le rythme.",
+    timeattack_round_4_desc: "Reaktions-Flash : Reine Geschwindigkeit.",
+    timeattack_round_5_desc: "Das perfekte Drittel : Genau 3,33 Sekunden.",
+    timeattack_round_6_desc: "Der Weitschuss : Langzeit-Ziel.",
+    timeattack_round_7_desc: "Zeitbombe : Halten bis zum Ziel.",
+    timeattack_round_8_desc: "Der Herzschlag : Puls von 0,75 Sekunden.",
+    timeattack_round_9_desc: "Binärer Puls : Genau 1,01 Sekunden.",
+    timeattack_sensory_deprivation: "SENSORISCHE DEPRIVATION AKTIV",
+    timeattack_survival_protocol: "Überlebensprotokoll",
+    timeattack_target_interval: "Zielintervall",
+    waiting_for_protocol: "Warte auf Protokoll...",
   },
   fa: {
     title: "LUNARIS",
@@ -1985,6 +2043,9 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_label_guess: "حدس",
     dixit_label_traps: "تله‌ها",
     dixit_label_risk: "ریسک",
+    rules_goal: "هدف",
+    rules_how_to_play: "روش بازی",
+    rules_notes: "نکات تاکتیکی",
     rank_out_of: "{rank} از {total}",
     LOG_LAY_EGG: "{player} تخم گذاشت! 🥚",
     LOG_HATCH: "{player} به دنیا آورد! 🐣",
@@ -2225,6 +2286,35 @@ export const translations: Record<Language, TranslationSet> = {
     timeattack_round_10_name: "فروپاشی سیستم",
     timeattack_round_10_desc:
       "چالش نهایی: نگه داشتن برای دقیقاً ۴.۴۴ ثانیه.\n\nریسک نهایی: فشار دهید و نگه دارید. جلوه‌های بصری در حال شکست خوردن هستند. اگر دیر رها کنید، ۳۰٪ از کل امتیاز شما پاک می‌شود. دقت کنید.",
+    incangold_briefing_desc: "آماده ورود به خرابه‌ها شوید. به یاد داشته باشید، هر چه عمیق‌تر بروید، جواهرات بیشتری ممکن است پیدا کنید... اما یک خطر تکراری کافیست تا تمام آنچه در این دور جمع کرده‌اید را از دست بدهید.",
+    incangold_briefing_title: "گزارش اکتشاف",
+    incangold_waiting_sync: "در انتظار رهبران اکتشاف...",
+    timeattack_extract_data: "استخراج داده",
+    timeattack_next_sequence: "توالی بعدی",
+    timeattack_round_10_goal: "چالش نهایی: نگه داشتن برای ۴.۴۴ ثانیه.",
+    timeattack_round_10_how: "دقت کنید.",
+    timeattack_round_10_penalty: "۳۰٪ جریمه در صورت تاخیر!",
+    timeattack_round_1_goal: "همگام‌سازی با پایه ۵.۰۰ ثانیه.",
+    timeattack_round_1_how: "نگه داشتن ساعت سیستم.",
+    timeattack_round_2_goal: "ثبت دقیق ۰.۸۸ ثانیه.",
+    timeattack_round_2_how: "شروع و توقف سریع.",
+    timeattack_round_3_goal: "مطابقت با فرکانس ۰.۵۰ ثانیه.",
+    timeattack_round_3_how: "نادیده گرفتن حواس‌پرتی‌های بصری.",
+    timeattack_round_4_goal: "ثبت دقیق ۳.۳۳۳ ثانیه.",
+    timeattack_round_4_how: "نگه داشتن فواصل ریتمیک غیر استاندارد.",
+    timeattack_round_5_goal: "ثبت مدت زمان تصادفی.",
+    timeattack_round_5_how: "تلویزیون تاریک می‌شود. به حافظه عضلانی تکیه کنید.",
+    timeattack_round_6_goal: "نگه داشتن دقیقاً برای زمان هدف.",
+    timeattack_round_6_how: "فشار دهید و نگه دارید تا فیوز شروع شود.",
+    timeattack_round_7_goal: "ثبت دقیق ۱.۰۱ ثانیه.",
+    timeattack_round_7_how: "اجازه ندهید لرزش صفحه درک شما را تغییر دهد.",
+    timeattack_round_7_warning: "۲۰٪ جریمه در صورت گذشتن از زمان!",
+    timeattack_round_8_goal: "پاسخ با تاخیر صفر.",
+    timeattack_round_8_how: "شروع و توقف سریع‌ترین حالت ممکن.",
+    timeattack_round_9_goal: "مطابقت با چرخه ۱۲.۰۰ ثانیه.",
+    timeattack_round_9_how: "متمرکز بمانید.",
+    timeattack_start_protocol: "شروع پروتکل",
+    waiting_for_protocol: "در انتظار پروتکل...",
   },
 };
 
