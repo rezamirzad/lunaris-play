@@ -3,8 +3,8 @@ import { GamePlugin } from "./types";
 export const ROUNDS_CONFIG: Record<
   number,
   {
-    name: string;
-    description: string;
+    nameKey: string;
+    descKey: string;
     targetRange?: [number, number]; // [min, max]
     targetMs: number; // Default if not randomized
     interaction: "TAP" | "PRESS_RELEASE";
@@ -13,40 +13,40 @@ export const ROUNDS_CONFIG: Record<
   }
 > = {
   1: {
-    name: "The Quantum Calibration",
-    description: "GOAL: Synchronize with the 5.00s baseline.\n\nSYSTEM NOTE: A guide timer will appear for 2 seconds to help you find the rhythm. Precision is key for the initial uplink.",
+    nameKey: "timeattack_round_1_name",
+    descKey: "timeattack_round_1_desc",
     targetMs: 5000,
     interaction: "TAP",
     scoring: "PRECISION",
     visuals: "BLIND",
   },
   2: {
-    name: "Sub-Second Pulse",
-    description: "GOAL: Record exactly 0.88s.\n\nHOW: Quick start, quick stop. High-frequency pulses are required for deep-core scanning.",
+    nameKey: "timeattack_round_2_name",
+    descKey: "timeattack_round_2_desc",
     targetMs: 880,
     interaction: "TAP",
     scoring: "PRECISION",
     visuals: "BLIND",
   },
   3: {
-    name: "Neural Metronome",
-    description: "GOAL: Match the 0.50s frequency.\n\nWARNING: Visual interference detected. The system will attempt to break your focus with distracting artifacts. Maintain internal rhythm.",
+    nameKey: "timeattack_round_3_name",
+    descKey: "timeattack_round_3_desc",
     targetMs: 500,
     interaction: "TAP",
     scoring: "PRECISION",
     visuals: "DISTRACTED",
   },
   4: {
-    name: "The Perfect Third",
-    description: "GOAL: Record exactly 3.333s.\n\nHOW: A perfect mathematical third of 10s. This round measures your ability to hold non-standard rhythmic intervals.",
+    nameKey: "timeattack_round_4_name",
+    descKey: "timeattack_round_4_desc",
     targetMs: 3333,
     interaction: "TAP",
     scoring: "PRECISION",
     visuals: "BLIND",
   },
   5: {
-    name: "Void Echo",
-    description: "GOAL: Record the randomized long-form duration.\n\nHOW: The TV will go dark. You are alone with the clock. Rely purely on muscle memory and internal counting.",
+    nameKey: "timeattack_round_5_name",
+    descKey: "timeattack_round_5_desc",
     targetRange: [7000, 12000],
     targetMs: 10000,
     interaction: "TAP",
@@ -54,8 +54,8 @@ export const ROUNDS_CONFIG: Record<
     visuals: "BLIND",
   },
   6: {
-    name: "Time Bomb: Fuse",
-    description: "GOAL: Hold for exactly the target time.\n\nCRITICAL: PRESS AND HOLD to start the fuse. RELEASE at the target. Over-shooting the target triggers a 20% SCORE PENALTY!",
+    nameKey: "timeattack_round_6_name",
+    descKey: "timeattack_round_6_desc",
     targetRange: [4000, 6000],
     targetMs: 5000,
     interaction: "PRESS_RELEASE",
@@ -63,32 +63,32 @@ export const ROUNDS_CONFIG: Record<
     visuals: "BLIND",
   },
   7: {
-    name: "The Binary Glitch",
-    description: "GOAL: Record exactly 1.01s.\n\nSYSTEM STATUS: Heavy visual distortion. The simulation is destabilizing. Do not let the screen flicker alter your perception of time.",
+    nameKey: "timeattack_round_7_name",
+    descKey: "timeattack_round_7_desc",
     targetMs: 1010,
     interaction: "TAP",
     scoring: "PRECISION",
     visuals: "DISTRACTED",
   },
   8: {
-    name: "Reaction Surge",
-    description: "GOAL: Zero-latency response.\n\nHOW: Tap START then STOP as fast as physically possible. A solar flash will signal the beginning.",
+    nameKey: "timeattack_round_8_name",
+    descKey: "timeattack_round_8_desc",
     targetMs: 100,
     interaction: "TAP",
     scoring: "PRECISION",
     visuals: "FULL",
   },
   9: {
-    name: "Deep Space Sync",
-    description: "GOAL: Match the 12.00s cycle.\n\nHOW: This is a test of long-term temporal stability. The TV will display confusing holographic data. Stay centered.",
+    nameKey: "timeattack_round_9_name",
+    descKey: "timeattack_round_9_desc",
     targetMs: 12000,
     interaction: "TAP",
     scoring: "PRECISION",
     visuals: "DISTRACTED",
   },
   10: {
-    name: "SYSTEM MELTDOWN",
-    description: "FINAL CHALLENGE: Hold for exactly 4.44s.\n\nULTIMATE RISK: PRESS AND HOLD. Visuals are failing. If you release LATE, 30% of your TOTAL SCORE is purged. MAKE IT COUNT.",
+    nameKey: "timeattack_round_10_name",
+    descKey: "timeattack_round_10_desc",
     targetMs: 4444,
     interaction: "PRESS_RELEASE",
     scoring: "SURVIVAL",

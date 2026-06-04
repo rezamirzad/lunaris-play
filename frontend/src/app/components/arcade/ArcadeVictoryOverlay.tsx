@@ -4,6 +4,8 @@ import { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/hooks/useTranslation";
 import Image from "next/image";
+import { useConvexAuth } from "convex/react";
+import { useAuthActions } from "@convex-dev/auth/react";
 
 interface ArcadeVictoryOverlayProps {
   winnerName?: ReactNode;
@@ -72,6 +74,8 @@ export default function ArcadeVictoryOverlay({
   icon = "👑",
 }: ArcadeVictoryOverlayProps) {
   const { t } = useTranslation();
+  const { isAuthenticated } = useConvexAuth();
+  const { signIn } = useAuthActions();
   const theme = THEME_MAP[accentColor];
 
   const handleExit = onExit || (() => (window.location.href = "/"));
@@ -80,7 +84,7 @@ export default function ArcadeVictoryOverlay({
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className={`absolute inset-0 ${theme.bg} backdrop-blur-3xl z-[60] flex flex-col items-center justify-center p-16 text-center`}
+      className={`absolute inset-0 ${theme.bg} backdrop-blur-3xl z-[60] flex flex-col items-center justify-center p-16 text-center overflow-y-auto no-scrollbar`}
     >
       <div className="relative mb-4">
         <motion.span
@@ -96,16 +100,58 @@ export default function ArcadeVictoryOverlay({
         {championLabel}
       </h2>
 
-      <div className="flex items-center justify-center gap-4 text-xl lg:text-5xl font-black text-yellow-500 uppercase mb-12 italic pb-2 px-12 max-w-3xl drop-shadow-lg">
+      <div className="flex items-center justify-center gap-4 text-xl lg:text-5xl font-black text-yellow-500 uppercase mb-12 italic pb-2 px-12 max-w-3xl drop-shadow-lg leading-tight">
         {winnerName || championLabel}
       </div>
 
-      <button
-        onClick={handleExit}
-        className={`px-16 py-5 bg-gradient-to-b ${theme.gradient} ${theme.buttonText} font-black text-2xl uppercase italic rounded-3xl shadow-[0_10px_50px_${theme.shadow}] hover:scale-105 active:scale-95 transition-all border-t-2 border-white/20`}
-      >
-        {t.exit}
-      </button>
+      <div className="flex flex-col gap-6 w-full max-w-md items-center">
+        {!isAuthenticated && (
+          <motion.div 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 1 }}
+            className="w-full bg-white/5 border border-white/10 p-8 rounded-[2.5rem] flex flex-col gap-6 shadow-2xl relative group overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            
+            <div className="relative z-10">
+               <span className="text-[10px] font-black text-yellow-500 uppercase tracking-[0.4em] mb-2 block">
+                  Hall of Fame // Persistence
+               </span>
+               <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter mb-4 leading-none">
+                  Save Your Legacy
+               </h3>
+               <p className="text-[10px] text-zinc-500 leading-relaxed uppercase tracking-wider font-bold mb-6">
+                  Sign in to link your session stats to a permanent profile and unlock global rankings.
+               </p>
+               
+               <div className="grid grid-cols-2 gap-3">
+                  <button 
+                    onClick={() => signIn("github")}
+                    className="py-3.5 bg-zinc-900 border border-white/10 rounded-2xl flex items-center justify-center gap-2 hover:bg-white hover:text-black transition-all group/btn"
+                  >
+                    <span className="text-xl">🐙</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest">GitHub</span>
+                  </button>
+                  <button 
+                    onClick={() => signIn("google")}
+                    className="py-3.5 bg-white text-black rounded-2xl flex items-center justify-center gap-2 hover:bg-brand-accent transition-all group/btn"
+                  >
+                    <span className="text-xl">💎</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest">Google</span>
+                  </button>
+               </div>
+            </div>
+          </motion.div>
+        )}
+
+        <button
+          onClick={handleExit}
+          className={`px-16 py-5 bg-gradient-to-b ${theme.gradient} ${theme.buttonText} font-black text-2xl uppercase italic rounded-3xl shadow-[0_10px_50px_${theme.shadow}] hover:scale-105 active:scale-95 transition-all border-t-2 border-white/20`}
+        >
+          {t.exit}
+        </button>
+      </div>
     </motion.div>
   );
 }

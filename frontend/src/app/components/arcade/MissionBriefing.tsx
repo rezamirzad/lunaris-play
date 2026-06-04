@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import SharedArcadeLayout from "../shared/SharedArcadeLayout";
 import LobbyInitialization from "../shared/LobbyInitialization";
 import { Doc } from "convex/_generated/dataModel";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface MissionBriefingProps {
   title: string;
@@ -87,7 +88,18 @@ export default function MissionBriefing({
   players,
   me,
 }: MissionBriefingProps) {
+  const { t } = useTranslation();
   const theme = COLOR_MAP[accentColor];
+
+  const getRulesBriefing = () => {
+    const slug = room.currentGame.toLowerCase();
+    return {
+      objective: t[`${slug}_goal_desc` as keyof typeof t] || "",
+      how: t[`${slug}_how_to_play_desc` as keyof typeof t] || "",
+    };
+  };
+
+  const rules = getRulesBriefing();
 
   return (
     <div className={`${theme.bg} ${theme.text} min-h-screen w-full flex flex-col relative overflow-hidden`}>
@@ -117,6 +129,25 @@ export default function MissionBriefing({
                         </p>
                         <div className={`text-[10px] ${theme.loading} uppercase tracking-[0.4em] animate-pulse mt-10`}>
                             {loadingText}
+                        </div>
+                    </div>
+
+                    {/* 📖 RULES BRIEFING */}
+                    <div className={`p-8 rounded-[2.5rem] border ${theme.panel} bg-black/20 space-y-6 shadow-xl`}>
+                        <div className="flex items-center gap-3">
+                            <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
+                            <h3 className="text-xs font-black text-zinc-500 uppercase tracking-[0.5em]">Rules Briefing</h3>
+                        </div>
+                        
+                        <div className="space-y-4">
+                            <div>
+                                <span className="text-[7px] font-black text-zinc-600 uppercase tracking-widest block mb-1">Primary Objective</span>
+                                <p className="text-sm text-slate-300 font-medium leading-relaxed">{rules.objective}</p>
+                            </div>
+                            <div>
+                                <span className="text-[7px] font-black text-zinc-600 uppercase tracking-widest block mb-1">Operational Protocol</span>
+                                <p className="text-[10px] text-slate-400 leading-relaxed italic line-clamp-4">{rules.how}</p>
+                            </div>
                         </div>
                     </div>
                 </div>

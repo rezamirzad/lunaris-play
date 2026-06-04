@@ -32,7 +32,7 @@ export default function LobbyInitialization({
 }: LobbyInitializationProps) {
   const { t, lang } = useTranslation();
   const isFA = lang === "fa";
-  const { isAdmin, pin: adminPin } = useAdmin();
+  const { isAdmin } = useAdmin();
 
   const toggleReady = useMutation(api.engine.toggleReady);
   const startGame = useMutation(api.engine.startGame);
@@ -71,17 +71,17 @@ export default function LobbyInitialization({
       await startJustOneMatch({
         roomId: room._id,
         language: justoneLang,
-        adminPin,
+        
       });
     } else {
-      await startGame({ roomId: room._id, adminPin });
+      await startGame({ roomId: room._id });
     }
   };
 
   const handleAddBot = async () => {
     if (!isAdmin) return;
     try {
-      await addBot({ roomCode: room.roomCode, adminPin });
+      await addBot({ roomCode: room.roomCode });
     } catch (e) {
       console.error("Add bot failed", e);
     }
@@ -90,7 +90,7 @@ export default function LobbyInitialization({
   const handleKick = async (playerId: string) => {
     if (!isAdmin) return;
     try {
-      await removePlayer({ playerId: playerId as any, adminPin });
+      await removePlayer({ playerId: playerId as any });
     } catch (e) {
       console.error("Kick failed", e);
     }
@@ -106,7 +106,6 @@ export default function LobbyInitialization({
         playerId: me._id,
         actionType: "SET_RULESET",
         ruleset: nextRuleset,
-        adminPin
       });
     } catch (e) {
       console.error("Ruleset toggle failed", e);

@@ -21,42 +21,53 @@ export default function PiouPiouPlayerStats({
   const eggs = state?.eggs ?? 0;
 
   return (
-    <div className="flex items-center gap-6 sm:gap-8 font-mono">
+    <div className="flex items-center gap-6 sm:gap-10 font-mono">
+      {/* 🐥 CHICKS SLOT */}
       <motion.div
-        initial={{ y: 10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="flex flex-col"
+        initial={{ x: -10, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        className="flex flex-col items-center sm:items-start group"
       >
-        <span className="text-[7px] uppercase tracking-[0.4em] text-zinc-500 mb-2 font-black opacity-60">
+        <span className="text-[7px] uppercase tracking-[0.4em] text-teal-500/60 mb-2 font-black group-hover:text-teal-400 transition-colors">
           {t.chicks}
         </span>
         <div className="flex items-center gap-3">
-          <div className="h-2 w-2 bg-teal-400 rounded-full shadow-[0_0_12px_rgba(45,212,191,0.6)] animate-pulse" />
-          <div className="flex items-baseline gap-1">
-            <span className="text-3xl font-black text-white tracking-tighter tabular-nums">
+          <div className="relative">
+             <span className="text-3xl filter drop-shadow-[0_0_8px_rgba(45,212,191,0.4)] group-hover:scale-110 transition-transform block">🐣</span>
+             <motion.div 
+               animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.2, 1] }}
+               transition={{ duration: 2, repeat: Infinity }}
+               className="absolute -inset-1 bg-teal-500/10 rounded-full -z-10" 
+             />
+          </div>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-4xl font-black text-white tracking-tighter tabular-nums drop-shadow-lg">
               {isFA ? toPersianDigits(chicks) : chicks}
             </span>
-            <span className="text-[10px] font-black text-zinc-600 tracking-widest">
+            <span className="text-[10px] font-black text-zinc-600 tracking-widest opacity-40">
               / {isFA ? toPersianDigits(3) : 3}
             </span>
           </div>
         </div>
       </motion.div>
 
-      <div className="h-10 w-[1px] bg-white/5" />
+      <div className="h-12 w-[1px] bg-white/5 rotate-12" />
 
+      {/* 🥚 EGGS SLOT */}
       <motion.div
-        initial={{ y: 10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
+        initial={{ x: 10, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
         transition={{ delay: 0.1 }}
-        className="flex flex-col"
+        className="flex flex-col items-center sm:items-start group"
       >
-        <span className="text-[7px] uppercase tracking-[0.4em] text-zinc-500 mb-2 font-white opacity-60">
+        <span className="text-[7px] uppercase tracking-[0.4em] text-amber-500/60 mb-2 font-black group-hover:text-amber-400 transition-colors">
           {t.eggs}
         </span>
         <div className="flex items-center gap-3">
-          <div className="h-2 w-2 bg-amber-500 rounded-full shadow-[0_0_12px_rgba(245,158,11,0.6)]" />
-          <span className="text-3xl font-black text-white tracking-tighter tabular-nums">
+           <div className="relative">
+             <span className="text-3xl filter drop-shadow-[0_0_8px_rgba(245,158,11,0.4)] group-hover:rotate-12 transition-transform block text-amber-50">🥚</span>
+          </div>
+          <span className="text-4xl font-black text-white tracking-tighter tabular-nums drop-shadow-lg">
             {isFA ? toPersianDigits(eggs) : eggs}
           </span>
         </div>

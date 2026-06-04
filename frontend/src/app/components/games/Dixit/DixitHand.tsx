@@ -122,24 +122,24 @@ export default function DixitHand({ room, player }: DixitHandProps) {
     const isAllOrNone = votesForST === totalGuessers || votesForST === 0;
 
     if (isST) {
-      if (!isAllOrNone) breakdown.push({ label: "Success", pts: 3 });
-      else breakdown.push({ label: "Failed", pts: 0 });
+      if (!isAllOrNone) breakdown.push({ label: t.dixit_label_success, pts: 3 });
+      else breakdown.push({ label: t.dixit_label_failed, pts: 0 });
     } else {
       if (isAllOrNone) {
-        breakdown.push({ label: "Safe", pts: 2 });
+        breakdown.push({ label: t.dixit_label_safe, pts: 2 });
       } else {
         const votedCorrect = myVotes.some(
           (v) => v.cardId === results.storytellerCard,
         );
         if (votedCorrect) {
           if (isOdyssey && myVotes.length === 1)
-            breakdown.push({ label: "Risk Bonus", pts: 4 });
-          else breakdown.push({ label: "Guess", pts: 3 });
+            breakdown.push({ label: t.dixit_label_risk, pts: 4 });
+          else breakdown.push({ label: t.dixit_label_guess, pts: 3 });
         }
       }
       if (votesForMe > 0) {
         const trapPts = isOdyssey ? Math.min(3, votesForMe) : votesForMe;
-        breakdown.push({ label: "Traps", pts: trapPts });
+        breakdown.push({ label: t.dixit_label_traps, pts: trapPts });
       }
     }
 
@@ -154,6 +154,7 @@ export default function DixitHand({ room, player }: DixitHandProps) {
     storytellerId,
     isOdyssey,
     room.players.length,
+    t
   ]);
 
   const handleCardClick = (cardId: string) => {
@@ -225,13 +226,13 @@ export default function DixitHand({ room, player }: DixitHandProps) {
               className="bg-emerald-500/10 border border-emerald-500/30 p-5 rounded-[2rem] text-center shadow-[0_0_50px_rgba(16,185,129,0.1)]"
             >
               <span className="text-[8px] font-black text-emerald-400 uppercase tracking-[0.4em] block mb-2">
-                Round Summary
+                {t.dixit_round_summary_title}
               </span>
               <div className="flex flex-col gap-3">
                 <div className="text-4xl font-black italic text-emerald-400 tracking-tighter drop-shadow-[0_0_15px_rgba(16,185,129,0.4)]">
                   +{myRoundResults.total}{" "}
                   <span className="text-xs uppercase tracking-widest text-emerald-400/60 not-italic">
-                    Pts
+                    {t.dixit_pts_label}
                   </span>
                 </div>
                 <div className="flex flex-wrap justify-center gap-2">
@@ -316,7 +317,7 @@ export default function DixitHand({ room, player }: DixitHandProps) {
                     : hasVoted
                       ? t.dixit_wait_others
                       : isOdyssey
-                        ? "SELECT UP TO 2 CARDS"
+                        ? t.dixit_select_up_to_2
                         : t.dixit_guess_card}
               </p>
             </motion.div>
@@ -336,7 +337,7 @@ export default function DixitHand({ room, player }: DixitHandProps) {
             >
               <div className="bg-amber-400 text-black text-[10px] font-black px-6 py-2 rounded-xl shadow-[0_0_30px_rgba(251,191,36,0.6)] border-2 border-amber-200 uppercase tracking-wider animate-bounce flex items-center gap-2">
                 <span className="text-sm">✨</span>
-                RISK BONUS: +1 PT IF CORRECT!
+                {t.dixit_risk_bonus_msg}
               </div>
             </motion.div>
           )}
@@ -393,15 +394,15 @@ export default function DixitHand({ room, player }: DixitHandProps) {
           <span className="relative z-10 group-hover:text-white transition-colors">
             {board?.phase === "RESULTS"
               ? isST
-                ? "NEXT ROUND →"
-                : "WAITING FOR STORYTELLER..."
+                ? t.dixit_next_round
+                : `${t.waiting} ${storytellerName.toUpperCase()}`
               : isWaitingPhase
-                ? "WAITING FOR OTHERS..."
+                ? t.shared_waiting
                 : board?.phase === "CLUE"
-                  ? "SEND CLUE"
+                  ? t.dixit_send_clue
                   : board?.phase === "SUBMITTING"
-                    ? "SUBMIT CARD"
-                    : "CONFIRM VOTE"}
+                    ? t.dixit_submit_card
+                    : t.dixit_confirm_vote}
           </span>
         </motion.button>
       </div>

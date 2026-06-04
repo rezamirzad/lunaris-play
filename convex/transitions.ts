@@ -24,12 +24,12 @@ export async function logHistoryEvent(ctx: GameMutationCtx, roomId: Id<"rooms">,
 export async function updateLeaderboardAtGameEnd(ctx: GameMutationCtx, room: Doc<"rooms">, players: Doc<"players">[]) {
   const board = room.gameBoard as any;
   for (const p of players) {
-    const user = await ctx.db
-      .query("users")
+    const profile = await ctx.db
+      .query("profiles")
       .withIndex("by_name", (q) => q.eq("name", p.name))
       .unique();
 
-    if (user) {
+    if (profile) {
       let isThisPlayerWinner = false;
       let currentScore = 0;
 
@@ -53,10 +53,10 @@ export async function updateLeaderboardAtGameEnd(ctx: GameMutationCtx, room: Doc
         currentScore = p.state.score || 0;
       }
 
-      await ctx.db.patch(user._id, {
-        wins: user.wins + (isThisPlayerWinner ? 1 : 0),
-        gamesPlayed: user.gamesPlayed + 1,
-        totalScore: user.totalScore + currentScore,
+      await ctx.db.patch(profile._id, {
+        wins: profile.wins + (isThisPlayerWinner ? 1 : 0),
+        gamesPlayed: profile.gamesPlayed + 1,
+        totalScore: profile.totalScore + currentScore,
       });
     }
   }

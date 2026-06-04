@@ -9,6 +9,7 @@ interface ArcadeHUDProps {
   accentColor: "orange" | "teal" | "blue" | "cyan" | "amber" | "rose";
   onHaltToggle?: () => void;
   isHalted?: boolean;
+  onRulesClick?: () => void;
 }
 
 const THEME_MAP = {
@@ -75,6 +76,7 @@ export default function ArcadeHUD({
   accentColor,
   onHaltToggle,
   isHalted = false,
+  onRulesClick,
 }: ArcadeHUDProps) {
   const theme = THEME_MAP[accentColor];
 
@@ -92,6 +94,15 @@ export default function ArcadeHUD({
       </div>
 
       <div className="flex items-center gap-4">
+        {onRulesClick && (
+            <button 
+                onClick={onRulesClick}
+                className="text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-xl border border-white/10 bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white transition-all mr-2 flex items-center gap-2"
+            >
+                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
+                RULES
+            </button>
+        )}
         {onHaltToggle && (
             <button 
                 onClick={onHaltToggle}

@@ -12,6 +12,7 @@ interface PlayerControllerProps {
   className?: string;
   history?: ActivityLog[];
   renderLog?: (log: ActivityLog) => React.ReactNode;
+  gameType?: string;
 }
 
 export default function PlayerController({
@@ -20,6 +21,7 @@ export default function PlayerController({
   actionsSlot,
   history,
   renderLog,
+  gameType = "none",
 }: PlayerControllerProps) {
   return (
     <div className="game-container p-4 sm:p-6 animate-in fade-in duration-1000 flex-1 min-h-0 flex flex-col">

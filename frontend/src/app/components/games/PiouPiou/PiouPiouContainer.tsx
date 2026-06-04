@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useState } from "react";
 import { BoardProps } from "../registry";
 import PlayerCard from "../../shared/PlayerCard";
 import PiouPiouPlayerStats from "./PiouPiouPlayerStats";
@@ -13,14 +14,17 @@ import ArcadeHUD from "../../arcade/ArcadeHUD";
 import ArcadeStatusPanel from "../../arcade/ArcadeStatusPanel";
 import ArcadePlayerGrid from "../../arcade/ArcadePlayerGrid";
 import ArcadeVictoryOverlay from "../../arcade/ArcadeVictoryOverlay";
+import AITelemetryLog from "../../arcade/AITelemetryLog";
+import RulesModal from "../../shared/RulesModal";
 import { useAdmin } from "@/app/admin/AdminGateway";
 import { useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
 
 export default function PiouPiouContainer({ roomId, roomData, history = [] }: BoardProps) {
   const { t } = useTranslation();
-  const { isAdmin, pin: adminPin } = useAdmin();
+  const { isAdmin, } = useAdmin();
   const toggleHaltMutation = useMutation(api.engine.toggleBotsHalt);
+  const [showRules, setShowRules] = useState(false);
 
   const isGameEnd =
     roomData.status?.toUpperCase() === "FINISHED" ||
@@ -64,14 +68,21 @@ export default function PiouPiouContainer({ roomId, roomData, history = [] }: Bo
           <div className="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')]" />
         </>
       }
+      extra={
+        <>
+          <AITelemetryLog players={roomData.players} />
+          <RulesModal isOpen={showRules} onClose={() => setShowRules(false)} gameType="pioupiou" />
+        </>
+      }
       header={
         <ArcadeHUD
           title={t.pioupiou_title}
           statusLabel={`${t.shared_status}: ${isGameEnd ? t.statusArchived : t.pioupiou_henhouse_integrity}`}
           badgeContent={board?.winnerId ? t.statusArchived : t.statusLive}
           accentColor="orange"
-          onHaltToggle={isAdmin ? () => toggleHaltMutation({ roomId: roomId as any, adminPin }) : undefined}
+          onHaltToggle={isAdmin ? () => toggleHaltMutation({ roomId: roomId as any }) : undefined}
           isHalted={roomData.botsHalted}
+          onRulesClick={() => setShowRules(true)}
         />
       }
       main={

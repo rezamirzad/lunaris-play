@@ -85,22 +85,35 @@ export const dispatchBotTurn = internalMutation({
         // Mark heartbeat
         await ctx.db.patch(room._id, { lastMoveTime: Date.now(), botStuck: false });
 
-        // Sequential delay: 20s between bots for Dixit, 5s for others
-        const staggerStep = room.currentGame === "dixit" ? 20000 : 5000;
+        // Calculate staggered delay with human-like randomness
+        // Base delay is 3-8s, plus stagger offset
+        const staggerStep = room.currentGame === "dixit" ? 15000 : 4000;
         const staggerOffset = botIndex * staggerStep;
-        const delay = 5000 + staggerOffset + Math.random() * 3000;
+        const randomThinkingTime = 3000 + Math.random() * 5000;
+        const totalDelay = staggerOffset + randomThinkingTime;
+
+        // Set Thinking State immediately
+        const persona = PERSONAS[player.persona || "balanced"];
+        const statusText = board.phase === "CLUE" ? "CRAFTING_VISION" : 
+                          board.phase === "VOTING" ? "DECODING_SYMBOLS" : 
+                          board.phase === "SUBMITTING" ? "DREAMING" : "ANALYZING_STRATEGY";
+
+        await ctx.db.patch(player._id, { 
+            isThinking: true, 
+            botStatus: `${persona.name} is ${statusText.toLowerCase().replace("_", " ")}...` 
+        });
         
-        await ctx.scheduler.runAfter(delay, (internal as any).bots.manager.executeMove, {
+        await ctx.scheduler.runAfter(totalDelay, (internal as any).bots.manager.executeMove, {
             roomId: room._id,
             playerId: player._id,
         });
 
         // Watchdog
-        const watchdogBuffer = room.currentGame === "dixit" ? 60000 : 25000;
-        await ctx.scheduler.runAfter(staggerOffset + watchdogBuffer, (internal as any).bots.manager.watchdog, {
+        const watchdogBuffer = room.currentGame === "dixit" ? 45000 : 20000;
+        await ctx.scheduler.runAfter(totalDelay + watchdogBuffer, (internal as any).bots.manager.watchdog, {
             roomId: room._id,
             playerId: player._id,
-            scheduledTime: Date.now(),
+            scheduledTime: Date.now() + totalDelay,
         });
         
         botIndex++;
@@ -115,6 +128,9 @@ export const executeMove = internalMutation({
     const player: any = await ctx.db.get(args.playerId);
     if (!room || !player || room.status !== "PLAYING") return;
     
+    // Clear thinking state as we are now executing
+    await ctx.db.patch(player._id, { isThinking: false, botStatus: undefined });
+
     const board = room.gameBoard as any;
     const persona = PERSONAS[player.persona || "balanced"];
 
@@ -143,7 +159,7 @@ export const executeMove = internalMutation({
 
       if (relevantCards.length === 0) return;
 
-      const prompt = persona.generateDixitPrompt(board.phase, board.currentClue, board.ruleset);
+      const prompt = persona.generateDixitPrompt(board.phase, player.maturity || "ADULT", board.currentClue, board.ruleset);
       const baseUrl = "https://lunaris-play.vercel.app";
       const cardImages = relevantCards.map(id => ({ id, url: `${baseUrl}/assets/games/dixit/cards/${id}.png` }));
 

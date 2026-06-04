@@ -76,11 +76,11 @@ export const getRoomState = query({
 export const getLeaderboard = query({
   args: {},
   handler: async (ctx) => {
-    const users = await ctx.db
-      .query("users")
+    const profiles = await ctx.db
+      .query("profiles")
       .filter((q) => q.neq(q.field("name"), "ADMIN_NODE"))
       .collect();
-    return users
+    return profiles
       .sort((a, b) => (b.wins || 0) - (a.wins || 0))
       .slice(0, 10);
   },
@@ -90,7 +90,7 @@ export const getUser = query({
   args: { name: v.string() },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query("users")
+      .query("profiles")
       .withIndex("by_name", (q) => q.eq("name", args.name))
       .unique();
   },
@@ -99,22 +99,44 @@ export const getUser = query({
 export const getOrCreateUser = mutation({
   args: { name: v.string() },
   handler: async (ctx, args) => {
-    const existing = await ctx.db
-      .query("users")
+    const identity = await ctx.auth.getUserIdentity();
+    const userId = identity?.subject;
+
+    // Try to find by authenticated userId first
+    if (userId) {
+      const existingByUser = await ctx.db
+        .query("profiles")
+        .filter((q) => q.eq(q.field("userId"), userId))
+        .unique();
+      if (existingByUser) {
+        await ctx.db.patch(existingByUser._id, { lastLogin: Date.now() });
+        return existingByUser._id;
+      }
+    }
+
+    // Fallback to name-based lookup (legacy/guest)
+    const existingByName = await ctx.db
+      .query("profiles")
       .withIndex("by_name", (q) => q.eq("name", args.name))
       .unique();
 
-    if (existing) {
-      await ctx.db.patch(existing._id, { lastLogin: Date.now() });
-      return existing._id;
+    if (existingByName) {
+      // If we are authenticated but this profile doesn't have a userId, link it!
+      if (userId && !existingByName.userId) {
+        await ctx.db.patch(existingByName._id, { userId, lastLogin: Date.now() });
+      } else {
+        await ctx.db.patch(existingByName._id, { lastLogin: Date.now() });
+      }
+      return existingByName._id;
     }
 
-    return await ctx.db.insert("users", {
+    return await ctx.db.insert("profiles", {
       name: args.name,
       totalScore: 0,
       wins: 0,
       gamesPlayed: 0,
       lastLogin: Date.now(),
+      userId: userId,
     });
   },
 });
@@ -297,22 +319,24 @@ export const joinRoom = mutation({
       throw new Error("ROOM_FULL");
     }
 
-    // ENSURE USER EXISTS for leaderboard tracking
-    const user = await ctx.db
-      .query("users")
+    // ENSURE PROFILE EXISTS for leaderboard tracking
+    const profile = await ctx.db
+      .query("profiles")
       .withIndex("by_name", (q) => q.eq("name", args.playerName))
       .unique();
 
-    if (!user) {
-      await ctx.db.insert("users", {
+    if (!profile) {
+      const identity = await ctx.auth.getUserIdentity();
+      await ctx.db.insert("profiles", {
         name: args.playerName,
         totalScore: 0,
         wins: 0,
         gamesPlayed: 0,
         lastLogin: Date.now(),
+        userId: identity?.subject,
       });
     } else {
-      await ctx.db.patch(user._id, { lastLogin: Date.now() });
+      await ctx.db.patch(profile._id, { lastLogin: Date.now() });
     }
 
     const plugin = getGamePlugin(room.currentGame);
@@ -336,12 +360,16 @@ export const joinRoom = mutation({
 export const addBot = mutation({
   args: { 
     roomCode: v.string(), 
-    adminPin: v.string() 
   },
   handler: async (ctx, args) => {
     // 1. Verify Admin Access
-    const isAuthorized = args.adminPin === "0000";
-    if (!isAuthorized) throw new Error("UNAUTHORIZED");
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("UNAUTHORIZED");
+    const profile = await ctx.db
+      .query("profiles")
+      .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
+      .unique();
+    if (!profile?.isAdmin) throw new Error("UNAUTHORIZED");
 
     const room = await ctx.db
       .query("rooms")
@@ -451,12 +479,16 @@ export const addBot = mutation({
 export const removePlayer = mutation({
   args: { 
     playerId: v.id("players"), 
-    adminPin: v.string() 
   },
   handler: async (ctx, args) => {
     // 1. Verify Admin Access
-    const isAuthorized = args.adminPin === "0000";
-    if (!isAuthorized) throw new Error("UNAUTHORIZED");
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("UNAUTHORIZED");
+    const profile = await ctx.db
+      .query("profiles")
+      .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
+      .unique();
+    if (!profile?.isAdmin) throw new Error("UNAUTHORIZED");
 
     const player = await ctx.db.get(args.playerId);
     if (!player) return;
@@ -471,12 +503,16 @@ export const removePlayer = mutation({
 export const startGame = mutation({
   args: { 
     roomId: v.id("rooms"),
-    adminPin: v.string()
   },
   handler: async (ctx, args) => {
     // 1. Verify Admin Access
-    const isAuthorized = args.adminPin === "0000";
-    if (!isAuthorized) throw new Error("UNAUTHORIZED");
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("UNAUTHORIZED");
+    const profile = await ctx.db
+      .query("profiles")
+      .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
+      .unique();
+    if (!profile?.isAdmin) throw new Error("UNAUTHORIZED");
 
     const room = await ctx.db.get(args.roomId);
     if (!room) return;
@@ -504,11 +540,15 @@ export const startGame = mutation({
 export const toggleBotsHalt = mutation({
   args: { 
     roomId: v.id("rooms"),
-    adminPin: v.string()
   },
   handler: async (ctx, args) => {
-    const isAuthorized = args.adminPin === "0000";
-    if (!isAuthorized) throw new Error("UNAUTHORIZED");
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("UNAUTHORIZED");
+    const profile = await ctx.db
+      .query("profiles")
+      .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
+      .unique();
+    if (!profile?.isAdmin) throw new Error("UNAUTHORIZED");
 
     const room = await ctx.db.get(args.roomId);
     if (!room) return;
@@ -586,26 +626,17 @@ export const resetRoom = mutation({
   },
 });
 
-export const verifyAdminPin = mutation({
-  args: { pin: v.string() },
-  handler: async (ctx, args) => {
-    const ADMIN_PIN = "0000";
-    const isAuthorized = args.pin === ADMIN_PIN;
+export const checkAdminStatus = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return false;
 
-    if (!isAuthorized) {
-      await ctx.db.insert("security_logs", {
-        event: "UNAUTHORIZED_ADMIN_ACCESS_ATTEMPT",
-        timestamp: Date.now(),
-        details: { attemptedPin: args.pin },
-      });
-    } else {
-      await ctx.db.insert("security_logs", {
-        event: "ADMIN_ACCESS_GRANTED",
-        timestamp: Date.now(),
-        details: {},
-      });
-    }
+    const profile = await ctx.db
+      .query("profiles")
+      .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
+      .unique();
 
-    return isAuthorized;
+    return !!profile?.isAdmin;
   },
 });

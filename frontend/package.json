@@ -18,6 +18,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@auth/core": "^0.37.0",
+    "@convex-dev/auth": "^0.0.93",
     "convex": "^1.31.7",
     "framer-motion": "^12.38.0",
     "next": "^14.2.20",
@@ -27,14 +29,14 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@types/node": "^20.19.39",
-    "@types/react": "^18.3.12",
+    "@types/node": "20.19.41",
+    "@types/react": "18.3.30",
     "@types/react-dom": "^18.3.1",
     "autoprefixer": "^10.4.19",
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.20",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",
-    "typescript": "^5.4.5"
+    "typescript": "5.9.3"
   }
 }

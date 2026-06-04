@@ -62,6 +62,7 @@ export default function DixitPlayerView({
         roomData={roomData}
         isMyTurn={isMyTurn}
         className="flex-grow"
+        gameType="dixit"
         statsSlot={
           <div className="flex flex-col gap-3 sm:gap-6 w-full lg:w-80">
             <motion.div

@@ -13,11 +13,16 @@ export function useTimeAttack(roomData: Doc<"rooms">, player: Doc<"players">) {
   
   // Local state to track timing without hitting Convex
   const startTimeRef = useRef<number | null>(null);
+  const submittedRef = useRef<boolean>(false);
 
   const gameBoard = roomData.gameBoard as TimeAttackBoard;
 
+  if (gameBoard.phase === "ROUND_INTRO") {
+    submittedRef.current = false;
+  }
+
   const handleAction = useCallback((type: "TAP" | "PRESS" | "RELEASE") => {
-    if (gameBoard.phase !== "ACTIVE_PLAY") return;
+    if (gameBoard.phase !== "ACTIVE_PLAY" || submittedRef.current) return;
 
     const now = performance.now(); // Use performance.now() for high precision
 
@@ -28,6 +33,7 @@ export function useTimeAttack(roomData: Doc<"rooms">, player: Doc<"players">) {
       } else {
         // Second tap: End timing and submit
         const duration = now - startTimeRef.current;
+        submittedRef.current = true;
         submitResult({
           roomId: roomData._id,
           playerId: player._id,
@@ -40,6 +46,7 @@ export function useTimeAttack(roomData: Doc<"rooms">, player: Doc<"players">) {
         startTimeRef.current = now;
       } else if (type === "RELEASE" && startTimeRef.current !== null) {
         const duration = now - startTimeRef.current;
+        submittedRef.current = true;
         submitResult({
           roomId: roomData._id,
           playerId: player._id,

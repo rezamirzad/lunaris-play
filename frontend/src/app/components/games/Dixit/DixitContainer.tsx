@@ -10,6 +10,8 @@ import VotingReveal from "./VotingReveal";
 import RoundResultsPanel from "./RoundResultsPanel";
 import MissionBriefing from "../../arcade/MissionBriefing";
 import ArcadeVictoryOverlay from "../../arcade/ArcadeVictoryOverlay";
+import AITelemetryLog from "../../arcade/AITelemetryLog";
+import RulesModal from "../../shared/RulesModal";
 import ArcadeHUD from "../../arcade/ArcadeHUD";
 import ArcadePlayerGrid from "../../arcade/ArcadePlayerGrid";
 import ArcadeBadge from "../../shared/ArcadeBadge";
@@ -24,11 +26,12 @@ import { fixPersianPunctuation } from "@/lib/translations";
 
 export default function DixitContainer({ roomId, roomData, history = [], submissions = [] }: BoardProps) {
   const { t, lang } = useTranslation();
-  const { isAdmin, pin: adminPin } = useAdmin();
+  const { isAdmin, } = useAdmin();
   const handleActionMutation = useMutation(api.dixit.handleAction);
   const toggleHaltMutation = useMutation(api.engine.toggleBotsHalt);
 
   const [zoomedCardId, setZoomedCardId] = useState<string | null>(null);
+  const [showRules, setShowRules] = useState(false);
 
   const board =
     roomData.gameBoard.gameType === "dixit" ? roomData.gameBoard : null;
@@ -168,10 +171,11 @@ export default function DixitContainer({ roomId, roomData, history = [], submiss
       containerClassName="bg-[#05030a] text-blue-100 font-mono !max-w-none w-full h-full"
       background={
         <>
-          <div className="neuro-grid opacity-10" />
-          <div className="absolute inset-0 opacity-5 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/pinstriped-suit.png')]" />
+          <div className="neuro-grid opacity-20" />
+          <div className="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
         </>
       }
+
       header={
         <ArcadeHUD
           title={t.dixit_title}
@@ -182,14 +186,12 @@ export default function DixitContainer({ roomId, roomData, history = [], submiss
               : t.dixit_awaiting_st
           }
           accentColor="blue"
-          onHaltToggle={
-            isAdmin
-              ? () => toggleHaltMutation({ roomId: roomId as any, adminPin })
-              : undefined
-          }
+          onHaltToggle={isAdmin ? () => toggleHaltMutation({ roomId: roomId as any }) : undefined}
           isHalted={roomData.botsHalted}
-        />
-      }
+          onRulesClick={() => setShowRules(true)}
+          />
+          }
+
       main={
         <div className="flex flex-col h-full gap-4 min-h-0 font-mono">
           <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0 w-full overflow-hidden mb-8">
@@ -502,10 +504,12 @@ export default function DixitContainer({ roomId, roomData, history = [], submiss
                         <p className="text-xs font-black uppercase text-blue-400 tracking-[0.2em]">
                           {zoomedCardOwner.name}
                           {zoomedCardOwner.isBot && (
-                            <img
+                            <Image
                               src="/assets/general/artificial-intelligence-design-png.webp"
                               alt="AI"
-                              className="w-3 h-3 inline-block ml-2 opacity-80"
+                              width={12}
+                              height={12}
+                              className="inline-block ml-2 opacity-80"
                             />
                           )}
                         </p>
@@ -522,10 +526,12 @@ export default function DixitContainer({ roomId, roomData, history = [], submiss
                             {voter.name}
                           </span>
                           {voter.isBot && (
-                            <img
+                            <Image
                               src="/assets/general/artificial-intelligence-design-png.webp"
                               alt="AI"
-                              className="w-3 h-3 inline-block opacity-80"
+                              width={12}
+                              height={12}
+                              className="inline-block opacity-80"
                             />
                           )}
                         </div>

@@ -1,11 +1,11 @@
 "use client";
 
 import { useTranslation } from "@/hooks/useTranslation";
-import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { Doc } from "convex/_generated/dataModel";
 import { GAME_REGISTRY } from "../registry";
-import Image from "next/image";
 import { formatLog } from "@/lib/translations";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface DixitCardProps {
   cardId: string;
@@ -74,7 +74,7 @@ export default function DixitCard({
       {/* 🖼️ CORE IMAGE */}
       <div className="absolute inset-0 w-full h-full">
         <Image
-          src={imageSrc}
+          src={imageSrc as string}
           alt={isBack ? "CARD_HIDDEN" : cardId}
           fill
           className={`object-cover pointer-events-none transition-transform duration-1000 ${selected || isStorytellerCard ? "scale-110" : "scale-100"}`}
@@ -98,10 +98,12 @@ export default function DixitCard({
                     {ownerName}
                   </p>
                   {isOwnerBot && (
-                    <img
+                    <Image
                       src="/assets/general/artificial-intelligence-design-png.webp"
                       alt="AI"
-                      className="w-2.5 h-2.5 opacity-80"
+                      width={10}
+                      height={10}
+                      className="opacity-80"
                     />
                   )}
                 </motion.div>
@@ -125,10 +127,12 @@ export default function DixitCard({
                     {voter.name}
                   </span>
                   {voter.isBot && (
-                    <img
+                    <Image
                       src="/assets/general/artificial-intelligence-design-png.webp"
                       alt="AI"
-                      className="w-2.5 h-2.5 inline-block opacity-80"
+                      width={10}
+                      height={10}
+                      className="inline-block opacity-80"
                     />
                   )}
                 </motion.div>

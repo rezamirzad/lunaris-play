@@ -97,6 +97,9 @@ export interface TranslationSet {
   incangold_total_wealth: string;
   incangold_close_rules: string;
   incangold_game_rules: string;
+  incangold_briefing_title: string;
+  incangold_briefing_desc: string;
+  incangold_waiting_sync: string;
   incangold_next_cave: string;
   incangold_time_to_decide: string;
   incangold_continue_exploration: string;
@@ -172,6 +175,79 @@ export interface TranslationSet {
   dixit_found_original_none: string;
   dixit_others_fooled: string;
   dixit_all_or_none: string;
+  dixit_select_up_to_2: string;
+  dixit_risk_bonus_msg: string;
+  dixit_next_round: string;
+  dixit_send_clue: string;
+  dixit_submit_card: string;
+  dixit_confirm_vote: string;
+  dixit_round_summary_title: string;
+  dixit_pts_label: string;
+  dixit_label_success: string;
+  dixit_label_failed: string;
+  dixit_label_safe: string;
+  dixit_label_guess: string;
+  dixit_label_traps: string;
+  dixit_label_risk: string;
+  dixit_clue_received: string;
+  dixit_wait_others_action: string;
+  timeattack_objective_sequence: string;
+  timeattack_extraction_decrypted: string;
+  timeattack_calibrating: string;
+  timeattack_transmitting: string;
+  timeattack_transmission_locked: string;
+  timeattack_analyzing_variance: string;
+  timeattack_arcade_rankings: string;
+  timeattack_round_protocol: string;
+  timeattack_target_interval: string;
+  timeattack_recording: string;
+  timeattack_release_now: string;
+  timeattack_survival_protocol: string;
+  timeattack_precision_uplink: string;
+  timeattack_sensory_deprivation: string;
+  timeattack_calibration_uplink: string;
+  timeattack_round_1_name: string;
+  timeattack_round_1_desc: string;
+  timeattack_round_2_name: string;
+  timeattack_round_2_desc: string;
+  timeattack_round_3_name: string;
+  timeattack_round_3_desc: string;
+  timeattack_round_4_name: string;
+  timeattack_round_4_desc: string;
+  timeattack_round_5_name: string;
+  timeattack_round_5_desc: string;
+  timeattack_round_6_name: string;
+  timeattack_round_6_desc: string;
+  timeattack_round_7_name: string;
+  timeattack_round_7_desc: string;
+  timeattack_round_8_name: string;
+  timeattack_round_8_desc: string;
+  timeattack_round_9_name: string;
+  timeattack_round_9_desc: string;
+  timeattack_round_10_name: string;
+  timeattack_round_10_desc: string;
+  timeattack_round: string;
+  timeattack_target: string;
+  timeattack_locked: string;
+  timeattack_waiting_reveal: string;
+  timeattack_release: string;
+  timeattack_hold: string;
+  timeattack_done: string;
+  timeattack_start: string;
+  timeattack_hold_to_start: string;
+  timeattack_tap_to_start: string;
+  timeattack_release_at_target: string;
+  timeattack_tap_to_stop: string;
+  timeattack_time_recorded: string;
+  timeattack_final_results: string;
+  timeattack_leave_game: string;
+  timeattack_waiting_next_round: string;
+  timeattack_round_victor: string;
+  timeattack_eyes_on_phone: string;
+  timeattack_syncing_oscillators: string;
+  timeattack_extraction_sequences: string;
+  timeattack_briefing_desc: string;
+  waiting_for_protocol: string;
   rank_out_of: string;
   LOG_LAY_EGG: string;
   LOG_HATCH: string;
@@ -511,7 +587,10 @@ export const translations: Record<Language, TranslationSet> = {
     incangold_total_wealth: "Total Wealth",
     incangold_close_rules: "Close Rules",
     incangold_game_rules: "Game Rules",
-    incangold_next_cave: "Next Cave →",
+    incangold_briefing_title: "EXPEDITION BRIEFING",
+    incangold_briefing_desc: "Prepare to enter the ruins. Remember, the deeper you go, the more gems you might find... but one duplicate hazard and you lose everything you've collected this round.",
+    incangold_waiting_sync: "AWAITING EXPEDITION LEADERS...",
+    incangold_next_cave: "Next Cave",
     incangold_time_to_decide: "Time to Decide",
     incangold_continue_exploration: "Continue Exploration",
     incangold_enter_cave: "Enter the Cave",
@@ -594,6 +673,24 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_found_original_none: "YOU AND NO ONE ELSE FOUND THE ORIGINAL",
     dixit_others_fooled: "GUESSES ON YOUR CARD",
     dixit_all_or_none: "ALL OR NONE GUESSED",
+    dixit_select_up_to_2: "SELECT UP TO 2 CARDS",
+    dixit_risk_bonus_msg: "RISK BONUS: +1 PT IF CORRECT!",
+    dixit_next_round: "NEXT ROUND →",
+    dixit_send_clue: "SEND CLUE",
+    dixit_submit_card: "SUBMIT CARD",
+    dixit_confirm_vote: "CONFIRM VOTE",
+    dixit_round_summary_title: "ROUND SUMMARY",
+    dixit_pts_label: "Pts",
+    dixit_label_success: "Success",
+    dixit_label_failed: "Failed",
+    dixit_label_safe: "Safe",
+    dixit_label_guess: "Guess",
+    dixit_label_traps: "Traps",
+    dixit_label_risk: "Risk Bonus",
+    rules_goal: "OBJECTIVE",
+    rules_how_to_play: "HOW TO PLAY",
+    rules_notes: "TACTICAL NOTES",
+    waiting_for_protocol: "Waiting for protocol...",
     rank_out_of: "{rank} of {total}",
     LOG_LAY_EGG: "{player} laid an egg! 🥚",
     LOG_HATCH: "{player} hatched a chick! 🐣",
@@ -798,53 +895,43 @@ export const translations: Record<Language, TranslationSet> = {
     timeattack_analyzing_variance: "Analyzing temporal variance...",
     timeattack_arcade_rankings: "Arcade Rankings",
     timeattack_round_protocol: "Round {round} Protocol",
-    timeattack_round_1_name: "The Warmup",
-    timeattack_round_1_goal: "Record a duration of exactly 5.00 seconds.",
-    timeattack_round_1_how:
-      "Tap START on your phone to begin your personal clock. Tap STOP when you think 5 seconds have passed. A guide timer will appear on the TV for 2 seconds to help you calibrate.",
-    timeattack_round_2_name: "Micro-Fraction",
-    timeattack_round_2_goal: "Record the randomized duration.",
-    timeattack_round_2_how:
-      "Tap START then STOP on your phone. NO TIMER will be shown on the TV. Rely purely on your internal rhythm.",
-    timeattack_round_3_name: "The Metronome",
-    timeattack_round_3_goal: "Match the rhythm.",
-    timeattack_round_3_how:
-      "Tap START then STOP. The TV will show distracting visual artifacts. Don't let them break your concentration!",
-    timeattack_round_4_name: "Reaction Flash",
-    timeattack_round_4_goal: "Pure reaction speed.",
-    timeattack_round_4_how:
-      "Tap START then STOP as fast as physically possible. A flash on the TV will signal when to begin.",
-    timeattack_round_5_name: "The Perfect Third",
-    timeattack_round_5_goal: "Record exactly 3.33 seconds.",
-    timeattack_round_5_how:
-      "No guide timer. This round requires extreme precision. The non-standard target will challenge your counting rhythm.",
-    timeattack_round_6_name: "The Long Shot",
-    timeattack_round_6_goal: "Record the long-form target.",
-    timeattack_round_6_how:
-      "Tap START then STOP. The TV will glitch and distort. Focus intensely on your internal count.",
-    timeattack_round_7_name: "Time Bomb",
-    timeattack_round_7_goal: "Hold for the target time.",
-    timeattack_round_7_how:
-      "PRESS AND HOLD to start the fuse. RELEASE at the target time.",
-    timeattack_round_7_warning:
-      "WARNING: If you release AFTER the target, the bomb EXPLODES and you lose 20% of your total game score!",
-    timeattack_round_8_name: "The Heartbeat",
-    timeattack_round_8_goal: "Match a slow pulse of 0.75 seconds.",
-    timeattack_round_8_how:
-      "Tap START then STOP. The TV will flicker rapidly to disrupt your visual perception of time.",
-    timeattack_round_9_name: "Binary Pulse",
-    timeattack_round_9_goal: "Record exactly 1.01 seconds.",
-    timeattack_round_9_how:
-      "A high-precision offset challenge. No guide timer. Rely purely on muscle memory.",
-    timeattack_round_10_name: "Meltdown",
-    timeattack_round_10_goal: "FINAL CHALLENGE. Hold for exactly 4.04 seconds.",
-    timeattack_round_10_how:
-      "PRESS AND HOLD. The TV will glitch violently. Make it count!",
-    timeattack_round_10_penalty:
-      "If you release LATE, you lose 30% of your total score.",
-    timeattack_start_protocol: "START PROTOCOL",
-    timeattack_extract_data: "EXTRACT DATA",
-    timeattack_next_sequence: "NEXT SEQUENCE",
+    timeattack_target_interval: "Target Interval",
+    timeattack_recording: "RECORDING...",
+    timeattack_release_now: "RELEASE NOW!",
+    timeattack_survival_protocol: "Survival Protocol",
+    timeattack_precision_uplink: "Precision Uplink",
+    timeattack_sensory_deprivation: "SENSORY DEPRIVATION ACTIVE",
+    timeattack_calibration_uplink: "Calibration Uplink",
+    timeattack_round_1_name: "The Quantum Calibration",
+    timeattack_round_1_desc:
+      "GOAL: Synchronize with the 5.00s baseline.\n\nSYSTEM NOTE: A guide timer will appear for 2 seconds to help you find the rhythm. Precision is key for the initial uplink.",
+    timeattack_round_2_name: "Sub-Second Pulse",
+    timeattack_round_2_desc:
+      "GOAL: Record exactly 0.88s.\n\nHOW: Quick start, quick stop. High-frequency pulses are required for deep-core scanning.",
+    timeattack_round_3_name: "Neural Metronome",
+    timeattack_round_3_desc:
+      "GOAL: Match the 0.50s frequency.\n\nWARNING: Visual interference detected. The system will attempt to break your focus with distracting artifacts. Maintain internal rhythm.",
+    timeattack_round_4_name: "The Perfect Third",
+    timeattack_round_4_desc:
+      "GOAL: Record exactly 3.333s.\n\nHOW: A perfect mathematical third of 10s. This round measures your ability to hold non-standard rhythmic intervals.",
+    timeattack_round_5_name: "Void Echo",
+    timeattack_round_5_desc:
+      "GOAL: Record the randomized long-form duration.\n\nHOW: The TV will go dark. You are alone with the clock. Rely purely on muscle memory and internal counting.",
+    timeattack_round_6_name: "Time Bomb: Fuse",
+    timeattack_round_6_desc:
+      "GOAL: Hold for exactly the target time.\n\nCRITICAL: PRESS AND HOLD to start the fuse. RELEASE at the target. Over-shooting the target triggers a 20% SCORE PENALTY!",
+    timeattack_round_7_name: "The Binary Glitch",
+    timeattack_round_7_desc:
+      "GOAL: Record exactly 1.01s.\n\nSYSTEM STATUS: Heavy visual distortion. The simulation is destabilizing. Do not let the screen flicker alter your perception of time.",
+    timeattack_round_8_name: "Reaction Surge",
+    timeattack_round_8_desc:
+      "GOAL: Zero-latency response.\n\nHOW: Tap START then STOP as fast as physically possible. A solar flash will signal the beginning.",
+    timeattack_round_9_name: "Deep Space Sync",
+    timeattack_round_9_desc:
+      "GOAL: Match the 12.00s cycle.\n\nHOW: This is a test of long-term temporal stability. The TV will display confusing holographic data. Stay centered.",
+    timeattack_round_10_name: "SYSTEM MELTDOWN",
+    timeattack_round_10_desc:
+      "FINAL CHALLENGE: Hold for exactly 4.44s.\n\nULTIMATE RISK: PRESS AND HOLD. Visuals are failing. If you release LATE, 30% of your TOTAL SCORE is purged. MAKE IT COUNT.",
   },
   fr: {
     title: "LUNARIS",
@@ -1884,6 +1971,20 @@ export const translations: Record<Language, TranslationSet> = {
     dixit_found_original_none: "فقط شما کارت اصلی را پیدا کردید\u200F",
     dixit_others_fooled: "رای‌ها به کارت شما",
     dixit_all_or_none: "همه یا هیچ‌کس حدس زد",
+    dixit_select_up_to_2: "تا ۲ کارت انتخاب کنید",
+    dixit_risk_bonus_msg: "ریسک: +۱ امتیاز در صورت درستی!",
+    dixit_next_round: "دور بعدی ←",
+    dixit_send_clue: "ارسال سرنخ",
+    dixit_submit_card: "ثبت کارت",
+    dixit_confirm_vote: "تایید رای",
+    dixit_round_summary_title: "خلاصه دور",
+    dixit_pts_label: "امتیاز",
+    dixit_label_success: "موفق",
+    dixit_label_failed: "شکست",
+    dixit_label_safe: "ایمن",
+    dixit_label_guess: "حدس",
+    dixit_label_traps: "تله‌ها",
+    dixit_label_risk: "ریسک",
     rank_out_of: "{rank} از {total}",
     LOG_LAY_EGG: "{player} تخم گذاشت! 🥚",
     LOG_HATCH: "{player} به دنیا آورد! 🐣",
@@ -2079,57 +2180,51 @@ export const translations: Record<Language, TranslationSet> = {
     timeattack_transmission_decrypted: "Transmission Decrypted",
     timeattack_neural_link_readiness: "Neural Link Readiness",
     timeattack_sync_all_freq: "Synchronize all frequencies to engage protocol",
-    timeattack_objective_sequence: "Objective Sequence",
-    timeattack_extraction_decrypted: "Transmission Decrypted",
-    timeattack_calibrating: "Calibrating...",
-    timeattack_transmitting: "TRANSMITTING...",
-    timeattack_transmission_locked: "TRANSMISSION LOCKED",
-    timeattack_analyzing_variance: "Analyzing temporal variance...",
-    timeattack_arcade_rankings: "Arcade Rankings",
-    timeattack_round_protocol: "Round {round} Protocol",
-    timeattack_round_1_name: "گرم کردن",
-    timeattack_round_1_goal: "دقیقاً ۵.۰۰ ثانیه را ثبت کنید.\u200F",
-    timeattack_round_1_how:
-      "دکمه شروع را بزنید. در ۵ ثانیه متوقف کنید. زمان‌سنج تلویزیون بعد از ۲ ثانیه محو می‌شود.\u200F",
-    timeattack_round_2_name: "Micro-Fraction",
-    timeattack_round_2_goal: "زمان تصادفی را حدس بزنید.\u200F",
-    timeattack_round_2_how:
-      "شروع و سپس توقف. بدون نمایش زمان در تلویزیون.\u200F",
-    timeattack_round_3_name: "The Metronome",
-    timeattack_round_3_goal: "ریتم را حفظ کنید.\u200F",
-    timeattack_round_3_how:
-      "شروع و سپس توقف. به پارازیت‌های تلویزیون بی‌توجه باشید.\u200F",
-    timeattack_round_4_name: "Reaction Flash",
-    timeattack_round_4_goal: "سرعت مطلق.\u200F",
-    timeattack_round_4_how:
-      "بلافاصله بعد از سیگنال تلویزیون شروع و توقف کنید.\u200F",
-    timeattack_round_5_name: "The Perfect Third",
-    timeattack_round_5_goal: "دقیقاً ۳.۳۳ ثانیه.\u200F",
-    timeattack_round_5_how: "دقت بسیار بالا لازم است. بدون هیچ کمکی.\u200F",
-    timeattack_round_6_name: "The Long Shot",
-    timeattack_round_6_goal: "زمان طولانی.\u200F",
-    timeattack_round_6_how:
-      "ریتم خود را علیرغم اختلالات تلویزیون حفظ کنید.\u200F",
-    timeattack_round_7_name: "Time Bomb",
-    timeattack_round_7_goal: "نگه داشتن تا هدف.\u200F",
-    timeattack_round_7_how:
-      "نگه دارید تا بمب فعال شود. در زمان هدف رها کنید.\u200F",
-    timeattack_round_7_warning:
-      "هشدار: اگر دیر رها کنید، بمب منفجر می‌شود (-۲۰٪ امتیاز)!\u200F",
-    timeattack_round_8_name: "The Heartbeat",
-    timeattack_round_8_goal: "پالس ۰.۷۵ ثانیه‌ای.\u200F",
-    timeattack_round_8_how: "تلویزیون برای حواس‌پرتی چشمک می‌زند.\u200F",
-    timeattack_round_9_name: "Binary Pulse",
-    timeattack_round_9_goal: "دقیقاً ۱.۰۱ ثانیه.\u200F",
-    timeattack_round_9_how: "فقط بر حافظه عضلانی خود تکیه کنید.\u200F",
-    timeattack_round_10_name: "Meltdown",
-    timeattack_round_10_goal: "چالش نهایی. نگه داشتن ۴.۰۴ ثانیه.\u200F",
-    timeattack_round_10_how: "نگه دارید. اختلالات شدید. اشتباه نکنید!\u200F",
-    timeattack_round_10_penalty:
-      "در صورت تاخیر، ۳۰٪ از کل امتیاز کسر می‌شود.\u200F",
-    timeattack_start_protocol: "شروع پروتکل",
-    timeattack_extract_data: "استخراج داده‌ها",
-    timeattack_next_sequence: "توالی بعدی",
+    timeattack_objective_sequence: "توالی هدف",
+    timeattack_extraction_decrypted: "انتقال رمزگشایی شد",
+    timeattack_calibrating: "در حال کالیبراسیون...",
+    timeattack_transmitting: "در حال انتقال...",
+    timeattack_transmission_locked: "انتقال قفل شد",
+    timeattack_analyzing_variance: "تحلیل واریانس زمانی...",
+    timeattack_arcade_rankings: "رده‌بندی آرکید",
+    timeattack_round_protocol: "پروتکل دور {round}",
+    timeattack_target_interval: "بازه هدف",
+    timeattack_recording: "در حال ضبط...",
+    timeattack_release_now: "همین حالا رها کنید!",
+    timeattack_survival_protocol: "پروتکل بقا",
+    timeattack_precision_uplink: "اتصال دقیق",
+    timeattack_sensory_deprivation: "محرومیت حسی فعال است",
+    timeattack_calibration_uplink: "اتصال کالیبراسیون",
+    timeattack_round_1_name: "کالیبراسیون کوانتومی",
+    timeattack_round_1_desc:
+      "هدف: همگام‌سازی با پایه ۵.۰۰ ثانیه.\n\nیادداشت سیستم: یک زمان‌سنج راهنما برای ۲ ثانیه ظاهر می‌شود تا به شما در پیدا کردن ریتم کمک کند. دقت برای اتصال اولیه کلیدی است.",
+    timeattack_round_2_name: "پالس زیر-ثانیه",
+    timeattack_round_2_desc:
+      "هدف: ثبت دقیق ۰.۸۸ ثانیه.\n\nروش: شروع سریع، توقف سریع. پالس‌های فرکانس بالا برای اسکن هسته عمیق مورد نیاز است.",
+    timeattack_round_3_name: "مترونوم عصبی",
+    timeattack_round_3_desc:
+      "هدف: مطابقت با فرکانس ۰.۵۰ ثانیه.\n\nهشدار: تداخل بصری شناسایی شد. سیستم سعی خواهد کرد تمرکز شما را با اشیاء منحرف‌کننده از بین ببرد. ریتم داخلی را حفظ کنید.",
+    timeattack_round_4_name: "سوم کامل",
+    timeattack_round_4_desc:
+      "هدف: ثبت دقیق ۳.۳۳۳ ثانیه.\n\nروش: یک سوم ریاضی کامل از ۱۰ ثانیه. این مرحله توانایی شما را در نگه داشتن فواصل ریتمیک غیر استاندارد اندازه‌گیری می‌کند.",
+    timeattack_round_5_name: "پژواک تهی",
+    timeattack_round_5_desc:
+      "هدف: ثبت مدت زمان طولانی تصادفی.\n\nروش: تلویزیون تاریک خواهد شد. شما با ساعت تنها هستید. صرفاً به حافظه عضلانی و شمارش داخلی تکیه کنید.",
+    timeattack_round_6_name: "بمب ساعتی: فیوز",
+    timeattack_round_6_desc:
+      "هدف: نگه داشتن دقیقاً برای زمان هدف.\n\nحیاتی: فشار دهید و نگه دارید تا فیوز شروع شود. در زمان هدف رها کنید. گذشتن از زمان هدف منجر به ۲۰٪ جریمه امتیاز می‌شود!",
+    timeattack_round_7_name: "اختلال باینری",
+    timeattack_round_7_desc:
+      "هدف: ثبت دقیق ۱.۰۱ ثانیه.\n\nوضعیت سیستم: اعوجاج بصری شدید. شبیه‌سازی در حال ناپایدار شدن است. اجازه ندهید لرزش صفحه درک شما از زمان را تغییر دهد.",
+    timeattack_round_8_name: "موج واکنش",
+    timeattack_round_8_desc:
+      "هدف: پاسخ با تاخیر صفر.\n\nروش: شروع و سپس توقف را با سریع‌ترین سرعت ممکن بزنید. یک فلاش خورشیدی شروع را سیگنال می‌دهد.",
+    timeattack_round_9_name: "همگام‌سازی فضای عمیق",
+    timeattack_round_9_desc:
+      "هدف: مطابقت با چرخه ۱۲.۰۰ ثانیه.\n\nروش: این تستی برای پایداری زمانی طولانی‌مدت است. تلویزیون داده‌های هولوگرافیک گیج‌کننده‌ای را نشان می‌دهد. متمرکز بمانید.",
+    timeattack_round_10_name: "فروپاشی سیستم",
+    timeattack_round_10_desc:
+      "چالش نهایی: نگه داشتن برای دقیقاً ۴.۴۴ ثانیه.\n\nریسک نهایی: فشار دهید و نگه دارید. جلوه‌های بصری در حال شکست خوردن هستند. اگر دیر رها کنید، ۳۰٪ از کل امتیاز شما پاک می‌شود. دقت کنید.",
   },
 };
 

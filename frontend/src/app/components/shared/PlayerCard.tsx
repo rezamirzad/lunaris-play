@@ -11,6 +11,8 @@ interface PlayerCardProps {
   name: string;
   isReady: boolean;
   isCurrentTurn: boolean;
+  isThinking?: boolean;
+  botStatus?: string;
   isGameFinished?: boolean;
   isWinner?: boolean;
   isMatchpoint?: boolean;
@@ -28,6 +30,8 @@ export default function PlayerCard({
   name,
   isReady,
   isCurrentTurn,
+  isThinking,
+  botStatus,
   isGameFinished,
   isWinner,
   isMatchpoint,
@@ -45,19 +49,21 @@ export default function PlayerCard({
       className={`relative p-6 rounded-[2rem] border-2 transition-all duration-700 font-mono ${className} ${
         isAiError
           ? "bg-rose-500/10 border-rose-500 shadow-[0_0_30px_rgba(244,63,94,0.3)]"
-          : isWinner
-            ? "bg-yellow-500/10 border-yellow-500/40 shadow-[0_0_40px_rgba(234,179,8,0.15)]"
-            : isCurrentTurn
-              ? "bg-blue-500/10 border-blue-500/50 shadow-[0_0_30px_rgba(59,130,246,0.2)]"
-              : "bg-zinc-950/40 border-white/5 backdrop-blur-3xl"
+          : isThinking
+            ? "bg-amber-500/5 border-amber-500/30 shadow-[0_0_30px_rgba(245,158,11,0.1)]"
+            : isWinner
+              ? "bg-yellow-500/10 border-yellow-500/40 shadow-[0_0_40px_rgba(234,179,8,0.15)]"
+              : isCurrentTurn
+                ? "bg-blue-500/10 border-blue-500/50 shadow-[0_0_30px_rgba(59,130,246,0.2)]"
+                : "bg-zinc-950/40 border-white/5 backdrop-blur-3xl"
       }`}
     >
       {/* 📡 ACTIVE TURN PULSE */}
-      {isCurrentTurn && !isGameFinished && (
+      {(isCurrentTurn || isThinking) && !isGameFinished && (
         <motion.div
-          animate={{ opacity: [0.1, 0.3, 0.1] }}
+          animate={{ opacity: [0.05, 0.2, 0.05] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="absolute inset-0 bg-blue-500 rounded-[2rem] pointer-events-none"
+          className={`absolute inset-0 rounded-[2rem] pointer-events-none ${isThinking ? "bg-amber-500" : "bg-blue-500"}`}
         />
       )}
 
@@ -75,24 +81,28 @@ export default function PlayerCard({
               <div className="flex items-center gap-2 mt-2">
                 <div
                   className={`h-1 w-1 rounded-full ${
-                    isCurrentTurn
-                      ? "bg-blue-400 animate-pulse"
-                      : isReady
-                        ? "bg-teal-400"
-                        : "bg-zinc-700"
+                    isThinking 
+                       ? "bg-amber-400 animate-bounce" 
+                       : isCurrentTurn
+                         ? "bg-blue-400 animate-pulse"
+                         : isReady
+                           ? "bg-teal-400"
+                           : "bg-zinc-700"
                   }`}
                 />
                 <span
                   dir={isFA ? "rtl" : "ltr"}
                   className={`text-[8px] font-black uppercase ${isFA ? "fa-text-fix" : "tracking-[0.3em]"} ${
-                    isCurrentTurn
-                      ? "text-blue-400"
-                      : isReady
-                        ? "text-teal-400/70"
-                        : "text-zinc-600"
+                    isThinking
+                       ? "text-amber-400"
+                       : isCurrentTurn
+                         ? "text-blue-400"
+                         : isReady
+                           ? "text-teal-400/70"
+                           : "text-zinc-600"
                   }`}
                 >
-                  {statusOverride ||
+                  {botStatus || statusOverride ||
                     (isCurrentTurn
                       ? t.activeTurn
                       : isReady

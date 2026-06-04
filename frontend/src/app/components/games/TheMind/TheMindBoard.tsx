@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/hooks/useTranslation";
+import { useState } from "react";
 import { BoardProps } from "../registry";
 import { motion, AnimatePresence } from "framer-motion";
 import SharedArcadeLayout from "../../shared/SharedArcadeLayout";
@@ -8,6 +9,8 @@ import MatchActivity from "../../shared/MatchActivity";
 import TheMindLogMessage from "./MatchActivity";
 import MissionBriefing from "../../arcade/MissionBriefing";
 import ArcadeVictoryOverlay from "../../arcade/ArcadeVictoryOverlay";
+import AITelemetryLog from "../../arcade/AITelemetryLog";
+import RulesModal from "../../shared/RulesModal";
 import ArcadeHUD from "../../arcade/ArcadeHUD";
 import ArcadeStatusPanel from "../../arcade/ArcadeStatusPanel";
 import ArcadePlayerGrid from "../../arcade/ArcadePlayerGrid";
@@ -17,8 +20,9 @@ import { api } from "convex/_generated/api";
 
 export default function NeuralSyncBoard({ roomId, roomData, history = [] }: BoardProps) {
   const { t } = useTranslation();
-  const { isAdmin, pin: adminPin } = useAdmin();
+  const { isAdmin, } = useAdmin();
   const toggleHaltMutation = useMutation(api.engine.toggleBotsHalt);
+  const [showRules, setShowRules] = useState(false);
 
   const board = roomData.gameBoard.gameType === "themind" ? roomData.gameBoard : null;
   const players = roomData.players;
@@ -49,14 +53,21 @@ export default function NeuralSyncBoard({ roomId, roomData, history = [] }: Boar
     <SharedArcadeLayout
       containerClassName="bg-[#020a0a] text-teal-100 font-mono"
       background={<div className="neuro-grid opacity-20" />}
+      extra={
+        <>
+          <AITelemetryLog players={roomData.players} />
+          <RulesModal isOpen={showRules} onClose={() => setShowRules(false)} gameType="themind" />
+        </>
+      }
       header={
         <ArcadeHUD
           title={t.themind_title}
           statusLabel={(t as any).themind_level_status ? (t as any).themind_level_status.replace("{level}", String(board.level)) : `LEVEL ${board.level}`}
           badgeContent={isFinished ? "SESSION_TERMINATED" : "SYNC_ACTIVE"}
           accentColor="teal"
-          onHaltToggle={isAdmin ? () => toggleHaltMutation({ roomId: roomId as any, adminPin }) : undefined}
+          onHaltToggle={isAdmin ? () => toggleHaltMutation({ roomId: roomId as any }) : undefined}
           isHalted={roomData.botsHalted}
+          onRulesClick={() => setShowRules(true)}
         />
       }
       main={

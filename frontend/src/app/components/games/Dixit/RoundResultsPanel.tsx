@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Doc } from "convex/_generated/dataModel";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -118,10 +119,12 @@ export default function RoundResultsPanel({
                         {player.name} {isLeader && "👑"}
                         </span>
                         {player.isBot && (
-                            <img 
+                            <Image
                                 src="/assets/general/artificial-intelligence-design-png.webp" 
                                 alt="AI" 
-                                className="w-2.5 h-2.5 opacity-80" 
+                                width={10}
+                                height={10}
+                                className="opacity-80" 
                             />
                         )}
                     </div>

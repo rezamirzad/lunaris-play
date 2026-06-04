@@ -161,7 +161,6 @@ export async function handleActionInternal(ctx: GameMutationCtx, args: {
     clue?: string,
     clues?: { en: string, fr: string, de: string, fa: string },
     ruleset?: "CLASSIC" | "ODYSSEY",
-    adminPin?: string,
     voteIds?: string[],
     cardIds?: string[]
 }) {
@@ -172,8 +171,13 @@ export async function handleActionInternal(ctx: GameMutationCtx, args: {
 
     // Allow SET_RULESET in lobby even if state is 'none'
     if (args.actionType === "SET_RULESET" && room.status === "LOBBY") {
-        const isAuthorized = args.adminPin === "0000";
-        if (!isAuthorized) throw new Error("UNAUTHORIZED");
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error("UNAUTHORIZED");
+        const profile = await ctx.db
+          .query("profiles")
+          .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
+          .unique();
+        if (!profile?.isAdmin) throw new Error("UNAUTHORIZED");
         
         await ctx.db.patch(room._id, {
             gameBoard: {

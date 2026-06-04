@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toPersianDigits, formatLog } from "@/lib/translations";
 import { motion } from "framer-motion";
@@ -62,10 +63,12 @@ export default function DixitPlayerStats({
                 {t.shared_points}
                 </span>
                 {isBot && (
-                    <img 
+                    <Image 
                         src="/assets/general/artificial-intelligence-design-png.webp" 
                         alt="AI" 
-                        className="w-3.5 h-3.5 opacity-80" 
+                        width={14}
+                        height={14}
+                        className="opacity-80" 
                     />
                 )}
             </div>

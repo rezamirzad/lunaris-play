@@ -6,7 +6,12 @@
     "build": "cd frontend && npx convex codegen && npx next build"
   },
   "dependencies": {
+    "@auth/core": "^0.37.0",
+    "@convex-dev/auth": "^0.0.93",
     "convex": "latest",
     "next": "14.2.20"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1"
   }
 }

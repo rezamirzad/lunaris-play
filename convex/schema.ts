@@ -1,5 +1,6 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { authTables } from "@convex-dev/auth/server";
 
 // Strictly typed history events to replace v.any()
 const HistoryEvent = v.union(
@@ -15,6 +16,7 @@ const HistoryEvent = v.union(
 );
 
 export default defineSchema({
+  ...authTables,
   games: defineTable({
     slug: v.string(),
     title: v.string(),
@@ -216,7 +218,10 @@ export default defineSchema({
     roomId: v.id("rooms"),
     name: v.string(),
     isBot: v.optional(v.boolean()),
+    isThinking: v.optional(v.boolean()),
+    botStatus: v.optional(v.string()),
     aiError: v.optional(v.boolean()),
+    maturity: v.optional(v.union(v.literal("CHILD"), v.literal("ADULT"))),
     persona: v.optional(v.union(v.literal("balanced"), v.literal("aggressive"), v.literal("cautious"))),
     gameHand: v.array(v.string()),
     isReady: v.boolean(),
@@ -261,14 +266,17 @@ export default defineSchema({
     timestamp: v.number(),
   }).index("by_room_player", ["roomId", "playerId"]),
 
-  users: defineTable({
+  profiles: defineTable({
     name: v.string(),
     totalScore: v.number(),
     wins: v.number(),
     gamesPlayed: v.number(),
     lastLogin: v.number(),
+    userId: v.optional(v.string()), // To link with auth user ID later
+    isAdmin: v.optional(v.boolean()), // RBAC Role
   }).index("by_name", ["name"])
-    .index("by_totalScore", ["totalScore"]),
+    .index("by_totalScore", ["totalScore"])
+    .index("by_userId", ["userId"]),
 
   security_logs: defineTable({
     event: v.string(),

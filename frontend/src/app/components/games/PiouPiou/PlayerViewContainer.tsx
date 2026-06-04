@@ -266,6 +266,7 @@ export default function PiouPiouPlayerView({
         isMyTurn={isMyTurn && !isGameFinished}
         className="flex-grow"
         history={history}
+        gameType="pioupiou"
         renderLog={(log) => <PiouPiouMatchActivity log={log} />}
         statsSlot={
           <div className="flex flex-col gap-6 w-full lg:w-80">

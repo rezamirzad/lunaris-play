@@ -61,14 +61,18 @@ export const justonePlugin: GamePlugin = {
 };
 
 export const startJustOneMatch = mutation({
-  args: { 
-    roomId: v.id("rooms"), 
+  args: {
+    roomId: v.id("rooms"),
     language: v.union(v.literal("en"), v.literal("fr"), v.literal("de"), v.literal("fa")),
-    adminPin: v.string()
   },
   handler: async (ctx, args) => {
-    const isAuthorized = args.adminPin === "0000";
-    if (!isAuthorized) throw new Error("UNAUTHORIZED");
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("UNAUTHORIZED");
+    const profile = await ctx.db
+      .query("profiles")
+      .withIndex("by_userId", (q) => q.eq("userId", identity.subject))
+      .unique();
+    if (!profile?.isAdmin) throw new Error("UNAUTHORIZED");
 
     const room = await ctx.db.get(args.roomId);
     if (!room) throw new Error("Room not found");

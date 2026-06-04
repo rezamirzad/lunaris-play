@@ -23,11 +23,11 @@ export default function JustOnePlayerView({
   return (
     <div className="relative min-h-[calc(100vh-180px)] bg-zinc-950/50 rounded-[3rem] overflow-hidden flex flex-col font-mono">
       <div className="scanline opacity-20" />
-
       <PlayerController
         player={player}
         roomData={roomData}
         isMyTurn={isMyTurn}
+        gameType="justone"
         className="flex-grow"
         history={history}
         renderLog={(log) => <JustOneLogMessage log={log} />}

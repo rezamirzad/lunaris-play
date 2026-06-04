@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useState } from "react";
 import { BoardProps } from "../registry";
 import PlayerCard from "../../shared/PlayerCard";
 import MatchActivity from "../../shared/MatchActivity";
@@ -10,6 +11,8 @@ import { toPersianDigits, formatLog } from "@/lib/translations";
 import { ROUNDS_CONFIG } from "convex/timeattackPlugin";
 import MissionBriefing from "../../arcade/MissionBriefing";
 import ArcadeVictoryOverlay from "../../arcade/ArcadeVictoryOverlay";
+import AITelemetryLog from "../../arcade/AITelemetryLog";
+import RulesModal from "../../shared/RulesModal";
 import ArcadeHUD from "../../arcade/ArcadeHUD";
 import ArcadeStatusPanel from "../../arcade/ArcadeStatusPanel";
 import ArcadePlayerGrid from "../../arcade/ArcadePlayerGrid";
@@ -19,7 +22,7 @@ import { api } from "convex/_generated/api";
 
 export default function TimeAttackContainer({ roomId, roomData, history = [] }: BoardProps) {
   const { t, lang } = useTranslation();
-  const { isAdmin, pin: adminPin } = useAdmin();
+  const { isAdmin, } = useAdmin();
   const toggleHaltMutation = useMutation(api.engine.toggleBotsHalt);
   const isFA = lang === "fa";
 
@@ -29,6 +32,7 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
   const players = roomData.players;
 
   const nextPhase = useMutation(api.timeattack.nextPhase);
+  const [showRules, setShowRules] = useState(false);
 
   // 1. LOBBY MISSION BRIEFING
   if (isLobby) {
@@ -64,14 +68,21 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
           <div className="neuro-grid opacity-10" />
         </>
       }
+      extra={
+        <>
+          <AITelemetryLog players={roomData.players} />
+          <RulesModal isOpen={showRules} onClose={() => setShowRules(false)} gameType="timeattack" />
+        </>
+      }
       header={
         <ArcadeHUD
           title={t.timeattack_title}
           statusLabel={formatLog(t.timeattack_round_protocol, { round: isFA ? toPersianDigits(board.currentRound) : board.currentRound }, lang)}
           badgeContent={board.phase === "ROUND_REVEAL" ? t.timeattack_round_victor : t.statusLive}
           accentColor="rose"
-          onHaltToggle={isAdmin ? () => toggleHaltMutation({ roomId: roomId as any, adminPin }) : undefined}
+          onHaltToggle={isAdmin ? () => toggleHaltMutation({ roomId: roomId as any }) : undefined}
           isHalted={roomData.botsHalted}
+          onRulesClick={() => setShowRules(true)}
         />
       }
       main={
@@ -120,10 +131,10 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
                           </div>
                           <div className="flex flex-col items-start">
                              <span className="text-[10px] font-black text-rose-500 uppercase tracking-[0.4em]">
-                                {currentRoundConfig?.scoring === "SURVIVAL" ? "Survival Protocol" : "Precision Uplink"}
+                                {currentRoundConfig?.scoring === "SURVIVAL" ? t.timeattack_survival_protocol : t.timeattack_precision_uplink}
                              </span>
                              <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter">
-                                {currentRoundConfig?.name}
+                                {t[currentRoundConfig?.nameKey as keyof typeof t] || currentRoundConfig?.nameKey}
                              </h2>
                           </div>
                        </div>
@@ -135,14 +146,14 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
                           
                           <div className="relative z-10 space-y-6">
                              <div className="flex flex-col items-center gap-2">
-                                <span className="text-[8px] font-black text-zinc-500 uppercase tracking-[0.6em]">Target Interval</span>
+                                <span className="text-[8px] font-black text-zinc-500 uppercase tracking-[0.6em]">{t.timeattack_target_interval}</span>
                                 <span className="text-6xl font-black text-rose-500 italic drop-shadow-[0_0_20px_rgba(244,63,94,0.4)]">
                                    {isFA ? toPersianDigits((board.targetMs / 1000).toFixed(2)) : (board.targetMs / 1000).toFixed(2)}s
                                 </span>
                              </div>
 
                              <p className="text-zinc-400 text-sm leading-relaxed whitespace-pre-wrap px-4">
-                                {currentRoundConfig?.description}
+                                {t[currentRoundConfig?.descKey as keyof typeof t] || currentRoundConfig?.descKey}
                              </p>
                           </div>
                        </div>
@@ -191,7 +202,7 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
                                transition={{ delay: 2, duration: 1 }}
                                className="flex flex-col items-center"
                              >
-                                <span className="text-[10px] font-black text-rose-500/60 uppercase tracking-[0.5em] mb-4">Calibration Uplink</span>
+                                <span className="text-[10px] font-black text-rose-500/60 uppercase tracking-[0.5em] mb-4">{t.timeattack_calibration_uplink}</span>
                                 <div className="flex gap-4">
                                    {[...Array(5)].map((_, i) => (
                                       <motion.div 
@@ -236,7 +247,7 @@ export default function TimeAttackContainer({ roomId, roomData, history = [] }: 
                        </div>
                        
                        <h2 className="text-2xl font-black text-rose-400 tracking-[0.5em] uppercase italic mb-12 z-10">
-                          {board.visuals === "BLIND" ? "SENSORY DEPRIVATION ACTIVE" : t.timeattack_eyes_on_phone}
+                          {board.visuals === "BLIND" ? t.timeattack_sensory_deprivation : t.timeattack_eyes_on_phone}
                        </h2>
 
                        {/* 👤 PLAYER READINESS SLOTS */}

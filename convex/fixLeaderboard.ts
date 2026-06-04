@@ -28,15 +28,15 @@ export const fix = internalMutation(async (ctx) => {
         for (const winnerId of secondaryWinners) {
           const player = await ctx.db.get(winnerId);
           if (player && !player.isBot) {
-            const user = await ctx.db
-              .query("users")
+            const profile = await ctx.db
+              .query("profiles")
               .withIndex("by_name", (q) => q.eq("name", player.name))
               .unique();
-            if (user) {
-              await ctx.db.patch(user._id, {
-                wins: user.wins + 1,
+            if (profile) {
+              await ctx.db.patch(profile._id, {
+                wins: profile.wins + 1,
               });
-              console.log(`Incremented wins for user ${user.name}`);
+              console.log(`Incremented wins for profile ${profile.name}`);
             }
           }
         }

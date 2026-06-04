@@ -137,6 +137,8 @@ export default function ArcadePlayerGrid({
                   isGameFinished={isGameEnd}
                   isWinner={isWinner}
                   isCurrentTurn={isCurrentTurn}
+                  isThinking={player.isThinking}
+                  botStatus={player.botStatus}
                   isAiError={player.aiError}
                   className="bg-transparent border-none p-0 shadow-none relative z-10"
                 >
