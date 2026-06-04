@@ -105,46 +105,6 @@ export default function ArcadeVictoryOverlay({
       </div>
 
       <div className="flex flex-col gap-6 w-full max-w-md items-center">
-        {!isAuthenticated && (
-          <motion.div 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 1 }}
-            className="w-full bg-white/5 border border-white/10 p-8 rounded-[2.5rem] flex flex-col gap-6 shadow-2xl relative group overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            
-            <div className="relative z-10">
-               <span className="text-[10px] font-black text-yellow-500 uppercase tracking-[0.4em] mb-2 block">
-                  Hall of Fame // Persistence
-               </span>
-               <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter mb-4 leading-none">
-                  Save Your Legacy
-               </h3>
-               <p className="text-[10px] text-zinc-500 leading-relaxed uppercase tracking-wider font-bold mb-6">
-                  Sign in to link your session stats to a permanent profile and unlock global rankings.
-               </p>
-               
-               <div className="grid grid-cols-2 gap-3">
-                  <button 
-                    onClick={() => signIn("github")}
-                    className="py-3.5 bg-zinc-900 border border-white/10 rounded-2xl flex items-center justify-center gap-2 hover:bg-white hover:text-black transition-all group/btn"
-                  >
-                    <span className="text-xl">🐙</span>
-                    <span className="text-[9px] font-black uppercase tracking-widest">GitHub</span>
-                  </button>
-                  <button 
-                    onClick={() => signIn("google")}
-                    className="py-3.5 bg-white text-black rounded-2xl flex items-center justify-center gap-2 hover:bg-brand-accent transition-all group/btn"
-                  >
-                    <span className="text-xl">💎</span>
-                    <span className="text-[9px] font-black uppercase tracking-widest">Google</span>
-                  </button>
-               </div>
-            </div>
-          </motion.div>
-        )}
-
         <button
           onClick={handleExit}
           className={`px-16 py-5 bg-gradient-to-b ${theme.gradient} ${theme.buttonText} font-black text-2xl uppercase italic rounded-3xl shadow-[0_10px_50px_${theme.shadow}] hover:scale-105 active:scale-95 transition-all border-t-2 border-white/20`}

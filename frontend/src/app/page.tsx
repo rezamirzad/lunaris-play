@@ -9,6 +9,7 @@ import { api } from "convex/_generated/api";
 import { useUser } from "./UserProvider";
 import OngoingRooms from "./components/OngoingRooms";
 import LeaderboardTicker from "./components/LeaderboardTicker";
+import Leaderboard from "./components/Leaderboard";
 import Navbar from "./components/shared/Navbar";
 import { motion, Variants } from "framer-motion";
 
@@ -149,7 +150,7 @@ function HomeContent() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 5 }}
+          transition={{ delay: 0.5 }}
           className="w-full"
         >
           <LeaderboardTicker />
@@ -232,6 +233,8 @@ function HomeContent() {
               lang={lang}
             />
           </motion.section>
+
+          <Leaderboard />
         </div>
 
         <motion.div

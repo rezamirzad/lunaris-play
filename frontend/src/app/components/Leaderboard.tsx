@@ -106,7 +106,7 @@ export default function Leaderboard() {
               repeat: Infinity,
               ease: "linear",
               // Dynamic speed: scales with the number of players so it doesn't get too fast
-              duration: 1,
+              duration: leaderboard.length * 4,
             }}
             className="flex flex-col"
           >
