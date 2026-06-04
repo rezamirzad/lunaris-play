@@ -70,7 +70,7 @@ export default function AdminGateway({
 
   if (!mounted) return null;
 
-  if (!isAdmin) {
+  if (!isAdmin && pathname === "/admin") {
     return (
       <div className="fixed inset-0 bg-app flex flex-col items-center justify-center p-6 z-[100]">
         <motion.div
@@ -123,8 +123,10 @@ export default function AdminGateway({
   }
 
   return (
-    <AdminContext.Provider value={{ isAdmin: true, adminPassword: savedPassword || undefined }}>
-      {pathname === "/admin" && (
+    <AdminContext.Provider
+      value={{ isAdmin, adminPassword: isAdmin ? (savedPassword || undefined) : undefined }}
+    >
+      {isAdmin && pathname === "/admin" && (
         <div className="fixed top-6 right-6 z-[200]">
           <button
             onClick={() => {
