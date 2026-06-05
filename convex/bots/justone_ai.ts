@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { internalAction } from "../_generated/server";
-import { internal } from "../_generated/api";
+import { internal, api } from "../_generated/api";
 
 /**
  * Just One Local AI Brain: Uses a predefined clues dataset to simulate AI behavior.
