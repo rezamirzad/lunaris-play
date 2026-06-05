@@ -6,33 +6,29 @@ import { logHistoryEvent, updateLeaderboardAtGameEnd } from "./transitions";
 import { justoneDictionary, NexusWord } from "./justone_words";
 import { internal } from "./_generated/api";
 
+// ... (helper functions for picking words updated below)
+
 /**
- * Helper to pick a fresh word from the dictionary.
+ * Helper to pick a fresh word from the database.
  */
-function pickFreshWord(usedWords: string[]): NexusWord {
-  const available = justoneDictionary.filter((w) => !usedWords.includes(w.en));
-  const source = available.length > 0 ? available : justoneDictionary;
-  return source[Math.floor(Math.random() * source.length)];
+async function pickFreshWord(ctx: any): Promise<Doc<"justone_clues">> {
+  const allClues = await ctx.db.query("justone_clues").collect();
+  const usedWords = await ctx.db.query("used_words").collect();
+  const usedWordStrings = usedWords.map(uw => uw.word);
+
+  const available = allClues.filter((w) => !usedWordStrings.includes(w.word.en));
+  const selected = available.length > 0 
+    ? available[Math.floor(Math.random() * available.length)]
+    : allClues[Math.floor(Math.random() * allClues.length)];
+
+  await ctx.db.insert("used_words", { word: selected.word.en, lastUsed: Date.now() });
+  return selected;
 }
 
 export const justonePlugin: GamePlugin = {
-  gameType: "justone",
-
-  getInitialBoard() {
-    return {
-      gameType: "none",
-    };
-  },
-
-  getInitialPlayerState(status: string) {
-    return {
-      initialHand: [],
-      initialState: { gameType: "justone", score: 0 },
-    };
-  },
-
+  // ... rest of the file unchanged
   async onStart(ctx: GameMutationCtx, roomId: Id<"rooms">, players: Doc<"players">[]) {
-    const mysteryWord = justoneDictionary[Math.floor(Math.random() * justoneDictionary.length)];
+    const mysteryWord = await pickFreshWord(ctx);
     const activePlayerId = players[Math.floor(Math.random() * players.length)]._id;
 
     await logHistoryEvent(ctx, roomId, { key: "LOG_GAME_STARTED", data: { time: Date.now() } });
@@ -44,8 +40,8 @@ export const justonePlugin: GamePlugin = {
         round: 1,
         score: 0,
         activePlayerId,
-        mysteryWord,
-        usedWords: [mysteryWord.en],
+        mysteryWord: mysteryWord.word,
+        usedWords: [mysteryWord.word.en],
         clues: {},
         canceledClues: [],
         confirmedPlayers: [],
@@ -59,6 +55,7 @@ export const justonePlugin: GamePlugin = {
     });
   },
 };
+// ... rest of the file unchanged
 
 export const startJustOneMatch = mutation({
   args: {
@@ -82,7 +79,7 @@ export const startJustOneMatch = mutation({
 
     if (players.length < 3) throw new Error("At least 3 players required.");
 
-    const mysteryWord = justoneDictionary[Math.floor(Math.random() * justoneDictionary.length)];
+    const mysteryWord = await pickFreshWord(ctx);
     const activePlayerId = players[Math.floor(Math.random() * players.length)]._id;
     const turnOrder = players.map((p) => p._id);
 
@@ -98,8 +95,8 @@ export const startJustOneMatch = mutation({
         round: 1,
         score: 0,
         activePlayerId,
-        mysteryWord,
-        usedWords: [mysteryWord.en],
+        mysteryWord: mysteryWord.word,
+        usedWords: [mysteryWord.word.en],
         clues: {},
         canceledClues: [],
         confirmedPlayers: [],
@@ -308,10 +305,10 @@ export async function handleActionInternal(ctx: GameMutationCtx, args: {
 
       const currentIndex = players.findIndex((p) => p._id === board.activePlayerId);
       const nextActiveId = players[(currentIndex + 1) % players.length]._id;
-      const nextWord = pickFreshWord(board.usedWords || []);
+      const nextWord = await pickFreshWord(ctx);
 
       await ctx.db.patch(room._id, {
-        gameBoard: { ...board, round: board.round + 1, activePlayerId: nextActiveId, mysteryWord: nextWord, usedWords: [...(board.usedWords || []), nextWord.en], clues: {}, canceledClues: [], confirmedPlayers: [], lenientVotes: {}, phase: "CLUE_INPUT" },
+        gameBoard: { ...board, round: board.round + 1, activePlayerId: nextActiveId, mysteryWord: nextWord.word, usedWords: [...(board.usedWords || []), nextWord.word.en], clues: {}, canceledClues: [], confirmedPlayers: [], lenientVotes: {}, phase: "CLUE_INPUT" },
       });
 
       await ctx.scheduler.runAfter(0, internal.bots.manager.dispatchBotTurn, { roomId: room._id });

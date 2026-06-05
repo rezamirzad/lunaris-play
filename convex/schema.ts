@@ -290,4 +290,26 @@ export default defineSchema({
     timestamp: v.number(),
     details: v.any(),
   }).index("by_timestamp", ["timestamp"]),
+
+  // NEW TABLES ADDED HERE
+  justone_clues: defineTable({
+    word: v.object({
+      en: v.string(),
+      fr: v.string(),
+      de: v.string(),
+      fa: v.string(),
+    }),
+    clues: v.object({
+      en: v.array(v.string()),
+      fr: v.array(v.string()),
+      de: v.array(v.string()),
+      fa: v.array(v.string()),
+    }),
+    difficulty: v.string(), // 'easy' | 'medium' | 'hard'
+  }).index("by_word", ["word.en"]),
+  
+  used_words: defineTable({
+    word: v.string(),
+    lastUsed: v.number(),
+  }),
 });

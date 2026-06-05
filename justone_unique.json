@@ -1,0 +1,4427 @@
+[
+  {
+    "word": {
+      "en": "Bridge",
+      "fr": "Pont",
+      "de": "Brücke",
+      "fa": "پل"
+    },
+    "clues": {
+      "en": [
+        "River",
+        "Crossing",
+        "Structure",
+        "Arch",
+        "Steel",
+        "Connection",
+        "Road",
+        "Traffic",
+        "Walkway",
+        "Span"
+      ],
+      "fr": [
+        "Rivière",
+        "Traversée",
+        "Structure",
+        "Arche",
+        "Acier",
+        "Connexion",
+        "Route",
+        "Trafic",
+        "Passerelle",
+        "Portée"
+      ],
+      "de": [
+        "Fluss",
+        "Überquerung",
+        "Struktur",
+        "Bogen",
+        "Stahl",
+        "Verbindung",
+        "Straße",
+        "Verkehr",
+        "Gehweg",
+        "Spannweite"
+      ],
+      "fa": [
+        "رودخانه",
+        "عبور",
+        "سازه",
+        "قوس",
+        "فولاد",
+        "اتصال",
+        "جاده",
+        "ترافیک",
+        "پیاده‌رو",
+        "دهانه"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Desert",
+      "fr": "Désert",
+      "de": "Wüste",
+      "fa": "کویر"
+    },
+    "clues": {
+      "en": [
+        "Sand",
+        "Hot",
+        "Dry",
+        "Camel",
+        "Dunes",
+        "Sun",
+        "Arid",
+        "Oasis",
+        "Heat",
+        "Barren"
+      ],
+      "fr": [
+        "Sable",
+        "Chaud",
+        "Sec",
+        "Chameau",
+        "Dunes",
+        "Soleil",
+        "Aride",
+        "Oasis",
+        "Chaleur",
+        "Désolé"
+      ],
+      "de": [
+        "Sand",
+        "Heiß",
+        "Trocken",
+        "Kamel",
+        "Dünen",
+        "Sonne",
+        "Arid",
+        "Oase",
+        "Hitze",
+        "Ödland"
+      ],
+      "fa": [
+        "شن",
+        "داغ",
+        "خشک",
+        "شتر",
+        "تپه‌شنی",
+        "خورشید",
+        "بایر",
+        "واحه",
+        "گرما",
+        "بی‌آب"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Clock",
+      "fr": "Horloge",
+      "de": "Uhr",
+      "fa": "ساعت"
+    },
+    "clues": {
+      "en": [
+        "Time",
+        "Hands",
+        "Ticks",
+        "Wall",
+        "Numbers",
+        "Alarm",
+        "Seconds",
+        "Face",
+        "Watch",
+        "Passing"
+      ],
+      "fr": [
+        "Temps",
+        "Aiguilles",
+        "Tic-tac",
+        "Mur",
+        "Chiffres",
+        "Alarme",
+        "Secondes",
+        "Cadran",
+        "Montre",
+        "Passage"
+      ],
+      "de": [
+        "Zeit",
+        "Zeiger",
+        "Ticken",
+        "Wand",
+        "Zahlen",
+        "Wecker",
+        "Sekunden",
+        "Zifferblatt",
+        "Armbanduhr",
+        "Vergehen"
+      ],
+      "fa": [
+        "زمان",
+        "عقربه",
+        "تیک‌تاک",
+        "دیوار",
+        "اعداد",
+        "زنگ",
+        "ثانیه",
+        "صفحه",
+        "مچی",
+        "گذر"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Magnet",
+      "fr": "Aimant",
+      "de": "Magnet",
+      "fa": "آهنربا"
+    },
+    "clues": {
+      "en": [
+        "Metal",
+        "Attract",
+        "Pole",
+        "Steel",
+        "Force",
+        "Invisible",
+        "Iron",
+        "Pull",
+        "Physics",
+        "North"
+      ],
+      "fr": [
+        "Métal",
+        "Attirer",
+        "Pôle",
+        "Acier",
+        "Force",
+        "Invisible",
+        "Fer",
+        "Traction",
+        "Physique",
+        "Nord"
+      ],
+      "de": [
+        "Metall",
+        "Anziehen",
+        "Pol",
+        "Stahl",
+        "Kraft",
+        "Unsichtbar",
+        "Eisen",
+        "Zug",
+        "Physik",
+        "Nord"
+      ],
+      "fa": [
+        "فلز",
+        "جذب",
+        "قطب",
+        "فولاد",
+        "نیرو",
+        "نامرئی",
+        "آهن",
+        "کشیدن",
+        "فیزیک",
+        "شمال"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Mirror",
+      "fr": "Miroir",
+      "de": "Spiegel",
+      "fa": "آینه"
+    },
+    "clues": {
+      "en": [
+        "Reflection",
+        "Glass",
+        "Image",
+        "Self",
+        "Shiny",
+        "Surface",
+        "Look",
+        "Reverse",
+        "Vanity",
+        "Silver"
+      ],
+      "fr": [
+        "Reflet",
+        "Verre",
+        "Image",
+        "Soi",
+        "Brillant",
+        "Surface",
+        "Regarder",
+        "Inversé",
+        "Vanité",
+        "Argent"
+      ],
+      "de": [
+        "Spiegelung",
+        "Glas",
+        "Bild",
+        "Selbst",
+        "Glänzend",
+        "Oberfläche",
+        "Schauen",
+        "Umgekehrt",
+        "Eitelkeit",
+        "Silber"
+      ],
+      "fa": [
+        "انعکاس",
+        "شیشه",
+        "تصویر",
+        "خود",
+        "براق",
+        "سطح",
+        "نگاه",
+        "معکوس",
+        "غرور",
+        "نقره‌ای"
+      ]
+    },
+    "difficulty": "hard"
+  },
+  {
+    "word": {
+      "en": "Piano",
+      "fr": "Piano",
+      "de": "Klavier",
+      "fa": "پیانو"
+    },
+    "clues": {
+      "en": [
+        "Keys",
+        "Music",
+        "Notes",
+        "Black",
+        "White",
+        "Keyboard",
+        "Grand",
+        "Sound",
+        "Strings",
+        "Classical"
+      ],
+      "fr": [
+        "Touches",
+        "Musique",
+        "Notes",
+        "Noir",
+        "Blanc",
+        "Clavier",
+        "Queue",
+        "Son",
+        "Cordes",
+        "Classique"
+      ],
+      "de": [
+        "Tasten",
+        "Musik",
+        "Noten",
+        "Schwarz",
+        "Weiß",
+        "Klaviatur",
+        "Flügel",
+        "Klang",
+        "Saiten",
+        "Klassisch"
+      ],
+      "fa": [
+        "کلید",
+        "موسیقی",
+        "نت",
+        "سیاه",
+        "سفید",
+        "کیبورد",
+        "گرند",
+        "صدا",
+        "سیم",
+        "کلاسیک"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Cloud",
+      "fr": "Nuage",
+      "de": "Wolke",
+      "fa": "ابر"
+    },
+    "clues": {
+      "en": [
+        "Sky",
+        "Rain",
+        "White",
+        "Fluffy",
+        "Storm",
+        "Gray",
+        "Floating",
+        "Weather",
+        "Sun",
+        "High"
+      ],
+      "fr": [
+        "Ciel",
+        "Pluie",
+        "Blanc",
+        "Moelleux",
+        "Orage",
+        "Gris",
+        "Flottant",
+        "Météo",
+        "Soleil",
+        "Haut"
+      ],
+      "de": [
+        "Himmel",
+        "Regen",
+        "Weiß",
+        "Flauschig",
+        "Sturm",
+        "Grau",
+        "Schwebend",
+        "Wetter",
+        "Sonne",
+        "Hoch"
+      ],
+      "fa": [
+        "آسمان",
+        "باران",
+        "سفید",
+        "پف‌دار",
+        "طوفان",
+        "خاکستری",
+        "شناور",
+        "هواشناسی",
+        "خورشید",
+        "بالا"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Library",
+      "fr": "Bibliothèque",
+      "de": "Bibliothek",
+      "fa": "کتابخانه"
+    },
+    "clues": {
+      "en": [
+        "Books",
+        "Quiet",
+        "Silence",
+        "Study",
+        "Shelves",
+        "Reading",
+        "Librarian",
+        "Knowledge",
+        "Schools",
+        "Borrow"
+      ],
+      "fr": [
+        "Livres",
+        "Calme",
+        "Silence",
+        "Étude",
+        "Étagères",
+        "Lecture",
+        "Bibliothécaire",
+        "Savoir",
+        "Écoles",
+        "Emprunt"
+      ],
+      "de": [
+        "Bücher",
+        "Ruhig",
+        "Stille",
+        "Lernen",
+        "Regale",
+        "Lesen",
+        "Bibliothekar",
+        "Wissen",
+        "Schulen",
+        "Ausleihen"
+      ],
+      "fa": [
+        "کتاب",
+        "آرام",
+        "سکوت",
+        "مطالعه",
+        "قفسه",
+        "خواندن",
+        "کتابدار",
+        "دانش",
+        "مدارس",
+        "امانت"
+      ]
+    },
+    "difficulty": "hard"
+  },
+  {
+    "word": {
+      "en": "Shadow",
+      "fr": "Ombre",
+      "de": "Schatten",
+      "fa": "سایه"
+    },
+    "clues": {
+      "en": [
+        "Dark",
+        "Light",
+        "Sun",
+        "Follow",
+        "Shape",
+        "Silhouette",
+        "Ground",
+        "Evening",
+        "Wall",
+        "Person"
+      ],
+      "fr": [
+        "Sombre",
+        "Lumière",
+        "Soleil",
+        "Suivre",
+        "Forme",
+        "Silhouette",
+        "Sol",
+        "Soir",
+        "Mur",
+        "Personne"
+      ],
+      "de": [
+        "Dunkel",
+        "Licht",
+        "Sonne",
+        "Folgen",
+        "Form",
+        "Silhouette",
+        "Boden",
+        "Abend",
+        "Wand",
+        "Person"
+      ],
+      "fa": [
+        "تاریک",
+        "نور",
+        "خورشید",
+        "دنبال‌کردن",
+        "شکل",
+        "ضدنور",
+        "زمین",
+        "عصر",
+        "دیوار",
+        "شخص"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Volcano",
+      "fr": "Volcan",
+      "de": "Vulkan",
+      "fa": "آتشفشان"
+    },
+    "clues": {
+      "en": [
+        "Lava",
+        "Eruption",
+        "Mountain",
+        "Magma",
+        "Hot",
+        "Fire",
+        "Ash",
+        "Explosion",
+        "Geology",
+        "Crater"
+      ],
+      "fr": [
+        "Lave",
+        "Éruption",
+        "Montagne",
+        "Magma",
+        "Chaud",
+        "Feu",
+        "Cendre",
+        "Explosion",
+        "Géologie",
+        "Cratère"
+      ],
+      "de": [
+        "Lava",
+        "Ausbruch",
+        "Berg",
+        "Magma",
+        "Heiß",
+        "Feuer",
+        "Asche",
+        "Explosion",
+        "Geologie",
+        "Krater"
+      ],
+      "fa": [
+        "گدازه",
+        "فوران",
+        "کوه",
+        "ماگما",
+        "داغ",
+        "آتش",
+        "خاکستر",
+        "انفجار",
+        "زمین‌شناسی",
+        "دهانه"
+      ]
+    },
+    "difficulty": "hard"
+  },
+  {
+    "word": {
+      "en": "Anchor",
+      "fr": "Ancre",
+      "de": "Anker",
+      "fa": "لنگر"
+    },
+    "clues": {
+      "en": [
+        "Ship",
+        "Sea",
+        "Heavy",
+        "Metal",
+        "Stop",
+        "Boat",
+        "Steel",
+        "Hook",
+        "Ocean",
+        "Weight"
+      ],
+      "fr": [
+        "Bateau",
+        "Mer",
+        "Lourd",
+        "Métal",
+        "Arrêt",
+        "Navire",
+        "Acier",
+        "Crochet",
+        "Océan",
+        "Poids"
+      ],
+      "de": [
+        "Schiff",
+        "Meer",
+        "Schwer",
+        "Metall",
+        "Stopp",
+        "Boot",
+        "Stahl",
+        "Haken",
+        "Ozean",
+        "Gewicht"
+      ],
+      "fa": [
+        "کشتی",
+        "دریا",
+        "سنگین",
+        "فلز",
+        "توقف",
+        "قایق",
+        "فولاد",
+        "قلاب",
+        "اقیانوس",
+        "وزن"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Honey",
+      "fr": "Miel",
+      "de": "Honig",
+      "fa": "عسل"
+    },
+    "clues": {
+      "en": [
+        "Bee",
+        "Sweet",
+        "Gold",
+        "Sticky",
+        "Flower",
+        "Jar",
+        "Food",
+        "Yellow",
+        "Comb",
+        "Buzz"
+      ],
+      "fr": [
+        "Abeille",
+        "Sucré",
+        "Or",
+        "Collant",
+        "Fleur",
+        "Pot",
+        "Nourriture",
+        "Jaune",
+        "Rayon",
+        "Bzzz"
+      ],
+      "de": [
+        "Biene",
+        "Süß",
+        "Gold",
+        "Klebrig",
+        "Blume",
+        "Glas",
+        "Essen",
+        "Gelb",
+        "Wabe",
+        "Summen"
+      ],
+      "fa": [
+        "زنبور",
+        "شیرین",
+        "طلا",
+        "چسبناک",
+        "گل",
+        "شیشه",
+        "غذا",
+        "زرد",
+        "کندو",
+        "وزوز"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Castle",
+      "fr": "Château",
+      "de": "Schloss",
+      "fa": "قلعه"
+    },
+    "clues": {
+      "en": [
+        "King",
+        "Stone",
+        "Tower",
+        "Walls",
+        "Queen",
+        "Moat",
+        "Knight",
+        "Royalty",
+        "Fortress",
+        "Bridge"
+      ],
+      "fr": [
+        "Roi",
+        "Pierre",
+        "Tour",
+        "Murs",
+        "Reine",
+        "Fossé",
+        "Chevalier",
+        "Royauté",
+        "Forteresse",
+        "Pont"
+      ],
+      "de": [
+        "König",
+        "Stein",
+        "Turm",
+        "Mauern",
+        "Königin",
+        "Graben",
+        "Ritter",
+        "Adel",
+        "Festung",
+        "Brücke"
+      ],
+      "fa": [
+        "پادشاه",
+        "سنگ",
+        "برج",
+        "دیوار",
+        "ملکه",
+        "خندق",
+        "شوالیه",
+        "سلطنتی",
+        "دژ",
+        "پل"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Ladder",
+      "fr": "Échelle",
+      "de": "Leiter",
+      "fa": "نردبان"
+    },
+    "clues": {
+      "en": [
+        "Climb",
+        "Steps",
+        "Height",
+        "Up",
+        "Wall",
+        "Wood",
+        "Metal",
+        "Rungs",
+        "Roof",
+        "Reach"
+      ],
+      "fr": [
+        "Grimper",
+        "Marches",
+        "Hauteur",
+        "Haut",
+        "Mur",
+        "Bois",
+        "Métal",
+        "Échelons",
+        "Toit",
+        "Atteindre"
+      ],
+      "de": [
+        "Klettern",
+        "Stufen",
+        "Höhe",
+        "Oben",
+        "Wand",
+        "Holz",
+        "Metall",
+        "Sprossen",
+        "Dach",
+        "Erreichen"
+      ],
+      "fa": [
+        "بالا‌رفتن",
+        "پله",
+        "ارتفاع",
+        "بالا",
+        "دیوار",
+        "چوب",
+        "فلز",
+        "پله‌فلزی",
+        "بام",
+        "رسیدن"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Camera",
+      "fr": "Appareil photo",
+      "de": "Kamera",
+      "fa": "دوربین"
+    },
+    "clues": {
+      "en": [
+        "Photo",
+        "Lens",
+        "Picture",
+        "Click",
+        "Flash",
+        "Image",
+        "Record",
+        "Digital",
+        "Memory",
+        "Shot"
+      ],
+      "fr": [
+        "Photo",
+        "Objectif",
+        "Image",
+        "Clic",
+        "Flash",
+        "Photo",
+        "Enregistrer",
+        "Numérique",
+        "Mémoire",
+        "Prise"
+      ],
+      "de": [
+        "Foto",
+        "Objektiv",
+        "Bild",
+        "Klick",
+        "Blitz",
+        "Abbild",
+        "Aufnehmen",
+        "Digital",
+        "Erinnerung",
+        "Aufnahme"
+      ],
+      "fa": [
+        "عکس",
+        "لنز",
+        "تصویر",
+        "کلیک",
+        "فلاش",
+        "عکس",
+        "ضبط",
+        "دیجیتال",
+        "خاطره",
+        "شات"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Umbrella",
+      "fr": "Parapluie",
+      "de": "Regenschirm",
+      "fa": "چتر"
+    },
+    "clues": {
+      "en": [
+        "Rain",
+        "Dry",
+        "Storm",
+        "Cover",
+        "Water",
+        "Fold",
+        "Handle",
+        "Weather",
+        "Protection",
+        "Sky"
+      ],
+      "fr": [
+        "Pluie",
+        "Sec",
+        "Orage",
+        "Couverture",
+        "Eau",
+        "Pliant",
+        "Manche",
+        "Météo",
+        "Protection",
+        "Ciel"
+      ],
+      "de": [
+        "Regen",
+        "Trocken",
+        "Sturm",
+        "Abdeckung",
+        "Wasser",
+        "Falten",
+        "Griff",
+        "Wetter",
+        "Schutz",
+        "Himmel"
+      ],
+      "fa": [
+        "باران",
+        "خشک",
+        "طوفان",
+        "پوشش",
+        "آب",
+        "تاشو",
+        "دسته",
+        "هوا",
+        "محافظت",
+        "آسمان"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Robot",
+      "fr": "Robot",
+      "de": "Roboter",
+      "fa": "ربات"
+    },
+    "clues": {
+      "en": [
+        "Machine",
+        "Metal",
+        "AI",
+        "Code",
+        "Automatic",
+        "Electronic",
+        "Future",
+        "Wires",
+        "Battery",
+        "Task"
+      ],
+      "fr": [
+        "Machine",
+        "Métal",
+        "IA",
+        "Code",
+        "Automatique",
+        "Électronique",
+        "Futur",
+        "Fils",
+        "Batterie",
+        "Tâche"
+      ],
+      "de": [
+        "Maschine",
+        "Metall",
+        "KI",
+        "Code",
+        "Automatisch",
+        "Elektronisch",
+        "Zukunft",
+        "Kabel",
+        "Batterie",
+        "Aufgabe"
+      ],
+      "fa": [
+        "ماشین",
+        "فلز",
+        "هوش‌مصنوعی",
+        "کد",
+        "اتوماتیک",
+        "الکترونیک",
+        "آینده",
+        "سیم",
+        "باتری",
+        "وظیفه"
+      ]
+    },
+    "difficulty": "hard"
+  },
+  {
+    "word": {
+      "en": "Mountain",
+      "fr": "Montagne",
+      "de": "Berg",
+      "fa": "کوه"
+    },
+    "clues": {
+      "en": [
+        "Climb",
+        "Peak",
+        "High",
+        "Snow",
+        "Hiking",
+        "Summit",
+        "Range",
+        "Steep",
+        "Alps",
+        "Rock"
+      ],
+      "fr": [
+        "Grimper",
+        "Pic",
+        "Haut",
+        "Neige",
+        "Randonnée",
+        "Sommet",
+        "Chaîne",
+        "Raide",
+        "Alpes",
+        "Roche"
+      ],
+      "de": [
+        "Klettern",
+        "Gipfel",
+        "Hoch",
+        "Schnee",
+        "Wandern",
+        "Spitze",
+        "Gebirge",
+        "Steil",
+        "Alpen",
+        "Fels"
+      ],
+      "fa": [
+        "صعود",
+        "قله",
+        "بلند",
+        "برف",
+        "کوهنوردی",
+        "اوج",
+        "رشته",
+        "شیب‌دار",
+        "آلپ",
+        "سنگ"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Feather",
+      "fr": "Plume",
+      "de": "Feder",
+      "fa": "پر"
+    },
+    "clues": {
+      "en": [
+        "Bird",
+        "Light",
+        "Soft",
+        "Flight",
+        "Wing",
+        "Writing",
+        "Quill",
+        "Air",
+        "Delicate",
+        "Plumage"
+      ],
+      "fr": [
+        "Oiseau",
+        "Léger",
+        "Doux",
+        "Vol",
+        "Aile",
+        "Écrire",
+        "Plume",
+        "Air",
+        "Délicat",
+        "Plumage"
+      ],
+      "de": [
+        "Vogel",
+        "Leicht",
+        "Weich",
+        "Flug",
+        "Flügel",
+        "Schreiben",
+        "Kiel",
+        "Luft",
+        "Zart",
+        "Gefieder"
+      ],
+      "fa": [
+        "پرنده",
+        "سبک",
+        "نرم",
+        "پرواز",
+        "بال",
+        "نوشتن",
+        "قلم",
+        "هوا",
+        "ظریف",
+        "پوشش"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Balloon",
+      "fr": "Ballon",
+      "de": "Ballon",
+      "fa": "بادکنک"
+    },
+    "clues": {
+      "en": [
+        "Float",
+        "Party",
+        "Air",
+        "Rubber",
+        "String",
+        "Sky",
+        "Color",
+        "Rise",
+        "Helium",
+        "Round"
+      ],
+      "fr": [
+        "Flotter",
+        "Fête",
+        "Air",
+        "Caoutchouc",
+        "Ficelle",
+        "Ciel",
+        "Couleur",
+        "Monter",
+        "Hélium",
+        "Rond"
+      ],
+      "de": [
+        "Schweben",
+        "Party",
+        "Luft",
+        "Gummi",
+        "Schnur",
+        "Himmel",
+        "Farbe",
+        "Aufsteigen",
+        "Helium",
+        "Rund"
+      ],
+      "fa": [
+        "شناور",
+        "جشن",
+        "هوا",
+        "لاستیک",
+        "نخ",
+        "آسمان",
+        "رنگ",
+        "اوج",
+        "هلیوم",
+        "گرد"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Coffee",
+      "fr": "Café",
+      "de": "Kaffee",
+      "fa": "قهوه"
+    },
+    "clues": {
+      "en": [
+        "Morning",
+        "Bean",
+        "Caffeine",
+        "Drink",
+        "Hot",
+        "Cup",
+        "Brew",
+        "Roast",
+        "Black",
+        "Energy"
+      ],
+      "fr": [
+        "Matin",
+        "Grain",
+        "Caféine",
+        "Boisson",
+        "Chaud",
+        "Tasse",
+        "Infusion",
+        "Torréfaction",
+        "Noir",
+        "Énergie"
+      ],
+      "de": [
+        "Morgen",
+        "Bohne",
+        "Koffein",
+        "Getränk",
+        "Heiß",
+        "Tasse",
+        "Brühen",
+        "Röstung",
+        "Schwarz",
+        "Energie"
+      ],
+      "fa": [
+        "صبح",
+        "دانه",
+        "کافئین",
+        "نوشیدنی",
+        "داغ",
+        "فنجان",
+        "دم‌کردن",
+        "بو‌داده",
+        "سیاه",
+        "انرژی"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Guitar",
+      "fr": "Guitare",
+      "de": "Gitarre",
+      "fa": "گیتار"
+    },
+    "clues": {
+      "en": [
+        "Strings",
+        "Music",
+        "Acoustic",
+        "Strum",
+        "Notes",
+        "Band",
+        "Pick",
+        "Wood",
+        "Melody",
+        "Fret"
+      ],
+      "fr": [
+        "Cordes",
+        "Musique",
+        "Acoustique",
+        "Grimer",
+        "Notes",
+        "Groupe",
+        "Médiator",
+        "Bois",
+        "Mélodie",
+        "Frette"
+      ],
+      "de": [
+        "Saiten",
+        "Musik",
+        "Akustisch",
+        "Anschlagen",
+        "Noten",
+        "Band",
+        "Plektrum",
+        "Holz",
+        "Melodie",
+        "Bund"
+      ],
+      "fa": [
+        "سیم",
+        "موسیقی",
+        "آکوستیک",
+        "نواختن",
+        "نت",
+        "گروه",
+        "مضراب",
+        "چوب",
+        "ملودی",
+        "فرت"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Ocean",
+      "fr": "Océan",
+      "de": "Ozean",
+      "fa": "اقیانوس"
+    },
+    "clues": {
+      "en": [
+        "Water",
+        "Blue",
+        "Salt",
+        "Deep",
+        "Waves",
+        "Fish",
+        "Vast",
+        "Tide",
+        "Marine",
+        "Abyss"
+      ],
+      "fr": [
+        "Eau",
+        "Bleu",
+        "Sel",
+        "Profond",
+        "Vagues",
+        "Poisson",
+        "Vaste",
+        "Marée",
+        "Marin",
+        "Abysse"
+      ],
+      "de": [
+        "Wasser",
+        "Blau",
+        "Salz",
+        "Tief",
+        "Wellen",
+        "Fisch",
+        "Riesig",
+        "Gezeiten",
+        "Maritim",
+        "Abgrund"
+      ],
+      "fa": [
+        "آب",
+        "آبی",
+        "نمک",
+        "عمیق",
+        "موج",
+        "ماهی",
+        "وسیع",
+        "جزرومد",
+        "دریایی",
+        "اعماق"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Forest",
+      "fr": "Forêt",
+      "de": "Wald",
+      "fa": "جنگل"
+    },
+    "clues": {
+      "en": [
+        "Trees",
+        "Green",
+        "Wood",
+        "Nature",
+        "Leaves",
+        "Hike",
+        "Wild",
+        "Pine",
+        "Oxygen",
+        "Shade"
+      ],
+      "fr": [
+        "Arbres",
+        "Vert",
+        "Bois",
+        "Nature",
+        "Feuilles",
+        "Randonnée",
+        "Sauvage",
+        "Pin",
+        "Oxygène",
+        "Ombre"
+      ],
+      "de": [
+        "Bäume",
+        "Grün",
+        "Holz",
+        "Natur",
+        "Blätter",
+        "Wandern",
+        "Wild",
+        "Kiefer",
+        "Sauerstoff",
+        "Schatten"
+      ],
+      "fa": [
+        "درخت",
+        "سبز",
+        "چوب",
+        "طبیعت",
+        "برگ",
+        "پیاده‌روی",
+        "وحشی",
+        "کاج",
+        "اکسیژن",
+        "سایه"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Bread",
+      "fr": "Pain",
+      "de": "Brot",
+      "fa": "نان"
+    },
+    "clues": {
+      "en": [
+        "Bakery",
+        "Wheat",
+        "Food",
+        "Slice",
+        "Toast",
+        "Oven",
+        "Flour",
+        "Butter",
+        "Crust",
+        "Yeast"
+      ],
+      "fr": [
+        "Boulangerie",
+        "Blé",
+        "Nourriture",
+        "Tranche",
+        "Grillé",
+        "Four",
+        "Farine",
+        "Beurre",
+        "Croûte",
+        "Levure"
+      ],
+      "de": [
+        "Bäckerei",
+        "Weizen",
+        "Essen",
+        "Scheibe",
+        "Toast",
+        "Ofen",
+        "Mehl",
+        "Butter",
+        "Kruste",
+        "Hefe"
+      ],
+      "fa": [
+        "نانوایی",
+        "گندم",
+        "غذا",
+        "برش",
+        "تست",
+        "فر",
+        "آرد",
+        "کره",
+        "برشته",
+        "خمیرمایه"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Lamp",
+      "fr": "Lampe",
+      "de": "Lampe",
+      "fa": "لامپ"
+    },
+    "clues": {
+      "en": [
+        "Light",
+        "Bulb",
+        "Dark",
+        "Electricity",
+        "Switch",
+        "Room",
+        "Desk",
+        "Shade",
+        "Bright",
+        "Glowing"
+      ],
+      "fr": [
+        "Lumière",
+        "Ampoule",
+        "Sombre",
+        "Électricité",
+        "Interrupteur",
+        "Pièce",
+        "Bureau",
+        "Abat-jour",
+        "Brillant",
+        "Brillant"
+      ],
+      "de": [
+        "Licht",
+        "Glühbirne",
+        "Dunkel",
+        "Strom",
+        "Schalter",
+        "Zimmer",
+        "Schreibtisch",
+        "Schirm",
+        "Hell",
+        "Leuchtend"
+      ],
+      "fa": [
+        "نور",
+        "حباب",
+        "تاریک",
+        "برق",
+        "کلید",
+        "اتاق",
+        "میز",
+        "کلاهک",
+        "روشن",
+        "درخشان"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Keyboard",
+      "fr": "Clavier",
+      "de": "Tastatur",
+      "fa": "صفحه‌کلید"
+    },
+    "clues": {
+      "en": [
+        "Typing",
+        "Computer",
+        "Keys",
+        "Letters",
+        "Writer",
+        "Input",
+        "Device",
+        "Qwerty",
+        "Click",
+        "Digital"
+      ],
+      "fr": [
+        "Taper",
+        "Ordinateur",
+        "Touches",
+        "Lettres",
+        "Écrivain",
+        "Entrée",
+        "Appareil",
+        "Qwerty",
+        "Clic",
+        "Numérique"
+      ],
+      "de": [
+        "Tippen",
+        "Computer",
+        "Tasten",
+        "Buchstaben",
+        "Schreiber",
+        "Eingabe",
+        "Gerät",
+        "Qwertz",
+        "Klick",
+        "Digital"
+      ],
+      "fa": [
+        "تایپ",
+        "کامپیوتر",
+        "کلید",
+        "حروف",
+        "نویسنده",
+        "ورودی",
+        "دستگاه",
+        "کیبورد",
+        "کلیک",
+        "دیجیتال"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Island",
+      "fr": "Île",
+      "de": "Insel",
+      "fa": "جزیره"
+    },
+    "clues": {
+      "en": [
+        "Ocean",
+        "Land",
+        "Water",
+        "Beach",
+        "Isolated",
+        "Tropical",
+        "Palm",
+        "Vacation",
+        "Sea",
+        "Sand"
+      ],
+      "fr": [
+        "Océan",
+        "Terre",
+        "Eau",
+        "Plage",
+        "Isolé",
+        "Tropical",
+        "Palmier",
+        "Vacances",
+        "Mer",
+        "Sable"
+      ],
+      "de": [
+        "Ozean",
+        "Land",
+        "Wasser",
+        "Strand",
+        "Isoliert",
+        "Tropisch",
+        "Palme",
+        "Urlaub",
+        "Meer",
+        "Sand"
+      ],
+      "fa": [
+        "اقیانوس",
+        "خشکی",
+        "آب",
+        "ساحل",
+        "دورافتاده",
+        "استوایی",
+        "نخل",
+        "تعطیلات",
+        "دریا",
+        "شن"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Rocket",
+      "fr": "Fusée",
+      "de": "Rakete",
+      "fa": "موشک"
+    },
+    "clues": {
+      "en": [
+        "Space",
+        "Launch",
+        "Sky",
+        "Fire",
+        "Moon",
+        "Fuel",
+        "Speed",
+        "Engine",
+        "Astronaut",
+        "Orbit"
+      ],
+      "fr": [
+        "Espace",
+        "Lancement",
+        "Ciel",
+        "Feu",
+        "Lune",
+        "Carburant",
+        "Vitesse",
+        "Moteur",
+        "Astronaute",
+        "Orbite"
+      ],
+      "de": [
+        "Weltraum",
+        "Start",
+        "Himmel",
+        "Feuer",
+        "Mond",
+        "Treibstoff",
+        "Geschwindigkeit",
+        "Motor",
+        "Astronaut",
+        "Umlaufbahn"
+      ],
+      "fa": [
+        "فضا",
+        "پرتاب",
+        "آسمان",
+        "آتش",
+        "ماه",
+        "سوخت",
+        "سرعت",
+        "موتور",
+        "فضانورد",
+        "مدار"
+      ]
+    },
+    "difficulty": "hard"
+  },
+  {
+    "word": {
+      "en": "Winter",
+      "fr": "Hiver",
+      "de": "Winter",
+      "fa": "زمستان"
+    },
+    "clues": {
+      "en": [
+        "Cold",
+        "Snow",
+        "Ice",
+        "Season",
+        "Freeze",
+        "Jacket",
+        "Ski",
+        "Christmas",
+        "White",
+        "Frost"
+      ],
+      "fr": [
+        "Froid",
+        "Neige",
+        "Glace",
+        "Saison",
+        "Geler",
+        "Veste",
+        "Ski",
+        "Noël",
+        "Blanc",
+        "Givre"
+      ],
+      "de": [
+        "Kalt",
+        "Schnee",
+        "Eis",
+        "Jahreszeit",
+        "Frieren",
+        "Jacke",
+        "Ski",
+        "Weihnachten",
+        "Weiß",
+        "Frost"
+      ],
+      "fa": [
+        "سرد",
+        "برف",
+        "یخ",
+        "فصل",
+        "انجماد",
+        "کاپشن",
+        "اسکی",
+        "کریسمس",
+        "سفید",
+        "یخبندان"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Flower",
+      "fr": "Fleur",
+      "de": "Blume",
+      "fa": "گل"
+    },
+    "clues": {
+      "en": [
+        "Petal",
+        "Bloom",
+        "Garden",
+        "Nature",
+        "Colors",
+        "Smell",
+        "Water",
+        "Spring",
+        "Sun",
+        "Plant"
+      ],
+      "fr": [
+        "Pétale",
+        "Fleurir",
+        "Jardin",
+        "Nature",
+        "Couleurs",
+        "Odeur",
+        "Eau",
+        "Printemps",
+        "Soleil",
+        "Plante"
+      ],
+      "de": [
+        "Blütenblatt",
+        "Blühen",
+        "Garten",
+        "Natur",
+        "Farben",
+        "Duft",
+        "Wasser",
+        "Frühling",
+        "Sonne",
+        "Pflanze"
+      ],
+      "fa": [
+        "گلبرگ",
+        "شکوفه",
+        "باغ",
+        "طبیعت",
+        "رنگ",
+        "بو",
+        "آب",
+        "بهار",
+        "خورشید",
+        "گیاه"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Computer",
+      "fr": "Ordinateur",
+      "de": "Computer",
+      "fa": "کامپیوتر"
+    },
+    "clues": {
+      "en": [
+        "Screen",
+        "Tech",
+        "Keyboard",
+        "Mouse",
+        "Internet",
+        "Software",
+        "Digital",
+        "Data",
+        "Work",
+        "Code"
+      ],
+      "fr": [
+        "Écran",
+        "Tech",
+        "Clavier",
+        "Souris",
+        "Internet",
+        "Logiciel",
+        "Numérique",
+        "Données",
+        "Travail",
+        "Code"
+      ],
+      "de": [
+        "Bildschirm",
+        "Technik",
+        "Tastatur",
+        "Maus",
+        "Internet",
+        "Software",
+        "Digital",
+        "Daten",
+        "Arbeit",
+        "Code"
+      ],
+      "fa": [
+        "صفحه",
+        "تکنولوژی",
+        "کیبورد",
+        "موس",
+        "اینترنت",
+        "نرم‌افزار",
+        "دیجیتال",
+        "داده",
+        "کار",
+        "کد"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Water",
+      "fr": "Eau",
+      "de": "Wasser",
+      "fa": "آب"
+    },
+    "clues": {
+      "en": [
+        "Drink",
+        "Liquid",
+        "Hydrate",
+        "Rain",
+        "River",
+        "Blue",
+        "Clear",
+        "Essential",
+        "Cold",
+        "Glass"
+      ],
+      "fr": [
+        "Boire",
+        "Liquide",
+        "Hydrater",
+        "Pluie",
+        "Rivière",
+        "Bleu",
+        "Clair",
+        "Essentiel",
+        "Froid",
+        "Verre"
+      ],
+      "de": [
+        "Trinken",
+        "Flüssig",
+        "Hydrieren",
+        "Regen",
+        "Fluss",
+        "Blau",
+        "Klar",
+        "Wesentlich",
+        "Kalt",
+        "Glas"
+      ],
+      "fa": [
+        "نوشیدن",
+        "مایع",
+        "هیدراته",
+        "باران",
+        "رودخانه",
+        "آبی",
+        "شفاف",
+        "حیاتی",
+        "سرد",
+        "لیوان"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Fire",
+      "fr": "Feu",
+      "de": "Feuer",
+      "fa": "آتش"
+    },
+    "clues": {
+      "en": [
+        "Burn",
+        "Hot",
+        "Flame",
+        "Heat",
+        "Smoke",
+        "Red",
+        "Orange",
+        "Light",
+        "Camp",
+        "Danger"
+      ],
+      "fr": [
+        "Brûler",
+        "Chaud",
+        "Flamme",
+        "Chaleur",
+        "Fumée",
+        "Rouge",
+        "Orange",
+        "Lumière",
+        "Camp",
+        "Danger"
+      ],
+      "de": [
+        "Brennen",
+        "Heiß",
+        "Flamme",
+        "Hitze",
+        "Rauch",
+        "Rot",
+        "Orange",
+        "Licht",
+        "Lager",
+        "Gefahr"
+      ],
+      "fa": [
+        "سوختن",
+        "داغ",
+        "شعله",
+        "گرما",
+        "دود",
+        "قرمز",
+        "نارنجی",
+        "نور",
+        "کمپ",
+        "خطر"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Train",
+      "fr": "Train",
+      "de": "Zug",
+      "fa": "قطار"
+    },
+    "clues": {
+      "en": [
+        "Track",
+        "Rail",
+        "Travel",
+        "Station",
+        "Engine",
+        "Wheels",
+        "Fast",
+        "Passenger",
+        "Carriage",
+        "Ticket"
+      ],
+      "fr": [
+        "Voie",
+        "Rail",
+        "Voyage",
+        "Gare",
+        "Moteur",
+        "Roues",
+        "Rapide",
+        "Passager",
+        "Wagon",
+        "Billet"
+      ],
+      "de": [
+        "Gleis",
+        "Schiene",
+        "Reisen",
+        "Bahnhof",
+        "Lok",
+        "Räder",
+        "Schnell",
+        "Passagier",
+        "Waggon",
+        "Ticket"
+      ],
+      "fa": [
+        "ریل",
+        "آهن",
+        "سفر",
+        "ایستگاه",
+        "لوکوموتیو",
+        "چرخ",
+        "سریع",
+        "مسافر",
+        "واگن",
+        "بلیت"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Moon",
+      "fr": "Lune",
+      "de": "Mond",
+      "fa": "ماه"
+    },
+    "clues": {
+      "en": [
+        "Night",
+        "Space",
+        "Orbit",
+        "Dark",
+        "Satellite",
+        "Light",
+        "Full",
+        "Crescent",
+        "Gravity",
+        "Sky"
+      ],
+      "fr": [
+        "Nuit",
+        "Espace",
+        "Orbite",
+        "Sombre",
+        "Satellite",
+        "Lumière",
+        "Pleine",
+        "Croissant",
+        "Gravité",
+        "Ciel"
+      ],
+      "de": [
+        "Nacht",
+        "Weltraum",
+        "Umlaufbahn",
+        "Dunkel",
+        "Satellit",
+        "Licht",
+        "Voll",
+        "Halb",
+        "Gravitation",
+        "Himmel"
+      ],
+      "fa": [
+        "شب",
+        "فضا",
+        "مدار",
+        "تاریک",
+        "قمر",
+        "نور",
+        "کامل",
+        "هلال",
+        "جاذبه",
+        "آسمان"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Table",
+      "fr": "Table",
+      "de": "Tisch",
+      "fa": "میز"
+    },
+    "clues": {
+      "en": [
+        "Wood",
+        "Eat",
+        "Legs",
+        "Furniture",
+        "Dinner",
+        "Surface",
+        "Kitchen",
+        "Dining",
+        "Flat",
+        "Chair"
+      ],
+      "fr": [
+        "Bois",
+        "Manger",
+        "Pieds",
+        "Meuble",
+        "Dîner",
+        "Surface",
+        "Cuisine",
+        "Salle",
+        "Plat",
+        "Chaise"
+      ],
+      "de": [
+        "Holz",
+        "Essen",
+        "Beine",
+        "Möbel",
+        "Abendessen",
+        "Oberfläche",
+        "Küche",
+        "Essen",
+        "Flach",
+        "Stuhl"
+      ],
+      "fa": [
+        "چوب",
+        "غذا",
+        "پایه",
+        "مبلمان",
+        "شام",
+        "سطح",
+        "آشپزخانه",
+        "ناهارخوری",
+        "صاف",
+        "صندلی"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Shirt",
+      "fr": "Chemise",
+      "de": "Hemd",
+      "fa": "پیراهن"
+    },
+    "clues": {
+      "en": [
+        "Cloth",
+        "Buttons",
+        "Wear",
+        "Sleeves",
+        "Collar",
+        "Cotton",
+        "Dress",
+        "Fashion",
+        "Laundry",
+        "Store"
+      ],
+      "fr": [
+        "Tissu",
+        "Boutons",
+        "Porter",
+        "Manches",
+        "Col",
+        "Coton",
+        "Habiller",
+        "Mode",
+        "Lessive",
+        "Magasin"
+      ],
+      "de": [
+        "Stoff",
+        "Knöpfe",
+        "Tragen",
+        "Ärmel",
+        "Kragen",
+        "Baumwolle",
+        "Kleid",
+        "Mode",
+        "Wäsche",
+        "Laden"
+      ],
+      "fa": [
+        "پارچه",
+        "دکمه",
+        "پوشیدن",
+        "آستین",
+        "یقه",
+        "کتان",
+        "لباس",
+        "مد",
+        "رخت‌شویی",
+        "فروشگاه"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Paper",
+      "fr": "Papier",
+      "de": "Papier",
+      "fa": "کاغذ"
+    },
+    "clues": {
+      "en": [
+        "Write",
+        "White",
+        "Sheet",
+        "Book",
+        "Pen",
+        "Printer",
+        "Tree",
+        "Fold",
+        "Notes",
+        "Flat"
+      ],
+      "fr": [
+        "Écrire",
+        "Blanc",
+        "Feuille",
+        "Livre",
+        "Stylo",
+        "Imprimante",
+        "Arbre",
+        "Pli",
+        "Notes",
+        "Plat"
+      ],
+      "de": [
+        "Schreiben",
+        "Weiß",
+        "Blatt",
+        "Buch",
+        "Stift",
+        "Drucker",
+        "Baum",
+        "Falten",
+        "Notizen",
+        "Flach"
+      ],
+      "fa": [
+        "نوشتن",
+        "سفید",
+        "ورقه",
+        "کتاب",
+        "خودکار",
+        "پرینتر",
+        "درخت",
+        "تا",
+        "یادداشت",
+        "صاف"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Window",
+      "fr": "Fenêtre",
+      "de": "Fenster",
+      "fa": "پنجره"
+    },
+    "clues": {
+      "en": [
+        "Glass",
+        "Open",
+        "View",
+        "Light",
+        "Wall",
+        "House",
+        "Outside",
+        "Frame",
+        "Curtain",
+        "Look"
+      ],
+      "fr": [
+        "Verre",
+        "Ouvrir",
+        "Vue",
+        "Lumière",
+        "Mur",
+        "Maison",
+        "Dehors",
+        "Cadre",
+        "Rideau",
+        "Regarder"
+      ],
+      "de": [
+        "Glas",
+        "Öffnen",
+        "Aussicht",
+        "Licht",
+        "Wand",
+        "Haus",
+        "Draußen",
+        "Rahmen",
+        "Vorhang",
+        "Schauen"
+      ],
+      "fa": [
+        "شیشه",
+        "باز",
+        "دید",
+        "نور",
+        "دیوار",
+        "خانه",
+        "بیرون",
+        "چارچوب",
+        "پرده",
+        "نگاه"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Sun",
+      "fr": "Soleil",
+      "de": "Sonne",
+      "fa": "خورشید"
+    },
+    "clues": {
+      "en": [
+        "Star",
+        "Hot",
+        "Yellow",
+        "Light",
+        "Day",
+        "Space",
+        "Solar",
+        "Bright",
+        "Heat",
+        "Sky"
+      ],
+      "fr": [
+        "Étoile",
+        "Chaud",
+        "Jaune",
+        "Lumière",
+        "Jour",
+        "Espace",
+        "Solaire",
+        "Brillant",
+        "Chaleur",
+        "Ciel"
+      ],
+      "de": [
+        "Stern",
+        "Heiß",
+        "Gelb",
+        "Licht",
+        "Tag",
+        "Weltraum",
+        "Solar",
+        "Hell",
+        "Hitze",
+        "Himmel"
+      ],
+      "fa": [
+        "ستاره",
+        "داغ",
+        "زرد",
+        "نور",
+        "روز",
+        "فضا",
+        "خورشیدی",
+        "روشن",
+        "گرما",
+        "آسمان"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Book",
+      "fr": "Livre",
+      "de": "Buch",
+      "fa": "کتاب"
+    },
+    "clues": {
+      "en": [
+        "Read",
+        "Pages",
+        "Story",
+        "Words",
+        "Library",
+        "Author",
+        "Paper",
+        "Cover",
+        "Knowledge",
+        "Chapter"
+      ],
+      "fr": [
+        "Lire",
+        "Pages",
+        "Histoire",
+        "Mots",
+        "Bibliothèque",
+        "Auteur",
+        "Papier",
+        "Couverture",
+        "Savoir",
+        "Chapitre"
+      ],
+      "de": [
+        "Lesen",
+        "Seiten",
+        "Geschichte",
+        "Wörter",
+        "Bibliothek",
+        "Autor",
+        "Papier",
+        "Einband",
+        "Wissen",
+        "Kapitel"
+      ],
+      "fa": [
+        "خواندن",
+        "صفحه",
+        "داستان",
+        "کلمات",
+        "کتابخانه",
+        "نویسنده",
+        "کاغذ",
+        "جلد",
+        "دانش",
+        "فصل"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Chair",
+      "fr": "Chaise",
+      "de": "Stuhl",
+      "fa": "صندلی"
+    },
+    "clues": {
+      "en": [
+        "Sit",
+        "Furniture",
+        "Table",
+        "Wood",
+        "Legs",
+        "Backrest",
+        "Comfort",
+        "Office",
+        "Dining",
+        "Seat"
+      ],
+      "fr": [
+        "Asseoir",
+        "Meuble",
+        "Table",
+        "Bois",
+        "Pieds",
+        "Dossier",
+        "Confort",
+        "Bureau",
+        "Dîner",
+        "Siège"
+      ],
+      "de": [
+        "Sitzen",
+        "Möbel",
+        "Tisch",
+        "Holz",
+        "Beine",
+        "Rückenlehne",
+        "Komfort",
+        "Büro",
+        "Essen",
+        "Sitz"
+      ],
+      "fa": [
+        "نشستن",
+        "مبلمان",
+        "میز",
+        "چوب",
+        "پایه",
+        "تکیه‌گاه",
+        "راحتی",
+        "اداره",
+        "ناهارخوری",
+        "نشیمن"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Phone",
+      "fr": "Téléphone",
+      "de": "Telefon",
+      "fa": "تلفن"
+    },
+    "clues": {
+      "en": [
+        "Call",
+        "Talk",
+        "Mobile",
+        "Screen",
+        "App",
+        "Text",
+        "Communication",
+        "Battery",
+        "Camera",
+        "Digital"
+      ],
+      "fr": [
+        "Appel",
+        "Parler",
+        "Mobile",
+        "Écran",
+        "App",
+        "Texte",
+        "Communication",
+        "Batterie",
+        "Appareil",
+        "Numérique"
+      ],
+      "de": [
+        "Anruf",
+        "Sprechen",
+        "Mobil",
+        "Bildschirm",
+        "App",
+        "Text",
+        "Kommunikation",
+        "Batterie",
+        "Kamera",
+        "Digital"
+      ],
+      "fa": [
+        "تماس",
+        "صحبت",
+        "موبایل",
+        "صفحه",
+        "اپلیکیشن",
+        "متن",
+        "ارتباط",
+        "باتری",
+        "دوربین",
+        "دیجیتال"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Star",
+      "fr": "Étoile",
+      "de": "Stern",
+      "fa": "ستاره"
+    },
+    "clues": {
+      "en": [
+        "Sky",
+        "Night",
+        "Bright",
+        "Space",
+        "Twinkle",
+        "Sun",
+        "Galaxy",
+        "Light",
+        "Distant",
+        "Constellation"
+      ],
+      "fr": [
+        "Ciel",
+        "Nuit",
+        "Brillant",
+        "Espace",
+        "Scintiller",
+        "Soleil",
+        "Galaxie",
+        "Lumière",
+        "Lointain",
+        "Constellation"
+      ],
+      "de": [
+        "Himmel",
+        "Nacht",
+        "Hell",
+        "Weltraum",
+        "Funkeln",
+        "Sonne",
+        "Galaxie",
+        "Licht",
+        "Fern",
+        "Sternbild"
+      ],
+      "fa": [
+        "آسمان",
+        "شب",
+        "درخشان",
+        "فضا",
+        "سو سو",
+        "خورشید",
+        "کهکشان",
+        "نور",
+        "دور",
+        "صورت‌فلکی"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Pen",
+      "fr": "Stylo",
+      "de": "Stift",
+      "fa": "خودکار"
+    },
+    "clues": {
+      "en": [
+        "Write",
+        "Ink",
+        "Paper",
+        "Hand",
+        "School",
+        "Office",
+        "Drawing",
+        "Point",
+        "Blue",
+        "Black"
+      ],
+      "fr": [
+        "Écrire",
+        "Encre",
+        "Papier",
+        "Main",
+        "École",
+        "Bureau",
+        "Dessin",
+        "Pointe",
+        "Bleu",
+        "Noir"
+      ],
+      "de": [
+        "Schreiben",
+        "Tinte",
+        "Papier",
+        "Hand",
+        "Schule",
+        "Büro",
+        "Zeichnen",
+        "Spitze",
+        "Blau",
+        "Schwarz"
+      ],
+      "fa": [
+        "نوشتن",
+        "جوهر",
+        "کاغذ",
+        "دست",
+        "مدرسه",
+        "اداره",
+        "نقاشی",
+        "نوک",
+        "آبی",
+        "سیاه"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Car",
+      "fr": "Voiture",
+      "de": "Auto",
+      "fa": "ماشین"
+    },
+    "clues": {
+      "en": [
+        "Drive",
+        "Road",
+        "Wheels",
+        "Engine",
+        "Travel",
+        "Vehicle",
+        "Gas",
+        "Steering",
+        "Traffic",
+        "Speed"
+      ],
+      "fr": [
+        "Conduire",
+        "Route",
+        "Roues",
+        "Moteur",
+        "Voyage",
+        "Véhicule",
+        "Essence",
+        "Direction",
+        "Trafic",
+        "Vitesse"
+      ],
+      "de": [
+        "Fahren",
+        "Straße",
+        "Räder",
+        "Motor",
+        "Reisen",
+        "Fahrzeug",
+        "Benzin",
+        "Lenkung",
+        "Verkehr",
+        "Geschwindigkeit"
+      ],
+      "fa": [
+        "رانندگی",
+        "جاده",
+        "چرخ",
+        "موتور",
+        "سفر",
+        "وسیله",
+        "بنزین",
+        "فرمان",
+        "ترافیک",
+        "سرعت"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Key",
+      "fr": "Clé",
+      "de": "Schlüssel",
+      "fa": "کلید"
+    },
+    "clues": {
+      "en": [
+        "Lock",
+        "Door",
+        "Open",
+        "Metal",
+        "House",
+        "Car",
+        "Pocket",
+        "Keychain",
+        "Unlock",
+        "Turn"
+      ],
+      "fr": [
+        "Serrure",
+        "Porte",
+        "Ouvrir",
+        "Métal",
+        "Maison",
+        "Voiture",
+        "Poche",
+        "Porte-clés",
+        "Déverrouiller",
+        "Tourner"
+      ],
+      "de": [
+        "Schloss",
+        "Tür",
+        "Öffnen",
+        "Metall",
+        "Haus",
+        "Auto",
+        "Tasche",
+        "Schlüsselbund",
+        "Aufschließen",
+        "Drehen"
+      ],
+      "fa": [
+        "قفل",
+        "در",
+        "باز",
+        "فلز",
+        "خانه",
+        "ماشین",
+        "جیب",
+        "جاکلیدی",
+        "بازکردن",
+        "چرخاندن"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Door",
+      "fr": "Porte",
+      "de": "Tür",
+      "fa": "در"
+    },
+    "clues": {
+      "en": [
+        "Enter",
+        "Exit",
+        "Open",
+        "Close",
+        "Handle",
+        "Lock",
+        "House",
+        "Room",
+        "Wood",
+        "Entry"
+      ],
+      "fr": [
+        "Entrer",
+        "Sortir",
+        "Ouvrir",
+        "Fermer",
+        "Poignée",
+        "Serrure",
+        "Maison",
+        "Pièce",
+        "Bois",
+        "Entrée"
+      ],
+      "de": [
+        "Eintreten",
+        "Ausgehen",
+        "Öffnen",
+        "Schließen",
+        "Griff",
+        "Schloss",
+        "Haus",
+        "Zimmer",
+        "Holz",
+        "Eingang"
+      ],
+      "fa": [
+        "ورود",
+        "خروج",
+        "باز",
+        "بستن",
+        "دستگیره",
+        "قفل",
+        "خانه",
+        "اتاق",
+        "چوب",
+        "ورودی"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Shoe",
+      "fr": "Chaussure",
+      "de": "Schuh",
+      "fa": "کفش"
+    },
+    "clues": {
+      "en": [
+        "Walk",
+        "Feet",
+        "Footwear",
+        "Laces",
+        "Run",
+        "Leather",
+        "Socks",
+        "Size",
+        "Pair",
+        "Sport"
+      ],
+      "fr": [
+        "Marcher",
+        "Pieds",
+        "Chaussure",
+        "Lacets",
+        "Courir",
+        "Cuir",
+        "Chaussettes",
+        "Taille",
+        "Paire",
+        "Sport"
+      ],
+      "de": [
+        "Gehen",
+        "Füße",
+        "Schuhwerk",
+        "Schnürsenkel",
+        "Laufen",
+        "Leder",
+        "Socken",
+        "Größe",
+        "Paar",
+        "Sport"
+      ],
+      "fa": [
+        "راه",
+        "پا",
+        "پاپوش",
+        "بند",
+        "دویدن",
+        "چرم",
+        "جوراب",
+        "سایز",
+        "جفت",
+        "ورزش"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Music",
+      "fr": "Musique",
+      "de": "Musik",
+      "fa": "موسیقی"
+    },
+    "clues": {
+      "en": [
+        "Song",
+        "Listen",
+        "Sound",
+        "Instrument",
+        "Rhythm",
+        "Melody",
+        "Dance",
+        "Notes",
+        "Audio",
+        "Concert"
+      ],
+      "fr": [
+        "Chanson",
+        "Écouter",
+        "Son",
+        "Instrument",
+        "Rythme",
+        "Mélodie",
+        "Danse",
+        "Notes",
+        "Audio",
+        "Concert"
+      ],
+      "de": [
+        "Lied",
+        "Hören",
+        "Klang",
+        "Instrument",
+        "Rhythmus",
+        "Melodie",
+        "Tanz",
+        "Noten",
+        "Audio",
+        "Konzert"
+      ],
+      "fa": [
+        "آهنگ",
+        "گوش‌دادن",
+        "صدا",
+        "ساز",
+        "ریتم",
+        "ملودی",
+        "رقص",
+        "نت",
+        "صوتی",
+        "کنسرت"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Cat",
+      "fr": "Chat",
+      "de": "Katze",
+      "fa": "گربه"
+    },
+    "clues": {
+      "en": [
+        "Pet",
+        "Meow",
+        "Fur",
+        "Animal",
+        "Claws",
+        "Tail",
+        "Kitten",
+        "Whisker",
+        "Purr",
+        "Hunt"
+      ],
+      "fr": [
+        "Animal",
+        "Miauler",
+        "Poil",
+        "Animal",
+        "Griffes",
+        "Queue",
+        "Chaton",
+        "Moustache",
+        "Ronronner",
+        "Chasser"
+      ],
+      "de": [
+        "Haustier",
+        "Miau",
+        "Fell",
+        "Tier",
+        "Krallen",
+        "Schwanz",
+        "Kätzchen",
+        "Schnurrhaare",
+        "Schnurren",
+        "Jagen"
+      ],
+      "fa": [
+        "حیوان",
+        "میو",
+        "پشم",
+        "جانور",
+        "پنجه",
+        "دم",
+        "بچه",
+        "سبیل",
+        "خرخر",
+        "شکار"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Tree",
+      "fr": "Arbre",
+      "de": "Baum",
+      "fa": "درخت"
+    },
+    "clues": {
+      "en": [
+        "Forest",
+        "Green",
+        "Wood",
+        "Leaves",
+        "Nature",
+        "Oxygen",
+        "Branches",
+        "Trunk",
+        "Plant",
+        "Tall"
+      ],
+      "fr": [
+        "Forêt",
+        "Vert",
+        "Bois",
+        "Feuilles",
+        "Nature",
+        "Oxygène",
+        "Branches",
+        "Tronc",
+        "Plante",
+        "Grand"
+      ],
+      "de": [
+        "Wald",
+        "Grün",
+        "Holz",
+        "Blätter",
+        "Natur",
+        "Sauerstoff",
+        "Äste",
+        "Stamm",
+        "Pflanze",
+        "Hoch"
+      ],
+      "fa": [
+        "جنگل",
+        "سبز",
+        "چوب",
+        "برگ",
+        "طبیعت",
+        "اکسیژن",
+        "شاخه",
+        "تنه",
+        "گیاه",
+        "بلند"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Glass",
+      "fr": "Verre",
+      "de": "Glas",
+      "fa": "لیوان"
+    },
+    "clues": {
+      "en": [
+        "Drink",
+        "Water",
+        "Clear",
+        "Break",
+        "Hard",
+        "Transparent",
+        "Hold",
+        "Container",
+        "Cold",
+        "Fragile"
+      ],
+      "fr": [
+        "Boire",
+        "Eau",
+        "Clair",
+        "Casser",
+        "Dur",
+        "Transparent",
+        "Tenir",
+        "Contenant",
+        "Froid",
+        "Fragile"
+      ],
+      "de": [
+        "Trinken",
+        "Wasser",
+        "Klar",
+        "Zerbrechen",
+        "Hart",
+        "Transparent",
+        "Halten",
+        "Behälter",
+        "Kalt",
+        "Zerbrechlich"
+      ],
+      "fa": [
+        "نوشیدن",
+        "آب",
+        "شفاف",
+        "شکستن",
+        "سخت",
+        "شیشه‌ای",
+        "گرفتن",
+        "ظرف",
+        "سرد",
+        "ظریف"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Earth",
+      "fr": "Terre",
+      "de": "Erde",
+      "fa": "زمین"
+    },
+    "clues": {
+      "en": [
+        "Planet",
+        "World",
+        "Soil",
+        "Land",
+        "Blue",
+        "Life",
+        "Space",
+        "Ground",
+        "Nature",
+        "Globe"
+      ],
+      "fr": [
+        "Planète",
+        "Monde",
+        "Sol",
+        "Terre",
+        "Bleu",
+        "Vie",
+        "Espace",
+        "Sol",
+        "Nature",
+        "Globe"
+      ],
+      "de": [
+        "Planet",
+        "Welt",
+        "Boden",
+        "Land",
+        "Blau",
+        "Leben",
+        "Weltraum",
+        "Erdboden",
+        "Natur",
+        "Globus"
+      ],
+      "fa": [
+        "سیاره",
+        "جهان",
+        "خاک",
+        "خشکی",
+        "آبی",
+        "زندگی",
+        "فضا",
+        "کف",
+        "طبیعت",
+        "کره"
+      ]
+    },
+    "difficulty": "hard"
+  },
+  {
+    "word": {
+      "en": "Beach",
+      "fr": "Plage",
+      "de": "Strand",
+      "fa": "ساحل"
+    },
+    "clues": {
+      "en": [
+        "Sand",
+        "Ocean",
+        "Sea",
+        "Sun",
+        "Waves",
+        "Summer",
+        "Vacation",
+        "Water",
+        "Shells",
+        "Relax"
+      ],
+      "fr": [
+        "Sable",
+        "Océan",
+        "Mer",
+        "Soleil",
+        "Vagues",
+        "Été",
+        "Vacances",
+        "Eau",
+        "Coquillages",
+        "Relax"
+      ],
+      "de": [
+        "Sand",
+        "Ozean",
+        "Meer",
+        "Sonne",
+        "Wellen",
+        "Sommer",
+        "Urlaub",
+        "Wasser",
+        "Muscheln",
+        "Entspannen"
+      ],
+      "fa": [
+        "شن",
+        "اقیانوس",
+        "دریا",
+        "خورشید",
+        "موج",
+        "تابستان",
+        "تعطیلات",
+        "آب",
+        "صدف",
+        "استراحت"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Friend",
+      "fr": "Ami",
+      "de": "Freund",
+      "fa": "دوست"
+    },
+    "clues": {
+      "en": [
+        "Companion",
+        "Trust",
+        "Person",
+        "Kind",
+        "Help",
+        "Play",
+        "Laugh",
+        "Loyal",
+        "Social",
+        "Time"
+      ],
+      "fr": [
+        "Compagnon",
+        "Confiance",
+        "Personne",
+        "Gentil",
+        "Aide",
+        "Jouer",
+        "Rire",
+        "Loyal",
+        "Social",
+        "Temps"
+      ],
+      "de": [
+        "Begleiter",
+        "Vertrauen",
+        "Person",
+        "Nett",
+        "Hilfe",
+        "Spielen",
+        "Lachen",
+        "Treue",
+        "Sozial",
+        "Zeit"
+      ],
+      "fa": [
+        "همراه",
+        "اعتماد",
+        "شخص",
+        "مهربان",
+        "کمک",
+        "بازی",
+        "خنده",
+        "وفادار",
+        "اجتماعی",
+        "وقت"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "City",
+      "fr": "Ville",
+      "de": "Stadt",
+      "fa": "شهر"
+    },
+    "clues": {
+      "en": [
+        "Urban",
+        "Buildings",
+        "People",
+        "Traffic",
+        "Street",
+        "Center",
+        "Lights",
+        "Crowded",
+        "Busy",
+        "Home"
+      ],
+      "fr": [
+        "Urbain",
+        "Bâtiments",
+        "Gens",
+        "Trafic",
+        "Rue",
+        "Centre",
+        "Lumières",
+        "Foule",
+        "Occupé",
+        "Maison"
+      ],
+      "de": [
+        "Urban",
+        "Gebäude",
+        "Menschen",
+        "Verkehr",
+        "Straße",
+        "Zentrum",
+        "Lichter",
+        "Überfüllt",
+        "Beschäftigt",
+        "Heimat"
+      ],
+      "fa": [
+        "شهری",
+        "ساختمان",
+        "مردم",
+        "ترافیک",
+        "خیابان",
+        "مرکز",
+        "چراغ",
+        "شلوغ",
+        "مشغول",
+        "خانه"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "School",
+      "fr": "École",
+      "de": "Schule",
+      "fa": "مدرسه"
+    },
+    "clues": {
+      "en": [
+        "Learn",
+        "Study",
+        "Class",
+        "Teacher",
+        "Books",
+        "Student",
+        "Desk",
+        "Lesson",
+        "Education",
+        "Test"
+      ],
+      "fr": [
+        "Apprendre",
+        "Étude",
+        "Classe",
+        "Maître",
+        "Livres",
+        "Élève",
+        "Bureau",
+        "Leçon",
+        "Éducation",
+        "Test"
+      ],
+      "de": [
+        "Lernen",
+        "Studieren",
+        "Klasse",
+        "Lehrer",
+        "Bücher",
+        "Schüler",
+        "Schreibtisch",
+        "Lektion",
+        "Bildung",
+        "Test"
+      ],
+      "fa": [
+        "یادگیری",
+        "مطالعه",
+        "کلاس",
+        "معلم",
+        "کتاب",
+        "دانش‌آموز",
+        "میز",
+        "درس",
+        "آموزش",
+        "آزمون"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Light",
+      "fr": "Lumière",
+      "de": "Licht",
+      "fa": "نور"
+    },
+    "clues": {
+      "en": [
+        "Bright",
+        "Sun",
+        "Bulb",
+        "Dark",
+        "Energy",
+        "Lamp",
+        "Beam",
+        "Vision",
+        "Day",
+        "Glow"
+      ],
+      "fr": [
+        "Brillant",
+        "Soleil",
+        "Ampoule",
+        "Sombre",
+        "Énergie",
+        "Lampe",
+        "Rayon",
+        "Vision",
+        "Jour",
+        "Éclat"
+      ],
+      "de": [
+        "Hell",
+        "Sonne",
+        "Glühbirne",
+        "Dunkel",
+        "Energie",
+        "Lampe",
+        "Strahl",
+        "Sicht",
+        "Tag",
+        "Glühen"
+      ],
+      "fa": [
+        "روشن",
+        "خورشید",
+        "لامپ",
+        "تاریک",
+        "انرژی",
+        "چراغ",
+        "پرتو",
+        "دید",
+        "روز",
+        "درخشش"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Time",
+      "fr": "Temps",
+      "de": "Zeit",
+      "fa": "زمان"
+    },
+    "clues": {
+      "en": [
+        "Clock",
+        "Seconds",
+        "Hours",
+        "Past",
+        "Future",
+        "Moment",
+        "Day",
+        "Passing",
+        "Watch",
+        "Speed"
+      ],
+      "fr": [
+        "Horloge",
+        "Secondes",
+        "Heures",
+        "Passé",
+        "Futur",
+        "Moment",
+        "Jour",
+        "Passage",
+        "Montre",
+        "Vitesse"
+      ],
+      "de": [
+        "Uhr",
+        "Sekunden",
+        "Stunden",
+        "Vergangenheit",
+        "Zukunft",
+        "Moment",
+        "Tag",
+        "Vergehen",
+        "Armbanduhr",
+        "Geschwindigkeit"
+      ],
+      "fa": [
+        "ساعت",
+        "ثانیه",
+        "ساعت",
+        "گذشته",
+        "آینده",
+        "لحظه",
+        "روز",
+        "گذر",
+        "مچی",
+        "سرعت"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Hand",
+      "fr": "Main",
+      "de": "Hand",
+      "fa": "دست"
+    },
+    "clues": {
+      "en": [
+        "Fingers",
+        "Touch",
+        "Grip",
+        "Hold",
+        "Write",
+        "Body",
+        "Arm",
+        "Palm",
+        "Left",
+        "Right"
+      ],
+      "fr": [
+        "Doigts",
+        "Toucher",
+        "Saisir",
+        "Tenir",
+        "Écrire",
+        "Corps",
+        "Bras",
+        "Paume",
+        "Gauche",
+        "Droite"
+      ],
+      "de": [
+        "Finger",
+        "Berühren",
+        "Griff",
+        "Halten",
+        "Schreiben",
+        "Körper",
+        "Arm",
+        "Handfläche",
+        "Links",
+        "Rechts"
+      ],
+      "fa": [
+        "انگشت",
+        "لمس",
+        "چسبندگی",
+        "گرفتن",
+        "نوشتن",
+        "بدن",
+        "بازو",
+        "کف",
+        "چپ",
+        "راست"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Dance",
+      "fr": "Danse",
+      "de": "Tanz",
+      "fa": "رقص"
+    },
+    "clues": {
+      "en": [
+        "Music",
+        "Movement",
+        "Rhythm",
+        "Party",
+        "Body",
+        "Song",
+        "Step",
+        "Fun",
+        "Performance",
+        "Stage"
+      ],
+      "fr": [
+        "Musique",
+        "Mouvement",
+        "Rythme",
+        "Fête",
+        "Corps",
+        "Chanson",
+        "Pas",
+        "Amusement",
+        "Performance",
+        "Scène"
+      ],
+      "de": [
+        "Musik",
+        "Bewegung",
+        "Rhythmus",
+        "Party",
+        "Körper",
+        "Lied",
+        "Schritt",
+        "Spaß",
+        "Aufführung",
+        "Bühne"
+      ],
+      "fa": [
+        "موسیقی",
+        "حرکت",
+        "ریتم",
+        "جشن",
+        "بدن",
+        "آهنگ",
+        "گام",
+        "سرگرمی",
+        "اجرا",
+        "صحنه"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Game",
+      "fr": "Jeu",
+      "de": "Spiel",
+      "fa": "بازی"
+    },
+    "clues": {
+      "en": [
+        "Play",
+        "Fun",
+        "Rules",
+        "Win",
+        "Lose",
+        "Team",
+        "Board",
+        "Computer",
+        "Match",
+        "Score"
+      ],
+      "fr": [
+        "Jouer",
+        "Amusement",
+        "Règles",
+        "Gagner",
+        "Perdre",
+        "Équipe",
+        "Plateau",
+        "Ordinateur",
+        "Match",
+        "Score"
+      ],
+      "de": [
+        "Spielen",
+        "Spaß",
+        "Regeln",
+        "Gewinnen",
+        "Verlieren",
+        "Team",
+        "Brett",
+        "Computer",
+        "Spiel",
+        "Punktzahl"
+      ],
+      "fa": [
+        "بازی",
+        "سرگرمی",
+        "قوانین",
+        "بردن",
+        "باختن",
+        "تیم",
+        "صفحه",
+        "کامپیوتر",
+        "مسابقه",
+        "امتیاز"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Food",
+      "fr": "Nourriture",
+      "de": "Essen",
+      "fa": "غذا"
+    },
+    "clues": {
+      "en": [
+        "Eat",
+        "Hunger",
+        "Meal",
+        "Cook",
+        "Restaurant",
+        "Nutrition",
+        "Dinner",
+        "Tasty",
+        "Energy",
+        "Kitchen"
+      ],
+      "fr": [
+        "Manger",
+        "Faim",
+        "Repas",
+        "Cuisiner",
+        "Restaurant",
+        "Nutrition",
+        "Dîner",
+        "Savoureux",
+        "Énergie",
+        "Cuisine"
+      ],
+      "de": [
+        "Essen",
+        "Hunger",
+        "Mahlzeit",
+        "Kochen",
+        "Restaurant",
+        "Ernährung",
+        "Abendessen",
+        "Lecker",
+        "Energie",
+        "Küche"
+      ],
+      "fa": [
+        "خوردن",
+        "گرسنگی",
+        "وعده",
+        "آشپزی",
+        "رستوران",
+        "تغذیه",
+        "شام",
+        "خوشمزه",
+        "انرژی",
+        "آشپزخانه"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Air",
+      "fr": "Air",
+      "de": "Luft",
+      "fa": "هوا"
+    },
+    "clues": {
+      "en": [
+        "Breath",
+        "Oxygen",
+        "Sky",
+        "Wind",
+        "Invisible",
+        "Gas",
+        "Atmosphere",
+        "Life",
+        "Breeze",
+        "Clear"
+      ],
+      "fr": [
+        "Respirer",
+        "Oxygène",
+        "Ciel",
+        "Vent",
+        "Invisible",
+        "Gaz",
+        "Atmosphère",
+        "Vie",
+        "Bise",
+        "Clair"
+      ],
+      "de": [
+        "Atmen",
+        "Sauerstoff",
+        "Himmel",
+        "Wind",
+        "Unsichtbar",
+        "Gas",
+        "Atmosphäre",
+        "Leben",
+        "Brise",
+        "Klar"
+      ],
+      "fa": [
+        "نفس",
+        "اکسیژن",
+        "آسمان",
+        "باد",
+        "نامرئی",
+        "گاز",
+        "اتمسفر",
+        "زندگی",
+        "نسیم",
+        "شفاف"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Bird",
+      "fr": "Oiseau",
+      "de": "Vogel",
+      "fa": "پرنده"
+    },
+    "clues": {
+      "en": [
+        "Wings",
+        "Fly",
+        "Feather",
+        "Sky",
+        "Nest",
+        "Sing",
+        "Animal",
+        "Egg",
+        "Beak",
+        "Nature"
+      ],
+      "fr": [
+        "Ailes",
+        "Voler",
+        "Plume",
+        "Ciel",
+        "Nid",
+        "Chanter",
+        "Animal",
+        "Œuf",
+        "Bec",
+        "Nature"
+      ],
+      "de": [
+        "Flügel",
+        "Fliegen",
+        "Feder",
+        "Himmel",
+        "Nest",
+        "Singen",
+        "Tier",
+        "Ei",
+        "Schnabel",
+        "Natur"
+      ],
+      "fa": [
+        "بال",
+        "پرواز",
+        "پر",
+        "آسمان",
+        "لانه",
+        "آواز",
+        "حیوان",
+        "تخم",
+        "منقار",
+        "طبیعت"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Money",
+      "fr": "Argent",
+      "de": "Geld",
+      "fa": "پول"
+    },
+    "clues": {
+      "en": [
+        "Cash",
+        "Buy",
+        "Bank",
+        "Wealth",
+        "Coins",
+        "Pay",
+        "Credit",
+        "Salary",
+        "Value",
+        "Rich"
+      ],
+      "fr": [
+        "Espèces",
+        "Acheter",
+        "Banque",
+        "Richesse",
+        "Pièces",
+        "Payer",
+        "Crédit",
+        "Salaire",
+        "Valeur",
+        "Riche"
+      ],
+      "de": [
+        "Bargeld",
+        "Kaufen",
+        "Bank",
+        "Wohlstand",
+        "Münzen",
+        "Bezahlen",
+        "Kredit",
+        "Gehalt",
+        "Wert",
+        "Reich"
+      ],
+      "fa": [
+        "نقد",
+        "خرید",
+        "بانک",
+        "ثروت",
+        "سکه",
+        "پرداخت",
+        "اعتبار",
+        "حقوق",
+        "ارزش",
+        "پولدار"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "House",
+      "fr": "Maison",
+      "de": "Haus",
+      "fa": "خانه"
+    },
+    "clues": {
+      "en": [
+        "Home",
+        "Living",
+        "Family",
+        "Rooms",
+        "Roof",
+        "Walls",
+        "Building",
+        "Shelter",
+        "Door",
+        "Kitchen"
+      ],
+      "fr": [
+        "Foyer",
+        "Vivre",
+        "Famille",
+        "Pièces",
+        "Toit",
+        "Murs",
+        "Bâtiment",
+        "Abri",
+        "Porte",
+        "Cuisine"
+      ],
+      "de": [
+        "Heim",
+        "Wohnen",
+        "Familie",
+        "Zimmer",
+        "Dach",
+        "Wände",
+        "Gebäude",
+        "Schutz",
+        "Tür",
+        "Küche"
+      ],
+      "fa": [
+        "منزل",
+        "زندگی",
+        "خانواده",
+        "اتاق",
+        "سقف",
+        "دیوار",
+        "ساختمان",
+        "پناهگاه",
+        "در",
+        "آشپزخانه"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Heart",
+      "fr": "Cœur",
+      "de": "Herz",
+      "fa": "قلب"
+    },
+    "clues": {
+      "en": [
+        "Love",
+        "Blood",
+        "Body",
+        "Beat",
+        "Organ",
+        "Emotion",
+        "Life",
+        "Center",
+        "Valentine",
+        "Chest"
+      ],
+      "fr": [
+        "Amour",
+        "Sang",
+        "Corps",
+        "Battre",
+        "Organe",
+        "Émotion",
+        "Vie",
+        "Centre",
+        "St-Valentin",
+        "Poitrine"
+      ],
+      "de": [
+        "Liebe",
+        "Blut",
+        "Körper",
+        "Schlagen",
+        "Organ",
+        "Emotion",
+        "Leben",
+        "Mitte",
+        "Valentinstag",
+        "Brust"
+      ],
+      "fa": [
+        "عشق",
+        "خون",
+        "بدن",
+        "تپش",
+        "عضو",
+        "احساس",
+        "زندگی",
+        "مرکز",
+        "ولنتاین",
+        "سینه"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Road",
+      "fr": "Route",
+      "de": "Straße",
+      "fa": "جاده"
+    },
+    "clues": {
+      "en": [
+        "Car",
+        "Travel",
+        "Path",
+        "Drive",
+        "Traffic",
+        "Asphalt",
+        "Street",
+        "Way",
+        "Journey",
+        "Street"
+      ],
+      "fr": [
+        "Voiture",
+        "Voyage",
+        "Chemin",
+        "Conduire",
+        "Trafic",
+        "Asphalte",
+        "Rue",
+        "Voie",
+        "Trajet",
+        "Rue"
+      ],
+      "de": [
+        "Auto",
+        "Reisen",
+        "Pfad",
+        "Fahren",
+        "Verkehr",
+        "Asphalt",
+        "Straße",
+        "Weg",
+        "Fahrt",
+        "Straße"
+      ],
+      "fa": [
+        "ماشین",
+        "سفر",
+        "مسیر",
+        "رانندگی",
+        "ترافیک",
+        "آسفالت",
+        "خیابان",
+        "راه",
+        "سفر",
+        "خیابان"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Rain",
+      "fr": "Pluie",
+      "de": "Regen",
+      "fa": "باران"
+    },
+    "clues": {
+      "en": [
+        "Water",
+        "Cloud",
+        "Storm",
+        "Weather",
+        "Wet",
+        "Sky",
+        "Umbrella",
+        "Fall",
+        "Drops",
+        "Nature"
+      ],
+      "fr": [
+        "Eau",
+        "Nuage",
+        "Orage",
+        "Météo",
+        "Mouillé",
+        "Ciel",
+        "Parapluie",
+        "Chute",
+        "Gouttes",
+        "Nature"
+      ],
+      "de": [
+        "Wasser",
+        "Wolke",
+        "Sturm",
+        "Wetter",
+        "Nass",
+        "Himmel",
+        "Regenschirm",
+        "Fall",
+        "Tropfen",
+        "Natur"
+      ],
+      "fa": [
+        "آب",
+        "ابر",
+        "طوفان",
+        "هوا",
+        "خیس",
+        "آسمان",
+        "چتر",
+        "سقوط",
+        "قطره",
+        "طبیعت"
+      ]
+    },
+    "difficulty": "easy"
+  },
+  {
+    "word": {
+      "en": "Silver",
+      "fr": "Argent",
+      "de": "Silber",
+      "fa": "نقره"
+    },
+    "clues": {
+      "en": [
+        "Metal",
+        "Shiny",
+        "Grey",
+        "Jewelry",
+        "Money",
+        "Coin",
+        "Precious",
+        "Element",
+        "Reflective",
+        "Mining"
+      ],
+      "fr": [
+        "Métal",
+        "Brillant",
+        "Gris",
+        "Bijoux",
+        "Argent",
+        "Pièce",
+        "Précieux",
+        "Élément",
+        "Réfléchissant",
+        "Mine"
+      ],
+      "de": [
+        "Metall",
+        "Glänzend",
+        "Grau",
+        "Schmuck",
+        "Geld",
+        "Münze",
+        "Kostbar",
+        "Element",
+        "Reflektierend",
+        "Bergbau"
+      ],
+      "fa": [
+        "فلز",
+        "براق",
+        "خاکستری",
+        "جواهر",
+        "پول",
+        "سکه",
+        "گرانبها",
+        "عنصر",
+        "بازتابنده",
+        "معدن"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Storm",
+      "fr": "Orage",
+      "de": "Sturm",
+      "fa": "طوفان"
+    },
+    "clues": {
+      "en": [
+        "Rain",
+        "Thunder",
+        "Wind",
+        "Lightning",
+        "Weather",
+        "Dark",
+        "Clouds",
+        "Flash",
+        "Power",
+        "Loud"
+      ],
+      "fr": [
+        "Pluie",
+        "Tonnerre",
+        "Vent",
+        "Éclair",
+        "Météo",
+        "Sombre",
+        "Nuages",
+        "Flash",
+        "Puissance",
+        "Fort"
+      ],
+      "de": [
+        "Regen",
+        "Donner",
+        "Wind",
+        "Blitz",
+        "Wetter",
+        "Dunkel",
+        "Wolken",
+        "Blitz",
+        "Kraft",
+        "Laut"
+      ],
+      "fa": [
+        "باران",
+        "رعد",
+        "باد",
+        "صاعقه",
+        "هوا",
+        "تاریک",
+        "ابر",
+        "فلاش",
+        "قدرت",
+        "بلند"
+      ]
+    },
+    "difficulty": "medium"
+  },
+  {
+    "word": {
+      "en": "Planet",
+      "fr": "Planète",
+      "de": "Planet",
+      "fa": "سیاره"
+    },
+    "clues": {
+      "en": [
+        "Space",
+        "Orbit",
+        "Earth",
+        "Mars",
+        "Stars",
+        "System",
+        "Gravity",
+        "Round",
+        "Sun",
+        "Galaxy"
+      ],
+      "fr": [
+        "Espace",
+        "Orbite",
+        "Terre",
+        "Mars",
+        "Étoiles",
+        "Système",
+        "Gravité",
+        "Rond",
+        "Soleil",
+        "Galaxie"
+      ],
+      "de": [
+        "Weltraum",
+        "Umlaufbahn",
+        "Erde",
+        "Mars",
+        "Sterne",
+        "System",
+        "Gravitation",
+        "Rund",
+        "Sonne",
+        "Galaxie"
+      ],
+      "fa": [
+        "فضا",
+        "مدار",
+        "زمین",
+        "مریخ",
+        "ستاره",
+        "سیستم",
+        "جاذبه",
+        "گرد",
+        "خورشید",
+        "کهکشان"
+      ]
+    },
+    "difficulty": "hard"
+  }
+]

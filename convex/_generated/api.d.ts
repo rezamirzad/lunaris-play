@@ -19,6 +19,7 @@ import type * as engine from "../engine.js";
 import type * as fixLeaderboard from "../fixLeaderboard.js";
 import type * as fixWinners from "../fixWinners.js";
 import type * as http from "../http.js";
+import type * as importClues from "../importClues.js";
 import type * as incangold from "../incangold.js";
 import type * as incangold_deck from "../incangold_deck.js";
 import type * as justone from "../justone.js";
@@ -50,6 +51,7 @@ declare const fullApi: ApiFromModules<{
   fixLeaderboard: typeof fixLeaderboard;
   fixWinners: typeof fixWinners;
   http: typeof http;
+  importClues: typeof importClues;
   incangold: typeof incangold;
   incangold_deck: typeof incangold_deck;
   justone: typeof justone;
