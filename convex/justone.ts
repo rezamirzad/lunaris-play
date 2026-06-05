@@ -11,12 +11,12 @@ import { internal } from "./_generated/api";
 /**
  * Helper to pick a fresh word from the database.
  */
-async function pickFreshWord(ctx: any): Promise<Doc<"justone_clues">> {
+async function pickFreshWord(ctx: GameMutationCtx): Promise<Doc<"justone_clues">> {
   const allClues = await ctx.db.query("justone_clues").collect();
   const usedWords = await ctx.db.query("used_words").collect();
-  const usedWordStrings = usedWords.map(uw => uw.word);
+  const usedWordStrings = usedWords.map((uw: Doc<"used_words">) => uw.word);
 
-  const available = allClues.filter((w) => !usedWordStrings.includes(w.word.en));
+  const available = allClues.filter((w: Doc<"justone_clues">) => !usedWordStrings.includes(w.word.en));
   const selected = available.length > 0 
     ? available[Math.floor(Math.random() * available.length)]
     : allClues[Math.floor(Math.random() * allClues.length)];
@@ -26,7 +26,21 @@ async function pickFreshWord(ctx: any): Promise<Doc<"justone_clues">> {
 }
 
 export const justonePlugin: GamePlugin = {
-  // ... rest of the file unchanged
+  gameType: "justone",
+
+  getInitialBoard() {
+    return {
+      gameType: "none",
+    };
+  },
+
+  getInitialPlayerState(status: string) {
+    return {
+      initialHand: [],
+      initialState: { gameType: "justone", score: 0 },
+    };
+  },
+
   async onStart(ctx: GameMutationCtx, roomId: Id<"rooms">, players: Doc<"players">[]) {
     const mysteryWord = await pickFreshWord(ctx);
     const activePlayerId = players[Math.floor(Math.random() * players.length)]._id;
