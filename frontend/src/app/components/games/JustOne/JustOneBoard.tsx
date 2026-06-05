@@ -137,7 +137,7 @@ export default function JustOneBoard({ roomId, roomData, history = [] }: BoardPr
                             <span className="text-3xl font-black text-white">{board.mysteryWord[board.language as keyof typeof board.mysteryWord]}</span>
                           </div>
                           <div className="flex flex-col">
-                            <span className="text-[10px] uppercase tracking-widest text-zinc-500">Guesser's Guess</span>
+                            <span className="text-[10px] uppercase tracking-widest text-zinc-500">Guesser&apos;s Guess</span>
                             <span className={`text-3xl font-black ${ (history[0]?.data as any)?.card === "Correct" ? "text-cyan-400" : "text-rose-500" }`}>
                               {board.lastGuess || "—"}
                             </span>
