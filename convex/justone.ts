@@ -8,6 +8,23 @@ import { internal } from "./_generated/api";
 
 // ... (helper functions for picking words updated below)
 
+export const getClueDataForWord = query({
+  args: { word: v.string(), language: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("justone_clues")
+      .filter((q) => q.eq(q.field("word.en"), args.word))
+      .first();
+  },
+});
+
+export const getAllClues = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("justone_clues").collect();
+  },
+});
+
 /**
  * Helper to pick a fresh word from the database.
  */

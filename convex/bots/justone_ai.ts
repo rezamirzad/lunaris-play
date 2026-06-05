@@ -16,21 +16,18 @@ export const processJustOneLocalAITurn = internalAction({
   },
   handler: async (ctx, args): Promise<void> => {
     try {
-        const { CLUES_DATA } = await import("./justone_clues");
         const lang = args.language as "en" | "fr" | "de" | "fa";
-        
         let result: any = {};
 
         if (args.phase === "CLUE_INPUT" && args.targetWord) {
-            // Find word entry (case insensitive)
-            const wordEntry = CLUES_DATA.find((e: any) => 
-                (e[lang] && e[lang].toLowerCase() === args.targetWord?.toLowerCase()) || 
-                (e.en && e.en.toLowerCase() === args.targetWord?.toLowerCase())
-            );
+            // Fetch word entry from database
+            const wordEntry = await ctx.runQuery(api.justone.getClueDataForWord, { 
+                word: args.targetWord,
+                language: lang 
+            });
 
             if (wordEntry && wordEntry.clues && wordEntry.clues[lang]) {
                 const possibleClues = wordEntry.clues[lang];
-                // High Quality Randomness: 15-25 clues available per word
                 const selectedClue = possibleClues[Math.floor(Math.random() * possibleClues.length)];
                 result = { clue: selectedClue };
             } else {
@@ -38,22 +35,23 @@ export const processJustOneLocalAITurn = internalAction({
             }
         } 
         else if (args.phase === "GUESSING" && args.providedClues) {
-            // PROBABILISTIC GUESSING LOGIC:
-            // 1. We look at ALL clues provided.
-            // 2. We rank words in the dictionary by how many of the provided clues match their dataset.
+            // Fetch all clues from DB to guess
+            const allEntries = await ctx.runQuery(api.justone.getAllClues);
             
             let bestMatches: { word: string, score: number }[] = [];
 
-            for (const entry of CLUES_DATA) {
+            for (const entry of allEntries) {
                 const datasetClues: string[] = entry.clues[lang] || [];
                 const score = args.providedClues.filter((pc: string) => 
                     datasetClues.some((dc: string) => dc.toLowerCase() === pc.toLowerCase())
                 ).length;
 
                 if (score > 0) {
-                    bestMatches.push({ word: entry[lang], score });
+                    bestMatches.push({ word: entry.word[lang], score });
                 }
             }
+
+            // ... (rest of guessing logic remains the same)
 
             // Sort by match count descending
             bestMatches.sort((a, b) => b.score - a.score);
