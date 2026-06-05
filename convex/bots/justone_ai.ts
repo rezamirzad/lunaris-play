@@ -42,11 +42,13 @@ export const processJustOneLocalAITurn = internalAction({
 
             for (const entry of allEntries) {
                 const datasetClues: string[] = entry.clues[lang] || [];
+                
                 const score = args.providedClues.filter((pc: string) => 
-                    datasetClues.some((dc: string) => dc.toLowerCase() === pc.toLowerCase())
+                    datasetClues.some((dc: string) => dc.trim().toLowerCase() === pc.trim().toLowerCase())
                 ).length;
 
                 if (score > 0) {
+                    console.log(`[BOT_TELEMETRY] Match found: Word ${entry.word.en}, Score ${score}, Clues: ${args.providedClues}`);
                     bestMatches.push({ word: entry.word[lang], score });
                 }
             }
