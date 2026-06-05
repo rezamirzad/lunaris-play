@@ -157,8 +157,8 @@ export default defineSchema({
         ),
         winner: v.optional(v.string()),
         winnerId: v.optional(v.id("players")),
+        guessWasCorrect: v.optional(v.boolean()),
       }),
-      // Time Attack (Sync Wave) state
       v.object({
         gameType: v.literal("timeattack"),
         phase: v.union(

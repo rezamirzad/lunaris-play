@@ -124,25 +124,37 @@ export default function JustOneBoard({ roomId, roomData, history = [] }: BoardPr
                     </motion.div>
                  ) : board.phase === "ROUND_RESULTS" ? (
                     <motion.div key="results" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center p-6 w-full flex flex-col items-center">
-                       <span className="text-[6rem] filter drop-shadow-[0_0_50px_rgba(255,255,255,0.2)] block mb-2">
-                          {(history[0]?.data as any)?.card === "Correct" ? "✨" : "💀"}
-                       </span>
-                       <h2 className={`text-4xl font-black tracking-tighter uppercase italic mb-6 ${ (history[0]?.data as any)?.card === "Correct" ? "text-cyan-400" : "text-rose-500" }`}>
-                          {(history[0]?.data as any)?.card === "Correct" ? t.justone_transmission_success : t.justone_security_override}
-                       </h2>
+                       {(() => {
+                         // Determine correctness based on the board state directly
+                         const mysteryWord = board.mysteryWord[board.language as keyof typeof board.mysteryWord]?.toLowerCase().trim();
+                         const guess = board.lastGuess?.toLowerCase().trim();
+                         // Fallback to manual check if guessWasCorrect is undefined
+                         const isCorrect = (board as any).guessWasCorrect ?? (mysteryWord === guess);
+                         
+                         return (
+                          <>
+                           <span className="text-[6rem] filter drop-shadow-[0_0_50px_rgba(255,255,255,0.2)] block mb-2">
+                              {isCorrect ? "✨" : "💀"}
+                           </span>
+                           <h2 className={`text-4xl font-black tracking-tighter uppercase italic mb-6 ${ isCorrect ? "text-cyan-400" : "text-rose-500" }`}>
+                              {isCorrect ? t.justone_transmission_success : t.justone_security_override}
+                           </h2>
 
-                       <div className="flex flex-col gap-4 mb-8 bg-black/40 p-6 rounded-2xl border border-white/10 w-full max-w-sm">
-                          <div className="flex flex-col">
-                            <span className="text-[10px] uppercase tracking-widest text-zinc-500">Mystery Word</span>
-                            <span className="text-3xl font-black text-white">{board.mysteryWord[board.language as keyof typeof board.mysteryWord]}</span>
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="text-[10px] uppercase tracking-widest text-zinc-500">Guesser&apos;s Guess</span>
-                            <span className={`text-3xl font-black ${ (history[0]?.data as any)?.card === "Correct" ? "text-cyan-400" : "text-rose-500" }`}>
-                              {board.lastGuess || "—"}
-                            </span>
-                          </div>
-                       </div>
+                           <div className="flex flex-col gap-4 mb-8 bg-black/40 p-6 rounded-2xl border border-white/10 w-full max-w-sm">
+                              <div className="flex flex-col">
+                                <span className="text-[10px] uppercase tracking-widest text-zinc-500">Mystery Word</span>
+                                <span className="text-3xl font-black text-white">{board.mysteryWord[board.language as keyof typeof board.mysteryWord]}</span>
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="text-[10px] uppercase tracking-widest text-zinc-500">Guesser&apos;s Guess</span>
+                                <span className={`text-3xl font-black ${ isCorrect ? "text-cyan-400" : "text-rose-500" }`}>
+                                  {board.lastGuess || "—"}
+                                </span>
+                              </div>
+                           </div>
+                          </>
+                         );
+                       })()}
 
                        <div className="flex flex-wrap gap-4 justify-center mt-4 max-w-4xl">
                          {Object.entries(board.clues || {}).map(([pId, clue]) => {

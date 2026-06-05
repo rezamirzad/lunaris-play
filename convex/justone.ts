@@ -290,7 +290,7 @@ export async function handleActionInternal(ctx: GameMutationCtx, args: {
 
       if (isExactMatch) {
         await logHistoryEvent(ctx, room._id, { key: "LOG_DISCARD", data: { player: player.name, card: "Correct" } });
-        await ctx.db.patch(room._id, { gameBoard: { ...board, score: board.score + 1, phase: "ROUND_RESULTS", lastGuess: guess } as any });
+        await ctx.db.patch(room._id, { gameBoard: { ...board, score: board.score + 1, phase: "ROUND_RESULTS", lastGuess: guess, guessWasCorrect: true } as any });
       } else {
         const players = await ctx.db.query("players").withIndex("by_room", q => q.eq("roomId", room._id)).collect();
         const humanVoters = players.filter(p => !p.isBot && p._id !== board.activePlayerId);
@@ -298,7 +298,7 @@ export async function handleActionInternal(ctx: GameMutationCtx, args: {
         if (humanVoters.length === 0) {
           // If no humans exist to judge the typo, it's considered wrong automatically
           await logHistoryEvent(ctx, room._id, { key: "LOG_DISCARD", data: { player: player.name, card: "Wrong" } });
-          await ctx.db.patch(room._id, { gameBoard: { ...board, lastGuess: guess, phase: "ROUND_RESULTS" } as any });
+          await ctx.db.patch(room._id, { gameBoard: { ...board, lastGuess: guess, phase: "ROUND_RESULTS", guessWasCorrect: false } as any });
         } else {
           await ctx.db.patch(room._id, { gameBoard: { ...board, lastGuess: guess, lenientVotes: {}, phase: "LENIENT_VALIDATION" } });
         }
@@ -317,7 +317,7 @@ export async function handleActionInternal(ctx: GameMutationCtx, args: {
         const allCorrect = humanVoters.every((p) => newVotes[p._id] === true);
         const newScore = allCorrect ? board.score + 1 : board.score;
         await logHistoryEvent(ctx, room._id, { key: "LOG_DISCARD", data: { player: "Team", card: allCorrect ? "Correct" : "Wrong" } });
-        await ctx.db.patch(room._id, { gameBoard: { ...board, score: newScore, phase: "ROUND_RESULTS", lenientVotes: newVotes } as any });
+        await ctx.db.patch(room._id, { gameBoard: { ...board, score: newScore, phase: "ROUND_RESULTS", lenientVotes: newVotes, guessWasCorrect: allCorrect } as any });
       } else {
         await ctx.db.patch(room._id, { gameBoard: { ...board, lenientVotes: newVotes } });
       }
