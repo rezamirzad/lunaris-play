@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, internalMutation } from "./_generated/server";
+import { mutation, internalMutation, query } from "./_generated/server";
 import { Doc, Id } from "./_generated/dataModel";
 import { GamePlugin, GameMutationCtx } from "./types";
 import { logHistoryEvent, updateLeaderboardAtGameEnd } from "./transitions";
