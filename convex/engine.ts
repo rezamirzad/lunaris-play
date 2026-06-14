@@ -54,7 +54,7 @@ export const getRoomState = query({
       )
       .unique();
 
-          if (!room) return null;
+    if (!room) return null;
 
     const players = await ctx.db
       .query("players")
@@ -77,7 +77,13 @@ export const getRoomState = query({
       .withIndex("by_room_player", (q) => q.eq("roomId", room._id))
       .collect();
 
-    return { ...room, players, gameMetadata: game, history: history.map(h => h.event), submissions };
+    return {
+      ...room,
+      players,
+      gameMetadata: game,
+      history: history.map((h) => h.event),
+      submissions,
+    };
   },
 });
 
@@ -86,7 +92,9 @@ export const getLeaderboard = query({
   handler: async (ctx) => {
     const users = await ctx.db.query("users").collect();
     return users
-      .filter((u) => u.name && u.name.toUpperCase() !== "ADMIN_NODE" && !u.isAdmin)
+      .filter(
+        (u) => u.name && u.name.toUpperCase() !== "ADMIN_NODE" && !u.isAdmin,
+      )
       .sort((a, b) => (b.wins || 0) - (a.wins || 0))
       .slice(0, 10);
   },
@@ -111,7 +119,7 @@ export const getOrCreateUser = mutation({
       .withIndex("by_name", (q) => q.eq("name", args.name))
       .unique();
 
-      if (existingByName) {
+    if (existingByName) {
       await ctx.db.patch(existingByName._id, { lastLogin: Date.now() });
       return existingByName._id;
     }
@@ -142,10 +150,10 @@ export const seedGames = mutation({
       title_fr: "Piou Piou",
       title_de: "Piou Piou",
       title_fa: "پیو پیو",
-      description: "Tactical henhouse card game.",
-      description_fr: "Jeu de cartes tactique.",
-      description_de: "Taktisches Kartenspiel.",
-      description_fa: "بازی کارتی استراتژیک.",
+      description: "A tactical battle of feathers and foxes.",
+      description_fr: "Une bataille tactique de plumes et de renards.",
+      description_de: "Ein taktischer Kampf um Federn und Füchse.",
+      description_fa: "نبردی استراتژیک بین پرها و روباه‌ها.",
       thumbnail: "/assets/games/pioupiou/box_scan.png",
       minPlayers: 2,
       suggestedMax: 5,
@@ -158,10 +166,10 @@ export const seedGames = mutation({
       title_fr: "Dixit",
       title_de: "Dixit",
       title_fa: "دیکسیت",
-      description: "A game of imagination and abstract art.",
-      description_fr: "Un jeu d'imagination et d'art.",
-      description_de: "Ein Spiel der Fantasie.",
-      description_fa: "بازی تخیل و هنر انتزاعی.",
+      description: "A journey through imagination and abstract art.",
+      description_fr: "Un voyage à travers l'imagination et l'art abstrait.",
+      description_de: "Eine Reise durch Fantasie und abstrakte Kunst.",
+      description_fa: "سفری در میان تخیل و هنر انتزاعی.",
       thumbnail: "/assets/games/dixit/box_scan.jpg",
       minPlayers: 3,
       suggestedMax: 6,
@@ -170,14 +178,14 @@ export const seedGames = mutation({
 
     await ctx.db.insert("games", {
       slug: "themind",
-      title: "Neural Sync",
-      title_fr: "Neural Sync",
-      title_de: "Neural Sync",
-      title_fa: "همگام‌سازی عصبی",
-      description: "A cooperative game of shared timing and intuition.",
-      description_fr: "Un jeu coopératif de timing et d'intuition partagés.",
-      description_de: "Ein kooperatives Spiel mit shared timing und Intuition.",
-      description_fa: "یک بازی همکارانه از زمان‌بندی و شهود مشترک.",
+      title: "The Mind",
+      title_fr: "The Mind",
+      title_de: "The Mind",
+      title_fa: "ذهن",
+      description: "A silent dance of intuition and shared rhythm.",
+      description_fr: "Une danse silencieuse d'intuition et de rythme partagé.",
+      description_de: "Ein stiller Tanz aus Intuition und shared Rhythmus.",
+      description_fa: "رقصی خاموش از شهود و ریتم مشترک.",
       thumbnail: "/assets/games/themind/box_scan.png",
       minPlayers: 2,
       suggestedMax: 4,
@@ -190,10 +198,10 @@ export const seedGames = mutation({
       title_fr: "Just One",
       title_de: "Just One",
       title_fa: "فقط یکی",
-      description: "A collaborative word association game.",
-      description_fr: "Un jeu d'association de mots collaboratif.",
-      description_de: "Ein kooperatives Wortassoziationsspiel.",
-      description_fa: "یک بازی همکارانه تداعی کلمات.",
+      description: "A collaborative search for the unique echo.",
+      description_fr: "Une recherche collaborative de l'écho unique.",
+      description_de: "Eine gemeinsame Suche nach dem einzigartigen Echo.",
+      description_fa: "جستجویی مشترک برای طنین منحصر به فرد.",
       thumbnail: "/assets/games/justone/box_scan.png",
       minPlayers: 3,
       suggestedMax: 7,
@@ -203,13 +211,13 @@ export const seedGames = mutation({
     await ctx.db.insert("games", {
       slug: "timeattack",
       title: "Time Attack",
-      title_fr: "Contre la montre",
-      title_de: "Zeitangriff",
+      title_fr: "Time Attack",
+      title_de: "Time Attack",
       title_fa: "حمله زمانی",
-      description: "A low-latency precision timing game.",
-      description_fr: "Un jeu de précision et de timing.",
-      description_de: "Ein Präzisions-Timing-Spiel.",
-      description_fa: "بازی دقت و زمان‌بندی پایین‌تأخیر.",
+      description: "A test of precision in the blink of an eye.",
+      description_fr: "Un test de précision en un clin d'œil.",
+      description_de: "Ein Präzisionstest im Handumdrehen.",
+      description_fa: "آزمون دقت در یک چشم به هم زدن.",
       minPlayers: 2,
       suggestedMax: 4,
       absoluteMax: 8,
@@ -221,10 +229,11 @@ export const seedGames = mutation({
       title_fr: "Incan Gold",
       title_de: "Incan Gold",
       title_fa: "طلای اینکا",
-      description: "A push-your-luck game of temple exploration.",
-      description_fr: "Un jeu d'exploration de temple et de prise de risque.",
-      description_de: "Ein Push-Your-Luck-Spiel zur Tempelexpedition.",
-      description_fa: "یک بازی هیجان‌انگیز از اکتشاف معبد و شانس.",
+      description: "A daring descent into the depths of fortune.",
+      description_fr:
+        "Une descente audacieuse dans les profondeurs de la fortune.",
+      description_de: "Ein gewagter Abstieg in die Tiefen des Glücks.",
+      description_fa: "هبوطی جسورانه به اعماق خوشبختی.",
       thumbnail: "/assets/games/incangold/box_scan.jpg.webp",
       minPlayers: 3,
       suggestedMax: 8,
@@ -249,10 +258,10 @@ export const createRoom = mutation({
 });
 
 export const joinRoom = mutation({
-  args: { 
-    roomCode: v.string(), 
+  args: {
+    roomCode: v.string(),
     playerName: v.string(),
-    playerId: v.optional(v.id("players")) // For session persistence
+    playerId: v.optional(v.id("players")), // For session persistence
   },
   handler: async (ctx, args) => {
     const room = await ctx.db
@@ -262,12 +271,12 @@ export const joinRoom = mutation({
       )
       .unique();
 
-          if (!room) throw new Error("Room not found");
+    if (!room) throw new Error("Room not found");
 
     // 1. Session Re-connection Check
-      if (args.playerId) {
+    if (args.playerId) {
       const player = await ctx.db.get(args.playerId);
-        if (player && player.roomId === room._id) {
+      if (player && player.roomId === room._id) {
         return { roomId: room._id, playerId: player._id };
       }
     }
@@ -279,14 +288,14 @@ export const joinRoom = mutation({
       .filter((q) => q.eq(q.field("name"), args.playerName))
       .unique();
 
-      if (existingPlayerWithName) {
+    if (existingPlayerWithName) {
       // If we don't have the matching playerId but the name is taken, it's a conflict
- throw new Error("NAME_TAKEN");
+      throw new Error("NAME_TAKEN");
     }
 
     // 3. Status Check
-          if (room.status !== "LOBBY") {
- throw new Error("GAME_ALREADY_STARTED");
+    if (room.status !== "LOBBY") {
+      throw new Error("GAME_ALREADY_STARTED");
     }
 
     // 4. Player Limit Check
@@ -294,14 +303,14 @@ export const joinRoom = mutation({
       .query("players")
       .withIndex("by_room", (q) => q.eq("roomId", room._id))
       .collect();
-    
+
     const game = await ctx.db
       .query("games")
       .filter((q) => q.eq(q.field("slug"), room.currentGame))
       .unique();
 
-      if (game && players.length >= game.absoluteMax) {
- throw new Error("ROOM_FULL");
+    if (game && players.length >= game.absoluteMax) {
+      throw new Error("ROOM_FULL");
     }
 
     // ENSURE PROFILE EXISTS for leaderboard tracking
@@ -310,7 +319,7 @@ export const joinRoom = mutation({
       .withIndex("by_name", (q) => q.eq("name", args.playerName))
       .unique();
 
-      if (!profile) {
+    if (!profile) {
       await ctx.db.insert("users", {
         name: args.playerName,
         totalScore: 0,
@@ -344,18 +353,53 @@ export const addBot = mutation({
   args: { roomCode: v.string(), adminPassword: v.string() },
   handler: async (ctx, args) => {
     if (!validateAdmin(args.adminPassword)) throw new Error("UNAUTHORIZED");
-    const room = await ctx.db.query("rooms").withIndex("by_roomCode", (q) => q.eq("roomCode", args.roomCode.toUpperCase())).unique();
+    const room = await ctx.db
+      .query("rooms")
+      .withIndex("by_roomCode", (q) =>
+        q.eq("roomCode", args.roomCode.toUpperCase()),
+      )
+      .unique();
     if (!room) throw new Error("Room not found");
     if (room.status !== "LOBBY") throw new Error("NOT_IN_LOBBY");
-    const players = await ctx.db.query("players").withIndex("by_room", (q) => q.eq("roomId", room._id)).collect();
-    const game = await ctx.db.query("games").filter((q) => q.eq(q.field("slug"), room.currentGame)).unique();
-    if (game && players.length >= game.absoluteMax) throw new Error("ROOM_FULL");
-    const themedNames: Record<string, string[]> = { pioupiou: ["Pip", "Chirpy"], incangold: ["Lucky", "Rocky"], dixit: ["Dreamer", "Ink"], justone: ["Wordy", "Link"], themind: ["Zenny", "Sage"], timeattack: ["Turbo", "Dash"] };
-    const namePool = themedNames[room.currentGame.toLowerCase()] || ["Alpha", "Beta"];
-    const botName = namePool.find(n => !players.some(p => p.name === n)) || `Bot ${players.length + 1}`;
+    const players = await ctx.db
+      .query("players")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .collect();
+    const game = await ctx.db
+      .query("games")
+      .filter((q) => q.eq(q.field("slug"), room.currentGame))
+      .unique();
+    if (game && players.length >= game.absoluteMax)
+      throw new Error("ROOM_FULL");
+    const themedNames: Record<string, string[]> = {
+      pioupiou: ["Pip", "Chirpy"],
+      incangold: ["Lucky", "Rocky"],
+      dixit: ["Dreamer", "Ink"],
+      justone: ["Wordy", "Link"],
+      themind: ["Zenny", "Sage"],
+      timeattack: ["Turbo", "Dash"],
+    };
+    const namePool = themedNames[room.currentGame.toLowerCase()] || [
+      "Alpha",
+      "Beta",
+    ];
+    const botName =
+      namePool.find((n) => !players.some((p) => p.name === n)) ||
+      `Bot ${players.length + 1}`;
     const plugin = getGamePlugin(room.currentGame);
-    const { initialHand, initialState } = plugin.getInitialPlayerState("LOBBY", room);
-    await ctx.db.insert("players", { roomId: room._id, name: botName, isBot: true, persona: "balanced", gameHand: initialHand, state: initialState, isReady: true });
+    const { initialHand, initialState } = plugin.getInitialPlayerState(
+      "LOBBY",
+      room,
+    );
+    await ctx.db.insert("players", {
+      roomId: room._id,
+      name: botName,
+      isBot: true,
+      persona: "balanced",
+      gameHand: initialHand,
+      state: initialState,
+      isReady: true,
+    });
   },
 });
 
@@ -377,11 +421,18 @@ export const startGame = mutation({
     if (!validateAdmin(args.adminPassword)) throw new Error("UNAUTHORIZED");
     const room = await ctx.db.get(args.roomId);
     if (!room) return;
-    const players = await ctx.db.query("players").withIndex("by_room", (q) => q.eq("roomId", args.roomId)).collect();
+    const players = await ctx.db
+      .query("players")
+      .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
+      .collect();
     if (players.length === 0) return;
     const plugin = getGamePlugin(room.currentGame);
     await plugin.onStart(ctx, room._id, players);
-    await ctx.db.patch(args.roomId, { status: "PLAYING", turnOrder: shuffle(players.map((p) => p._id)), currentTurnIndex: 0 });
+    await ctx.db.patch(args.roomId, {
+      status: "PLAYING",
+      turnOrder: shuffle(players.map((p) => p._id)),
+      currentTurnIndex: 0,
+    });
   },
 });
 
@@ -394,7 +445,11 @@ export const toggleBotsHalt = mutation({
     const nextHaltState = !room.botsHalted;
     await ctx.db.patch(args.roomId, { botsHalted: nextHaltState });
     if (!nextHaltState && room.status === "PLAYING") {
-      await ctx.scheduler.runAfter(0, (internal as any).bots.manager.dispatchBotTurn, { roomId: args.roomId });
+      await ctx.scheduler.runAfter(
+        0,
+        (internal as any).bots.manager.dispatchBotTurn,
+        { roomId: args.roomId },
+      );
     }
   },
 });
@@ -403,7 +458,7 @@ export const toggleReady = mutation({
   args: { playerId: v.id("players") },
   handler: async (ctx, args) => {
     const player = await ctx.db.get(args.playerId);
-          if (!player) return;
+    if (!player) return;
     await ctx.db.patch(player._id, { isReady: !player.isReady });
   },
 });
@@ -412,7 +467,7 @@ export const updatePlayerName = mutation({
   args: { playerId: v.id("players"), newName: v.string() },
   handler: async (ctx, args) => {
     const player = await ctx.db.get(args.playerId);
-          if (!player) throw new Error("Player not found");
+    if (!player) throw new Error("Player not found");
     await ctx.db.patch(player._id, { name: args.newName });
   },
 });
@@ -435,12 +490,27 @@ export const resetRoom = mutation({
     const room = await ctx.db.get(args.roomId);
     if (!room) return;
     const plugin = getGamePlugin(room.currentGame);
-    const players = await ctx.db.query("players").withIndex("by_room", (q) => q.eq("roomId", args.roomId)).collect();
+    const players = await ctx.db
+      .query("players")
+      .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
+      .collect();
     for (const player of players) {
-      const { initialHand, initialState } = plugin.getInitialPlayerState("LOBBY", room);
-      await ctx.db.patch(player._id, { isReady: false, gameHand: initialHand, state: initialState });
+      const { initialHand, initialState } = plugin.getInitialPlayerState(
+        "LOBBY",
+        room,
+      );
+      await ctx.db.patch(player._id, {
+        isReady: false,
+        gameHand: initialHand,
+        state: initialState,
+      });
     }
-    await ctx.db.patch(args.roomId, { status: "LOBBY", currentTurnIndex: 0, turnOrder: [], gameBoard: plugin.getInitialBoard() });
+    await ctx.db.patch(args.roomId, {
+      status: "LOBBY",
+      currentTurnIndex: 0,
+      turnOrder: [],
+      gameBoard: plugin.getInitialBoard(),
+    });
   },
 });
 

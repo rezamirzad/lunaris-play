@@ -82,18 +82,18 @@ export default function RoundResultsPanel({
 
             const breakdown = [];
             if (isST) {
-                if (!isAllOrNone) breakdown.push(`Storyteller: +3`);
-                else breakdown.push("Penalty: 0");
+                if (!isAllOrNone) breakdown.push({ label: "Storyteller Success", pts: 3, icon: "🔮" });
+                else breakdown.push({ label: "Too Obvious / Vague", pts: 0, icon: "⚠️" });
             } else {
-                if (isAllOrNone) breakdown.push("Safe: +2");
+                if (isAllOrNone) breakdown.push({ label: "Insight Bonus", pts: 2, icon: "🧠" });
                 else if (votedCorrect) {
                     const myVotes = board.votes?.filter(v => v.voterId === player._id).length || 1;
-                    if (board.ruleset === "ODYSSEY" && myVotes === 1) breakdown.push("Risk: +4");
-                    else breakdown.push("Guess: +3");
+                    if (board.ruleset === "ODYSSEY" && myVotes === 1) breakdown.push({ label: "Risk Reward", pts: 4, icon: "🎲" });
+                    else breakdown.push({ label: "Correct Guess", pts: 3, icon: "🎯" });
                 }
                 if (votesForMe > 0) {
                     const decoyPts = board.ruleset === "ODYSSEY" ? Math.min(3, votesForMe) : votesForMe;
-                    breakdown.push(`Traps: +${decoyPts}`);
+                    breakdown.push({ label: "Deception", pts: decoyPts, icon: "🎭" });
                 }
             }
 
@@ -103,43 +103,56 @@ export default function RoundResultsPanel({
                 initial={{ x: 20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: index * 0.05 }}
-                className={`flex items-center justify-between p-3.5 border rounded-2xl group transition-all ${isLeader ? "bg-yellow-400/10 border-yellow-400/30 shadow-[0_0_20px_rgba(250,204,21,0.1)]" : "bg-black/40 border-white/5 hover:border-blue-500/30"}`}
+                className={`flex flex-col gap-2 p-4 border rounded-3xl group transition-all ${isLeader ? "bg-yellow-400/10 border-yellow-400/30 shadow-[0_0_20px_rgba(250,204,21,0.1)]" : "bg-black/40 border-white/5 hover:border-blue-500/30"}`}
               >
-                <div className="flex items-center gap-3.5 min-w-0">
-                  <div
-                    className={`h-8 w-8 text-xs shrink-0 rounded-full flex items-center justify-center font-black border transition-colors ${isLeader ? "bg-yellow-400 border-yellow-500 text-black shadow-[0_0_15px_rgba(250,204,21,0.4)]" : "bg-zinc-800 border-white/10 group-hover:bg-blue-500 group-hover:text-white"}`}
-                  >
-                    {isFA ? toPersianDigits(rank) : rank}
-                  </div>
-                  <div className="flex flex-col gap-0.5 min-w-0">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                        <span
-                        className={`font-black uppercase tracking-tight italic truncate text-sm ${isLeader ? "text-yellow-400" : "text-white"}`}
-                        >
-                        {player.name} {isLeader && "👑"}
-                        </span>
-                        {player.isBot && (
-                            <Image
-                                src="/assets/general/artificial-intelligence-design-png.webp" 
-                                alt="AI" 
-                                width={10}
-                                height={10}
-                                className="opacity-80" 
-                            />
-                        )}
+                <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-3.5 min-w-0">
+                    <div
+                        className={`h-8 w-8 text-xs shrink-0 rounded-full flex items-center justify-center font-black border transition-colors ${isLeader ? "bg-yellow-400 border-yellow-500 text-black shadow-[0_0_15px_rgba(250,204,21,0.4)]" : "bg-zinc-800 border-white/10 group-hover:bg-blue-500 group-hover:text-white"}`}
+                    >
+                        {isFA ? toPersianDigits(rank) : rank}
                     </div>
-                    <div className="flex flex-wrap gap-1">
-                        <span className="text-[7px] text-zinc-500 font-bold uppercase tracking-widest">{breakdown.join(" | ")}</span>
+                    <div className="flex flex-col min-w-0">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                            <span
+                            className={`font-black uppercase tracking-tight italic truncate text-sm ${isLeader ? "text-yellow-400" : "text-white"}`}
+                            >
+                            {player.name} {isLeader && "👑"}
+                            </span>
+                            {player.isBot && (
+                                <Image
+                                    src="/assets/general/artificial-intelligence-design-png.webp" 
+                                    alt="AI" 
+                                    width={10}
+                                    height={10}
+                                    className="opacity-80" 
+                                />
+                            )}
+                        </div>
                     </div>
-                  </div>
+                    </div>
+
+                    <div className="flex flex-col items-end shrink-0 pl-2">
+                    <span
+                        className={`font-black italic tracking-tighter text-lg leading-none ${isLeader ? "text-yellow-400" : pointsEarned > 0 ? "text-teal-400" : "text-zinc-600"}`}
+                    >
+                        +{isFA ? toPersianDigits(pointsEarned) : pointsEarned}
+                    </span>
+                    </div>
                 </div>
 
-                <div className="flex flex-col items-end shrink-0 pl-2">
-                  <span
-                    className={`font-black italic tracking-tighter text-lg leading-none ${isLeader ? "text-yellow-400" : pointsEarned > 0 ? "text-teal-400" : "text-zinc-600"}`}
-                  >
-                    Total: +{isFA ? toPersianDigits(pointsEarned) : pointsEarned}
-                  </span>
+                {/* 🧩 BREAKDOWN TAGS */}
+                <div className="flex flex-wrap gap-1.5 mt-1 border-t border-white/5 pt-3">
+                    {breakdown.map((item, i) => (
+                        <div key={i} className="flex items-center gap-1.5 bg-white/5 px-2 py-0.5 rounded-lg border border-white/5">
+                            <span className="text-[10px] grayscale brightness-150">{item.icon}</span>
+                            <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">{item.label}</span>
+                            <span className="text-[9px] font-black text-blue-400">+{item.pts}</span>
+                        </div>
+                    ))}
+                    {breakdown.length === 0 && (
+                        <span className="text-[8px] font-black text-zinc-700 uppercase tracking-[0.2em] italic ml-1">No points earned this round</span>
+                    )}
                 </div>
               </motion.div>
             );

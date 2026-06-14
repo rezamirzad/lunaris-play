@@ -122,24 +122,24 @@ export default function DixitHand({ room, player }: DixitHandProps) {
     const isAllOrNone = votesForST === totalGuessers || votesForST === 0;
 
     if (isST) {
-      if (!isAllOrNone) breakdown.push({ label: t.dixit_label_success, pts: 3 });
-      else breakdown.push({ label: t.dixit_label_failed, pts: 0 });
+      if (!isAllOrNone) breakdown.push({ label: t.dixit_label_success, pts: 3, icon: "🔮" });
+      else breakdown.push({ label: t.dixit_label_failed, pts: 0, icon: "⚠️" });
     } else {
       if (isAllOrNone) {
-        breakdown.push({ label: t.dixit_label_safe, pts: 2 });
+        breakdown.push({ label: t.dixit_label_safe, pts: 2, icon: "🧠" });
       } else {
         const votedCorrect = myVotes.some(
           (v) => v.cardId === results.storytellerCard,
         );
         if (votedCorrect) {
           if (isOdyssey && myVotes.length === 1)
-            breakdown.push({ label: t.dixit_label_risk, pts: 4 });
-          else breakdown.push({ label: t.dixit_label_guess, pts: 3 });
+            breakdown.push({ label: t.dixit_label_risk, pts: 4, icon: "🎲" });
+          else breakdown.push({ label: t.dixit_label_guess, pts: 3, icon: "🎯" });
         }
       }
       if (votesForMe > 0) {
         const trapPts = isOdyssey ? Math.min(3, votesForMe) : votesForMe;
-        breakdown.push({ label: t.dixit_label_traps, pts: trapPts });
+        breakdown.push({ label: t.dixit_label_traps, pts: trapPts, icon: "🎭" });
       }
     }
 
@@ -236,11 +236,12 @@ export default function DixitHand({ room, player }: DixitHandProps) {
                   </span>
                 </div>
                 <div className="flex flex-wrap justify-center gap-2">
-                  {myRoundResults.breakdown.map((b, idx) => (
+                  {myRoundResults.breakdown.map((b: any, idx: number) => (
                     <div
                       key={idx}
                       className="bg-black/40 px-3 py-1 rounded-lg border border-white/5 flex items-center gap-1.5"
                     >
+                      <span className="text-[10px] grayscale brightness-150">{b.icon}</span>
                       <span className="text-[9px] font-black uppercase text-zinc-500 tracking-tighter">
                         {b.label}
                       </span>

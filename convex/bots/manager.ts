@@ -12,16 +12,23 @@ export const dispatchBotTurn = internalMutation({
     const room = await ctx.db.get(args.roomId);
     if (!room || room.status !== "PLAYING" || room.botsHalted) return;
 
-    const board = room.gameBoard as any;
-    let targetPlayerIds: any[] = [];
+    // 1. Fetch all players in the room once to avoid redundant DB calls
+    const players = await ctx.db
+      .query("players")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .collect();
 
+    const board = room.gameBoard as any;
+    let targetPlayerIds: Id<"players">[] = [];
+
+    // 2. Identify which bots need to act based on game-specific logic
     if (board.gameType === "pioupiou" && board.pendingAttack) {
       targetPlayerIds = [board.pendingAttack.victimId];
     } else if (board.gameType === "incangold" && board.phase === "DECISION_PHASE") {
-      const players = (await ctx.db.query("players").withIndex("by_room", q => q.eq("roomId", room._id)).collect()) as any[];
-      targetPlayerIds = players.filter(p => p.isBot && p.state.gameType === "incangold" && p.state.status === "IN_TEMPLE" && !board.decisions[p._id]).map(p => p._id);
+      targetPlayerIds = players
+        .filter(p => p.isBot && p.state.gameType === "incangold" && p.state.status === "IN_TEMPLE" && !board.decisions[p._id])
+        .map(p => p._id);
     } else if (board.gameType === "dixit") {
-      const players = (await ctx.db.query("players").withIndex("by_room", (q) => q.eq("roomId", room._id)).collect()) as any[];
       if (board.phase === "CLUE") {
         const storytellerId = room.turnOrder[room.currentTurnIndex];
         targetPlayerIds = [storytellerId];
@@ -66,7 +73,6 @@ export const dispatchBotTurn = internalMutation({
         }
       }
     } else if (board.gameType === "justone") {
-        const players = (await ctx.db.query("players").withIndex("by_room", q => q.eq("roomId", room._id)).collect()) as any[];
         if (board.phase === "CLUE_INPUT") {
             targetPlayerIds = players.filter(p => p.isBot && p._id !== board.activePlayerId && !board.confirmedPlayers?.includes(p._id)).map(p => p._id);
         } else if (board.phase === "GUESSING") {
@@ -76,23 +82,22 @@ export const dispatchBotTurn = internalMutation({
       targetPlayerIds = [room.turnOrder[room.currentTurnIndex]];
     }
 
-    // Stagger bots to avoid blowing the API quota (especially Vision calls)
+    // 3. Stagger bots to avoid blowing the API quota (especially Vision calls)
     let botIndex = 0;
     for (const playerId of targetPlayerIds) {
-        const player: any = await ctx.db.get(playerId);
+        const player = players.find(p => p._id === playerId);
         if (!player || !player.isBot) continue;
 
-        // Mark heartbeat
+        // Mark heartbeat to indicate the game loop is active
         await ctx.db.patch(room._id, { lastMoveTime: Date.now(), botStuck: false });
 
-        // Calculate staggered delay with human-like randomness
-        // Base delay is 3-8s, plus stagger offset
+        // Calculate staggered delay with human-like randomness (15s for Dixit/Vision, 4s for others)
         const staggerStep = room.currentGame === "dixit" ? 15000 : 4000;
         const staggerOffset = botIndex * staggerStep;
         const randomThinkingTime = 3000 + Math.random() * 5000;
         const totalDelay = staggerOffset + randomThinkingTime;
 
-        // Set Thinking State immediately
+        // Set Thinking State immediately for UI feedback
         const persona = PERSONAS[player.persona || "balanced"];
         const statusText = board.phase === "CLUE" ? "CRAFTING_VISION" : 
                           board.phase === "VOTING" ? "DECODING_SYMBOLS" : 
@@ -108,7 +113,7 @@ export const dispatchBotTurn = internalMutation({
             playerId: player._id,
         });
 
-        // Watchdog
+        // Watchdog: ensures bots don't hang indefinitely
         const watchdogBuffer = room.currentGame === "dixit" ? 45000 : 20000;
         await ctx.scheduler.runAfter(totalDelay + watchdogBuffer, (internal as any).bots.manager.watchdog, {
             roomId: room._id,
