@@ -412,24 +412,28 @@ async function calculateScores(
     let newHand = [...p.gameHand];
     
     // Calculate how many cards this player needs to draw
-    const cardsNeeded = targetHandSize - newHand.length;
+    const cardsNeeded = Math.max(0, targetHandSize - newHand.length);
     
     for (let i = 0; i < cardsNeeded; i++) {
-      if (deck.length === 0 && used.length > 0) {
-        deck = shuffle(used);
-        used = [];
-        console.log(`[DIXIT] 🔄 Reshuffled ${deck.length} cards back into the deck.`);
+      if (deck.length === 0) {
+        if (used.length > 0) {
+          deck = shuffle(used);
+          used = [];
+          console.log(`[DIXIT] 🔄 Reshuffled ${deck.length} cards back into the deck.`);
+        } else {
+          console.warn(`[DIXIT] ⚠️ Out of cards! Deck and discard pile are both empty.`);
+          break; // Nothing left to draw
+        }
       }
       
-      if (deck.length > 0) {
-        const drawnCard = deck.shift()!;
-        // Final safety check: ensure we aren't adding a duplicate that somehow got in
-        if (!newHand.includes(drawnCard)) {
-            newHand.push(drawnCard);
-        } else {
-            console.warn(`[DIXIT] ⚠️ Attempted to draw duplicate card ${drawnCard}. Skipping.`);
-            i--; // Try to draw another one instead
-        }
+      const drawnCard = deck.shift()!;
+      // Final safety check: ensure we aren't adding a duplicate that somehow got in
+      if (!newHand.includes(drawnCard)) {
+          newHand.push(drawnCard);
+      } else {
+          console.error(`[DIXIT] ❌ CRITICAL: Attempted to draw duplicate card ${drawnCard} already in hand!`);
+          // Skip this card and try again if possible
+          i--; 
       }
     }
 

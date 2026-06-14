@@ -80,8 +80,9 @@ export default function ArcadeVictoryOverlay({
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className={`absolute inset-0 ${theme.bg} backdrop-blur-3xl z-[60] flex flex-col items-center justify-center p-16 text-center overflow-y-auto no-scrollbar`}
-    >
+      className={`absolute inset-0 ${theme.bg} backdrop-blur-3xl z-[60] flex flex-col items-center justify-start p-16 text-center overflow-y-auto custom-scrollbar`}
+      >
+      <div className="flex flex-col items-center justify-center my-auto">
       <div className="relative mb-4">
         <motion.span
           animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
@@ -108,6 +109,7 @@ export default function ArcadeVictoryOverlay({
           {t.exit}
         </button>
       </div>
+     </div>
     </motion.div>
   );
 }

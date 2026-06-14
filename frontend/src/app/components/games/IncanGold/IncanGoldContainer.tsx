@@ -166,6 +166,50 @@ const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData, history = [] }
                 <motion.div key="intro" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 1.2, opacity: 0 }} className="text-center z-10">
                   <h2 className="text-8xl font-black text-amber-500 italic uppercase tracking-tighter mb-4">ROUND {isFA ? toPersianDigits(board.currentRound) : board.currentRound}</h2>
                   <p className="text-amber-200/40 text-xl font-black uppercase tracking-[0.5em] italic">Preparing Expedition...</p>
+                   {isAdmin && (
+                      <motion.button
+                        whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(245,158,11,0.3)" }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => drawCard({ roomId: roomId as any })}
+                        className="mt-8 bg-amber-500 text-black px-12 py-5 rounded-2xl font-black uppercase italic tracking-widest shadow-2xl transition-all"
+                      >
+                         START EXPEDITION
+                      </motion.button>
+                   )}
+                </motion.div>
+              )}
+
+              {board.phase === "REVEAL_PHASE" && (
+                <motion.div key="reveal-phase" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center gap-12 z-10 w-full max-w-2xl px-8">
+                   <div className="flex flex-wrap justify-center gap-4">
+                      {board.path.map((cardId: string, i: number) => (
+                        <motion.div 
+                          key={`${cardId}-${i}`}
+                          initial={{ scale: 0, rotate: -20 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          className={`w-24 h-32 rounded-xl border-2 flex items-center justify-center text-3xl shadow-2xl relative ${cardId.startsWith("H_") ? "bg-red-950/40 border-red-500/40" : cardId.startsWith("A_") ? "bg-amber-500/20 border-amber-400/50" : "bg-zinc-900 border-white/10"}`}
+                        >
+                           {cardId.startsWith("T_") ? "💎" : cardId.startsWith("A_") ? "🏺" : getHazardEmoji(cardId)}
+                           {board.cardGems[i] > 0 && (
+                             <div className="absolute -bottom-2 -right-2 bg-amber-500 text-black font-black text-[10px] px-2 py-0.5 rounded-full shadow-lg">
+                               {board.cardGems[i]}
+                             </div>
+                           )}
+                        </motion.div>
+                      ))}
+                      <div className="w-24 h-32 rounded-xl border-4 border-dashed border-amber-500/50 flex items-center justify-center text-amber-500 text-4xl italic font-black animate-pulse">!</div>
+                   </div>
+
+                   {isAdmin && (
+                      <motion.button
+                        whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(245,158,11,0.3)" }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => startDecision({ roomId: roomId as any })}
+                        className="bg-amber-500 text-black px-12 py-5 rounded-2xl font-black uppercase italic tracking-widest shadow-2xl transition-all"
+                      >
+                         START DECISION PHASE
+                      </motion.button>
+                   )}
                 </motion.div>
               )}
 

@@ -105,8 +105,8 @@ export default function MissionBriefing({
     <div className={`${theme.bg} ${theme.text} min-h-screen w-full flex flex-col relative overflow-hidden`}>
       {background && <div className="absolute inset-0 z-0">{background}</div>}
       
-      <div className="flex-1 min-h-0 flex flex-col items-center justify-center p-8 lg:p-12 relative z-10 overflow-y-auto no-scrollbar">
-        <div className="max-w-7xl w-full space-y-12">
+      <div className="flex-1 min-h-0 flex flex-col items-center justify-start p-8 lg:p-12 lg:py-24 relative z-10 overflow-y-auto custom-scrollbar">
+        <div className="max-w-7xl w-full space-y-12 my-auto">
             {/* 1. CINEMATIC HEADER */}
             <div className="text-center">
                 <h1 className={`text-5xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b ${theme.gradient} tracking-tighter uppercase italic leading-tight`}>

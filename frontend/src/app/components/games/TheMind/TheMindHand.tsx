@@ -108,7 +108,8 @@ export default function TheMindHand({
       </div>
 
       {/* CARDS GRID */}
-      <div className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-2 lg:gap-4 overflow-y-auto no-scrollbar pb-12 lg:pb-0 px-4" dir="ltr">
+      <div className="flex-1 flex flex-col items-center justify-start gap-4 overflow-y-auto custom-scrollbar pt-12 pb-24 px-4" dir="ltr">
+       <div className="flex flex-col items-center justify-center gap-4 my-auto">
         <AnimatePresence>
           {rows.length > 0 ? (
             rows.map((row, rowIndex) => (
@@ -152,6 +153,7 @@ export default function TheMindHand({
              </motion.div>
           )}
         </AnimatePresence>
+       </div>
       </div>
 
       {/* ACTION AREA */}
