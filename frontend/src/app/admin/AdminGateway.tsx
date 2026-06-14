@@ -70,6 +70,20 @@ export default function AdminGateway({
 
   if (!mounted) return null;
 
+  // Handle the "Verifying" state to prevent flicker
+  if (isPending && pathname.startsWith("/admin")) {
+    return (
+      <div className="fixed inset-0 bg-app flex flex-col items-center justify-center p-6 z-[100]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-2 border-brand-accent/20 border-t-brand-accent rounded-full animate-spin" />
+          <span className="text-[8px] font-black tracking-[0.4em] text-brand-accent animate-pulse uppercase">
+            Verifying Uplink...
+          </span>
+        </div>
+      </div>
+    );
+  }
+
   if (!isAdmin && pathname.startsWith("/admin")) {
     return (
       <div className="fixed inset-0 bg-app flex flex-col items-center justify-center p-6 z-[100]">
