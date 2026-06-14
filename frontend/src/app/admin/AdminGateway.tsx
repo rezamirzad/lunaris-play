@@ -70,7 +70,7 @@ export default function AdminGateway({
 
   if (!mounted) return null;
 
-  if (!isAdmin && pathname === "/admin") {
+  if (!isAdmin && pathname.startsWith("/admin")) {
     return (
       <div className="fixed inset-0 bg-app flex flex-col items-center justify-center p-6 z-[100]">
         <motion.div
