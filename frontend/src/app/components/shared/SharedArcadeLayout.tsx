@@ -41,7 +41,7 @@ export default function SharedArcadeLayout({
   return (
     <div
       className={`relative flex flex-col ${
-        isMobile ? "min-h-[100dvh] p-3.5 overflow-y-auto no-scrollbar" : "h-full min-h-[80vh] p-6 overflow-hidden"
+        isMobile ? "min-h-[100dvh] p-3.5 overflow-y-auto no-scrollbar" : "min-h-[80vh] h-full p-6 overflow-y-auto no-scrollbar"
       } ${containerClassName} font-mono select-none`}
     >
       {/* 1. Base Layer: Thematic Backgrounds */}
@@ -53,7 +53,7 @@ export default function SharedArcadeLayout({
         <div className={`shrink-0 ${isMobile ? "mb-2" : "mb-6"}`}>{header}</div>
 
         {/* Main Context Anchor (Grows to fill remaining space) */}
-        <div className="flex-1 min-h-0 flex flex-col overflow-hidden relative">
+        <div className="flex-1 min-h-0 flex flex-col relative">
           {main}
         </div>
 

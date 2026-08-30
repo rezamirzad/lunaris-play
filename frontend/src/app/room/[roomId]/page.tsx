@@ -162,7 +162,7 @@ export default function RoomPage() {
   const content = (
     <main 
       lang={lang}
-      className={`${isBoardView ? 'h-screen overflow-hidden' : 'min-h-screen overflow-y-auto no-scrollbar'} flex flex-col bg-app relative ${lang === 'fa' ? 'fa-text-fix' : ''}`}
+      className={`min-h-screen overflow-y-auto no-scrollbar flex flex-col bg-app relative ${lang === 'fa' ? 'fa-text-fix' : ''}`}
     >
       {/* Dynamic Header */}
       <div className="shrink-0">
