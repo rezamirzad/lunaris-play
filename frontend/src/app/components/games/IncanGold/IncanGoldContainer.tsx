@@ -86,6 +86,90 @@ const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData, history = [] }
     return "⚠️";
   };
 
+  const getTreasureValue = (id: string): number | null => {
+    if (!id.startsWith("T_")) return null;
+    const match = id.match(/^T_(\d+)/);
+    return match ? parseInt(match[1], 10) : null;
+  };
+
+  const renderPathCard = (cardId: string, i: number) => {
+    const isTreasure = cardId.startsWith("T_");
+    const isArtifact = cardId.startsWith("A_");
+    const isHazard = cardId.startsWith("H_");
+    const treasureVal = getTreasureValue(cardId);
+    const cardGemsMap = (board.cardGems || {}) as Record<string | number, number>;
+    const leftoverGems = cardGemsMap[i] ?? cardGemsMap[String(i)] ?? 0;
+
+    return (
+      <motion.div 
+        key={`${cardId}-${i}`}
+        initial={{ scale: 0, rotate: -20 }}
+        animate={{ scale: 1, rotate: 0 }}
+        className={`w-24 h-32 rounded-2xl border-2 flex flex-col items-center justify-between p-2 shadow-2xl relative select-none ${
+          isHazard 
+            ? "bg-red-950/60 border-red-500/60 shadow-[0_0_15px_rgba(239,68,68,0.2)]" 
+            : isArtifact 
+              ? "bg-amber-500/20 border-amber-400/60 shadow-[0_0_15px_rgba(245,158,11,0.2)]" 
+              : "bg-zinc-900/90 border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.15)]"
+        }`}
+      >
+        {isTreasure ? (
+          <>
+            <div className="w-full flex items-center justify-between text-[8px] font-black text-amber-400/70 border-b border-amber-500/20 pb-1">
+              <span>💎</span>
+              <span className="tracking-tighter">VALUE</span>
+            </div>
+
+            <div className="flex flex-col items-center justify-center my-auto">
+              <span className="text-3xl font-black text-amber-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.6)] font-mono leading-none">
+                {treasureVal ?? "?"}
+              </span>
+              <span className="text-[8px] font-black text-amber-400/60 uppercase tracking-widest mt-1">
+                GEMS
+              </span>
+            </div>
+
+            {leftoverGems > 0 ? (
+              <div className="w-full bg-amber-500 text-black font-black text-[9px] py-0.5 rounded-md text-center shadow-lg uppercase tracking-tight">
+                LEFT: {leftoverGems} 💎
+              </div>
+            ) : (
+              <div className="w-full bg-black/40 text-zinc-500 font-black text-[7px] py-0.5 rounded-md text-center uppercase tracking-tighter border border-white/5">
+                0 LEFT
+              </div>
+            )}
+          </>
+        ) : isArtifact ? (
+          <>
+            <div className="w-full flex items-center justify-between text-[8px] font-black text-amber-400/70 border-b border-amber-500/20 pb-1">
+              <span>🏺</span>
+              <span className="tracking-tighter">RELIC</span>
+            </div>
+            <div className="flex flex-col items-center justify-center my-auto">
+              <span className="text-3xl">🏺</span>
+            </div>
+            <div className="w-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-black text-[8px] py-0.5 rounded-md text-center uppercase tracking-tighter">
+              ARTIFACT
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="w-full flex items-center justify-between text-[8px] font-black text-red-400/70 border-b border-red-500/20 pb-1">
+              <span>⚠️</span>
+              <span className="tracking-tighter">DANGER</span>
+            </div>
+            <div className="flex flex-col items-center justify-center my-auto">
+              <span className="text-3xl">{getHazardEmoji(cardId)}</span>
+            </div>
+            <div className="w-full bg-red-500/20 text-red-400 border border-red-500/30 font-black text-[8px] py-0.5 rounded-md text-center uppercase tracking-tighter">
+              HAZARD
+            </div>
+          </>
+        )}
+      </motion.div>
+    );
+  };
+
   return (
     <SharedArcadeLayout
       containerClassName="bg-[#050300] text-amber-50 font-mono"
@@ -179,24 +263,10 @@ const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData, history = [] }
                 </motion.div>
               )}
 
-              {board.phase === "REVEAL_PHASE" && (
+               {board.phase === "REVEAL_PHASE" && (
                 <motion.div key="reveal-phase" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center gap-12 z-10 w-full max-w-2xl px-8">
                    <div className="flex flex-wrap justify-center gap-4">
-                      {board.path.map((cardId: string, i: number) => (
-                        <motion.div 
-                          key={`${cardId}-${i}`}
-                          initial={{ scale: 0, rotate: -20 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          className={`w-24 h-32 rounded-xl border-2 flex items-center justify-center text-3xl shadow-2xl relative ${cardId.startsWith("H_") ? "bg-red-950/40 border-red-500/40" : cardId.startsWith("A_") ? "bg-amber-500/20 border-amber-400/50" : "bg-zinc-900 border-white/10"}`}
-                        >
-                           {cardId.startsWith("T_") ? "💎" : cardId.startsWith("A_") ? "🏺" : getHazardEmoji(cardId)}
-                           {board.cardGems[i] > 0 && (
-                             <div className="absolute -bottom-2 -right-2 bg-amber-500 text-black font-black text-[10px] px-2 py-0.5 rounded-full shadow-lg">
-                               {board.cardGems[i]}
-                             </div>
-                           )}
-                        </motion.div>
-                      ))}
+                      {board.path.map((cardId: string, i: number) => renderPathCard(cardId, i))}
                       <div className="w-24 h-32 rounded-xl border-4 border-dashed border-amber-500/50 flex items-center justify-center text-amber-500 text-4xl italic font-black animate-pulse">!</div>
                    </div>
 
@@ -216,21 +286,7 @@ const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData, history = [] }
               {board.phase === "EXPEDITION_PHASE" && (
                 <motion.div key="expedition" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center gap-12 z-10 w-full max-w-2xl px-8">
                    <div className="flex flex-wrap justify-center gap-4">
-                      {board.path.map((cardId: string, i: number) => (
-                        <motion.div 
-                          key={`${cardId}-${i}`}
-                          initial={{ scale: 0, rotate: -20 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          className={`w-24 h-32 rounded-xl border-2 flex items-center justify-center text-3xl shadow-2xl relative ${cardId.startsWith("H_") ? "bg-red-950/40 border-red-500/40" : cardId.startsWith("A_") ? "bg-amber-500/20 border-amber-400/50" : "bg-zinc-900 border-white/10"}`}
-                        >
-                           {cardId.startsWith("T_") ? "💎" : cardId.startsWith("A_") ? "🏺" : getHazardEmoji(cardId)}
-                           {board.cardGems[i] > 0 && (
-                             <div className="absolute -bottom-2 -right-2 bg-amber-500 text-black font-black text-[10px] px-2 py-0.5 rounded-full shadow-lg">
-                               {board.cardGems[i]}
-                             </div>
-                           )}
-                        </motion.div>
-                      ))}
+                      {board.path.map((cardId: string, i: number) => renderPathCard(cardId, i))}
                       <div className="w-24 h-32 rounded-xl border-4 border-dashed border-white/5 flex items-center justify-center text-zinc-800 text-4xl italic font-black">?</div>
                    </div>
 
@@ -248,11 +304,15 @@ const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData, history = [] }
               )}
 
               {board.phase === "DECISION_PHASE" && (
-                <motion.div key="decision" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center gap-10 z-10">
-                   <div className="flex flex-col items-center gap-4">
-                      <div className="text-[12rem] animate-bounce">🏺</div>
-                      <h2 className="text-5xl font-black text-amber-500 italic uppercase tracking-tighter">THE DILEMMA</h2>
-                      <p className="text-zinc-500 font-bold uppercase tracking-[0.4em]">Players are deciding their fate...</p>
+                <motion.div key="decision" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center gap-6 z-10">
+                   {board.path.length > 0 && (
+                     <div className="flex flex-wrap justify-center gap-4 max-w-2xl px-4">
+                        {board.path.map((cardId: string, i: number) => renderPathCard(cardId, i))}
+                     </div>
+                   )}
+                   <div className="flex flex-col items-center gap-2">
+                      <h2 className="text-4xl font-black text-amber-500 italic uppercase tracking-tighter">THE DILEMMA</h2>
+                      <p className="text-zinc-500 text-xs font-bold uppercase tracking-[0.4em]">Players are deciding their fate...</p>
                    </div>
                    
                    <div className="flex gap-4">
