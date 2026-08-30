@@ -372,20 +372,54 @@ export const addBot = mutation({
     if (game && players.length >= game.absoluteMax)
       throw new Error("ROOM_FULL");
     const themedNames: Record<string, string[]> = {
-      pioupiou: ["Pip", "Chirpy"],
-      incangold: ["Lucky", "Rocky"],
-      dixit: ["Dreamer", "Ink"],
-      justone: ["Wordy", "Link"],
-      themind: ["Zenny", "Sage"],
-      timeattack: ["Turbo", "Dash"],
+      pioupiou: [
+        "Chirpy", "Barnaby", "Feathers", "Pip", "Rusty", 
+        "Pippin", "Clover", "Hazel", "Squeak", "Buttercup", 
+        "Tango", "Sunny", "Peanut", "Twiggy"
+      ],
+      incangold: [
+        "Indiana", "Lara", "Blaze", "Wilder", "Tracker", 
+        "Ranger", "Venture", "Goldie", "Falcon", "Sienna", 
+        "Hunter", "Maverick", "Outlaw", "Flint"
+      ],
+      dixit: [
+        "Dreamer", "Aura", "Luna", "Echo", "Mirage", 
+        "Orion", "Celeste", "Vesper", "Solstice", "Fable", 
+        "Poet", "Vision", "Nova", "Zephyr"
+      ],
+      justone: [
+        "Wordsworth", "Lexicon", "Prose", "Anagram", "Rhyme", 
+        "Cipher", "Glyph", "Scribe", "Synonym", "Stanza", 
+        "Vellum", "Riddle", "Quill", "Enigma"
+      ],
+      themind: [
+        "Sage", "Zenith", "Pulse", "Kensho", "Synapse", 
+        "Bodhi", "Mindmeld", "Nirvana", "Chakra", "Serenity", 
+        "Vortex", "Telepath", "Om", "Intuition"
+      ],
+      timeattack: [
+        "Nitro", "Turbo", "Velocity", "Blitz", "Flash", 
+        "Sonic", "Apex", "Pace", "Chrono", "Vector", 
+        "Overdrive", "Volt", "Dash", "Ignition"
+      ],
     };
-    const namePool = themedNames[room.currentGame.toLowerCase()] || [
-      "Alpha",
-      "Beta",
+
+    const fallbackNames = [
+      "Atlas", "Orion", "Cipher", "Nexus", "Quantum", 
+      "Spectra", "Aria", "Zephyr", "Apex", "Vesper"
     ];
-    const botName =
-      namePool.find((n) => !players.some((p) => p.name === n)) ||
-      `Bot ${players.length + 1}`;
+
+    const namePool = themedNames[room.currentGame.toLowerCase()] || fallbackNames;
+    let botName = namePool.find((n) => !players.some((p) => p.name === n));
+
+    if (!botName) {
+      const unusedFallback = fallbackNames.find((f) => !players.some((p) => p.name.includes(f)));
+      if (unusedFallback) {
+        botName = `Agent ${unusedFallback}`;
+      } else {
+        botName = `Agent ${players.length + 1}`;
+      }
+    }
     const plugin = getGamePlugin(room.currentGame);
     const { initialHand, initialState } = plugin.getInitialPlayerState(
       "LOBBY",
