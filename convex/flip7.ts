@@ -204,6 +204,11 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
   const myState = player.state;
   if (myState.status !== "ACTIVE") throw new Error("Player is not active");
 
+  const players = await ctx.db
+    .query("players")
+    .withIndex("by_room", (q) => q.eq("roomId", room._id))
+    .collect();
+
   let deck = [...board.deck];
   let discardPile = [...board.discardPile];
 
@@ -226,21 +231,41 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
   let lastActionType: "HIT" | "FREEZE" | "BUST" | "FLIP_7_BONUS" | "SECOND_CHANCE_USED" | "ACTION_CARD" = "HIT";
   let message = `${player.name} flipped ${parsedCard.label}`;
 
+  let mustFlipCount = board.mustFlipCount || 0;
+
   if (parsedCard.type === "ACTION") {
     faceUpCards.push(drawnCardId);
     if (parsedCard.actionType === "SECOND_CHANCE") {
-      hasSecondChance = true;
-      lastActionType = "ACTION_CARD";
-      message = `${player.name} drew a 🛡️ Second Chance shield!`;
+      if (hasSecondChance) {
+        // Player already has Second Chance shield! Pass to opponent without shield.
+        const candidate = players.find(p => String(p._id) !== String(player._id) && (p.state as any).status === "ACTIVE" && !(p.state as any).hasSecondChance);
+        if (candidate) {
+          await ctx.db.patch(candidate._id, {
+            state: {
+              ...(candidate.state as any),
+              hasSecondChance: true,
+            },
+          });
+          message = `${player.name} drew an extra 🛡️ Second Chance shield and passed it to ${candidate.name}!`;
+        } else {
+          message = `${player.name} drew an extra 🛡️ Second Chance shield!`;
+        }
+      } else {
+        hasSecondChance = true;
+        lastActionType = "ACTION_CARD";
+        message = `${player.name} drew a 🛡️ Second Chance shield!`;
+      }
     } else if (parsedCard.actionType === "FREEZE") {
       status = "FROZEN";
       lastActionType = "FREEZE";
       message = `❄️ ${player.name} drew a FREEZE card! Points locked & banked!`;
     } else if (parsedCard.actionType === "FLIP_THREE") {
+      mustFlipCount = 3;
       lastActionType = "ACTION_CARD";
-      message = `⚡ ${player.name} drew a FLIP THREE card!`;
+      message = `⚡ ${player.name} drew a FLIP THREE card! Must flip 3 cards sequentially!`;
     }
   } else if (parsedCard.type === "NUMBER" && parsedCard.numberValue !== undefined) {
+    if (mustFlipCount > 0) mustFlipCount--;
     // Check if player already has this number value face up
     const existingNumbers = faceUpCards.map((cId) => parseFlip7Card(cId).numberValue).filter((n) => n !== undefined);
     const isDuplicate = existingNumbers.includes(parsedCard.numberValue);
@@ -255,6 +280,7 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
       } else {
         // BUST!
         status = "BUSTED";
+        mustFlipCount = 0;
         faceUpCards.push(drawnCardId);
         lastActionType = "BUST";
         message = `${player.name} flipped duplicate ${parsedCard.numberValue} and 💥 BUSTED!`;
@@ -263,8 +289,13 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
       faceUpCards.push(drawnCardId);
     }
   } else {
-    // Modifier (+1, +2, +3) card
+    if (mustFlipCount > 0) mustFlipCount--;
+    // Modifier card
     faceUpCards.push(drawnCardId);
+  }
+
+  if (status === "FROZEN" || status === "BUSTED") {
+    mustFlipCount = 0;
   }
 
   // Calculate new round score
@@ -274,6 +305,7 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
   // Check for Flip 7 Bonus
   if (status === "ACTIVE" && scoreInfo.hasFlip7Bonus) {
     status = "FROZEN";
+    mustFlipCount = 0;
     lastActionType = "FLIP_7_BONUS";
     message = `🌟 FLIP 7 BONUS! ${player.name} flipped 7 unique numbers and banked ${roundScore} pts!`;
   }
@@ -293,12 +325,6 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
   });
 
   // Determine next turn player
-  const players = await ctx.db
-    .query("players")
-    .withIndex("by_room", (q) => q.eq("roomId", room._id))
-    .collect();
-
-  // Refresh current player object in array
   const updatedPlayers = players.map((p) =>
     String(p._id) === String(player._id)
       ? {
@@ -324,6 +350,9 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
     // All players frozen or busted! Round ends!
     phase = "ROUND_RESULTS";
     nextTurnPlayerId = undefined;
+  } else if (mustFlipCount > 0 && status === "ACTIVE") {
+    // Player is in the middle of a FLIP THREE sequence! Turn stays with current player.
+    nextTurnPlayerId = player._id;
   } else {
     // Advance to next active player in turnOrder
     const order = room.turnOrder;
@@ -370,6 +399,7 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
       deck,
       discardPile,
       currentTurnPlayerId: nextTurnPlayerId,
+      mustFlipCount,
       lastAction: {
         type: lastActionType,
         playerId: player._id,
