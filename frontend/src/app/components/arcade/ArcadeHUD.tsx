@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
+import BackgroundAudioPlayer from "../shared/BackgroundAudioPlayer";
 
 interface ArcadeHUDProps {
   title: string;
@@ -10,6 +11,8 @@ interface ArcadeHUDProps {
   onHaltToggle?: () => void;
   isHalted?: boolean;
   onRulesClick?: () => void;
+  audioSrc?: string | string[];
+  audioSlot?: ReactNode;
 }
 
 const THEME_MAP = {
@@ -77,6 +80,8 @@ export default function ArcadeHUD({
   onHaltToggle,
   isHalted = false,
   onRulesClick,
+  audioSrc,
+  audioSlot,
 }: ArcadeHUDProps) {
   const theme = THEME_MAP[accentColor];
 
@@ -94,6 +99,10 @@ export default function ArcadeHUD({
       </div>
 
       <div className="flex items-center gap-4">
+        {audioSlot}
+        {!audioSlot && audioSrc && (
+          <BackgroundAudioPlayer src={audioSrc} accentColor={accentColor} />
+        )}
         {onRulesClick && (
             <button 
                 onClick={onRulesClick}

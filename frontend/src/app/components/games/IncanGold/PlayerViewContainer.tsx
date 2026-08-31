@@ -9,6 +9,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { formatLog } from "@/lib/translations";
 import { useRouter } from "next/navigation";
 import PlayerController from "../../shared/PlayerController";
+import BackgroundAudioPlayer from "../../shared/BackgroundAudioPlayer";
 
 const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData }) => {
   const { t } = useTranslation();
@@ -146,9 +147,12 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData }) => {
                     {formatLog(t.incangold_round, { round: board.currentRound })} / 5
                   </span>
                 </div>
-                <div className="bg-white/5 px-3 py-1 rounded-full border border-white/10 text-[8px] font-black text-slate-400 uppercase tracking-widest shadow-inner">
-                  {board.phase === "DECISION_PHASE" ? "⚡ " + t.incangold_decide : "✨ EXPEDITION"}
-                </div>
+                 <div className="flex items-center gap-3">
+                   <BackgroundAudioPlayer src="/assets/games/incangold/audio/ambience_cave_00.wav" />
+                   <div className="bg-white/5 px-3 py-1 rounded-full border border-white/10 text-[8px] font-black text-slate-400 uppercase tracking-widest shadow-inner">
+                     {board.phase === "DECISION_PHASE" ? "⚡ " + t.incangold_decide : "✨ EXPEDITION"}
+                   </div>
+                 </div>
              </div>
 
               {/* 2. Context Panel */}
