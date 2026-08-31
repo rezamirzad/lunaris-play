@@ -47,6 +47,9 @@ const TimeAttackPlayer = dynamic(() => import("./TimeAttack/PlayerViewContainer"
 const IncanGoldBoard = dynamic(() => import("./IncanGold/IncanGoldContainer"));
 const IncanGoldPlayer = dynamic(() => import("./IncanGold/PlayerViewContainer"));
 
+const Flip7Board = dynamic(() => import("./Flip7/Flip7Container"));
+const Flip7Player = dynamic(() => import("./Flip7/PlayerViewContainer"));
+
 export const GAME_REGISTRY: Record<string, GameModule> = {
   dixit: {
     Board: DixitBoard as ComponentType<BoardProps>,
@@ -101,6 +104,18 @@ export const GAME_REGISTRY: Record<string, GameModule> = {
     Player: IncanGoldPlayer as ComponentType<PlayerProps>,
     visuals: {
       emoji: "💎",
+    },
+  },
+  flip7: {
+    Board: Flip7Board as ComponentType<BoardProps>,
+    Player: Flip7Player as ComponentType<PlayerProps>,
+    visuals: {
+      emoji: "🎰",
+      assets: {
+        cover: "/assets/games/flip7/box_scan.jpg.webp",
+        cardsPath: "/assets/games/flip7/cards/",
+        audioPath: "/assets/games/flip7/audio/",
+      },
     },
   },
 };

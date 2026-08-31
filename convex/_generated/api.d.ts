@@ -18,6 +18,8 @@ import type * as dixit_deck from "../dixit_deck.js";
 import type * as engine from "../engine.js";
 import type * as fixLeaderboard from "../fixLeaderboard.js";
 import type * as fixWinners from "../fixWinners.js";
+import type * as flip7 from "../flip7.js";
+import type * as flip7_deck from "../flip7_deck.js";
 import type * as http from "../http.js";
 import type * as importClues from "../importClues.js";
 import type * as incangold from "../incangold.js";
@@ -50,6 +52,8 @@ declare const fullApi: ApiFromModules<{
   engine: typeof engine;
   fixLeaderboard: typeof fixLeaderboard;
   fixWinners: typeof fixWinners;
+  flip7: typeof flip7;
+  flip7_deck: typeof flip7_deck;
   http: typeof http;
   importClues: typeof importClues;
   incangold: typeof incangold;

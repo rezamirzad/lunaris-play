@@ -107,6 +107,11 @@ export interface TranslationSet {
   incangold_chest_total: string;
   incangold_choice_leave: string;
   incangold_choice_stay: string;
+  flip7_title: string;
+  flip7_desc: string;
+  flip7_hit: string;
+  flip7_freeze: string;
+  flip7_round: string;
   incangold_close_rules: string;
   incangold_continue_exploration: string;
   incangold_danger: string;

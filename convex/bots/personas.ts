@@ -16,6 +16,7 @@ export interface BotPersona {
   // Game-specific decision logic
   decidePiouPiou(myId: string, hand: string[], eggs: number, chicks: number, players: Doc<"players">[], board: any): BotMove;
   decideIncanGold(myId: string, currentGems: number, players: Doc<"players">[], board: any): "STAY" | "LEAVE";
+  decideFlip7(myId: string, faceUpCards: string[], board: any): "HIT" | "FREEZE";
   generateDixitPrompt(phase: string, maturity: "CHILD" | "ADULT", clue?: string, ruleset?: string): string;
 }
 
@@ -72,6 +73,11 @@ export const PERSONAS: Record<string, BotPersona> = {
       if (crashProb > 0.15 || currentGems >= 15) return "LEAVE";
       if (board.artifactsOnPath.length > 0 && currentGems > 10) return "LEAVE";
       return "STAY";
+    },
+    decideFlip7(myId, faceUpCards, board) {
+      if (faceUpCards.length === 0) return "HIT";
+      const uniqueCount = new Set(faceUpCards.filter((c: string) => c.startsWith("N_"))).size;
+      return uniqueCount >= 5 ? "FREEZE" : "HIT";
     },
     generateDixitPrompt(phase, maturity, clue, ruleset) {
       const maturityConstraint = maturity === "CHILD" 
@@ -135,6 +141,11 @@ export const PERSONAS: Record<string, BotPersona> = {
       if (crashProb > 0.25 || currentGems >= 25) return "LEAVE";
       return "STAY";
     },
+    decideFlip7(myId, faceUpCards, board) {
+      if (faceUpCards.length === 0) return "HIT";
+      const uniqueCount = new Set(faceUpCards.filter((c: string) => c.startsWith("N_"))).size;
+      return uniqueCount >= 6 ? "FREEZE" : "HIT";
+    },
     generateDixitPrompt(phase, maturity, clue, ruleset) {
       const maturityConstraint = maturity === "CHILD" 
         ? "You are a silly 9-year-old child. Use funny and creative words like 'cloud jump', 'banana moon', 'tickle stars'. NO hard words." 
@@ -197,6 +208,11 @@ export const PERSONAS: Record<string, BotPersona> = {
       const crashProb = calculateCrashProbability(board);
       if (crashProb > 0.08 || currentGems >= 10) return "LEAVE";
       return "STAY";
+    },
+    decideFlip7(myId, faceUpCards, board) {
+      if (faceUpCards.length === 0) return "HIT";
+      const uniqueCount = new Set(faceUpCards.filter((c: string) => c.startsWith("N_"))).size;
+      return uniqueCount >= 4 ? "FREEZE" : "HIT";
     },
     generateDixitPrompt(phase, maturity, clue, ruleset) {
       const maturityConstraint = maturity === "CHILD" 

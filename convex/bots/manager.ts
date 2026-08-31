@@ -28,6 +28,11 @@ export const dispatchBotTurn = internalMutation({
       targetPlayerIds = players
         .filter(p => p.isBot && p.state.gameType === "incangold" && p.state.status === "IN_TEMPLE" && !board.decisions[p._id])
         .map(p => p._id);
+    } else if (board.gameType === "flip7" && board.phase === "ACTIVE_PLAY") {
+      const currentTurnPlayer = players.find(p => String(p._id) === String(board.currentTurnPlayerId));
+      if (currentTurnPlayer && currentTurnPlayer.isBot && (currentTurnPlayer.state as any).status === "ACTIVE") {
+        targetPlayerIds = [currentTurnPlayer._id];
+      }
     } else if (board.gameType === "dixit") {
       if (board.phase === "CLUE") {
         const storytellerId = room.turnOrder[room.currentTurnIndex];
@@ -155,6 +160,13 @@ export const executeMove = internalMutation({
       // Humanized delay: 1.2s to 3.5s randomized per bot
       const delayMs = 1200 + Math.floor(Math.random() * 2300);
       await ctx.scheduler.runAfter(delayMs, (internal as any).incangold.performBotDecision, { playerId: player._id, decision });
+    }
+    else if (room.currentGame === "flip7") {
+      if (board.phase !== "ACTIVE_PLAY") return;
+      const state = player.state as any;
+      const action = (persona as any).decideFlip7 ? (persona as any).decideFlip7(player._id, state.roundFaceUpCards || [], board) : "HIT";
+      const delayMs = 1000 + Math.floor(Math.random() * 2000);
+      await ctx.scheduler.runAfter(delayMs, (internal as any).flip7.performBotTurn, { playerId: player._id, action });
     }
     else if (room.currentGame === "dixit") {
       let relevantCards: string[] = [];

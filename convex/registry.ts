@@ -5,6 +5,7 @@ import { themindPlugin } from "./themind";
 import { justonePlugin } from "./justone";
 import { timeattackPlugin } from "./timeattackPlugin";
 import { incangoldPlugin } from "./incangold";
+import { flip7Plugin } from "./flip7";
 
 const registry: Record<string, GamePlugin> = {
   dixit: dixitPlugin,
@@ -13,6 +14,7 @@ const registry: Record<string, GamePlugin> = {
   justone: justonePlugin,
   timeattack: timeattackPlugin,
   incangold: incangoldPlugin,
+  flip7: flip7Plugin,
 };
 
 export function getGamePlugin(gameType: string): GamePlugin {

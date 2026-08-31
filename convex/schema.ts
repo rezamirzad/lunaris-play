@@ -261,6 +261,53 @@ export default defineSchema({
         }))),
         winner: v.optional(v.string()),
         winnerId: v.optional(v.id("players")),
+      }),
+      // Flip 7 state
+      v.object({
+        gameType: v.literal("flip7"),
+        phase: v.union(
+          v.literal("ROUND_INTRO"),
+          v.literal("ACTIVE_PLAY"),
+          v.literal("BUST_REVEAL"),
+          v.literal("ROUND_RESULTS"),
+          v.literal("FINAL_LEADERBOARD")
+        ),
+        currentRound: v.number(),
+        targetScore: v.number(),
+        currentTurnPlayerId: v.optional(v.id("players")),
+        mustFlipCount: v.optional(v.number()),
+        deck: v.array(v.string()),
+        discardPile: v.array(v.string()),
+        lastAction: v.optional(
+          v.object({
+            type: v.union(
+              v.literal("HIT"),
+              v.literal("FREEZE"),
+              v.literal("BUST"),
+              v.literal("FLIP_7_BONUS"),
+              v.literal("SECOND_CHANCE_USED"),
+              v.literal("ACTION_CARD")
+            ),
+            playerId: v.id("players"),
+            playerName: v.string(),
+            cardId: v.optional(v.string()),
+            scoreGained: v.optional(v.number()),
+            message: v.optional(v.string()),
+          })
+        ),
+        roundResults: v.optional(
+          v.array(
+            v.object({
+              playerId: v.id("players"),
+              playerName: v.string(),
+              roundScore: v.number(),
+              totalScore: v.number(),
+              status: v.union(v.literal("FROZEN"), v.literal("BUSTED"), v.literal("FLIP_7")),
+            })
+          )
+        ),
+        winner: v.optional(v.string()),
+        winnerId: v.optional(v.id("players")),
       })
     ),
   }).index("by_roomCode", ["roomCode"]),
@@ -311,6 +358,14 @@ export default defineSchema({
         gemsThisRound: v.number(),    // Unbanked gems (at risk)
         artifacts: v.number(),        // Number of artifacts collected
         status: v.union(v.literal("IN_TEMPLE"), v.literal("AT_CAMP")),
+      }),
+      v.object({
+        gameType: v.literal("flip7"),
+        bankedScore: v.number(),
+        roundScore: v.number(),
+        roundFaceUpCards: v.array(v.string()),
+        hasSecondChance: v.boolean(),
+        status: v.union(v.literal("ACTIVE"), v.literal("FROZEN"), v.literal("BUSTED")),
       })
     ),
   }).index("by_room", ["roomId"]),

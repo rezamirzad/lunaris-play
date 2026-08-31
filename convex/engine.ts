@@ -239,6 +239,22 @@ export const seedGames = mutation({
       suggestedMax: 8,
       absoluteMax: 8,
     });
+
+    await ctx.db.insert("games", {
+      slug: "flip7",
+      title: "Flip 7",
+      title_fr: "Flip 7",
+      title_de: "Flip 7",
+      title_fa: "فلیپ ۷",
+      description: "Push your luck in the ultimate number flipping challenge!",
+      description_fr: "Tentez votre chance dans le défi ultime de cartes!",
+      description_de: "Fordern Sie Ihr Glück im ultimativen Kartenduell heraus!",
+      description_fa: "شانس خود را در چالش هیجان‌انگیز فلیپ ۷ امتحان کنید!",
+      thumbnail: "/assets/games/flip7/box_scan.jpg.webp",
+      minPlayers: 2,
+      suggestedMax: 6,
+      absoluteMax: 8,
+    });
   },
 });
 
