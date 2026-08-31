@@ -42,15 +42,12 @@ export const Flip7Card: React.FC<Flip7CardProps> = ({
     } else if (val >= 1 && val <= 3) {
       // 1-3: Low Numbers (Coral / Gold)
       themeGradient = "from-orange-500 via-amber-600 to-amber-900 border-amber-400 text-amber-100 shadow-[0_0_15px_rgba(249,115,22,0.3)]";
-      subLabel = `${val} COPIES`;
     } else if (val >= 4 && val <= 8) {
       // 4-8: Mid Numbers (Emerald / Teal)
       themeGradient = "from-emerald-500 via-teal-700 to-teal-950 border-emerald-400 text-emerald-100 shadow-[0_0_15px_rgba(16,185,129,0.3)]";
-      subLabel = `${val} COPIES`;
     } else {
       // 9-12: High Numbers (Cobalt / Indigo / Violet)
       themeGradient = "from-blue-600 via-indigo-700 to-slate-950 border-indigo-400 text-blue-100 shadow-[0_0_15px_rgba(99,102,241,0.3)]";
-      subLabel = `${val} COPIES`;
     }
   } else if (card.type === "MODIFIER") {
     themeGradient = "from-emerald-400 via-teal-500 to-amber-400 border-emerald-200 text-black shadow-[0_0_20px_rgba(52,211,153,0.4)]";

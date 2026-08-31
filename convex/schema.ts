@@ -278,6 +278,24 @@ export default defineSchema({
         mustFlipCount: v.optional(v.number()),
         deck: v.array(v.string()),
         discardPile: v.array(v.string()),
+        pendingTargetAction: v.optional(
+          v.object({
+            cardId: v.string(),
+            actionType: v.union(v.literal("FREEZE"), v.literal("FLIP_THREE")),
+            sourcePlayerId: v.id("players"),
+            sourcePlayerName: v.string(),
+          })
+        ),
+        queuedTargetActions: v.optional(
+          v.array(
+            v.object({
+              cardId: v.string(),
+              actionType: v.union(v.literal("FREEZE"), v.literal("FLIP_THREE")),
+              sourcePlayerId: v.id("players"),
+              sourcePlayerName: v.string(),
+            })
+          )
+        ),
         lastAction: v.optional(
           v.object({
             type: v.union(

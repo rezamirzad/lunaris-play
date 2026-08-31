@@ -97,6 +97,16 @@ export const freeze = mutation({
   },
 });
 
+export const resolveTargetAction = mutation({
+  args: {
+    playerId: v.id("players"),
+    targetPlayerId: v.id("players"),
+  },
+  handler: async (ctx, args) => {
+    return await handleResolveTargetActionInternal(ctx, args.playerId, args.targetPlayerId);
+  },
+});
+
 export const performBotTurn = internalMutation({
   args: {
     playerId: v.id("players"),
@@ -230,6 +240,8 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
   let status: "ACTIVE" | "FROZEN" | "BUSTED" = "ACTIVE";
   let lastActionType: "HIT" | "FREEZE" | "BUST" | "FLIP_7_BONUS" | "SECOND_CHANCE_USED" | "ACTION_CARD" = "HIT";
   let message = `${player.name} flipped ${parsedCard.label}`;
+  let pendingTarget: any = undefined;
+  let queuedActions = [...(board.queuedTargetActions || [])];
 
   let mustFlipCount = board.mustFlipCount || 0;
 
@@ -255,14 +267,44 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
         lastActionType = "ACTION_CARD";
         message = `${player.name} drew a 🛡️ Second Chance shield!`;
       }
-    } else if (parsedCard.actionType === "FREEZE") {
-      status = "FROZEN";
-      lastActionType = "FREEZE";
-      message = `❄️ ${player.name} drew a FREEZE card! Points locked & banked!`;
-    } else if (parsedCard.actionType === "FLIP_THREE") {
-      mustFlipCount = 3;
-      lastActionType = "ACTION_CARD";
-      message = `⚡ ${player.name} drew a FLIP THREE card! Must flip 3 cards sequentially!`;
+    } else if (parsedCard.actionType === "FREEZE" || parsedCard.actionType === "FLIP_THREE") {
+      let isChainedInFlipThree = mustFlipCount > 0;
+      if (mustFlipCount > 0) mustFlipCount--;
+
+      if (isChainedInFlipThree && mustFlipCount > 0) {
+        // Queue nested action card to resolve after current sequence completes!
+        const queuedItem = {
+          cardId: drawnCardId,
+          actionType: parsedCard.actionType as "FREEZE" | "FLIP_THREE",
+          sourcePlayerId: player._id,
+          sourcePlayerName: player.name,
+        };
+        queuedActions.push(queuedItem);
+        lastActionType = "ACTION_CARD";
+        message = `⚡ ${player.name} flipped a ${parsedCard.actionType === "FREEZE" ? "❄️ FREEZE" : "⚡ FLIP THREE"} card during FLIP THREE! Queued for after the sequence!`;
+      } else {
+        const otherActive = players.filter((p) => String(p._id) !== String(player._id) && (p.state as any).status === "ACTIVE");
+        if (otherActive.length > 0) {
+          pendingTarget = {
+            cardId: drawnCardId,
+            actionType: parsedCard.actionType,
+            sourcePlayerId: player._id,
+            sourcePlayerName: player.name,
+          };
+          lastActionType = "ACTION_CARD";
+          message = `${player.name} drew a ${parsedCard.actionType === "FREEZE" ? "❄️ FREEZE" : "⚡ FLIP THREE"} card! Choose a target...`;
+        } else {
+          if (parsedCard.actionType === "FREEZE") {
+            status = "FROZEN";
+            lastActionType = "FREEZE";
+            message = `❄️ ${player.name} drew a FREEZE card! Points locked & banked!`;
+          } else {
+            mustFlipCount = 3;
+            lastActionType = "ACTION_CARD";
+            message = `⚡ ${player.name} drew a FLIP THREE card! Must flip 3 cards sequentially!`;
+          }
+        }
+      }
     }
   } else if (parsedCard.type === "NUMBER" && parsedCard.numberValue !== undefined) {
     if (mustFlipCount > 0) mustFlipCount--;
@@ -281,6 +323,7 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
         // BUST!
         status = "BUSTED";
         mustFlipCount = 0;
+        queuedActions = [];
         faceUpCards.push(drawnCardId);
         lastActionType = "BUST";
         message = `${player.name} flipped duplicate ${parsedCard.numberValue} and 💥 BUSTED!`;
@@ -296,6 +339,23 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
 
   if (status === "FROZEN" || status === "BUSTED") {
     mustFlipCount = 0;
+    if (status === "BUSTED") queuedActions = [];
+  } else if (mustFlipCount === 0 && queuedActions.length > 0 && !pendingTarget && status === "ACTIVE") {
+    // Sequence completed! Process next queued action card!
+    const nextAction = queuedActions.shift()!;
+    const otherActive = players.filter((p) => String(p._id) !== String(nextAction.sourcePlayerId) && (p.state as any).status === "ACTIVE");
+    if (otherActive.length > 0) {
+      pendingTarget = nextAction;
+      message = `⚡ Sequence complete! Resolving queued ${nextAction.actionType} card from ${nextAction.sourcePlayerName}...`;
+    } else {
+      if (nextAction.actionType === "FREEZE") {
+        status = "FROZEN";
+        message = `❄️ Resolving queued FREEZE card! ${player.name} is FROZEN!`;
+      } else {
+        mustFlipCount = 3;
+        message = `⚡ Resolving queued FLIP THREE card! ${player.name} must flip 3 cards!`;
+      }
+    }
   }
 
   // Calculate new round score
@@ -400,6 +460,8 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
       discardPile,
       currentTurnPlayerId: nextTurnPlayerId,
       mustFlipCount,
+      pendingTargetAction: pendingTarget,
+      queuedTargetActions: queuedActions,
       lastAction: {
         type: lastActionType,
         playerId: player._id,
@@ -526,6 +588,120 @@ async function handleFreezeInternal(ctx: GameMutationCtx, playerId: Id<"players"
         message: `❄️ ${player.name} froze their hand and banked ${roundScore} pts!`,
       },
       roundResults,
+    } as any,
+  });
+
+  if (phase === "ACTIVE_PLAY" && nextTurnPlayerId) {
+    await ctx.scheduler.runAfter(0, (internal as any).bots.manager.dispatchBotTurn, {
+      roomId: room._id,
+    });
+  }
+
+  return { success: true };
+}
+
+async function handleResolveTargetActionInternal(
+  ctx: GameMutationCtx,
+  sourcePlayerId: Id<"players">,
+  targetPlayerId: Id<"players">,
+) {
+  const sourcePlayer = await ctx.db.get(sourcePlayerId);
+  if (!sourcePlayer || sourcePlayer.state.gameType !== "flip7") throw new Error("Invalid player");
+  const room = await ctx.db.get(sourcePlayer.roomId);
+  if (!room || room.gameBoard.gameType !== "flip7") throw new Error("Invalid room");
+
+  const board = room.gameBoard;
+  const pending = board.pendingTargetAction;
+  if (!pending) throw new Error("No pending target action");
+  if (String(pending.sourcePlayerId) !== String(sourcePlayerId)) throw new Error("Not authorized to resolve target");
+
+  const targetPlayer = await ctx.db.get(targetPlayerId);
+  if (!targetPlayer || targetPlayer.state.gameType !== "flip7") throw new Error("Invalid target player");
+
+  const players = await ctx.db
+    .query("players")
+    .withIndex("by_room", (q) => q.eq("roomId", room._id))
+    .collect();
+
+  let message = "";
+  let nextTurnPlayerId = board.currentTurnPlayerId;
+  let mustFlipCount = board.mustFlipCount || 0;
+
+  if (pending.actionType === "FREEZE") {
+    const targetState = targetPlayer.state as any;
+    const scoreInfo = calculateFlip7RoundScore(targetState.roundFaceUpCards || []);
+    const bankedScore = targetState.bankedScore + scoreInfo.score;
+
+    await ctx.db.patch(targetPlayer._id, {
+      state: {
+        ...targetState,
+        bankedScore,
+        roundScore: scoreInfo.score,
+        status: "FROZEN",
+      },
+    });
+
+    message = `❄️ ${sourcePlayer.name} played FREEZE on ${targetPlayer.name}! ${targetPlayer.name} banked ${scoreInfo.score} pts!`;
+
+    if (String(board.currentTurnPlayerId) === String(targetPlayer._id)) {
+      const order = room.turnOrder;
+      const currIndex = order.findIndex((id) => String(id) === String(targetPlayer._id));
+      let nextIndex = (currIndex + 1) % order.length;
+      for (let i = 0; i < order.length; i++) {
+        const candidateId = order[nextIndex];
+        const cand = players.find((p) => String(p._id) === String(candidateId));
+        if (cand && String(cand._id) !== String(targetPlayer._id) && (cand.state as any).status === "ACTIVE") {
+          nextTurnPlayerId = candidateId;
+          break;
+        }
+        nextIndex = (nextIndex + 1) % order.length;
+      }
+    }
+  } else if (pending.actionType === "FLIP_THREE") {
+    mustFlipCount = 3;
+    nextTurnPlayerId = targetPlayer._id;
+    message = `⚡ ${sourcePlayer.name} played FLIP THREE on ${targetPlayer.name}! ${targetPlayer.name} must flip 3 cards!`;
+  }
+
+  const updatedPlayers = await ctx.db
+    .query("players")
+    .withIndex("by_room", (q) => q.eq("roomId", room._id))
+    .collect();
+
+  const activeRemaining = updatedPlayers.filter((p) => (p.state as any).status === "ACTIVE");
+  let phase: "ACTIVE_PLAY" | "ROUND_RESULTS" | "FINAL_LEADERBOARD" = "ACTIVE_PLAY";
+
+  if (activeRemaining.length === 0) {
+    phase = "ROUND_RESULTS";
+    nextTurnPlayerId = undefined;
+  }
+
+  let queuedActions = [...(board.queuedTargetActions || [])];
+  let nextPendingTarget: any = undefined;
+
+  if (queuedActions.length > 0) {
+    const nextQueued = queuedActions.shift()!;
+    const otherActive = updatedPlayers.filter((p) => String(p._id) !== String(nextQueued.sourcePlayerId) && (p.state as any).status === "ACTIVE");
+    if (otherActive.length > 0) {
+      nextPendingTarget = nextQueued;
+    }
+  }
+
+  await ctx.db.patch(room._id, {
+    gameBoard: {
+      ...board,
+      phase,
+      currentTurnPlayerId: nextTurnPlayerId,
+      mustFlipCount,
+      pendingTargetAction: nextPendingTarget,
+      queuedTargetActions: queuedActions,
+      lastAction: {
+        type: "ACTION_CARD",
+        playerId: sourcePlayer._id,
+        playerName: sourcePlayer.name,
+        cardId: pending.cardId,
+        message,
+      },
     } as any,
   });
 

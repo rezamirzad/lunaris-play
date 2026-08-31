@@ -29,9 +29,16 @@ export const dispatchBotTurn = internalMutation({
         .filter(p => p.isBot && p.state.gameType === "incangold" && p.state.status === "IN_TEMPLE" && !board.decisions[p._id])
         .map(p => p._id);
     } else if (board.gameType === "flip7" && board.phase === "ACTIVE_PLAY") {
-      const currentTurnPlayer = players.find(p => String(p._id) === String(board.currentTurnPlayerId));
-      if (currentTurnPlayer && currentTurnPlayer.isBot && (currentTurnPlayer.state as any).status === "ACTIVE") {
-        targetPlayerIds = [currentTurnPlayer._id];
+      if (board.pendingTargetAction) {
+        const sourceBot = players.find(p => String(p._id) === String(board.pendingTargetAction.sourcePlayerId));
+        if (sourceBot && sourceBot.isBot) {
+          targetPlayerIds = [sourceBot._id];
+        }
+      } else {
+        const currentTurnPlayer = players.find(p => String(p._id) === String(board.currentTurnPlayerId));
+        if (currentTurnPlayer && currentTurnPlayer.isBot && (currentTurnPlayer.state as any).status === "ACTIVE") {
+          targetPlayerIds = [currentTurnPlayer._id];
+        }
       }
     } else if (board.gameType === "dixit") {
       if (board.phase === "CLUE") {
@@ -138,6 +145,11 @@ export const executeMove = internalMutation({
     const player: any = await ctx.db.get(args.playerId);
     if (!room || !player || room.status !== "PLAYING") return;
     
+    const players = await ctx.db
+      .query("players")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .collect();
+    
     // Clear thinking state as we are now executing
     await ctx.db.patch(player._id, { isThinking: false, botStatus: undefined });
 
@@ -163,10 +175,35 @@ export const executeMove = internalMutation({
     }
     else if (room.currentGame === "flip7") {
       if (board.phase !== "ACTIVE_PLAY") return;
-      const state = player.state as any;
-      const action = (persona as any).decideFlip7 ? (persona as any).decideFlip7(player._id, state.roundFaceUpCards || [], board) : "HIT";
-      const delayMs = 1000 + Math.floor(Math.random() * 2000);
-      await ctx.scheduler.runAfter(delayMs, (internal as any).flip7.performBotTurn, { playerId: player._id, action });
+      const delayMs = 1000 + Math.floor(Math.random() * 1500);
+
+      if (board.pendingTargetAction && String(board.pendingTargetAction.sourcePlayerId) === String(player._id)) {
+        const activePlayers = players.filter((p: any) => (p.state as any).status === "ACTIVE");
+        let targetId = player._id;
+        const rivals = activePlayers.filter((p: any) => String(p._id) !== String(player._id));
+
+        if (board.pendingTargetAction.actionType === "FREEZE") {
+          const myScore = (player.state as any).roundScore || 0;
+          if (myScore >= 12 || rivals.length === 0) {
+            targetId = player._id;
+          } else {
+            const sortedRivals = [...rivals].sort((a: any, b: any) => ((b.state as any).roundScore || 0) - ((a.state as any).roundScore || 0));
+            targetId = sortedRivals[0]._id;
+          }
+        } else {
+          // FLIP_THREE: target top scoring rival
+          if (rivals.length > 0) {
+            const sortedRivals = [...rivals].sort((a: any, b: any) => ((b.state as any).roundScore || 0) - ((a.state as any).roundScore || 0));
+            targetId = sortedRivals[0]._id;
+          }
+        }
+
+        await ctx.scheduler.runAfter(delayMs, (internal as any).flip7.resolveTargetAction, { playerId: player._id, targetPlayerId: targetId });
+      } else {
+        const state = player.state as any;
+        const action = (persona as any).decideFlip7 ? (persona as any).decideFlip7(player._id, state.roundFaceUpCards || [], board) : "HIT";
+        await ctx.scheduler.runAfter(delayMs, (internal as any).flip7.performBotTurn, { playerId: player._id, action });
+      }
     }
     else if (room.currentGame === "dixit") {
       let relevantCards: string[] = [];
