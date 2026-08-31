@@ -152,7 +152,11 @@ export default function RoomPage() {
         roomId={room._id} 
         roomData={room as any} 
         player={me as any} 
-        isMyTurn={String(room.turnOrder[room.currentTurnIndex]) === String(me?._id)} 
+        isMyTurn={
+          (room.gameBoard as any)?.currentTurnPlayerId
+            ? String((room.gameBoard as any).currentTurnPlayerId) === String(me?._id)
+            : String(room.turnOrder[room.currentTurnIndex]) === String(me?._id)
+        }
         history={history}
         submissions={submissions}
       />

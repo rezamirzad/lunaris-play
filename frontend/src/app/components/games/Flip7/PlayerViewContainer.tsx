@@ -26,7 +26,7 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
   if (!board || board.gameType !== "flip7") return null;
   if (!myState || myState.gameType !== "flip7") return null;
 
-  const isMyTurnNow = isMyTurn && board.phase === "ACTIVE_PLAY" && String(board.currentTurnPlayerId) === String(player._id) && myState.status === "ACTIVE";
+  const isMyTurnNow = board.phase === "ACTIVE_PLAY" && String(board.currentTurnPlayerId) === String(player._id) && myState.status === "ACTIVE";
   const faceUpCards = (myState.roundFaceUpCards as string[]) || [];
   const scoreInfo = calculateFlip7RoundScore(faceUpCards);
 
