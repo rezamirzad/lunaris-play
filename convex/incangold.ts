@@ -278,6 +278,36 @@ export const startDecision = mutation({
   },
 });
 
+export const forceResolveDecisions = mutation({
+  args: { roomId: v.id("rooms") },
+  handler: async (ctx, args) => {
+    const room = await ctx.db.get(args.roomId);
+    if (!room || room.gameBoard.gameType !== "incangold")
+      throw new Error("Invalid room");
+    const board = room.gameBoard;
+    if (board.phase !== "DECISION_PHASE") return { success: false };
+
+    const players = await ctx.db
+      .query("players")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .collect();
+
+    const activePlayers = players.filter(
+      (p) => p.state.gameType === "incangold" && p.state.status === "IN_TEMPLE",
+    );
+
+    const decisions = { ...board.decisions };
+    activePlayers.forEach((p) => {
+      if (!decisions[p._id]) {
+        decisions[p._id] = "STAY";
+      }
+    });
+
+    await resolveDecisions(ctx, room, players, decisions);
+    return { success: true };
+  },
+});
+
 export const submitDecision = mutation({
   args: {
     playerId: v.id("players"),

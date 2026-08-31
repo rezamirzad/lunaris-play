@@ -2,6 +2,22 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
+export interface YouTubePreset {
+  id: string;
+  name: string;
+  youtubeId?: string;
+  type: "local" | "youtube";
+}
+
+export const INCANGOLD_YOUTUBE_PRESETS: YouTubePreset[] = [
+  { id: "local", name: "🦇 Cavern Ambience (Local)", type: "local" },
+  { id: "UiZNMDrEbko", name: "🤠 Indiana Jones Temple 1", type: "youtube", youtubeId: "UiZNMDrEbko" },
+  { id: "vzulc7RlNpA", name: "🏺 Lost Tomb Expedition", type: "youtube", youtubeId: "vzulc7RlNpA" },
+  { id: "205meIww0zg", name: "💧 Deep Cavern & Water Echoes", type: "youtube", youtubeId: "205meIww0zg" },
+  { id: "naU5pbyFHEs", name: "🔥 Fire & Shamanic Drums", type: "youtube", youtubeId: "naU5pbyFHEs" },
+  { id: "1Pe5MKvrvdk", name: "🏛️ Ancient Incan Sanctuary", type: "youtube", youtubeId: "1Pe5MKvrvdk" },
+];
+
 interface BackgroundAudioPlayerProps {
   /** Source URL or array of source URLs for the background track (.mp3, .webm, .ogg) */
   src?: string | string[];
@@ -34,6 +50,7 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(initialVolume);
+  const [selectedPresetId, setSelectedPresetId] = useState<string>("local");
 
   // Load user audio preferences from localStorage on mount
   useEffect(() => {
@@ -46,6 +63,10 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
       if (savedVol !== null) {
         const parsed = parseFloat(savedVol);
         if (!isNaN(parsed)) setVolume(parsed);
+      }
+      const savedPreset = localStorage.getItem("lunaris_ambient_preset");
+      if (savedPreset) {
+        setSelectedPresetId(savedPreset);
       }
     } catch {
       // Ignore localStorage errors
@@ -77,7 +98,6 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
   // Handle track ending (Option B: Sequential Intro -> Looping Ambient)
   const handleTrackEnded = () => {
     if (currentTrackIndex < sources.length - 1) {
-      // Move from Intro (enter-cave.wav) to Looping Ambient (ambience_cave_00.wav)
       setCurrentTrackIndex((prev) => prev + 1);
     } else if (!loop) {
       setIsPlaying(false);
@@ -86,10 +106,10 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
 
   // Play audio whenever currentTrackIndex changes
   useEffect(() => {
-    if (audioRef.current) {
+    if (selectedPresetId === "local" && audioRef.current) {
       attemptPlay();
     }
-  }, [currentTrackIndex, attemptPlay]);
+  }, [currentTrackIndex, selectedPresetId, attemptPlay]);
 
   // Register first user interaction listener to bypass browser autoplay policies
   useEffect(() => {
@@ -113,12 +133,16 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
   }, [sources.length, attemptPlay]);
 
   const togglePlay = () => {
-    if (!audioRef.current) return;
-    if (isPlaying) {
-      audioRef.current.pause();
-      setIsPlaying(false);
+    if (selectedPresetId === "local") {
+      if (!audioRef.current) return;
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        attemptPlay();
+      }
     } else {
-      attemptPlay();
+      setIsPlaying(!isPlaying);
     }
   };
 
@@ -141,24 +165,52 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
     } catch {}
   };
 
+  const handlePresetSelect = (presetId: string) => {
+    setSelectedPresetId(presetId);
+    try {
+      localStorage.setItem("lunaris_ambient_preset", presetId);
+    } catch {}
+    if (presetId !== "local" && audioRef.current) {
+      audioRef.current.pause();
+    }
+  };
+
   if (sources.length === 0) return null;
 
   const currentSrc = sources[currentTrackIndex] || sources[0];
   const isFinalTrack = currentTrackIndex === sources.length - 1;
+  const activePreset = INCANGOLD_YOUTUBE_PRESETS.find((p) => p.id === selectedPresetId);
 
   return (
-    <div className={`inline-flex items-center ${className}`}>
-      <audio
-        ref={audioRef}
-        key={currentSrc}
-        src={currentSrc}
-        loop={isFinalTrack ? loop : false}
-        preload="auto"
-        onEnded={handleTrackEnded}
-      />
+    <div className={`inline-flex items-center gap-2 ${className}`}>
+      {/* Local HTML5 Audio Player */}
+      {selectedPresetId === "local" && (
+        <audio
+          ref={audioRef}
+          key={currentSrc}
+          src={currentSrc}
+          loop={isFinalTrack ? loop : false}
+          preload="auto"
+          onEnded={handleTrackEnded}
+        />
+      )}
+
+      {/* YouTube Embedded Audio Player (Hidden Iframe Streaming) */}
+      {activePreset?.type === "youtube" && activePreset.youtubeId && !isMuted && (
+        <iframe
+          key={activePreset.youtubeId}
+          width="1"
+          height="1"
+          src={`https://www.youtube.com/embed/${activePreset.youtubeId}?autoplay=1&loop=1&playlist=${activePreset.youtubeId}&controls=0`}
+          title={activePreset.name}
+          allow="autoplay"
+          className="absolute opacity-0 pointer-events-none w-0 h-0"
+        />
+      )}
 
       {showControls && (
-        <div className="flex items-center gap-2 bg-black/60 border border-white/10 backdrop-blur-md px-3 py-1.5 rounded-full shadow-lg text-xs font-mono select-none">
+        <div className="flex items-center gap-2 bg-black/70 border border-white/15 backdrop-blur-md px-3 py-1.5 rounded-full shadow-lg text-xs font-mono select-none">
+          {/* Play / Pause Toggle */}
           <button
             onClick={togglePlay}
             title={isPlaying ? "Pause Ambient Soundtrack" : "Play Ambient Soundtrack"}
@@ -171,6 +223,7 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
             )}
           </button>
 
+          {/* Mute Toggle */}
           <button
             onClick={toggleMute}
             title={isMuted ? "Unmute Sound" : "Mute Sound"}
@@ -179,6 +232,7 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
             {isMuted || volume === 0 ? "🔇" : volume > 0.5 ? "🔊" : "🔉"}
           </button>
 
+          {/* Volume Slider */}
           <input
             type="range"
             min="0"
@@ -186,9 +240,23 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
             step="0.05"
             value={isMuted ? 0 : volume}
             onChange={handleVolumeChange}
-            className="w-16 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-amber-500"
+            className="w-14 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-amber-500 hidden sm:block"
             title={`Volume: ${Math.round((isMuted ? 0 : volume) * 100)}%`}
           />
+
+          {/* YouTube & Local Soundtrack Preset Selector */}
+          <select
+            value={selectedPresetId}
+            onChange={(e) => handlePresetSelect(e.target.value)}
+            className="bg-black/80 text-amber-300 border border-white/20 text-[10px] rounded-lg px-2 py-0.5 outline-none cursor-pointer hover:border-amber-400 transition-colors"
+            title="Select Ambient Soundtrack Preset"
+          >
+            {INCANGOLD_YOUTUBE_PRESETS.map((preset) => (
+              <option key={preset.id} value={preset.id} className="bg-zinc-900 text-amber-200">
+                {preset.name}
+              </option>
+            ))}
+          </select>
         </div>
       )}
     </div>

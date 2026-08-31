@@ -152,7 +152,9 @@ export const executeMove = internalMutation({
       if (board.phase !== "DECISION_PHASE") return;
       const state = player.state as any;
       const decision = persona.decideIncanGold(player._id, state.gemsThisRound, [], board);
-      await ctx.scheduler.runAfter(0, (internal as any).incangold.performBotDecision, { playerId: player._id, decision });
+      // Humanized delay: 1.2s to 3.5s randomized per bot
+      const delayMs = 1200 + Math.floor(Math.random() * 2300);
+      await ctx.scheduler.runAfter(delayMs, (internal as any).incangold.performBotDecision, { playerId: player._id, decision });
     }
     else if (room.currentGame === "dixit") {
       let relevantCards: string[] = [];

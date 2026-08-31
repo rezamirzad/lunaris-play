@@ -27,6 +27,7 @@ const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData, history = [] }
   const drawCard = useMutation(incanApi.drawCard);
   const nextRound = useMutation(incanApi.nextRound);
   const startDecision = useMutation(incanApi.startDecision);
+  const forceResolveDecisions = useMutation(incanApi.forceResolveDecisions);
   const finishVoteReveal = useMutation(incanApi.finishVoteReveal);
   const toggleHaltMutation = useMutation(api.engine.toggleBotsHalt);
 
@@ -469,7 +470,7 @@ const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData, history = [] }
                    </div>
 
                    {isAdmin && (
-                      <button onClick={() => startDecision({ roomId: roomId as any })} className="text-[10px] text-zinc-600 uppercase font-black tracking-widest hover:text-amber-500 transition-colors">Force Reveal</button>
+                      <button onClick={() => forceResolveDecisions({ roomId: roomId as any })} className="text-[10px] text-zinc-600 uppercase font-black tracking-widest hover:text-amber-500 transition-colors">Force Reveal</button>
                    )}
                 </motion.div>
               )}
