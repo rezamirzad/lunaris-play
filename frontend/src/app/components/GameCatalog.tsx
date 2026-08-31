@@ -148,7 +148,8 @@ export default function GameCatalog({
                 {(game.slug === "dixit" ||
                   game.slug === "justone" ||
                   game.slug === "pioupiou" ||
-                  game.slug === "incangold") && (
+                  game.slug === "incangold" ||
+                  game.slug === "flip7") && (
                   <ArcadeBadge
                     variant="ai"
                     label=""
