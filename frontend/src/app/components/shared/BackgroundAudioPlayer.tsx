@@ -28,11 +28,11 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
   className = "",
   showControls = true,
 }) => {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const sources = Array.isArray(src) ? src : src ? [src] : [];
+  const audioRefs = useRef<(HTMLAudioElement | null)[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(initialVolume);
-  const [hasError, setHasError] = useState(false);
 
   // Load user audio preferences from localStorage on mount
   useEffect(() => {
@@ -51,32 +51,40 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
     }
   }, []);
 
-  // Update audio element volume & muted state
+  // Update audio element volume & muted state across all layered tracks
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
-      audioRef.current.muted = isMuted;
-    }
+    audioRefs.current.forEach((el) => {
+      if (el) {
+        el.volume = volume;
+        el.muted = isMuted;
+      }
+    });
   }, [volume, isMuted]);
 
-  // Attempt to play audio
+  // Attempt to play all audio layers
   const attemptPlay = React.useCallback(async () => {
-    if (!audioRef.current || !src) return;
-    try {
-      audioRef.current.volume = volume;
-      audioRef.current.muted = isMuted;
-      await audioRef.current.play();
-      setIsPlaying(true);
-      setHasError(false);
-    } catch {
-      // Autoplay policy prevented playback until user interaction
-      setIsPlaying(false);
+    if (sources.length === 0) return;
+    let anyPlayed = false;
+    for (const el of audioRefs.current) {
+      if (el) {
+        try {
+          el.volume = volume;
+          el.muted = isMuted;
+          await el.play();
+          anyPlayed = true;
+        } catch {
+          // Autoplay policy prevented playback until user interaction
+        }
+      }
     }
-  }, [src, volume, isMuted]);
+    if (anyPlayed) {
+      setIsPlaying(true);
+    }
+  }, [sources.length, volume, isMuted]);
 
   // Register first user interaction listener to bypass browser autoplay policies
   useEffect(() => {
-    if (!src) return;
+    if (sources.length === 0) return;
 
     attemptPlay();
 
@@ -93,12 +101,11 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
       window.removeEventListener("pointerdown", handleUserInteraction);
       window.removeEventListener("keydown", handleUserInteraction);
     };
-  }, [src, attemptPlay]);
+  }, [sources.length, attemptPlay]);
 
   const togglePlay = () => {
-    if (!audioRef.current) return;
     if (isPlaying) {
-      audioRef.current.pause();
+      audioRefs.current.forEach((el) => el?.pause());
       setIsPlaying(false);
     } else {
       attemptPlay();
@@ -124,38 +131,28 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
     } catch {}
   };
 
-  const sources = Array.isArray(src) ? src : src ? [src] : [];
-
-  if (!src) return null;
+  if (sources.length === 0) return null;
 
   return (
     <div className={`inline-flex items-center ${className}`}>
-      <audio
-        ref={audioRef}
-        loop={loop}
-        preload="auto"
-        onError={() => setHasError(true)}
-        onEnded={() => {
-          if (!loop) setIsPlaying(false);
-        }}
-      >
-        {sources.map((url, i) => {
-          const type = url.endsWith(".webm")
-            ? "audio/webm"
-            : url.endsWith(".ogg")
-              ? "audio/ogg"
-              : url.endsWith(".wav")
-                ? "audio/wav"
-                : "audio/mpeg";
-          return <source key={i} src={url} type={type} />;
-        })}
-      </audio>
+      {sources.map((url, i) => (
+        <audio
+          key={url + i}
+          ref={(el) => {
+            audioRefs.current[i] = el;
+          }}
+          loop={url.includes("enter") ? false : loop}
+          preload="auto"
+        >
+          <source src={url} type={url.endsWith(".wav") ? "audio/wav" : url.endsWith(".webm") ? "audio/webm" : "audio/mpeg"} />
+        </audio>
+      ))}
 
       {showControls && (
         <div className="flex items-center gap-2 bg-black/60 border border-white/10 backdrop-blur-md px-3 py-1.5 rounded-full shadow-lg text-xs font-mono select-none">
           <button
             onClick={togglePlay}
-            title={isPlaying ? "Pause Background Music" : "Play Background Music"}
+            title={isPlaying ? "Pause Ambient Soundtrack" : "Play Ambient Soundtrack"}
             className="text-amber-400 hover:text-amber-300 transition-colors p-1 flex items-center justify-center"
           >
             {isPlaying ? (

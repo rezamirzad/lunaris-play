@@ -186,7 +186,10 @@ const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData, history = [] }
           statusLabel={formatLog(t.incangold_round, { round: isFA ? toPersianDigits(board.currentRound) : board.currentRound })}
           badgeContent={board.phase === "DECISION_PHASE" ? "VOTING ACTIVE" : t.statusLive}
           accentColor="amber"
-          audioSrc="/assets/games/incangold/audio/ambience_cave_00.wav"
+          audioSrc={[
+            "/assets/games/incangold/audio/enter-cave.wav",
+            "/assets/games/incangold/audio/ambience_cave_00.wav"
+          ]}
           onHaltToggle={isAdmin && adminPassword ? () => toggleHaltMutation({ roomId: roomId as any, adminPassword }) : undefined}
           isHalted={roomData.botsHalted}
           onRulesClick={() => setShowRules(true)}

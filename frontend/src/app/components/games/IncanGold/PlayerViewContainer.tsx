@@ -148,7 +148,10 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData }) => {
                   </span>
                 </div>
                  <div className="flex items-center gap-3">
-                   <BackgroundAudioPlayer src="/assets/games/incangold/audio/ambience_cave_00.wav" />
+                   <BackgroundAudioPlayer src={[
+                     "/assets/games/incangold/audio/enter-cave.wav",
+                     "/assets/games/incangold/audio/ambience_cave_00.wav"
+                   ]} />
                    <div className="bg-white/5 px-3 py-1 rounded-full border border-white/10 text-[8px] font-black text-slate-400 uppercase tracking-widest shadow-inner">
                      {board.phase === "DECISION_PHASE" ? "⚡ " + t.incangold_decide : "✨ EXPEDITION"}
                    </div>
