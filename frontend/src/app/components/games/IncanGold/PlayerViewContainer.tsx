@@ -24,6 +24,60 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData }) => {
   const myState = player.state;
   const hasDecided = (board as any).decisions?.[player._id];
 
+  const myStatus = (myState as any).status;
+  const prevStatusRef = React.useRef(myStatus);
+
+  // Play gold_drop.wav ONLY when this player returns to camp
+  React.useEffect(() => {
+    if (prevStatusRef.current === "IN_TEMPLE" && myStatus === "AT_CAMP") {
+      try {
+        const audio = new Audio("/assets/games/incangold/audio/gold_drop.wav");
+        const savedMute = localStorage.getItem("lunaris_audio_muted");
+        const savedVol = localStorage.getItem("lunaris_audio_volume");
+        if (savedMute !== "true") {
+          if (savedVol !== null) {
+            const vol = parseFloat(savedVol);
+            if (!isNaN(vol)) audio.volume = vol;
+          } else {
+            audio.volume = 0.5;
+          }
+          audio.play().catch(() => {});
+        }
+      } catch {
+        // Audio playback error fallback
+      }
+    }
+    prevStatusRef.current = myStatus;
+  }, [myStatus]);
+
+  const prevCardIdRef = React.useRef((board as any).lastDrawnCard);
+
+  React.useEffect(() => {
+    const lastCard = (board as any).lastDrawnCard;
+    const lastEvent = (board as any).lastEvent;
+    if (lastCard && lastCard !== prevCardIdRef.current) {
+      if (lastCard.includes("Rockfall") || lastEvent?.hazardType === "Rockfall") {
+        try {
+          const audio = new Audio("/assets/games/incangold/audio/rockfall-in-mine.wav");
+          const savedMute = localStorage.getItem("lunaris_audio_muted");
+          const savedVol = localStorage.getItem("lunaris_audio_volume");
+          if (savedMute !== "true") {
+            if (savedVol !== null) {
+              const vol = parseFloat(savedVol);
+              if (!isNaN(vol)) audio.volume = vol;
+            } else {
+              audio.volume = 0.6;
+            }
+            audio.play().catch(() => {});
+          }
+        } catch {
+          // Audio playback error fallback
+        }
+      }
+    }
+    prevCardIdRef.current = lastCard;
+  }, [(board as any).lastDrawnCard, (board as any).lastEvent]);
+
   React.useEffect(() => {
     if (hasDecided) {
       setPendingDecision(false);

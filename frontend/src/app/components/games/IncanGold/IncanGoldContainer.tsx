@@ -36,6 +36,33 @@ const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData, history = [] }
   const board = roomData.gameBoard;
   if (board.gameType !== "incangold") return null;
 
+  const prevCardIdRef = React.useRef(board.lastDrawnCard);
+
+  React.useEffect(() => {
+    const lastCard = board.lastDrawnCard;
+    if (lastCard && lastCard !== prevCardIdRef.current) {
+      if (lastCard.includes("Rockfall") || board.lastEvent?.hazardType === "Rockfall") {
+        try {
+          const audio = new Audio("/assets/games/incangold/audio/rockfall-in-mine.wav");
+          const savedMute = localStorage.getItem("lunaris_audio_muted");
+          const savedVol = localStorage.getItem("lunaris_audio_volume");
+          if (savedMute !== "true") {
+            if (savedVol !== null) {
+              const vol = parseFloat(savedVol);
+              if (!isNaN(vol)) audio.volume = vol;
+            } else {
+              audio.volume = 0.6;
+            }
+            audio.play().catch(() => {});
+          }
+        } catch {
+          // Fallback if audio fails
+        }
+      }
+    }
+    prevCardIdRef.current = lastCard;
+  }, [board.lastDrawnCard, board.lastEvent]);
+
   const isLobby = roomData.status?.toUpperCase() === "LOBBY";
   if (isLobby) {
     return (

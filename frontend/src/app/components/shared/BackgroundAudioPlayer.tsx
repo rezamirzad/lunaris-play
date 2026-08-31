@@ -7,7 +7,7 @@ interface BackgroundAudioPlayerProps {
   src?: string | string[];
   /** Default volume between 0.0 and 1.0 (default: 0.3) */
   initialVolume?: number;
-  /** Whether to loop the track (default: true) */
+  /** Whether to loop the final background track (default: true) */
   loop?: boolean;
   /** Custom label or title for the audio track */
   title?: string;
@@ -29,7 +29,8 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
   showControls = true,
 }) => {
   const sources = Array.isArray(src) ? src : src ? [src] : [];
-  const audioRefs = useRef<(HTMLAudioElement | null)[]>([]);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(initialVolume);
@@ -51,36 +52,44 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
     }
   }, []);
 
-  // Update audio element volume & muted state across all layered tracks
+  // Update audio element volume & muted state
   useEffect(() => {
-    audioRefs.current.forEach((el) => {
-      if (el) {
-        el.volume = volume;
-        el.muted = isMuted;
-      }
-    });
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+      audioRef.current.muted = isMuted;
+    }
   }, [volume, isMuted]);
 
-  // Attempt to play all audio layers
+  // Attempt to play current track
   const attemptPlay = React.useCallback(async () => {
-    if (sources.length === 0) return;
-    let anyPlayed = false;
-    for (const el of audioRefs.current) {
-      if (el) {
-        try {
-          el.volume = volume;
-          el.muted = isMuted;
-          await el.play();
-          anyPlayed = true;
-        } catch {
-          // Autoplay policy prevented playback until user interaction
-        }
-      }
-    }
-    if (anyPlayed) {
+    if (!audioRef.current || sources.length === 0) return;
+    try {
+      audioRef.current.volume = volume;
+      audioRef.current.muted = isMuted;
+      await audioRef.current.play();
       setIsPlaying(true);
+    } catch {
+      // Autoplay policy prevented playback until user interaction
+      setIsPlaying(false);
     }
   }, [sources.length, volume, isMuted]);
+
+  // Handle track ending (Option B: Sequential Intro -> Looping Ambient)
+  const handleTrackEnded = () => {
+    if (currentTrackIndex < sources.length - 1) {
+      // Move from Intro (enter-cave.wav) to Looping Ambient (ambience_cave_00.wav)
+      setCurrentTrackIndex((prev) => prev + 1);
+    } else if (!loop) {
+      setIsPlaying(false);
+    }
+  };
+
+  // Play audio whenever currentTrackIndex changes
+  useEffect(() => {
+    if (audioRef.current) {
+      attemptPlay();
+    }
+  }, [currentTrackIndex, attemptPlay]);
 
   // Register first user interaction listener to bypass browser autoplay policies
   useEffect(() => {
@@ -104,8 +113,9 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
   }, [sources.length, attemptPlay]);
 
   const togglePlay = () => {
+    if (!audioRef.current) return;
     if (isPlaying) {
-      audioRefs.current.forEach((el) => el?.pause());
+      audioRef.current.pause();
       setIsPlaying(false);
     } else {
       attemptPlay();
@@ -133,20 +143,19 @@ export const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
 
   if (sources.length === 0) return null;
 
+  const currentSrc = sources[currentTrackIndex] || sources[0];
+  const isFinalTrack = currentTrackIndex === sources.length - 1;
+
   return (
     <div className={`inline-flex items-center ${className}`}>
-      {sources.map((url, i) => (
-        <audio
-          key={url + i}
-          ref={(el) => {
-            audioRefs.current[i] = el;
-          }}
-          loop={url.includes("enter") ? false : loop}
-          preload="auto"
-        >
-          <source src={url} type={url.endsWith(".wav") ? "audio/wav" : url.endsWith(".webm") ? "audio/webm" : "audio/mpeg"} />
-        </audio>
-      ))}
+      <audio
+        ref={audioRef}
+        key={currentSrc}
+        src={currentSrc}
+        loop={isFinalTrack ? loop : false}
+        preload="auto"
+        onEnded={handleTrackEnded}
+      />
 
       {showControls && (
         <div className="flex items-center gap-2 bg-black/60 border border-white/10 backdrop-blur-md px-3 py-1.5 rounded-full shadow-lg text-xs font-mono select-none">
