@@ -126,12 +126,24 @@ export const drawCard = mutation({
       (p) => p.state.gameType === "incangold" && p.state.status === "IN_TEMPLE",
     );
 
+    let lastEvent: any = board.lastEvent;
+
     if (cardId.startsWith("T_")) {
       const treasure = INCANGOLD_TREASURES.find((t) => t.id === cardId);
       if (treasure) {
         const share = Math.floor(treasure.value / activePlayers.length);
         const remainder = treasure.value % activePlayers.length;
         cardGems[cardIndex] = remainder;
+
+        lastEvent = {
+          type: "TREASURE",
+          cardId,
+          value: treasure.value,
+          activePlayersCount: activePlayers.length,
+          activePlayerNames: activePlayers.map((p) => p.name),
+          sharePerPlayer: share,
+          remainder,
+        };
 
         for (const p of activePlayers) {
           if (p.state.gameType !== "incangold") continue;
@@ -150,6 +162,13 @@ export const drawCard = mutation({
           const existingHazard = INCANGOLD_HAZARDS.find((h2) => h2.id === pId);
           return existingHazard && existingHazard.type === hazard.type;
         });
+
+        lastEvent = {
+          type: "HAZARD",
+          cardId,
+          hazardType: hazard.type,
+          isDuplicate,
+        };
 
         if (isDuplicate) {
           phase = "ROUND_RESULTS";
@@ -202,6 +221,10 @@ export const drawCard = mutation({
       }
     } else if (cardId.startsWith("A_")) {
       artifactsOnPath.push(cardId);
+      lastEvent = {
+        type: "ARTIFACT",
+        cardId,
+      };
     }
 
     await ctx.db.patch(room._id, {
@@ -215,6 +238,7 @@ export const drawCard = mutation({
         eliminatedHazards,
         roundHistory,
         lastDrawnCard: cardId,
+        lastEvent,
         decisions: {},
       } as any,
     });
@@ -327,6 +351,7 @@ async function resolveDecisions(
   let cardGems = { ...board.cardGems };
   let artifactsOnPath = [...board.artifactsOnPath];
   let collectedArtifactsCount = board.collectedArtifactsCount;
+  let lastEvent: any = board.lastEvent;
 
   if (leavingPlayers.length > 0) {
     let totalPathGems = 0;
@@ -349,22 +374,38 @@ async function resolveDecisions(
       artifactsOnPath = [];
     }
 
+    const leavingDetails: any[] = [];
     for (const p of leavingPlayers) {
       if (p.state.gameType !== "incangold") continue;
+      const hand = p.state.gemsThisRound;
+      const totalBanked = hand + share + artifactPointsThisTurn;
+      leavingDetails.push({
+        playerId: p._id,
+        playerName: p.name,
+        hand,
+        path: share,
+        artifacts: artifactsCollectedThisTurn,
+        artifactPoints: artifactPointsThisTurn,
+        totalBanked,
+      });
+
+      // Reset gemsInHand to 0 when player leaves (Requirement 4)
       await ctx.db.patch(p._id, {
         state: {
           ...p.state,
-          bankedScore:
-            p.state.bankedScore +
-            p.state.gemsThisRound +
-            share +
-            artifactPointsThisTurn,
-          gemsThisRound: p.state.gemsThisRound + share + artifactPointsThisTurn, // Total gained this round
+          bankedScore: p.state.bankedScore + totalBanked,
+          gemsThisRound: 0,
           artifacts: p.state.artifacts + artifactsCollectedThisTurn,
           status: "AT_CAMP",
         },
       });
     }
+
+    lastEvent = {
+      type: "LEAVE",
+      leavingPlayers: leavingDetails,
+      remainderOnPath: remainder,
+    };
 
     // Update gems on path: clear all, place remainder on first card (or index 0)
     const newCardGems: Record<number, number> = {};
@@ -382,6 +423,7 @@ async function resolveDecisions(
       artifactsOnPath,
       collectedArtifactsCount,
       decisions,
+      lastEvent,
     } as any,
   });
 }
@@ -423,8 +465,11 @@ export const finishVoteReveal = mutation({
 
       for (const p of players) {
         if (p.state.gameType !== "incangold") continue;
+        const leaveDetail = board.lastEvent?.type === "LEAVE"
+          ? board.lastEvent.leavingPlayers.find((lp: any) => lp.playerId === p._id)
+          : undefined;
         playerResults[p._id] = {
-          gained: p.state.status === "AT_CAMP" ? p.state.gemsThisRound : 0,
+          gained: leaveDetail ? leaveDetail.totalBanked : (p.state.status === "AT_CAMP" ? p.state.gemsThisRound : 0),
           lost: p.state.status === "IN_TEMPLE" ? p.state.gemsThisRound : 0,
           artifacts: p.state.artifacts,
           status: p.state.status === "AT_CAMP" ? "SAFE" : "CRASHED",

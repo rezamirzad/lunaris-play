@@ -233,17 +233,75 @@ const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData, history = [] }
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-amber-500/20 to-transparent border border-amber-500/20 rounded-[2rem] p-6 text-center">
-                <span className="text-[8px] font-black text-amber-500/50 uppercase tracking-widest block mb-2">{t.incangold_path_gems}</span>
-                <div className="text-6xl font-black text-amber-400 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">
-                    {isFA ? toPersianDigits(totalPathGems) : totalPathGems}<span className="text-2xl ml-2">💎</span>
+            <div className="bg-gradient-to-br from-amber-500/20 to-transparent border border-amber-500/30 rounded-[2rem] p-6 text-center space-y-4 shadow-xl">
+                <div>
+                    <span className="text-[8px] font-black text-amber-500/60 uppercase tracking-widest block mb-1">{t.incangold_path_treasures}</span>
+                    <div className="flex items-center justify-center gap-2">
+                        <span className="text-4xl font-black text-amber-400 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">
+                            {isFA ? toPersianDigits(totalPathGems) : totalPathGems}
+                        </span>
+                        <span className="text-2xl">💎</span>
+                    </div>
+                </div>
+
+                <div className="pt-3 border-t border-amber-500/20">
+                    <span className="text-[8px] font-black text-amber-400/60 uppercase tracking-widest block mb-2">
+                        {t.incangold_artifacts_on_path}
+                    </span>
+                    {board.artifactsOnPath && board.artifactsOnPath.length > 0 ? (
+                        <div className="flex flex-wrap items-center justify-center gap-2">
+                            {board.artifactsOnPath.map((artId: string, idx: number) => (
+                                <div key={idx} className="bg-amber-500/20 border border-amber-400/50 rounded-xl px-2.5 py-1 text-amber-300 font-black text-[10px] flex items-center gap-1 shadow-md">
+                                    <span>🏺</span>
+                                    <span>Relic #{artId.split("_")[1] || idx + 1}</span>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-[10px] font-bold text-zinc-500 italic uppercase tracking-wider">
+                            0 Relics
+                        </div>
+                    )}
                 </div>
             </div>
           </div>
 
           {/* CENTER: THE EXPEDITION PATH */}
-          <div className="col-span-6 relative flex flex-col items-center justify-center bg-black/40 rounded-[3rem] border border-white/5 shadow-inner overflow-hidden">
+          <div className="col-span-6 relative flex flex-col items-center justify-center bg-black/40 rounded-[3rem] border border-white/5 shadow-inner overflow-hidden p-6">
             <div className="absolute inset-0 neuro-grid opacity-10 pointer-events-none" />
+
+            {/* CARD REVEAL GEMS ADDED INFORMATION DISPLAY */}
+            {board.lastEvent?.type === "TREASURE" && (board.phase === "REVEAL_PHASE" || board.phase === "EXPEDITION_PHASE" || board.phase === "DECISION_PHASE") && (
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="w-full max-w-xl bg-amber-950/80 border border-amber-500/40 rounded-2xl p-4 mb-4 shadow-2xl flex items-center justify-between gap-4 backdrop-blur-md z-20"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl animate-bounce">💎</span>
+                  <div className="text-left">
+                    <div className="text-xs font-black text-amber-400 uppercase tracking-wider">
+                      {formatLog(t.incangold_gems_added_per_player, { 
+                        n: isFA ? toPersianDigits(board.lastEvent.sharePerPlayer) : board.lastEvent.sharePerPlayer 
+                      })}
+                    </div>
+                    <div className="text-[10px] font-bold text-amber-200/80 mt-0.5">
+                      {formatLog(t.incangold_gems_added_desc, {
+                        val: isFA ? toPersianDigits(board.lastEvent.value) : board.lastEvent.value,
+                        count: isFA ? toPersianDigits(board.lastEvent.activePlayersCount) : board.lastEvent.activePlayersCount,
+                        share: isFA ? toPersianDigits(board.lastEvent.sharePerPlayer) : board.lastEvent.sharePerPlayer,
+                        rem: isFA ? toPersianDigits(board.lastEvent.remainder) : board.lastEvent.remainder,
+                      })}
+                    </div>
+                  </div>
+                </div>
+                {board.lastEvent.remainder > 0 && (
+                  <div className="bg-amber-500/20 px-3 py-1.5 rounded-xl border border-amber-500/30 text-[10px] font-black text-amber-300 whitespace-nowrap">
+                    +{isFA ? toPersianDigits(board.lastEvent.remainder) : board.lastEvent.remainder} 💎 {t.incangold_left}
+                  </div>
+                )}
+              </motion.div>
+            )}
             
             <AnimatePresence mode="wait">
               {board.phase === "ROUND_INTRO" && (
@@ -306,9 +364,9 @@ const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData, history = [] }
               {board.phase === "DECISION_PHASE" && (
                 <motion.div key="decision" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center gap-6 z-10">
                    {board.path.length > 0 && (
-                     <div className="flex flex-wrap justify-center gap-4 max-w-2xl px-4">
+                      <div className="flex flex-wrap justify-center gap-4 max-w-2xl px-4">
                         {board.path.map((cardId: string, i: number) => renderPathCard(cardId, i))}
-                     </div>
+                      </div>
                    )}
                    <div className="flex flex-col items-center gap-2">
                       <h2 className="text-4xl font-black text-amber-500 italic uppercase tracking-tighter">THE DILEMMA</h2>
@@ -330,17 +388,49 @@ const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData, history = [] }
               )}
 
               {board.phase === "VOTE_REVEAL" && (
-                 <motion.div key="reveal" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-12 z-10">
-                    <h2 className="text-6xl font-black text-white italic uppercase tracking-tighter">CHOICES REVEALED</h2>
-                    <div className="flex flex-wrap justify-center gap-8">
+                 <motion.div key="reveal" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-8 z-10 w-full max-w-2xl">
+                    <h2 className="text-5xl font-black text-white italic uppercase tracking-tighter">CHOICES REVEALED</h2>
+                    
+                    {/* LEAVING PLAYERS BANKING BREAKDOWN DISPLAY */}
+                    {board.lastEvent?.type === "LEAVE" && board.lastEvent.leavingPlayers && board.lastEvent.leavingPlayers.length > 0 && (
+                      <div className="w-full bg-emerald-950/80 border border-emerald-500/40 rounded-2xl p-4 shadow-xl text-center space-y-2 backdrop-blur-md">
+                        <h4 className="text-xs font-black text-emerald-400 uppercase tracking-widest">
+                          RETREAT & BANKING SUMMARY
+                        </h4>
+                        <div className="flex flex-col gap-2">
+                          {board.lastEvent.leavingPlayers.map((lp: any) => (
+                            <div key={lp.playerId} className="text-xs font-bold text-slate-200 flex justify-between items-center bg-black/40 px-4 py-2 rounded-xl border border-white/5">
+                              <span className="font-black text-emerald-300">{lp.playerName}</span>
+                              <span className="text-emerald-400 font-mono font-black">
+                                +{isFA ? toPersianDigits(lp.totalBanked) : lp.totalBanked} 💎
+                                <span className="text-[9px] text-zinc-400 font-normal ml-2">
+                                  ({isFA ? toPersianDigits(lp.hand) : lp.hand} {t.incangold_from_hand}, {isFA ? toPersianDigits(lp.path) : lp.path} {t.incangold_from_path}{lp.artifactPoints > 0 ? `, +${lp.artifactPoints} pts artifact` : ""})
+                                </span>
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex flex-wrap justify-center gap-6">
                        {roomData.players.map(p => {
                           const choice = board.decisions[p._id];
                           if (!choice) return null;
+                          const leaveDetail = board.lastEvent?.type === "LEAVE" 
+                            ? board.lastEvent.leavingPlayers?.find((lp: any) => lp.playerId === p._id) 
+                            : undefined;
+
                           return (
-                            <motion.div key={p._id} initial={{ scale: 0 }} animate={{ scale: 1 }} className="flex flex-col items-center gap-4">
-                               <div className={`w-32 h-32 rounded-3xl border-4 flex flex-col items-center justify-center gap-2 shadow-2xl ${choice === "STAY" ? "bg-emerald-500/20 border-emerald-500 text-emerald-400" : "bg-rose-500/20 border-rose-500 text-rose-400"}`}>
-                                  <span className="text-5xl">{choice === "STAY" ? "🤠" : "🏃‍♂️"}</span>
+                            <motion.div key={p._id} initial={{ scale: 0 }} animate={{ scale: 1 }} className="flex flex-col items-center gap-3">
+                               <div className={`w-32 h-32 rounded-3xl border-4 flex flex-col items-center justify-center gap-1 p-2 shadow-2xl ${choice === "STAY" ? "bg-emerald-500/20 border-emerald-500 text-emerald-400" : "bg-rose-500/20 border-rose-500 text-rose-400"}`}>
+                                  <span className="text-4xl">{choice === "STAY" ? "🤠" : "🏃‍♂️"}</span>
                                   <span className="font-black text-[10px] uppercase tracking-widest">{choice}</span>
+                                  {choice === "LEAVE" && leaveDetail && (
+                                    <div className="text-[9px] font-black text-emerald-300 text-center leading-tight">
+                                      +{isFA ? toPersianDigits(leaveDetail.totalBanked) : leaveDetail.totalBanked} 💎
+                                    </div>
+                                  )}
                                </div>
                                <span className="font-black uppercase italic text-sm">{p.name}</span>
                             </motion.div>
@@ -348,7 +438,7 @@ const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData, history = [] }
                        })}
                     </div>
                     {isAdmin && (
-                       <button onClick={() => finishVoteReveal({ roomId: roomId as any })} className="bg-white text-black px-12 py-4 rounded-xl font-black uppercase italic tracking-widest shadow-2xl transition-all">Proceed</button>
+                       <button onClick={() => finishVoteReveal({ roomId: roomId as any })} className="bg-white text-black px-12 py-4 rounded-xl font-black uppercase italic tracking-widest shadow-2xl transition-all mt-4">Proceed</button>
                     )}
                  </motion.div>
               )}
@@ -396,14 +486,15 @@ const IncanGoldBoard: React.FC<BoardProps> = ({ roomId, roomData, history = [] }
           accentColor="amber"
           renderStats={(player) => {
             const pState = player.state as any;
+            const gemsInHand = pState.status === "AT_CAMP" ? 0 : (pState.gemsThisRound || 0);
             return (
               <div className="flex flex-col gap-4 w-full">
                  <div className="flex justify-between items-center bg-black/30 p-3 rounded-xl border border-white/5">
-                    <span className="text-[8px] font-black text-amber-500/50 uppercase tracking-widest">In Hand</span>
-                    <span className="text-xl font-black text-amber-400 tabular-nums">{isFA ? toPersianDigits(pState.gemsThisRound) : pState.gemsThisRound} 💎</span>
+                    <span className="text-[8px] font-black text-amber-500/50 uppercase tracking-widest">{t.incangold_in_hand}</span>
+                    <span className="text-xl font-black text-amber-400 tabular-nums">{isFA ? toPersianDigits(gemsInHand) : gemsInHand} 💎</span>
                  </div>
                  <div className="flex justify-between items-center bg-black/30 p-3 rounded-xl border border-white/5">
-                    <span className="text-[8px] font-black text-emerald-500/50 uppercase tracking-widest">Banked</span>
+                    <span className="text-[8px] font-black text-emerald-500/50 uppercase tracking-widest">{t.incangold_chest_total}</span>
                     <span className="text-xl font-black text-emerald-400 tabular-nums">{isFA ? toPersianDigits(pState.bankedScore) : pState.bankedScore} ⛺</span>
                  </div>
               </div>

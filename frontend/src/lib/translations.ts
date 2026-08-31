@@ -142,6 +142,13 @@ export interface TranslationSet {
   incangold_on_path_bonus: string;
   incangold_path: string;
   incangold_path_gems: string;
+  incangold_path_treasures: string;
+  incangold_artifacts_on_path: string;
+  incangold_gems_added_per_player: string;
+  incangold_gems_added_desc: string;
+  incangold_banked_breakdown: string;
+  incangold_from_hand: string;
+  incangold_from_path: string;
   incangold_rank: string;
   incangold_resting_camp: string;
   incangold_results: string;

@@ -208,6 +208,44 @@ export default defineSchema({
         collectedArtifactsCount: v.number(),  // Total artifacts safely returned to camp (for point scaling)
         decisions: v.record(v.string(), v.union(v.literal("STAY"), v.literal("LEAVE"))), // PlayerId -> Choice
         lastDrawnCard: v.optional(v.string()),
+        lastEvent: v.optional(
+          v.union(
+            v.object({
+              type: v.literal("TREASURE"),
+              cardId: v.string(),
+              value: v.number(),
+              activePlayersCount: v.number(),
+              activePlayerNames: v.array(v.string()),
+              sharePerPlayer: v.number(),
+              remainder: v.number(),
+            }),
+            v.object({
+              type: v.literal("HAZARD"),
+              cardId: v.string(),
+              hazardType: v.string(),
+              isDuplicate: v.boolean(),
+            }),
+            v.object({
+              type: v.literal("ARTIFACT"),
+              cardId: v.string(),
+            }),
+            v.object({
+              type: v.literal("LEAVE"),
+              leavingPlayers: v.array(
+                v.object({
+                  playerId: v.id("players"),
+                  playerName: v.string(),
+                  hand: v.number(),
+                  path: v.number(),
+                  artifacts: v.number(),
+                  artifactPoints: v.number(),
+                  totalBanked: v.number(),
+                })
+              ),
+              remainderOnPath: v.number(),
+            })
+          )
+        ),
         eliminatedHazards: v.array(v.string()), // Hazard types removed from deck after crash
         roundHistory: v.optional(v.array(v.object({
           round: v.number(),

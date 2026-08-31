@@ -151,58 +151,77 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData }) => {
                 </div>
              </div>
 
-             {/* 2. Context Panel */}
-             <div className="py-6 px-4 bg-gradient-to-b from-white/[0.04] to-transparent rounded-[2rem] border border-white/[0.03] flex flex-col items-center justify-center text-center shadow-2xl">
-                <AnimatePresence mode="wait">
-                  {!isInTemple ? (
-                    <motion.div key="at-camp" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center">
-                      <span className="text-5xl mb-2.5">⛺</span>
-                      <h2 className="text-lg font-black text-slate-400 tracking-tighter uppercase italic leading-none">{t.incangold_resting_camp}</h2>
-                    </motion.div>
-                  ) : hasDecided ? (
-                    <motion.div key="decided" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center">
-                      <div className="w-14 h-14 rounded-full bg-emerald-500/10 border-2 border-emerald-500 flex items-center justify-center mb-2 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-                        <span className="text-3xl text-emerald-400">✓</span>
-                      </div>
-                      <h2 className="text-lg font-black text-emerald-400 tracking-tighter uppercase italic leading-none">{t.incangold_locked}</h2>
-                    </motion.div>
-                  ) : isDecisionPhase ? (
-                    <motion.div key="deciding" initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="w-full flex flex-col items-center">
-                      <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] mb-2 italic">{t.incangold_the_dilemma}</span>
-                      <div className="text-sm font-bold bg-amber-500/10 px-4 py-2 rounded-xl border border-amber-500/20 text-amber-400 flex items-center gap-2">
-                        <span className="text-lg">🏺</span>
-                        <span className="uppercase text-xs tracking-tighter font-black">
-                          {formatLog(t.incangold_on_path_bonus, { n: totalPathGems })}
-                        </span>
-                      </div>
-                    </motion.div>
-                  ) : (
-                    <motion.div key="waiting" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center">
-                      <div className="animate-spin-slow mb-3 text-5xl">🏺</div>
-                      <h2 className="text-lg font-black text-amber-500/80 tracking-tighter uppercase italic leading-none">{t.incangold_exploring}</h2>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-             </div>
+              {/* 2. Context Panel */}
+              <div className="py-6 px-4 bg-gradient-to-b from-white/[0.04] to-transparent rounded-[2rem] border border-white/[0.03] flex flex-col items-center justify-center text-center shadow-2xl">
+                 <AnimatePresence mode="wait">
+                   {!isInTemple ? (
+                     <motion.div key="at-camp" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-2">
+                       <span className="text-5xl">⛺</span>
+                       <h2 className="text-lg font-black text-slate-400 tracking-tighter uppercase italic leading-none">{t.incangold_resting_camp}</h2>
+                       {board.lastEvent?.type === "LEAVE" && (() => {
+                          const myDetail = board.lastEvent.leavingPlayers?.find((lp: any) => lp.playerId === player._id);
+                          if (!myDetail) return null;
+                          return (
+                            <div className="text-xs font-black text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-xl border border-emerald-500/30 mt-1">
+                              +{myDetail.totalBanked} 💎 ({myDetail.hand} hand, +{myDetail.path} path)
+                            </div>
+                          );
+                       })()}
+                     </motion.div>
+                   ) : hasDecided ? (
+                     <motion.div key="decided" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center">
+                       <div className="w-14 h-14 rounded-full bg-emerald-500/10 border-2 border-emerald-500 flex items-center justify-center mb-2 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                         <span className="text-3xl text-emerald-400">✓</span>
+                       </div>
+                       <h2 className="text-lg font-black text-emerald-400 tracking-tighter uppercase italic leading-none">{t.incangold_locked}</h2>
+                     </motion.div>
+                   ) : isDecisionPhase ? (
+                     <motion.div key="deciding" initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="w-full flex flex-col items-center">
+                       <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] mb-2 italic">{t.incangold_the_dilemma}</span>
+                       <div className="text-sm font-bold bg-amber-500/10 px-4 py-2 rounded-xl border border-amber-500/20 text-amber-400 flex flex-col items-center gap-1.5">
+                         <div className="flex items-center gap-2">
+                           <span className="text-lg">💎</span>
+                           <span className="uppercase text-xs tracking-tighter font-black">
+                             {formatLog(t.incangold_on_path_bonus, { n: totalPathGems })}
+                           </span>
+                         </div>
+                         {board.artifactsOnPath && board.artifactsOnPath.length > 0 && (
+                           <div className="flex items-center gap-1 text-[10px] text-amber-300 font-black border-t border-amber-500/20 pt-1">
+                             <span>🏺</span>
+                             <span>{board.artifactsOnPath.length} {t.incangold_artifacts}</span>
+                           </div>
+                         )}
+                       </div>
+                     </motion.div>
+                   ) : (
+                     <motion.div key="waiting" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center">
+                       <div className="animate-spin-slow mb-3 text-5xl">🏺</div>
+                       <h2 className="text-lg font-black text-amber-500/80 tracking-tighter uppercase italic leading-none">{t.incangold_exploring}</h2>
+                     </motion.div>
+                   )}
+                 </AnimatePresence>
+              </div>
 
-             {/* 3. Stats Panel */}
-             <div className="space-y-3">
-                <div className={`flex justify-between items-center bg-black/50 px-5 py-4 rounded-2xl border border-white/5 transition-all ${isInTemple ? "opacity-100 ring-1 ring-amber-500/10" : "opacity-40"}`}>
-                  <span className="text-[10px] font-black text-amber-500/60 uppercase italic tracking-widest">{t.incangold_in_hand}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl font-black tabular-nums text-amber-400">{myState.gemsThisRound}</span>
-                    <span className="text-xl">💎</span>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center bg-black/50 px-5 py-4 rounded-2xl border border-white/5 shadow-lg ring-1 ring-emerald-500/10">
-                  <span className="text-[10px] font-black text-emerald-500/60 uppercase italic tracking-widest">{t.incangold_chest_total}</span>
-                  <div className="flex items-center gap-2">
-                    {myState.artifacts > 0 && <span className="text-[11px] font-black text-amber-500 bg-amber-500/10 px-2 rounded-lg border border-amber-500/20">🏺 {myState.artifacts}</span>}
-                    <span className="text-2xl font-black tabular-nums text-emerald-400">{myState.bankedScore}</span>
-                    <span className="text-xl">⛺</span>
-                  </div>
-                </div>
-             </div>
+              {/* 3. Stats Panel */}
+              <div className="space-y-3">
+                 <div className={`flex justify-between items-center bg-black/50 px-5 py-4 rounded-2xl border border-white/5 transition-all ${isInTemple ? "opacity-100 ring-1 ring-amber-500/10" : "opacity-40"}`}>
+                   <span className="text-[10px] font-black text-amber-500/60 uppercase italic tracking-widest">{t.incangold_in_hand}</span>
+                   <div className="flex items-center gap-2">
+                     <span className="text-2xl font-black tabular-nums text-amber-400">
+                       {myState.status === "AT_CAMP" ? 0 : (myState.gemsThisRound || 0)}
+                     </span>
+                     <span className="text-xl">💎</span>
+                   </div>
+                 </div>
+                 <div className="flex justify-between items-center bg-black/50 px-5 py-4 rounded-2xl border border-white/5 shadow-lg ring-1 ring-emerald-500/10">
+                   <span className="text-[10px] font-black text-emerald-500/60 uppercase italic tracking-widest">{t.incangold_chest_total}</span>
+                   <div className="flex items-center gap-2">
+                     {myState.artifacts > 0 && <span className="text-[11px] font-black text-amber-500 bg-amber-500/10 px-2 rounded-lg border border-amber-500/20">🏺 {myState.artifacts}</span>}
+                     <span className="text-2xl font-black tabular-nums text-emerald-400">{myState.bankedScore}</span>
+                     <span className="text-xl">⛺</span>
+                   </div>
+                 </div>
+              </div>
           </div>
         }
         actionsSlot={
