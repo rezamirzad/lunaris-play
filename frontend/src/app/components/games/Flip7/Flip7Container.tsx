@@ -136,15 +136,29 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                     {p.isBot && <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded text-amber-300">BOT</span>}
                   </div>
                   <div className="flex items-center gap-2">
-                    {st?.hasSecondChance && (
-                      <span className="text-xs bg-cyan-950 text-cyan-400 border border-cyan-500/30 px-2 py-0.5 rounded-full" title="Second Chance Shield">
-                        🛡️
-                      </span>
-                    )}
                     <span className="text-xs font-mono font-black text-amber-400">
                       {st?.bankedScore || 0} pts
                     </span>
                   </div>
+                </div>
+
+                {/* Special Active Status Badges */}
+                <div className="flex flex-wrap gap-1.5 pt-2">
+                  {st?.hasSecondChance && (
+                    <span className="text-[9px] font-mono font-black bg-cyan-950/90 text-cyan-300 border border-cyan-400/40 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-[0_0_8px_rgba(6,182,212,0.3)] animate-pulse" title="Second Chance Shield Active">
+                      <span>🛡️</span>
+                      <span>SHIELD</span>
+                    </span>
+                  )}
+                  {scoreInfo.hasMultiplier && (
+                    <span className="text-[9px] font-mono font-black bg-amber-950/90 text-amber-300 border border-amber-400/40 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-[0_0_8px_rgba(245,158,11,0.3)]" title="x2 Multiplier Active">
+                      <span>✖️2</span>
+                      <span>MULT</span>
+                    </span>
+                  )}
+                  <span className="text-[9px] font-mono font-bold bg-white/5 text-zinc-300 px-2 py-0.5 rounded-full border border-white/5">
+                    {scoreInfo.uniqueNumbersCount}/7 Unique
+                  </span>
                 </div>
 
                 {/* Face-up Cards Grid */}
@@ -162,10 +176,10 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                 {/* Footer Stats & Status */}
                 <div className="flex items-center justify-between border-t border-white/10 pt-3 text-xs font-mono">
                   <span className="text-zinc-400">
-                    Round: <strong className="text-white">{st?.roundScore || 0}</strong>
+                    Round: <strong className="text-emerald-400 font-black">+{st?.roundScore || 0} pts</strong>
                   </span>
                   <span
-                    className={`font-black uppercase text-[10px] px-2 py-0.5 rounded-full ${
+                    className={`font-black uppercase text-[10px] px-2.5 py-0.5 rounded-full ${
                       st?.status === "FROZEN"
                         ? "bg-cyan-950 text-cyan-400 border border-cyan-500/40"
                         : st?.status === "BUSTED"
@@ -173,7 +187,7 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                           : "bg-emerald-950 text-emerald-400 border border-emerald-500/40"
                     }`}
                   >
-                    {st?.status || "ACTIVE"}
+                    {st?.status === "FROZEN" ? "STAYED ✋" : st?.status === "BUSTED" ? "BUSTED 💥" : "ACTIVE 🃏"}
                   </span>
                 </div>
               </motion.div>

@@ -82,6 +82,24 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
             </div>
           </div>
 
+          {/* Special Cards & Modifiers Indicators */}
+          {(myState.hasSecondChance || scoreInfo.hasMultiplier) && (
+            <div className="flex flex-wrap gap-2 pt-1">
+              {myState.hasSecondChance && (
+                <div className="bg-cyan-950/80 border border-cyan-400/50 text-cyan-300 px-3 py-1 rounded-full text-[10px] font-mono font-black flex items-center gap-1.5 shadow-[0_0_10px_rgba(6,182,212,0.3)] animate-pulse">
+                  <span>🛡️</span>
+                  <span>SECOND CHANCE SHIELD ACTIVE</span>
+                </div>
+              )}
+              {scoreInfo.hasMultiplier && (
+                <div className="bg-amber-950/80 border border-amber-400/50 text-amber-300 px-3 py-1 rounded-full text-[10px] font-mono font-black flex items-center gap-1.5 shadow-[0_0_10px_rgba(245,158,11,0.3)]">
+                  <span>✖️2</span>
+                  <span>MULTIPLIER APPLIED</span>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Current Round Hand Status */}
           <div className="bg-black/40 border border-white/5 rounded-2xl p-4 flex flex-col gap-3">
             <div className="flex justify-between items-center text-xs font-mono">
@@ -116,22 +134,22 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
                 : "bg-zinc-800 border-white/5 text-zinc-500 cursor-not-allowed opacity-50"
             }`}
           >
-            <span>🎰</span>
-            <span>HIT CARD</span>
+            <span>🃏</span>
+            <span>HIT</span>
           </button>
 
-          {/* FREEZE Button */}
+          {/* STAY Button */}
           <button
             disabled={!isMyTurnNow || pendingAction}
             onClick={handleFreeze}
             className={`py-5 rounded-2xl font-black text-base uppercase tracking-wider transition-all border flex items-center justify-center gap-2 ${
               isMyTurnNow && !pendingAction
-                ? "bg-gradient-to-r from-cyan-600 to-blue-600 border-cyan-400 text-white shadow-lg shadow-cyan-500/20 active:scale-95"
+                ? "bg-gradient-to-r from-emerald-600 to-teal-600 border-emerald-400 text-white shadow-lg shadow-emerald-500/20 active:scale-95"
                 : "bg-zinc-800 border-white/5 text-zinc-500 cursor-not-allowed opacity-50"
             }`}
           >
-            <span>❄️</span>
-            <span>FREEZE</span>
+            <span>✋</span>
+            <span>STAY</span>
           </button>
         </div>
       }
