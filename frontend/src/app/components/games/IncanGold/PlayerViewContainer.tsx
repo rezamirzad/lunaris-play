@@ -50,15 +50,30 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData }) => {
     prevStatusRef.current = myStatus;
   }, [myStatus]);
 
-  const prevCardIdRef = React.useRef((board as any).lastDrawnCard);
+  const lastDrawnCard = (board as any)?.lastDrawnCard;
+  const lastEvent = (board as any)?.lastEvent;
+  const prevCardIdRef = React.useRef(lastDrawnCard);
 
   React.useEffect(() => {
-    const lastCard = (board as any).lastDrawnCard;
-    const lastEvent = (board as any).lastEvent;
-    if (lastCard && lastCard !== prevCardIdRef.current) {
-      if (lastCard.includes("Rockfall") || lastEvent?.hazardType === "Rockfall") {
+    if (lastDrawnCard && lastDrawnCard !== prevCardIdRef.current) {
+      let soundPath: string | null = null;
+      if (lastDrawnCard.includes("Rockfall") || lastEvent?.hazardType === "Rockfall") {
+        soundPath = "/assets/games/incangold/audio/rockfall-in-mine.wav";
+      } else if (lastDrawnCard.includes("Serpent") || lastEvent?.hazardType === "Serpent") {
+        soundPath = "/assets/games/incangold/audio/snake-hss-effect.ogg";
+      } else if (lastDrawnCard.includes("Gas") || lastEvent?.hazardType === "Gas") {
+        soundPath = "/assets/games/incangold/audio/pisongasrelease.wav";
+      } else if (lastDrawnCard.includes("Scorpion") || lastEvent?.hazardType === "Scorpion") {
+        soundPath = "/assets/games/incangold/audio/skittering-bugs.mp3";
+      } else if (lastDrawnCard.includes("Explosion") || lastEvent?.hazardType === "Explosion") {
+        soundPath = "/assets/games/incangold/audio/big-explosion.wav";
+      } else {
+        soundPath = "/assets/games/incangold/audio/splashing-footsteps-shallow-water.wav";
+      }
+
+      if (soundPath) {
         try {
-          const audio = new Audio("/assets/games/incangold/audio/rockfall-in-mine.wav");
+          const audio = new Audio(soundPath);
           const savedMute = localStorage.getItem("lunaris_audio_muted");
           const savedVol = localStorage.getItem("lunaris_audio_volume");
           if (savedMute !== "true") {
@@ -66,7 +81,7 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData }) => {
               const vol = parseFloat(savedVol);
               if (!isNaN(vol)) audio.volume = vol;
             } else {
-              audio.volume = 0.6;
+              audio.volume = 0.5;
             }
             audio.play().catch(() => {});
           }
@@ -75,8 +90,47 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData }) => {
         }
       }
     }
-    prevCardIdRef.current = lastCard;
-  }, [(board as any).lastDrawnCard, (board as any).lastEvent]);
+    prevCardIdRef.current = lastDrawnCard;
+  }, [lastDrawnCard, lastEvent]);
+
+  // Terror Clock audio loop during DECISION_PHASE
+  const terrorAudioRef = React.useRef<HTMLAudioElement | null>(null);
+  const currentPhase = (board as any)?.phase;
+
+  React.useEffect(() => {
+    if (currentPhase === "DECISION_PHASE" && myStatus === "IN_TEMPLE") {
+      try {
+        if (!terrorAudioRef.current) {
+          terrorAudioRef.current = new Audio("/assets/games/incangold/audio/terror_clock.mp3");
+          terrorAudioRef.current.loop = true;
+        }
+        const savedMute = localStorage.getItem("lunaris_audio_muted");
+        const savedVol = localStorage.getItem("lunaris_audio_volume");
+        if (savedMute !== "true") {
+          if (savedVol !== null) {
+            const vol = parseFloat(savedVol);
+            if (!isNaN(vol)) terrorAudioRef.current.volume = vol;
+          } else {
+            terrorAudioRef.current.volume = 0.5;
+          }
+          terrorAudioRef.current.play().catch(() => {});
+        }
+      } catch {
+        // Audio playback error fallback
+      }
+    } else {
+      if (terrorAudioRef.current) {
+        terrorAudioRef.current.pause();
+        terrorAudioRef.current.currentTime = 0;
+      }
+    }
+
+    return () => {
+      if (terrorAudioRef.current) {
+        terrorAudioRef.current.pause();
+      }
+    };
+  }, [currentPhase, myStatus]);
 
   React.useEffect(() => {
     if (hasDecided) {
@@ -91,6 +145,22 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData }) => {
     if (pendingDecision) return;
     if (navigator.vibrate) {
       navigator.vibrate(50);
+    }
+    if (decision === "STAY") {
+      try {
+        const audio = new Audio("/assets/games/incangold/audio/splashing-footsteps-shallow-water.wav");
+        const savedMute = localStorage.getItem("lunaris_audio_muted");
+        const savedVol = localStorage.getItem("lunaris_audio_volume");
+        if (savedMute !== "true") {
+          if (savedVol !== null) {
+            const vol = parseFloat(savedVol);
+            if (!isNaN(vol)) audio.volume = vol;
+          } else {
+            audio.volume = 0.5;
+          }
+          audio.play().catch(() => {});
+        }
+      } catch {}
     }
     setPendingDecision(true);
     try {
