@@ -226,10 +226,20 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
   let lastActionType: "HIT" | "FREEZE" | "BUST" | "FLIP_7_BONUS" | "SECOND_CHANCE_USED" | "ACTION_CARD" = "HIT";
   let message = `${player.name} flipped ${parsedCard.label}`;
 
-  if (parsedCard.type === "ACTION" && parsedCard.actionType === "SECOND_CHANCE") {
-    hasSecondChance = true;
-    lastActionType = "ACTION_CARD";
-    message = `${player.name} drew a 🛡️ Second Chance shield!`;
+  if (parsedCard.type === "ACTION") {
+    faceUpCards.push(drawnCardId);
+    if (parsedCard.actionType === "SECOND_CHANCE") {
+      hasSecondChance = true;
+      lastActionType = "ACTION_CARD";
+      message = `${player.name} drew a 🛡️ Second Chance shield!`;
+    } else if (parsedCard.actionType === "FREEZE") {
+      status = "FROZEN";
+      lastActionType = "FREEZE";
+      message = `❄️ ${player.name} drew a FREEZE card! Points locked & banked!`;
+    } else if (parsedCard.actionType === "FLIP_THREE") {
+      lastActionType = "ACTION_CARD";
+      message = `⚡ ${player.name} drew a FLIP THREE card!`;
+    }
   } else if (parsedCard.type === "NUMBER" && parsedCard.numberValue !== undefined) {
     // Check if player already has this number value face up
     const existingNumbers = faceUpCards.map((cId) => parseFlip7Card(cId).numberValue).filter((n) => n !== undefined);
@@ -253,7 +263,7 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
       faceUpCards.push(drawnCardId);
     }
   } else {
-    // Modifier (+1, +2, +3) or other card
+    // Modifier (+1, +2, +3) card
     faceUpCards.push(drawnCardId);
   }
 

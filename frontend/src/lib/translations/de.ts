@@ -112,6 +112,31 @@ export const de: TranslationSet = {
   flip7_hit: "KARTE ZIEHEN",
   flip7_freeze: "EINFRIEREN",
   flip7_round: "Runde {round}",
+  flip7_goal_desc: "Erreichen Sie als erster Spieler 200 Punkte! Ziehen Sie Karten, sammeln Sie Punkte und vermeiden Sie doppelte Zahlen.",
+  flip7_how_to_play_desc: `🎴 DECK (94 Karten):
+• Zahlenkarten (0–12): Anzahl entspricht dem Wert (eine 0, eine 1, zwei 2en ... zwölf 12en).
+• Modifikatoren: +2, +4, +6, +8, +10 und Multiplikator x2.
+• Aktionskarten: Einfrieren ❄️, Drei Ziehen ⚡, Zweite Chance 🛡️.
+
+🎮 IHR ZUG:
+1️⃣ ZIEHEN: Neue Karte aufdecken.
+   - Doppelte Zahl = VERLOREN! Punkte der Runde verfallen.
+   - Einzigartige Karte = Sicher aufdecken.
+2️⃣ STOPP: Punkte sichern und Runde beenden.
+
+⚡ AKTIONEN:
+• ❄️ EINFRIEREN: Zwingt zum sofortigen Stoppen & Sichern.
+• ⚡ DREI ZIEHEN: 3 Karten nacheinander ziehen.
+• 🛡️ ZWEITE CHANCE: Schützt vor einem Fehlversuch.
+
+🌟 FLIP 7 BONUS:
+7 verschiedene Zahlen bringen +15 BONUSPUNKTE!`,
+  flip7_notes_desc: `🧮 PUNKTEBERECHNUNG:
+1. Summe der einzigartigen Zahlen.
+2. Mit x2 multiplizieren (falls x2-Karte vorhanden).
+3. Modifikatoren (+2, +4, +6, +8, +10) addieren.
+4. +15 Flip 7 Bonus addieren (bei 7 verschiedenen Zahlen).
+Wer zuerst 200 Punkte erreicht, gewinnt!`,
   dixit_st_bonus: "Erzähler-Bonus",
   dixit_others_fooled: "Teilnehmer getäuscht",
   dixit_pts_label: "PKT",

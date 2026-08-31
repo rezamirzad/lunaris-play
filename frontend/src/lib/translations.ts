@@ -112,6 +112,9 @@ export interface TranslationSet {
   flip7_hit: string;
   flip7_freeze: string;
   flip7_round: string;
+  flip7_goal_desc: string;
+  flip7_how_to_play_desc: string;
+  flip7_notes_desc: string;
   incangold_close_rules: string;
   incangold_continue_exploration: string;
   incangold_danger: string;

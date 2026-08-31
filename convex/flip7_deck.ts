@@ -2,36 +2,47 @@ export interface Flip7CardInfo {
   id: string;
   type: "NUMBER" | "MODIFIER" | "ACTION";
   numberValue?: number; // 0 to 12
-  modifierValue?: number; // +1, +2, +3
+  modifierValue?: number; // +2, +4, +6, +8, +10
+  isMultiplier?: boolean; // x2 multiplier
   actionType?: "FREEZE" | "FLIP_THREE" | "SECOND_CHANCE";
   label: string;
 }
 
+/**
+ * Generates the official 94-card Flip 7 deck:
+ * - 79 Number Cards (0-12)
+ * - 6 Modifier Cards (+2, +4, +6, +8, +10, x2)
+ * - 9 Action Cards (3x FREEZE, 3x FLIP_THREE, 3x SECOND_CHANCE)
+ */
 export function getFlip7Deck(): string[] {
   const deck: string[] = [];
 
-  // Card 0 (1 copy)
+  // 1. Number Cards 0 to 12 (79 cards)
+  // 0 has 1 copy
   deck.push("N_0_1");
 
-  // Number cards 1 to 12 (N copies of number N)
+  // 1 to 12 have N copies each
   for (let num = 1; num <= 12; num++) {
     for (let copy = 1; copy <= num; copy++) {
       deck.push(`N_${num}_${copy}`);
     }
   }
 
-  // Modifiers: +1 (2 copies), +2 (2 copies), +3 (2 copies)
-  deck.push("M_PLUS_1_1", "M_PLUS_1_2");
-  deck.push("M_PLUS_2_1", "M_PLUS_2_2");
-  deck.push("M_PLUS_3_1", "M_PLUS_3_2");
+  // 2. Modifier Cards (6 cards)
+  deck.push("M_PLUS_2_1");
+  deck.push("M_PLUS_4_1");
+  deck.push("M_PLUS_6_1");
+  deck.push("M_PLUS_8_1");
+  deck.push("M_PLUS_10_1");
+  deck.push("M_MULT_2_1");
 
-  // Action Cards:
+  // 3. Action Cards (9 cards)
   // SECOND_CHANCE (3 copies)
   deck.push("ACT_SECOND_CHANCE_1", "ACT_SECOND_CHANCE_2", "ACT_SECOND_CHANCE_3");
-  // FREEZE (2 copies)
-  deck.push("ACT_FREEZE_1", "ACT_FREEZE_2");
-  // FLIP_THREE (2 copies)
-  deck.push("ACT_FLIP3_1", "ACT_FLIP3_2");
+  // FREEZE (3 copies)
+  deck.push("ACT_FREEZE_1", "ACT_FREEZE_2", "ACT_FREEZE_3");
+  // FLIP_THREE (3 copies)
+  deck.push("ACT_FLIP3_1", "ACT_FLIP3_2", "ACT_FLIP3_3");
 
   // Fisher-Yates Shuffle
   for (let i = deck.length - 1; i > 0; i--) {
@@ -54,8 +65,18 @@ export function parseFlip7Card(cardId: string): Flip7CardInfo {
     };
   }
 
+  if (cardId.startsWith("M_MULT_2")) {
+    return {
+      id: cardId,
+      type: "MODIFIER",
+      isMultiplier: true,
+      label: "x2",
+    };
+  }
+
   if (cardId.startsWith("M_PLUS_")) {
-    const val = cardId.includes("1") ? 1 : cardId.includes("2") ? 2 : 3;
+    const parts = cardId.split("_");
+    const val = parseInt(parts[2], 10);
     return {
       id: cardId,
       type: "MODIFIER",
@@ -100,36 +121,47 @@ export function parseFlip7Card(cardId: string): Flip7CardInfo {
 }
 
 /**
- * Calculates a player's round score from face-up cards:
- * Sum of all unique numbers + modifiers.
+ * Calculates a player's round score according to official Flip 7 rules:
+ * 1. Add up face value of all unique Number cards.
+ * 2. Apply any x2 multiplier to the Number card total.
+ * 3. Add any + modifier points (+2, +4, +6, +8, +10).
+ * 4. Add +15 Flip 7 bonus if 7 unique numbers are collected.
  */
 export function calculateFlip7RoundScore(faceUpCardIds: string[]): {
   score: number;
   uniqueNumbersCount: number;
   hasFlip7Bonus: boolean;
+  hasMultiplier: boolean;
 } {
   const numberValues = new Set<number>();
-  let totalModifier = 0;
+  let plusModifiers = 0;
+  let hasMultiplier = false;
 
   faceUpCardIds.forEach((id) => {
     const card = parseFlip7Card(id);
     if (card.type === "NUMBER" && card.numberValue !== undefined) {
       numberValues.add(card.numberValue);
-    } else if (card.type === "MODIFIER" && card.modifierValue !== undefined) {
-      totalModifier += card.modifierValue;
+    } else if (card.type === "MODIFIER") {
+      if (card.isMultiplier) {
+        hasMultiplier = true;
+      } else if (card.modifierValue !== undefined) {
+        plusModifiers += card.modifierValue;
+      }
     }
   });
 
   const sumNumbers = Array.from(numberValues).reduce((a, b) => a + b, 0);
+  const multipliedNumbers = hasMultiplier ? sumNumbers * 2 : sumNumbers;
   const uniqueNumbersCount = numberValues.size;
 
-  // Flip 7 Bonus: If a player collects 7 unique number cards, they get +15 bonus points!
+  // Flip 7 Bonus: If a player collects 7 unique number cards, +15 bonus points!
   const hasFlip7Bonus = uniqueNumbersCount >= 7;
   const bonusPoints = hasFlip7Bonus ? 15 : 0;
 
   return {
-    score: sumNumbers + totalModifier + bonusPoints,
+    score: multipliedNumbers + plusModifiers + bonusPoints,
     uniqueNumbersCount,
     hasFlip7Bonus,
+    hasMultiplier,
   };
 }

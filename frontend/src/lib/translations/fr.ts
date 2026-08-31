@@ -112,6 +112,31 @@ export const fr: TranslationSet = {
   flip7_hit: "TIRER",
   flip7_freeze: "GELER",
   flip7_round: "Manche {round}",
+  flip7_goal_desc: "Soyez le premier joueur à atteindre 200 points ! Retournez des cartes, accumulez des bonus et évitez les doublons.",
+  flip7_how_to_play_desc: `🎴 COMPOSITION DU PAQUET (94 Cartes) :
+• Cartes Chiffres (0 à 12) : Quantités égales à leur valeur (une carte 0, une carte 1, deux cartes 2 ... douze cartes 12).
+• Cartes Modificateurs : +2, +4, +6, +8, +10 et Multiplicateur x2.
+• Cartes Action : Geler ❄️, Tirer Trois ⚡, Seconde Chance 🛡️.
+
+🎮 À VOTRE TOUR :
+1️⃣ TIRER : Retournez une nouvelle carte.
+   - Chiffre en double = PERDU ! Vous perdez tous vos points de manche.
+   - Carte unique / Modificateur / Action = Ajoutée à votre main.
+2️⃣ STOP : Enregistrez vos points et quittez la manche en sécurité.
+
+⚡ CARTES ACTION :
+• ❄️ GELER : Force le joueur à arrêter et valider ses points.
+• ⚡ TIRER TROIS : Le joueur doit retourner 3 cartes de suite.
+• 🛡️ SECONDE CHANCE : Protège contre un doublon.
+
+🌟 BONUS FLIP 7 :
+Obtenir 7 chiffres uniques donne +15 POINTS DE BONUS !`,
+  flip7_notes_desc: `🧮 CALCUL DES POINTS :
+1. Somme des cartes Chiffres uniques.
+2. Multiplier par x2 (si carte x2 présente).
+3. Ajouter les modificateurs (+2, +4, +6, +8, +10).
+4. Ajouter le bonus +15 Flip 7 si 7 chiffres uniques.
+Le premier à 200 points gagne !`,
   dixit_st_bonus: "Bonus Conteurs",
   dixit_others_fooled: "Participants Trompés",
   dixit_pts_label: "PTS",

@@ -112,6 +112,31 @@ export const en: TranslationSet = {
   flip7_hit: "HIT CARD",
   flip7_freeze: "FREEZE",
   flip7_round: "Round {round}",
+  flip7_goal_desc: "Be the first player to reach 200 points over multiple press-your-luck rounds! Flip number cards, collect modifiers, avoid duplicate busts, and aim for the massive +15 Flip 7 Bonus.",
+  flip7_how_to_play_desc: `🎴 DECK COMPOSITION (94 Cards Total):
+• Number Cards (0–12): Quantities match face value (one 0, one 1, two 2s ... twelve 12s). Card 0 is worth 0 pts but counts as a unique number!
+• Modifier Cards: +2, +4, +6, +8, +10 and Multiplier x2.
+• Action Cards: Freeze ❄️, Flip Three ⚡, Second Chance 🛡️.
+
+🎮 YOUR TURN (2 Options):
+1️⃣ HIT: Flip another card face-up.
+   - Duplicate Number = BUST! Lose all round points.
+   - Unique Number / Modifier / Action = Added to your hand safely!
+2️⃣ STAY: Bank your current round points and exit the round safely.
+
+⚡ ACTION CARDS:
+• ❄️ FREEZE: Instantly forces target player to STAY, bank points, and exit the round.
+• ⚡ FLIP THREE: Target player must flip 3 cards sequentially.
+• 🛡️ SECOND CHANCE: Protects from a duplicate bust (Max 1 held per player; extra passed to opponent).
+
+🌟 FLIP 7 BONUS:
+Flipping 7 unique numbers ends the round instantly and awards +15 BONUS POINTS!`,
+  flip7_notes_desc: `🧮 SCORING FORMULA (Applied in order):
+1. Sum of unique Number cards.
+2. Multiply number sum by x2 (if x2 card is in hand).
+3. Add + Modifier points (+2, +4, +6, +8, +10).
+4. Add +15 Flip 7 Bonus if 7 unique numbers collected.
+First player to reach 200 total points wins!`,
   dixit_st_bonus: "Storyteller Bonus",
   dixit_others_fooled: "Participants Fooled",
   dixit_pts_label: "PTS",
