@@ -1,4 +1,5 @@
 import { Doc } from "../_generated/dataModel";
+import { decideFlip7Action } from "./flip7_ai";
 
 export type BotMove = {
   actionType: string;
@@ -75,9 +76,14 @@ export const PERSONAS: Record<string, BotPersona> = {
       return "STAY";
     },
     decideFlip7(myId, faceUpCards, board) {
-      if (faceUpCards.length === 0) return "HIT";
-      const uniqueCount = new Set(faceUpCards.filter((c: string) => c.startsWith("N_"))).size;
-      return uniqueCount >= 5 ? "FREEZE" : "HIT";
+      return decideFlip7Action({
+        myId,
+        faceUpCards,
+        hasSecondChance: false,
+        bankedScore: 0,
+        persona: "balanced",
+        board,
+      });
     },
     generateDixitPrompt(phase, maturity, clue, ruleset) {
       const maturityConstraint = maturity === "CHILD" 
@@ -142,9 +148,14 @@ export const PERSONAS: Record<string, BotPersona> = {
       return "STAY";
     },
     decideFlip7(myId, faceUpCards, board) {
-      if (faceUpCards.length === 0) return "HIT";
-      const uniqueCount = new Set(faceUpCards.filter((c: string) => c.startsWith("N_"))).size;
-      return uniqueCount >= 6 ? "FREEZE" : "HIT";
+      return decideFlip7Action({
+        myId,
+        faceUpCards,
+        hasSecondChance: false,
+        bankedScore: 0,
+        persona: "aggressive",
+        board,
+      });
     },
     generateDixitPrompt(phase, maturity, clue, ruleset) {
       const maturityConstraint = maturity === "CHILD" 
@@ -210,9 +221,14 @@ export const PERSONAS: Record<string, BotPersona> = {
       return "STAY";
     },
     decideFlip7(myId, faceUpCards, board) {
-      if (faceUpCards.length === 0) return "HIT";
-      const uniqueCount = new Set(faceUpCards.filter((c: string) => c.startsWith("N_"))).size;
-      return uniqueCount >= 4 ? "FREEZE" : "HIT";
+      return decideFlip7Action({
+        myId,
+        faceUpCards,
+        hasSecondChance: false,
+        bankedScore: 0,
+        persona: "cautious",
+        board,
+      });
     },
     generateDixitPrompt(phase, maturity, clue, ruleset) {
       const maturityConstraint = maturity === "CHILD" 

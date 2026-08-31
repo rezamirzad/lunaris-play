@@ -9,6 +9,7 @@
  */
 
 import type * as bots_ai from "../bots/ai.js";
+import type * as bots_flip7_ai from "../bots/flip7_ai.js";
 import type * as bots_justone_ai from "../bots/justone_ai.js";
 import type * as bots_justone_clues from "../bots/justone_clues.js";
 import type * as bots_manager from "../bots/manager.js";
@@ -43,6 +44,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   "bots/ai": typeof bots_ai;
+  "bots/flip7_ai": typeof bots_flip7_ai;
   "bots/justone_ai": typeof bots_justone_ai;
   "bots/justone_clues": typeof bots_justone_clues;
   "bots/manager": typeof bots_manager;

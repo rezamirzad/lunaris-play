@@ -418,6 +418,11 @@ export const addBot = mutation({
         "Sonic", "Apex", "Pace", "Chrono", "Vector", 
         "Overdrive", "Volt", "Dash", "Ignition"
       ],
+      flip7: [
+        "Lucky Seven", "High Roller", "Risk Taker", "Jackpot", "Ace", 
+        "Gamble", "Vegas", "Fortune", "Chance", "Flipper", 
+        "Card Shark", "Wildcard", "Double Down", "Streak"
+      ],
     };
 
     const fallbackNames = [
