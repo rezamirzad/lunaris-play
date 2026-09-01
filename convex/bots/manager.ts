@@ -175,7 +175,7 @@ export const executeMove = internalMutation({
     }
     else if (room.currentGame === "flip7") {
       if (board.phase !== "ACTIVE_PLAY") return;
-      const delayMs = 1000 + Math.floor(Math.random() * 1500);
+      const delayMs = (board.mustFlipCount || 0) > 0 ? 350 + Math.floor(Math.random() * 250) : 800 + Math.floor(Math.random() * 1000);
 
       if (board.pendingTargetAction && String(board.pendingTargetAction.sourcePlayerId) === String(player._id)) {
         const activePlayers = players.filter((p: any) => (p.state as any).status === "ACTIVE");

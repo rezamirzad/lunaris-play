@@ -74,38 +74,65 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
 
       {/* Main Game Stage */}
       <div className="flex-1 p-4 md:p-8 flex flex-col justify-between max-w-7xl mx-auto w-full gap-6">
-        {/* Banner Action Notification */}
-        {board.lastAction && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`w-full p-4 rounded-2xl border backdrop-blur-md shadow-2xl flex items-center justify-between ${
-              board.lastAction.type === "BUST"
-                ? "bg-rose-950/80 border-rose-500/40 text-rose-300"
-                : board.lastAction.type === "FLIP_7_BONUS"
-                  ? "bg-amber-950/80 border-amber-400 text-amber-300"
-                  : board.lastAction.type === "FREEZE"
-                    ? "bg-cyan-950/80 border-cyan-500/40 text-cyan-300"
-                    : "bg-zinc-900/80 border-white/10 text-zinc-200"
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">
-                {board.lastAction.type === "BUST"
-                  ? "💥"
+        {/* Banner Action Notification & Live Standings Bar */}
+        <div className="flex flex-col gap-3 w-full">
+          {board.lastAction && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`w-full p-4 rounded-2xl border backdrop-blur-md shadow-2xl flex items-center justify-between ${
+                board.lastAction.type === "BUST"
+                  ? "bg-rose-950/80 border-rose-500/40 text-rose-300"
                   : board.lastAction.type === "FLIP_7_BONUS"
-                    ? "🌟"
+                    ? "bg-amber-950/80 border-amber-400 text-amber-300"
                     : board.lastAction.type === "FREEZE"
-                      ? "❄️"
-                      : "🃏"}
-              </span>
-              <span className="font-bold text-sm md:text-base">{board.lastAction.message}</span>
+                      ? "bg-cyan-950/80 border-cyan-500/40 text-cyan-300"
+                      : "bg-zinc-900/80 border-white/10 text-zinc-200"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">
+                  {board.lastAction.type === "BUST"
+                    ? "💥"
+                    : board.lastAction.type === "FLIP_7_BONUS"
+                      ? "🌟"
+                      : board.lastAction.type === "FREEZE"
+                        ? "❄️"
+                        : "🃏"}
+                </span>
+                <span className="font-bold text-sm md:text-base">{board.lastAction.message}</span>
+              </div>
+              <div className="text-xs font-mono font-black opacity-70">
+                Deck: {board.deck?.length || 0} cards left
+              </div>
+            </motion.div>
+          )}
+
+          {/* In-Round Standings Strip */}
+          <div className="bg-black/50 border border-white/10 rounded-2xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+            <span className="text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <span>🏆</span>
+              <span>LIVE STANDINGS</span>
+            </span>
+            <div className="flex flex-wrap items-center gap-4">
+              {[...roomData.players]
+                .sort((a, b) => ((b.state as any)?.bankedScore || 0) - ((a.state as any)?.bankedScore || 0))
+                .slice(0, 4)
+                .map((p, idx) => {
+                  const st = p.state as any;
+                  const medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `#${idx + 1}`;
+                  return (
+                    <div key={p._id} className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-full border border-white/5">
+                      <span>{medal}</span>
+                      <span className="font-bold text-zinc-200">{p.name}</span>
+                      <span className="text-amber-400 font-black">{st?.bankedScore || 0} pts</span>
+                      <span className="text-emerald-400 text-[10px]">(+{st?.roundScore || 0})</span>
+                    </div>
+                  );
+                })}
             </div>
-            <div className="text-xs font-mono font-black opacity-70">
-              Deck: {board.deck?.length || 0} cards left
-            </div>
-          </motion.div>
-        )}
+          </div>
+        </div>
 
         {/* Players Grid / Table */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 flex-1 overflow-y-auto">
@@ -114,21 +141,42 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
             const isCurrentTurn = String(p._id) === String(board.currentTurnPlayerId);
             const faceUpCards = (st?.roundFaceUpCards as string[]) || [];
             const scoreInfo = calculateFlip7RoundScore(faceUpCards);
+            const isStayed = st?.status === "FROZEN";
+            const isBusted = st?.status === "BUSTED";
+            const isFlipThreeSequence = isCurrentTurn && (board.mustFlipCount || 0) > 0;
 
             return (
               <motion.div
                 key={p._id}
                 layout
                 className={`p-4 rounded-2xl border flex flex-col justify-between transition-all relative overflow-hidden ${
-                  isCurrentTurn
-                    ? "bg-amber-950/30 border-amber-500/60 shadow-[0_0_25px_rgba(245,158,11,0.2)]"
-                    : st?.status === "BUSTED"
-                      ? "bg-rose-950/20 border-rose-500/20 opacity-60"
-                      : st?.status === "FROZEN"
-                        ? "bg-cyan-950/20 border-cyan-500/20"
+                  isStayed
+                    ? "bg-gradient-to-br from-cyan-950 via-cyan-900/40 to-slate-950 border-2 border-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.35)]"
+                    : isCurrentTurn
+                      ? isFlipThreeSequence
+                        ? "bg-gradient-to-br from-yellow-950/60 via-amber-900/40 to-black border-2 border-yellow-400 shadow-[0_0_30px_rgba(234,179,8,0.4)] animate-pulse"
+                        : "bg-amber-950/30 border-amber-500/60 shadow-[0_0_25px_rgba(245,158,11,0.2)]"
+                      : isBusted
+                        ? "bg-gradient-to-br from-rose-950/40 via-red-950/20 to-black border-rose-600/30 opacity-60"
                         : "bg-zinc-900/60 border-white/5"
                 }`}
               >
+                {/* Stayed Ice Glow Banner */}
+                {isStayed && (
+                  <div className="bg-cyan-500 text-black font-mono font-black text-[10px] uppercase tracking-widest text-center py-1 -mx-4 -mt-4 mb-3 shadow-md flex items-center justify-center gap-1.5">
+                    <span>✋</span>
+                    <span>STAYED & BANKED +{st?.roundScore || 0} PTS</span>
+                  </div>
+                )}
+
+                {/* Flip Three Active Banner */}
+                {isFlipThreeSequence && (
+                  <div className="bg-yellow-400 text-black font-mono font-black text-[10px] uppercase tracking-widest text-center py-1 -mx-4 -mt-4 mb-3 shadow-md flex items-center justify-center gap-1.5 animate-bounce">
+                    <span>⚡</span>
+                    <span>FLIP THREE: {board.mustFlipCount} FLIPS LEFT</span>
+                  </div>
+                )}
+
                 {/* Player Header */}
                 <div className="flex items-center justify-between border-b border-white/10 pb-3">
                   <div className="flex items-center gap-2">
@@ -162,7 +210,9 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                 </div>
 
                 {/* Face-up Cards Grid */}
-                <div className="py-4 flex flex-wrap gap-2 min-h-[100px] items-center">
+                <div className={`py-4 flex flex-wrap gap-2 min-h-[100px] items-center rounded-xl p-2 transition-all ${
+                  isFlipThreeSequence ? "border border-yellow-400/50 bg-yellow-950/20" : ""
+                }`}>
                   <AnimatePresence>
                     {faceUpCards.map((cId, idx) => (
                       <Flip7Card key={cId + idx} cardId={cId} size="md" />
@@ -180,14 +230,14 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                   </span>
                   <span
                     className={`font-black uppercase text-[10px] px-2.5 py-0.5 rounded-full ${
-                      st?.status === "FROZEN"
-                        ? "bg-cyan-950 text-cyan-400 border border-cyan-500/40"
-                        : st?.status === "BUSTED"
+                      isStayed
+                        ? "bg-cyan-400 text-black border border-cyan-300 font-black shadow-[0_0_10px_rgba(6,182,212,0.4)]"
+                        : isBusted
                           ? "bg-rose-950 text-rose-400 border border-rose-500/40"
                           : "bg-emerald-950 text-emerald-400 border border-emerald-500/40"
                     }`}
                   >
-                    {st?.status === "FROZEN" ? "STAYED ✋" : st?.status === "BUSTED" ? "BUSTED 💥" : "ACTIVE 🃏"}
+                    {isStayed ? "STAYED ✋" : isBusted ? "BUSTED 💥" : "ACTIVE 🃏"}
                   </span>
                 </div>
               </motion.div>
@@ -195,36 +245,69 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
           })}
         </div>
 
-        {/* Round Results Modal Overlay */}
+        {/* End-of-Round Pop-up Scoreboard Modal */}
         {board.phase === "ROUND_RESULTS" && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="w-full bg-zinc-900/90 border border-amber-500/40 rounded-3xl p-6 shadow-2xl backdrop-blur-md flex flex-col items-center gap-6 max-w-2xl mx-auto text-center"
-          >
-            <h3 className="text-2xl font-black text-amber-400 tracking-wider italic uppercase">
-              ROUND {board.currentRound} COMPLETE
-            </h3>
-
-            <div className="w-full space-y-2">
-              {board.roundResults?.map((res: any) => (
-                <div key={res.playerId} className="flex justify-between items-center bg-black/40 p-3 rounded-xl border border-white/5 text-sm font-mono">
-                  <span className="font-bold text-white">{res.playerName}</span>
-                  <div className="flex items-center gap-4">
-                    <span className="text-zinc-400">+{res.roundScore} round pts</span>
-                    <span className="text-amber-400 font-black">{res.totalScore} total pts</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <button
-              onClick={() => nextRound({ roomId: roomId as any })}
-              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-black uppercase italic tracking-widest px-8 py-3 rounded-2xl shadow-xl transition-all"
+          <div className="fixed inset-0 z-[120] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 select-none font-mono">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="w-full bg-zinc-900 border-2 border-amber-400/50 rounded-3xl p-6 md:p-8 shadow-2xl flex flex-col items-center gap-6 max-w-xl text-center"
             >
-              Start Next Round ➔
-            </button>
-          </motion.div>
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-4xl">🏆</span>
+                <h3 className="text-2xl font-black text-amber-300 tracking-wider italic uppercase">
+                  ROUND {board.currentRound} SCOREBOARD
+                </h3>
+                <p className="text-xs text-zinc-400">Ranked by Total Banked Points</p>
+              </div>
+
+              <div className="w-full space-y-2 max-h-[60vh] overflow-y-auto pr-1">
+                {roomData.players
+                  .map((p) => {
+                    const st = p.state as any;
+                    return {
+                      playerId: p._id,
+                      playerName: p.name,
+                      roundScore: st?.roundScore || 0,
+                      totalScore: st?.bankedScore || 0,
+                      status: st?.status,
+                    };
+                  })
+                  .sort((a, b) => b.totalScore - a.totalScore)
+                  .map((res: any, idx: number) => {
+                    const medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}.`;
+                    return (
+                      <div
+                        key={res.playerId}
+                        className={`flex justify-between items-center p-3.5 rounded-2xl border text-sm font-mono transition-all ${
+                          idx === 0
+                            ? "bg-amber-950/60 border-amber-400 text-amber-200 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+                            : "bg-black/60 border-white/10 text-white"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-base font-bold min-w-[28px]">{medal}</span>
+                          <span className="font-bold text-white text-base">{res.playerName}</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-emerald-400 font-bold text-xs">+{res.roundScore} round</span>
+                          <span className="bg-white/10 px-3 py-1 rounded-full text-amber-400 font-black text-sm border border-amber-400/30">
+                            {res.totalScore} pts
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+
+              <button
+                onClick={() => nextRound({ roomId: roomId as any })}
+                className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-black uppercase italic tracking-widest py-4 rounded-2xl shadow-xl transition-all text-base active:scale-95"
+              >
+                Start Next Round ➔
+              </button>
+            </motion.div>
+          </div>
         )}
       </div>
     </div>
