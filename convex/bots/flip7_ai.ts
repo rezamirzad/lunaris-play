@@ -53,6 +53,11 @@ export function decideFlip7Action(ctx: Flip7BotContext): "HIT" | "FREEZE" {
     return "FREEZE";
   }
 
+  // SHIELD NO-RISK RULE: An AI player holding a Second Chance shield NEVER STAYS (always HITs), since duplicates are absorbed risk-free!
+  if (hasSecondChance) {
+    return "HIT";
+  }
+
   const existingNumbers = new Set(
     faceUpCards.map((cId) => parseFlip7Card(cId).numberValue).filter((n) => n !== undefined),
   );
