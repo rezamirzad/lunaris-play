@@ -40,18 +40,50 @@ export const flip7Plugin: GamePlugin = {
       "cautious",
     ];
 
+    let pendingInitialTarget: any = undefined;
+
     for (let i = 0; i < players.length; i++) {
       const player = players[i];
+      let faceUpCards: string[] = [];
+      let hasSecondChance = false;
+      let status: "ACTIVE" | "FROZEN" | "BUSTED" = "ACTIVE";
+
+      if (deck.length > 0) {
+        const drawn = deck.pop()!;
+        faceUpCards.push(drawn);
+        const parsed = parseFlip7Card(drawn);
+
+        if (parsed.type === "ACTION") {
+          if (parsed.actionType === "SECOND_CHANCE") {
+            hasSecondChance = true;
+          } else if (parsed.actionType === "FREEZE" || parsed.actionType === "FLIP_THREE") {
+            if (players.length > 1) {
+              if (!pendingInitialTarget) {
+                pendingInitialTarget = {
+                  cardId: drawn,
+                  actionType: parsed.actionType,
+                  sourcePlayerId: player._id,
+                  sourcePlayerName: player.name,
+                };
+              }
+            } else {
+              if (parsed.actionType === "FREEZE") status = "FROZEN";
+            }
+          }
+        }
+      }
+
+      const scoreInfo = calculateFlip7RoundScore(faceUpCards);
       await ctx.db.patch(player._id, {
         gameHand: [],
         persona: personas[i % personas.length],
         state: {
           gameType: "flip7",
           bankedScore: 0,
-          roundScore: 0,
-          roundFaceUpCards: [],
-          hasSecondChance: false,
-          status: "ACTIVE",
+          roundScore: scoreInfo.score,
+          roundFaceUpCards: faceUpCards,
+          hasSecondChance,
+          status,
         },
       });
     }
@@ -66,6 +98,7 @@ export const flip7Plugin: GamePlugin = {
         targetScore: 200,
         currentTurnPlayerId: firstPlayerId,
         mustFlipCount: 0,
+        pendingTargetAction: pendingInitialTarget,
         deck,
         discardPile: [],
       } as any,
@@ -137,41 +170,73 @@ export const nextRound = mutation({
       .withIndex("by_room", (q) => q.eq("roomId", room._id))
       .collect();
 
-    // Check if game is over
-    const winnerPlayer = players.find((p) => {
-      const state = p.state as any;
-      return state.bankedScore >= board.targetScore;
-    });
+    // Check Case 9 Tie Breaker for target score (200 pts)
+    const sorted = [...players].sort((a, b) => ((b.state as any).bankedScore || 0) - ((a.state as any).bankedScore || 0));
+    const topScore = (sorted[0].state as any).bankedScore || 0;
 
-    if (winnerPlayer) {
-      // Sort players by total score
-      const sorted = [...players].sort((a, b) => ((b.state as any).bankedScore || 0) - ((a.state as any).bankedScore || 0));
-      await ctx.db.patch(room._id, {
-        status: "FINISHED",
-        gameBoard: {
-          ...board,
-          phase: "FINAL_LEADERBOARD",
-          winner: sorted[0].name,
-          winnerId: sorted[0]._id,
-        } as any,
-      });
-      return { success: true };
+    if (topScore >= board.targetScore) {
+      const tiedForTop = sorted.filter((p) => ((p.state as any).bankedScore || 0) === topScore);
+      if (tiedForTop.length === 1) {
+        // Unique high score >= 200: Game Winner!
+        await ctx.db.patch(room._id, {
+          status: "FINISHED",
+          gameBoard: {
+            ...board,
+            phase: "FINAL_LEADERBOARD",
+            winner: sorted[0].name,
+            winnerId: sorted[0]._id,
+          } as any,
+        });
+        return { success: true };
+      }
+      // Tied for top score >= 200: Play another tie-breaker round for ALL players (Case 9)!
     }
 
     // Reset for next round
     const deck = getFlip7Deck();
     const currentRound = board.currentRound + 1;
+    let pendingInitialTarget: any = undefined;
 
-    // Reset player round state
+    // Reset player round state and deal 1 initial card
     for (const p of players) {
+      let faceUpCards: string[] = [];
+      let hasSecondChance = false;
+      let status: "ACTIVE" | "FROZEN" | "BUSTED" = "ACTIVE";
+
+      if (deck.length > 0) {
+        const drawn = deck.pop()!;
+        faceUpCards.push(drawn);
+        const parsed = parseFlip7Card(drawn);
+
+        if (parsed.type === "ACTION") {
+          if (parsed.actionType === "SECOND_CHANCE") {
+            hasSecondChance = true;
+          } else if (parsed.actionType === "FREEZE" || parsed.actionType === "FLIP_THREE") {
+            if (players.length > 1) {
+              if (!pendingInitialTarget) {
+                pendingInitialTarget = {
+                  cardId: drawn,
+                  actionType: parsed.actionType,
+                  sourcePlayerId: p._id,
+                  sourcePlayerName: p.name,
+                };
+              }
+            } else {
+              if (parsed.actionType === "FREEZE") status = "FROZEN";
+            }
+          }
+        }
+      }
+
+      const scoreInfo = calculateFlip7RoundScore(faceUpCards);
       await ctx.db.patch(p._id, {
         state: {
           gameType: "flip7",
           bankedScore: (p.state as any).bankedScore || 0,
-          roundScore: 0,
-          roundFaceUpCards: [],
-          hasSecondChance: false,
-          status: "ACTIVE",
+          roundScore: scoreInfo.score,
+          roundFaceUpCards: faceUpCards,
+          hasSecondChance,
+          status,
         },
       });
     }
@@ -187,6 +252,8 @@ export const nextRound = mutation({
         discardPile: [],
         currentTurnPlayerId: firstPlayerId,
         mustFlipCount: 0,
+        pendingTargetAction: pendingInitialTarget,
+        queuedTargetActions: [],
         lastAction: undefined,
         roundResults: undefined,
       } as any,
