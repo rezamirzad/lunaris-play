@@ -22,6 +22,7 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
   const toggleHaltMutation = useMutation(api.engine.toggleBotsHalt);
 
   const [showRules, setShowRules] = useState(false);
+  const [showBustOdds, setShowBustOdds] = useState(false);
 
   const board = roomData.gameBoard;
   if (!board || board.gameType !== "flip7") return null;
@@ -118,10 +119,23 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
 
           {/* In-Round Standings Strip */}
           <div className="bg-black/50 border border-white/10 rounded-2xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
-            <span className="text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <span>🏆</span>
-              <span>LIVE STANDINGS</span>
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <span>🏆</span>
+                <span>LIVE STANDINGS</span>
+              </span>
+              <button
+                onClick={() => setShowBustOdds(!showBustOdds)}
+                className={`px-3 py-1 rounded-full text-[10px] font-mono font-black border transition-all flex items-center gap-1.5 active:scale-95 ${
+                  showBustOdds
+                    ? "bg-amber-400 text-black border-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.5)]"
+                    : "bg-white/5 text-zinc-400 border-white/10 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                <span>📊</span>
+                <span>BUST ODDS {showBustOdds ? "ON" : "OFF"}</span>
+              </button>
+            </div>
             <div className="flex flex-wrap items-center gap-4">
               {[...roomData.players]
                 .sort((a, b) => ((b.state as any)?.bankedScore || 0) - ((a.state as any)?.bankedScore || 0))
@@ -199,7 +213,7 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                 </div>
 
                 {/* Special Active Status Badges */}
-                <div className="flex flex-wrap gap-1.5 pt-2">
+                <div className="flex flex-wrap items-center gap-1.5 pt-2">
                   {st?.hasSecondChance && (
                     <span className="text-[9px] font-mono font-black bg-cyan-950/90 text-cyan-300 border border-cyan-400/40 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-[0_0_8px_rgba(6,182,212,0.3)] animate-pulse" title="Second Chance Shield Active">
                       <span>🛡️</span>
@@ -215,6 +229,37 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                   <span className="text-[9px] font-mono font-bold bg-white/5 text-zinc-300 px-2 py-0.5 rounded-full border border-white/5">
                     {scoreInfo.uniqueNumbersCount}/7 Unique
                   </span>
+
+                  {/* Optional Live Bust Risk Badge */}
+                  {showBustOdds && !isBusted && !isStayed && (() => {
+                    const deck = board.deck || [];
+                    const existingNumbers = new Set(
+                      faceUpCards.map((cId) => parseFlip7Card(cId).numberValue).filter((n) => n !== undefined),
+                    );
+                    let matchingDuplicates = 0;
+                    deck.forEach((cardId: string) => {
+                      const parsed = parseFlip7Card(cardId);
+                      if (parsed.type === "NUMBER" && parsed.numberValue !== undefined && existingNumbers.has(parsed.numberValue)) {
+                        matchingDuplicates++;
+                      }
+                    });
+                    const rawBustPct = deck.length > 0 ? (matchingDuplicates / deck.length) * 100 : 0;
+                    const isShielded = st?.hasSecondChance;
+                    const badgeStyle = isShielded
+                      ? "bg-cyan-950/90 text-cyan-300 border-cyan-400/50"
+                      : rawBustPct > 40
+                        ? "bg-rose-950/90 text-rose-300 border-rose-500/50"
+                        : rawBustPct > 22
+                          ? "bg-amber-950/90 text-amber-300 border-amber-500/50"
+                          : "bg-emerald-950/90 text-emerald-300 border-emerald-500/40";
+
+                    return (
+                      <span className={`text-[9px] font-mono font-black px-2 py-0.5 rounded-full border flex items-center gap-1 shadow-sm ${badgeStyle}`} title="Exact Bust Odds">
+                        <span>📊</span>
+                        <span>{isShielded ? "0% (SHIELD 🛡️)" : `${rawBustPct.toFixed(1)}% BUST`}</span>
+                      </span>
+                    );
+                  })()}
                 </div>
 
                 {/* Face-up Cards Grid */}
