@@ -198,8 +198,15 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
                 <AnimatePresence>
                   {faceUpCards.map((cId, idx) => {
                     const isAssignedAction = cId.startsWith("ACT_FLIP3") || cId.startsWith("ACT_FREEZE");
+                    const isUsedSecondChance = cId.startsWith("ACT_SECOND_CHANCE") && !myState.hasSecondChance;
                     return (
-                      <Flip7Card key={cId + idx} cardId={cId} size="sm" isGrayedOut={isAssignedAction} />
+                      <Flip7Card
+                        key={cId + idx}
+                        cardId={cId}
+                        size="sm"
+                        isGrayedOut={isAssignedAction}
+                        isCrossedOut={isUsedSecondChance}
+                      />
                     );
                   })}
                 </AnimatePresence>

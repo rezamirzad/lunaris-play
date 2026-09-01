@@ -256,7 +256,7 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                     return (
                       <span className={`text-[9px] font-mono font-black px-2 py-0.5 rounded-full border flex items-center gap-1 shadow-sm ${badgeStyle}`} title="Exact Bust Odds">
                         <span>📊</span>
-                        <span>{isShielded ? "0% (SHIELD 🛡️)" : `${rawBustPct.toFixed(1)}% BUST`}</span>
+                        <span>{isShielded ? "0.0% (Shield 🛡️)" : `${rawBustPct.toFixed(1)}% BUST`}</span>
                       </span>
                     );
                   })()}
@@ -269,8 +269,15 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                   <AnimatePresence>
                     {faceUpCards.map((cId, idx) => {
                       const isAssignedAction = cId.startsWith("ACT_FLIP3") || cId.startsWith("ACT_FREEZE");
+                      const isUsedSecondChance = cId.startsWith("ACT_SECOND_CHANCE") && !st?.hasSecondChance;
                       return (
-                        <Flip7Card key={cId + idx} cardId={cId} size="md" isGrayedOut={isAssignedAction} />
+                        <Flip7Card
+                          key={cId + idx}
+                          cardId={cId}
+                          size="md"
+                          isGrayedOut={isAssignedAction}
+                          isCrossedOut={isUsedSecondChance}
+                        />
                       );
                     })}
                   </AnimatePresence>
