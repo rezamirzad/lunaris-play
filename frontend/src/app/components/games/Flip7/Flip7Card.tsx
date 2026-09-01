@@ -9,6 +9,8 @@ interface Flip7CardProps {
   size?: "sm" | "md" | "lg";
   className?: string;
   isFlipped?: boolean;
+  isCrossedOut?: boolean;
+  isGrayedOut?: boolean;
 }
 
 export const Flip7Card: React.FC<Flip7CardProps> = ({
@@ -16,6 +18,8 @@ export const Flip7Card: React.FC<Flip7CardProps> = ({
   size = "md",
   className = "",
   isFlipped = false,
+  isCrossedOut = false,
+  isGrayedOut = false,
 }) => {
   const card: Flip7CardInfo = parseFlip7Card(cardId);
 
@@ -74,7 +78,9 @@ export const Flip7Card: React.FC<Flip7CardProps> = ({
       initial={{ scale: 0.8, rotateY: 90 }}
       animate={{ scale: 1, rotateY: 0 }}
       whileHover={{ y: -5, scale: 1.05 }}
-      className={`bg-gradient-to-br ${themeGradient} ${sizeClasses} flex flex-col justify-between p-2 select-none relative overflow-hidden font-black transition-all backdrop-blur-md ${className}`}
+      className={`bg-gradient-to-br ${themeGradient} ${sizeClasses} flex flex-col justify-between p-2 select-none relative overflow-hidden font-black transition-all backdrop-blur-md ${
+        isGrayedOut ? "grayscale opacity-45 mix-blend-luminosity border-zinc-600/50" : ""
+      } ${className}`}
     >
       {/* Background Texture Detail */}
       <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(circle_at_top,_white_0%,_transparent_70%)]" />
@@ -97,6 +103,26 @@ export const Flip7Card: React.FC<Flip7CardProps> = ({
           <span className="text-2xl drop-shadow-md">{badgeIcon}</span>
         )}
       </div>
+
+      {/* Grayed Out Assigned Badge Overlay */}
+      {isGrayedOut && (
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px] flex flex-col items-center justify-center z-20 pointer-events-none rounded-[inherit]">
+          <span className="text-[9px] font-mono font-black uppercase text-zinc-300 tracking-wider bg-zinc-800/90 px-1.5 py-0.5 rounded border border-zinc-500/50">
+            USED
+          </span>
+        </div>
+      )}
+
+      {/* Crossed Out Overlay */}
+      {isCrossedOut && (
+        <div className="absolute inset-0 bg-black/75 backdrop-blur-[1px] flex items-center justify-center z-30 pointer-events-none rounded-[inherit]">
+          <div className="relative flex items-center justify-center">
+            <span className="text-3xl font-black text-rose-500 drop-shadow-[0_0_12px_rgba(244,63,94,0.9)] animate-pulse">❌</span>
+            <div className="absolute w-16 h-1 bg-rose-500 rotate-45 rounded-full shadow-[0_0_8px_rgba(244,63,94,0.9)]" />
+            <div className="absolute w-16 h-1 bg-rose-500 -rotate-45 rounded-full shadow-[0_0_8px_rgba(244,63,94,0.9)]" />
+          </div>
+        </div>
+      )}
 
       {/* Bottom Sublabel */}
       <div className="w-full text-center z-10">

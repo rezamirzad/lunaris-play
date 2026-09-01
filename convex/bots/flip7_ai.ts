@@ -1,4 +1,4 @@
-import { parseFlip7Card } from "../flip7_deck";
+import { parseFlip7Card, calculateFlip7RoundScore } from "../flip7_deck";
 
 export interface Flip7BotContext {
   myId: string;
@@ -43,6 +43,15 @@ export function decideFlip7Action(ctx: Flip7BotContext): "HIT" | "FREEZE" {
 
   // First card of round is always a HIT
   if (faceUpCards.length === 0) return "HIT";
+
+  // WIN CONDITION CHECK: If current round score + banked score >= 200 (target score), FREEZE immediately to win!
+  const scoreInfo = calculateFlip7RoundScore(faceUpCards);
+  const targetScore = board.targetScore || 200;
+  const projectedTotalScore = (ctx.bankedScore || 0) + scoreInfo.score;
+
+  if (projectedTotalScore >= targetScore) {
+    return "FREEZE";
+  }
 
   const existingNumbers = new Set(
     faceUpCards.map((cId) => parseFlip7Card(cId).numberValue).filter((n) => n !== undefined),

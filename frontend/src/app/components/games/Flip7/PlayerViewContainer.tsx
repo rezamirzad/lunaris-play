@@ -149,6 +149,21 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
               </div>
             </div>
 
+            {/* Second Chance Neutralization Notification Banner */}
+            {board.lastAction?.type === "SECOND_CHANCE_USED" && String(board.lastAction?.playerId) === String(player._id) && (
+              <div className="bg-gradient-to-r from-cyan-950 via-rose-950 to-zinc-900 border border-cyan-400/60 p-3 rounded-2xl flex flex-col gap-2 shadow-lg">
+                <div className="flex items-center gap-2 text-xs font-mono font-black text-cyan-300">
+                  <span>🛡️</span>
+                  <span>SECOND CHANCE SAVED YOU FROM BUSTING!</span>
+                </div>
+                <div className="flex items-center gap-3 pt-1">
+                  <span className="text-[10px] font-mono text-zinc-400">DISCARDED TO PILE:</span>
+                  <Flip7Card cardId="ACT_SECOND_CHANCE_1" size="sm" isCrossedOut={true} />
+                  {board.lastAction.cardId && <Flip7Card cardId={board.lastAction.cardId} size="sm" isCrossedOut={true} />}
+                </div>
+              </div>
+            )}
+
             {/* Special Cards & Modifiers Indicators */}
             {(myState.hasSecondChance || scoreInfo.hasMultiplier) && (
               <div className="flex flex-wrap gap-2 pt-1">
@@ -181,9 +196,12 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
               {/* Face-up Cards Grid */}
               <div className="flex flex-wrap gap-2 pt-2 min-h-[70px] items-center">
                 <AnimatePresence>
-                  {faceUpCards.map((cId, idx) => (
-                    <Flip7Card key={cId + idx} cardId={cId} size="sm" />
-                  ))}
+                  {faceUpCards.map((cId, idx) => {
+                    const isAssignedAction = cId.startsWith("ACT_FLIP3") || cId.startsWith("ACT_FREEZE");
+                    return (
+                      <Flip7Card key={cId + idx} cardId={cId} size="sm" isGrayedOut={isAssignedAction} />
+                    );
+                  })}
                 </AnimatePresence>
               </div>
             </div>
