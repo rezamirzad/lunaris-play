@@ -560,6 +560,7 @@ async function handleFreezeInternal(ctx: GameMutationCtx, playerId: Id<"players"
   const board = room.gameBoard;
   if (board.phase !== "ACTIVE_PLAY") throw new Error("Not in active play phase");
   if (String(board.currentTurnPlayerId) !== String(playerId)) throw new Error("Not your turn");
+  if ((board.mustFlipCount || 0) > 0) throw new Error("Cannot stay during a mandatory Flip Three sequence!");
 
   const myState = player.state;
   if (myState.status !== "ACTIVE") throw new Error("Player is not active");
@@ -746,11 +747,37 @@ async function handleResolveTargetActionInternal(
   let queuedActions = [...(board.queuedTargetActions || [])];
   let nextPendingTarget: any = undefined;
 
-  if (queuedActions.length > 0) {
+  // Case 16a: If target player was frozen by this FREEZE card, any pending FLIP THREE for them is discarded!
+  if (pending.actionType === "FREEZE" && (targetPlayer.state as any).status === "FROZEN") {
+    queuedActions = queuedActions.filter(q => String(q.sourcePlayerId) !== String(targetPlayer._id));
+  }
+
+  if (queuedActions.length > 0 && phase === "ACTIVE_PLAY") {
     const nextQueued = queuedActions.shift()!;
-    const otherActive = updatedPlayers.filter((p) => String(p._id) !== String(nextQueued.sourcePlayerId) && (p.state as any).status === "ACTIVE");
-    if (otherActive.length > 0) {
+    const otherActive = updatedPlayers.filter((p) => (p.state as any).status === "ACTIVE");
+    if (otherActive.length > 1) {
+      // Multiple active players: prompt source player for target assignment!
       nextPendingTarget = nextQueued;
+    } else if (otherActive.length === 1) {
+      // Single active player: auto-target self!
+      const solePlayer = otherActive[0];
+      if (nextQueued.actionType === "FREEZE") {
+        const soleState = solePlayer.state as any;
+        const sInfo = calculateFlip7RoundScore(soleState.roundFaceUpCards || []);
+        await ctx.db.patch(solePlayer._id, {
+          state: {
+            ...soleState,
+            bankedScore: soleState.bankedScore + sInfo.score,
+            roundScore: sInfo.score,
+            status: "FROZEN",
+          },
+        });
+        message += ` | ❄️ Queued FREEZE card auto-applied to ${solePlayer.name}!`;
+      } else {
+        mustFlipCount = 3;
+        nextTurnPlayerId = solePlayer._id;
+        message += ` | ⚡ Queued FLIP THREE card auto-applied to ${solePlayer.name}!`;
+      }
     }
   }
 

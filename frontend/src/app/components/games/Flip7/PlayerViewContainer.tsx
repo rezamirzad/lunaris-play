@@ -190,34 +190,42 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
           </div>
         }
         actionsSlot={
-          <div className="w-full grid grid-cols-2 gap-4 pt-2">
-            {/* HIT Button */}
-            <button
-              disabled={!isMyTurnNow || pendingAction}
-              onClick={handleHit}
-              className={`py-5 rounded-2xl font-black text-base uppercase tracking-wider transition-all border flex items-center justify-center gap-2 ${
-                isMyTurnNow && !pendingAction
-                  ? "bg-gradient-to-r from-amber-500 to-amber-600 border-amber-300 text-black shadow-lg shadow-amber-500/20 active:scale-95"
-                  : "bg-zinc-800 border-white/5 text-zinc-500 cursor-not-allowed opacity-50"
-              }`}
-            >
-              <span>🃏</span>
-              <span>HIT</span>
-            </button>
+          <div className="w-full flex flex-col gap-2 pt-2">
+            {(board.mustFlipCount || 0) > 0 && isMyTurnNow && (
+              <div className="bg-yellow-400/20 border border-yellow-400/40 text-yellow-300 px-3 py-1.5 rounded-xl text-xs font-mono font-bold text-center flex items-center justify-center gap-1.5 animate-pulse">
+                <span>⚡</span>
+                <span>FLIP THREE MANDATORY: STAY IS LOCKED ({board.mustFlipCount} FLIPS REMAINING)</span>
+              </div>
+            )}
+            <div className="w-full grid grid-cols-2 gap-4">
+              {/* HIT Button */}
+              <button
+                disabled={!isMyTurnNow || pendingAction}
+                onClick={handleHit}
+                className={`py-5 rounded-2xl font-black text-base uppercase tracking-wider transition-all border flex items-center justify-center gap-2 ${
+                  isMyTurnNow && !pendingAction
+                    ? "bg-gradient-to-r from-amber-500 to-amber-600 border-amber-300 text-black shadow-lg shadow-amber-500/20 active:scale-95"
+                    : "bg-zinc-800 border-white/5 text-zinc-500 cursor-not-allowed opacity-50"
+                }`}
+              >
+                <span>🃏</span>
+                <span>HIT</span>
+              </button>
 
-            {/* STAY Button */}
-            <button
-              disabled={!isMyTurnNow || pendingAction}
-              onClick={handleFreeze}
-              className={`py-5 rounded-2xl font-black text-base uppercase tracking-wider transition-all border flex items-center justify-center gap-2 ${
-                isMyTurnNow && !pendingAction
-                  ? "bg-gradient-to-r from-emerald-600 to-teal-600 border-emerald-400 text-white shadow-lg shadow-emerald-500/20 active:scale-95"
-                  : "bg-zinc-800 border-white/5 text-zinc-500 cursor-not-allowed opacity-50"
-              }`}
-            >
-              <span>✋</span>
-              <span>STAY</span>
-            </button>
+              {/* STAY Button */}
+              <button
+                disabled={!isMyTurnNow || pendingAction || (board.mustFlipCount || 0) > 0}
+                onClick={handleFreeze}
+                className={`py-5 rounded-2xl font-black text-base uppercase tracking-wider transition-all border flex items-center justify-center gap-2 ${
+                  isMyTurnNow && !pendingAction && (board.mustFlipCount || 0) === 0
+                    ? "bg-gradient-to-r from-emerald-600 to-teal-600 border-emerald-400 text-white shadow-lg shadow-emerald-500/20 active:scale-95"
+                    : "bg-zinc-800 border-white/5 text-zinc-500 cursor-not-allowed opacity-40"
+                }`}
+              >
+                <span>✋</span>
+                <span>{(board.mustFlipCount || 0) > 0 ? "LOCKED" : "STAY"}</span>
+              </button>
+            </div>
           </div>
         }
       />
