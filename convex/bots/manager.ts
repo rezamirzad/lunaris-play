@@ -201,7 +201,8 @@ export const executeMove = internalMutation({
         await ctx.scheduler.runAfter(delayMs, (internal as any).flip7.resolveTargetAction, { playerId: player._id, targetPlayerId: targetId });
       } else {
         const state = player.state as any;
-        const action = (persona as any).decideFlip7 ? (persona as any).decideFlip7(player._id, state.roundFaceUpCards || [], board) : "HIT";
+        const mustFlip = (board.mustFlipCount || 0) > 0;
+        const action = mustFlip ? "HIT" : ((persona as any).decideFlip7 ? (persona as any).decideFlip7(player._id, state.roundFaceUpCards || [], board) : "HIT");
         await ctx.scheduler.runAfter(delayMs, (internal as any).flip7.performBotTurn, { playerId: player._id, action });
       }
     }

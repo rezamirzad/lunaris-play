@@ -38,6 +38,9 @@ export function calculateBustProbability(faceUpCards: string[], deck: string[]):
 export function decideFlip7Action(ctx: Flip7BotContext): "HIT" | "FREEZE" {
   const { faceUpCards, hasSecondChance, persona, board } = ctx;
 
+  // Mandatory Flip 3 sequence forces HIT
+  if ((board.mustFlipCount || 0) > 0) return "HIT";
+
   // First card of round is always a HIT
   if (faceUpCards.length === 0) return "HIT";
 
