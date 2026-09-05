@@ -343,7 +343,7 @@ export default defineSchema({
               playerName: v.string(),
               roundScore: v.number(),
               totalScore: v.number(),
-              status: v.union(v.literal("FROZEN"), v.literal("BUSTED"), v.literal("FLIP_7")),
+              status: v.union(v.literal("FROZEN"), v.literal("STAYED"), v.literal("BUSTED"), v.literal("FLIP_7")),
             })
           )
         ),

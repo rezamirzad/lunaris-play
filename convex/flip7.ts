@@ -717,7 +717,7 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
         playerName: p.name,
         roundScore: st.roundScore || 0,
         totalScore: st.bankedScore || 0,
-        status: st.status as "FROZEN" | "BUSTED" | "FLIP_7",
+        status: st.status as "FROZEN" | "STAYED" | "BUSTED" | "FLIP_7",
       };
     });
   }
@@ -852,7 +852,7 @@ async function handleFreezeInternal(ctx: GameMutationCtx, playerId: Id<"players"
         playerName: p.name,
         roundScore: st.roundScore || 0,
         totalScore: st.bankedScore || 0,
-        status: st.status as "FROZEN" | "BUSTED" | "FLIP_7",
+        status: st.status as "FROZEN" | "STAYED" | "BUSTED" | "FLIP_7",
       };
     });
   }
@@ -1035,6 +1035,20 @@ async function handleResolveTargetActionInternal(
     }
   }
 
+  let roundResults = undefined;
+  if (phase === "ROUND_RESULTS") {
+    roundResults = updatedPlayers.map((p) => {
+      const st = p.state as any;
+      return {
+        playerId: p._id,
+        playerName: p.name,
+        roundScore: st.roundScore || 0,
+        totalScore: st.bankedScore || 0,
+        status: st.status as "FROZEN" | "STAYED" | "BUSTED" | "FLIP_7",
+      };
+    });
+  }
+
   await ctx.db.patch(room._id, {
     gameBoard: {
       ...board,
@@ -1053,6 +1067,7 @@ async function handleResolveTargetActionInternal(
         message,
       },
       actionLog: appendActionLog(board.actionLog, message, "ACTION_CARD"),
+      roundResults,
     } as any,
   });
 
