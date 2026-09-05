@@ -5,12 +5,40 @@ import { Id, Doc } from "./_generated/dataModel";
 import { getFlip7Deck, parseFlip7Card, calculateFlip7RoundScore } from "./flip7_deck";
 import { GamePlugin, GameMutationCtx } from "./types";
 
+export interface Flip7HouseRules {
+  bustPenalty: "NONE" | "FLAT_10" | "HALF_HAND";
+  minHitThreshold: boolean;
+  allowDoubleDown: boolean;
+  targetStayed: boolean;
+  shieldReflect: boolean;
+  zeroHero: boolean;
+  megaFlipBonus: boolean;
+}
+
+export const DEFAULT_FLIP7_RULES: Flip7HouseRules = {
+  bustPenalty: "NONE",
+  minHitThreshold: false,
+  allowDoubleDown: false,
+  targetStayed: false,
+  shieldReflect: false,
+  zeroHero: false,
+  megaFlipBonus: false,
+};
+
+export function getFlip7Rules(board: any): Flip7HouseRules {
+  return {
+    ...DEFAULT_FLIP7_RULES,
+    ...(board?.flip7Rules || {}),
+  };
+}
+
 export const flip7Plugin: GamePlugin = {
   gameType: "flip7",
 
   getInitialBoard() {
     return {
       gameType: "none",
+      flip7Rules: { ...DEFAULT_FLIP7_RULES },
     };
   },
 
@@ -33,6 +61,9 @@ export const flip7Plugin: GamePlugin = {
     roomId: Doc<"rooms">["_id"],
     players: Doc<"players">[],
   ) {
+    const room = await ctx.db.get(roomId);
+    const existingRules = (room?.gameBoard as any)?.flip7Rules || { ...DEFAULT_FLIP7_RULES };
+
     const deck = getFlip7Deck();
     const personas: ("balanced" | "aggressive" | "cautious")[] = [
       "balanced",
@@ -55,6 +86,7 @@ export const flip7Plugin: GamePlugin = {
           roundFaceUpCards: [],
           hasSecondChance: false,
           status: "ACTIVE",
+          isDoubledDown: false,
         },
       });
     }
@@ -72,6 +104,7 @@ export const flip7Plugin: GamePlugin = {
         pendingTargetAction: undefined,
         deck,
         discardPile: [],
+        flip7Rules: existingRules,
         lastAction: {
           type: "HIT",
           playerId: firstPlayerId,
@@ -171,6 +204,7 @@ export const dealNextInitialCard = internalMutation({
           roundFaceUpCards: faceUpCards,
           hasSecondChance,
           status,
+          frozenByName: status === "FROZEN" ? player.name : undefined,
         },
       });
 
@@ -320,6 +354,7 @@ export const nextRound = mutation({
           roundFaceUpCards: [],
           hasSecondChance: false,
           status: "ACTIVE",
+          isDoubledDown: false,
         },
       });
     }
@@ -401,6 +436,7 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
   let faceUpCards = [...myState.roundFaceUpCards];
   let hasSecondChance = myState.hasSecondChance;
   let status: "ACTIVE" | "FROZEN" | "STAYED" | "BUSTED" = "ACTIVE";
+  let frozenByName: string | undefined = undefined;
   let lastActionType: "HIT" | "FREEZE" | "BUST" | "FLIP_7_BONUS" | "SECOND_CHANCE_USED" | "ACTION_CARD" = "HIT";
   let message = `${player.name} flipped ${parsedCard.label}`;
   let pendingTarget: any = undefined;
@@ -459,19 +495,15 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
         message = `🛡️ ${player.name} obtained a Second Chance shield!`;
       }
     } else if (parsedCard.actionType === "FREEZE" || parsedCard.actionType === "FLIP_THREE") {
-      let isChainedInFlipThree = mustFlipCount > 0;
-      if (mustFlipCount > 0) mustFlipCount--;
+      faceUpCards.push(drawnCardId);
 
-      if (isChainedInFlipThree && mustFlipCount > 0) {
-        // Queue nested action card to resolve after current sequence completes!
-        const queuedItem = {
+      if (mustFlipCount > 0) {
+        queuedActions.push({
           cardId: drawnCardId,
-          actionType: parsedCard.actionType as "FREEZE" | "FLIP_THREE",
+          actionType: parsedCard.actionType,
           sourcePlayerId: player._id,
           sourcePlayerName: player.name,
-        };
-        queuedActions.push(queuedItem);
-        lastActionType = "ACTION_CARD";
+        });
         message = `⚡ ${player.name} flipped a ${parsedCard.actionType === "FREEZE" ? "❄️ FREEZE" : "⚡ FLIP THREE"} card during FLIP THREE! Queued for after the sequence!`;
       } else {
         const otherActive = players.filter((p) => String(p._id) !== String(player._id) && (p.state as any).status === "ACTIVE");
@@ -487,6 +519,7 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
         } else {
           if (parsedCard.actionType === "FREEZE") {
             status = "FROZEN";
+            frozenByName = player.name;
             lastActionType = "FREEZE";
             message = `❄️ ${player.name} drew a FREEZE card! Points locked & banked!`;
           } else {
@@ -503,8 +536,19 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
     const existingNumbers = faceUpCards.map((cId) => parseFlip7Card(cId).numberValue).filter((n) => n !== undefined);
     const isDuplicate = existingNumbers.includes(parsedCard.numberValue);
 
+    const rules = getFlip7Rules(board);
     if (isDuplicate) {
-      if (hasSecondChance) {
+      const isLowNumber = parsedCard.numberValue === 1 || parsedCard.numberValue === 2 || parsedCard.numberValue === 3;
+      const zeroCardIdx = faceUpCards.findIndex((cId) => cId === "N_0_1");
+
+      if (rules.zeroHero && isLowNumber && zeroCardIdx !== -1 && !hasSecondChance) {
+        // Zero Hero consumes 0 card to absorb duplicate!
+        faceUpCards.splice(zeroCardIdx, 1);
+        discardPile.push("N_0_1");
+        faceUpCards.push(drawnCardId);
+        lastActionType = "SECOND_CHANCE_USED";
+        message = `🦸 ZERO HERO! ${player.name}'s 0 card absorbed duplicate ${parsedCard.numberValue}!`;
+      } else if (hasSecondChance) {
         // Second Chance shield consumes and protects player!
         hasSecondChance = false;
         discardPile.push(drawnCardId);
@@ -541,6 +585,7 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
     } else {
       if (nextAction.actionType === "FREEZE") {
         status = "FROZEN";
+        frozenByName = nextAction.sourcePlayerName;
         message = `❄️ Resolving queued FREEZE card! ${player.name} is FROZEN!`;
       } else {
         mustFlipCount = 3;
@@ -549,9 +594,21 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
     }
   }
 
+  const rules = getFlip7Rules(board);
   // Calculate new round score
   const scoreInfo = calculateFlip7RoundScore(faceUpCards);
   let roundScore = status === "BUSTED" ? 0 : scoreInfo.score;
+
+  // Check Mega Flip Bonus if active
+  if (status === "ACTIVE" && rules.megaFlipBonus) {
+    if (scoreInfo.uniqueNumbersCount === 8) {
+      roundScore += 25;
+      message += ` | 🌟 MEGA FLIP 8 BONUS (+25 pts)!`;
+    } else if (scoreInfo.uniqueNumbersCount >= 9) {
+      roundScore += 40;
+      message += ` | 🌟 MEGA FLIP 9+ BONUS (+40 pts)!`;
+    }
+  }
 
   // Check for Flip 7 Bonus
   if (status === "ACTIVE" && scoreInfo.hasFlip7Bonus) {
@@ -561,8 +618,22 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
     message = `🌟 FLIP 7 BONUS! ${player.name} flipped 7 unique numbers and banked ${roundScore} pts!`;
   }
 
-  // Save updated player state
-  const updatedBanked = (status === "FROZEN" || (status as string) === "STAYED") ? myState.bankedScore + roundScore : myState.bankedScore;
+  // Calculate updatedBanked score considering house rules and Double Down
+  let updatedBanked = myState.bankedScore;
+  if (status === "BUSTED") {
+    if (rules.bustPenalty === "FLAT_10") {
+      updatedBanked = Math.max(0, updatedBanked - 10);
+    } else if (rules.bustPenalty === "HALF_HAND") {
+      const handVal = scoreInfo.score;
+      updatedBanked = Math.max(0, updatedBanked - Math.floor(handVal / 2));
+    }
+    if (myState.isDoubledDown) {
+      updatedBanked = Math.max(0, updatedBanked - 10);
+    }
+  } else if (status === "FROZEN" || (status as string) === "STAYED") {
+    const finalRoundScore = myState.isDoubledDown ? roundScore * 2 : roundScore;
+    updatedBanked = updatedBanked + finalRoundScore;
+  }
 
   await ctx.db.patch(player._id, {
     state: {
@@ -572,6 +643,7 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
       roundFaceUpCards: faceUpCards,
       hasSecondChance,
       status,
+      frozenByName: status === "FROZEN" ? (frozenByName || player.name) : undefined,
     },
   });
 
@@ -692,8 +764,16 @@ async function handleFreezeInternal(ctx: GameMutationCtx, playerId: Id<"players"
   const myState = player.state;
   if (myState.status !== "ACTIVE") throw new Error("Player is not active");
 
+  const rules = getFlip7Rules(board);
   const scoreInfo = calculateFlip7RoundScore(myState.roundFaceUpCards);
-  const roundScore = scoreInfo.score;
+  if (rules.minHitThreshold && scoreInfo.score < 10) {
+    throw new Error("Minimum 10 round points required to STAY under House Rules!");
+  }
+
+  let roundScore = scoreInfo.score;
+  if (myState.isDoubledDown) {
+    roundScore = roundScore * 2;
+  }
   const newBankedScore = myState.bankedScore + roundScore;
 
   await ctx.db.patch(player._id, {
@@ -823,21 +903,50 @@ async function handleResolveTargetActionInternal(
   let nextTurnPlayerId = board.currentTurnPlayerId;
   let mustFlipCount = board.mustFlipCount || 0;
 
+  const rules = getFlip7Rules(board);
   if (pending.actionType === "FREEZE") {
     const targetState = targetPlayer.state as any;
-    const scoreInfo = calculateFlip7RoundScore(targetState.roundFaceUpCards || []);
-    const bankedScore = targetState.bankedScore + scoreInfo.score;
+    if (rules.shieldReflect && targetState.hasSecondChance && String(targetPlayer._id) !== String(sourcePlayer._id)) {
+      // Consume shield on target
+      await ctx.db.patch(targetPlayer._id, {
+        state: {
+          ...targetState,
+          hasSecondChance: false,
+        },
+      });
 
-    await ctx.db.patch(targetPlayer._id, {
-      state: {
-        ...targetState,
-        bankedScore,
-        roundScore: scoreInfo.score,
-        status: "FROZEN",
-      },
-    });
+      // Freeze source player instead!
+      const sourceState = sourcePlayer.state as any;
+      const sScoreInfo = calculateFlip7RoundScore(sourceState.roundFaceUpCards || []);
+      const sourceBanked = sourceState.bankedScore + sScoreInfo.score;
 
-    message = `❄️ ${sourcePlayer.name} played FREEZE on ${targetPlayer.name}! ${targetPlayer.name} banked ${scoreInfo.score} pts!`;
+      await ctx.db.patch(sourcePlayer._id, {
+        state: {
+          ...sourceState,
+          bankedScore: sourceBanked,
+          roundScore: sScoreInfo.score,
+          status: "FROZEN",
+          frozenByName: `${targetPlayer.name} (Reflected 🛡️)`,
+        },
+      });
+
+      message = `🛡️ REFLECTED! ${targetPlayer.name} used 🛡️ Shield to reflect FREEZE back onto ${sourcePlayer.name}! ${sourcePlayer.name} banked ${sScoreInfo.score} pts!`;
+    } else {
+      const scoreInfo = calculateFlip7RoundScore(targetState.roundFaceUpCards || []);
+      const bankedScore = targetState.bankedScore + scoreInfo.score;
+
+      await ctx.db.patch(targetPlayer._id, {
+        state: {
+          ...targetState,
+          bankedScore,
+          roundScore: scoreInfo.score,
+          status: "FROZEN",
+          frozenByName: sourcePlayer.name,
+        },
+      });
+
+      message = `❄️ ${sourcePlayer.name} played FREEZE on ${targetPlayer.name}! ${targetPlayer.name} banked ${scoreInfo.score} pts!`;
+    }
 
     if (String(board.currentTurnPlayerId) === String(targetPlayer._id)) {
       const order = room.turnOrder;
@@ -907,6 +1016,7 @@ async function handleResolveTargetActionInternal(
             bankedScore: soleState.bankedScore + sInfo.score,
             roundScore: sInfo.score,
             status: "FROZEN",
+            frozenByName: nextQueued.sourcePlayerName,
           },
         });
         message += ` | ❄️ Queued FREEZE card auto-applied to ${solePlayer.name}!`;
@@ -964,6 +1074,81 @@ export const toggleBustOdds = mutation({
         showBustOdds: !board.showBustOdds,
       } as any,
     });
+    return { success: true };
+  },
+});
+
+export const updateFlip7HouseRules = mutation({
+  args: {
+    roomId: v.id("rooms"),
+    ruleKey: v.string(),
+    ruleValue: v.any(),
+  },
+  handler: async (ctx, args) => {
+    const room = await ctx.db.get(args.roomId);
+    if (!room) throw new Error("Invalid room");
+    const board = room.gameBoard as any;
+    const currentRules = board.flip7Rules || { ...DEFAULT_FLIP7_RULES };
+    const updatedRules = {
+      ...currentRules,
+      [args.ruleKey]: args.ruleValue,
+    };
+    await ctx.db.patch(room._id, {
+      gameBoard: {
+        ...board,
+        flip7Rules: updatedRules,
+      } as any,
+    });
+    return { success: true };
+  },
+});
+
+export const doubleDown = mutation({
+  args: {
+    playerId: v.id("players"),
+  },
+  handler: async (ctx, args) => {
+    const player = await ctx.db.get(args.playerId);
+    if (!player || player.state.gameType !== "flip7") throw new Error("Invalid player");
+    const room = await ctx.db.get(player.roomId);
+    if (!room || room.gameBoard.gameType !== "flip7") throw new Error("Invalid room");
+
+    const board = room.gameBoard;
+    const rules = getFlip7Rules(board);
+    if (!rules.allowDoubleDown) throw new Error("Double Down rule is not active");
+    if (board.phase !== "ACTIVE_PLAY") throw new Error("Not in active play phase");
+    if (String(board.currentTurnPlayerId) !== String(args.playerId)) throw new Error("Not your turn");
+
+    const myState = player.state as any;
+    if (myState.status !== "ACTIVE") throw new Error("Player is not active");
+    if (myState.isDoubledDown) throw new Error("Already doubled down");
+
+    const scoreInfo = calculateFlip7RoundScore(myState.roundFaceUpCards || []);
+    if (scoreInfo.uniqueNumbersCount < 5) {
+      throw new Error("Must have at least 5 unique numbers to double down!");
+    }
+
+    await ctx.db.patch(player._id, {
+      state: {
+        ...myState,
+        isDoubledDown: true,
+      },
+    });
+
+    const msg = `🎲 ${player.name} DOUBLED DOWN! Double points if safe, -10 pts if bust!`;
+    await ctx.db.patch(room._id, {
+      gameBoard: {
+        ...board,
+        lastAction: {
+          type: "HIT",
+          playerId: player._id,
+          playerName: player.name,
+          message: msg,
+        },
+        actionLog: appendActionLog(board.actionLog, msg, "DOUBLE_DOWN"),
+      } as any,
+    });
+
     return { success: true };
   },
 });

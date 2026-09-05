@@ -66,6 +66,17 @@ export default defineSchema({
       v.object({
         gameType: v.literal("none"),
         ruleset: v.optional(v.union(v.literal("CLASSIC"), v.literal("ODYSSEY"))),
+        flip7Rules: v.optional(
+          v.object({
+            bustPenalty: v.union(v.literal("NONE"), v.literal("FLAT_10"), v.literal("HALF_HAND")),
+            minHitThreshold: v.boolean(),
+            allowDoubleDown: v.boolean(),
+            targetStayed: v.boolean(),
+            shieldReflect: v.boolean(),
+            zeroHero: v.boolean(),
+            megaFlipBonus: v.boolean(),
+          })
+        ),
       }),
       // Dixit state
       v.object({
@@ -339,6 +350,17 @@ export default defineSchema({
         winner: v.optional(v.string()),
         winnerId: v.optional(v.id("players")),
         showBustOdds: v.optional(v.boolean()),
+        flip7Rules: v.optional(
+          v.object({
+            bustPenalty: v.union(v.literal("NONE"), v.literal("FLAT_10"), v.literal("HALF_HAND")),
+            minHitThreshold: v.boolean(),
+            allowDoubleDown: v.boolean(),
+            targetStayed: v.boolean(),
+            shieldReflect: v.boolean(),
+            zeroHero: v.boolean(),
+            megaFlipBonus: v.boolean(),
+          })
+        ),
       })
     ),
   }).index("by_roomCode", ["roomCode"]),
@@ -397,6 +419,8 @@ export default defineSchema({
         roundFaceUpCards: v.array(v.string()),
         hasSecondChance: v.boolean(),
         status: v.union(v.literal("ACTIVE"), v.literal("FROZEN"), v.literal("STAYED"), v.literal("BUSTED")),
+        frozenByName: v.optional(v.string()),
+        isDoubledDown: v.optional(v.boolean()),
       })
     ),
   }).index("by_room", ["roomId"]),

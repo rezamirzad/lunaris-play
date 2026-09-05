@@ -17,6 +17,7 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
   const hitCard = useMutation(flip7Api.hitCard);
   const freeze = useMutation(flip7Api.freeze);
   const resolveTargetAction = useMutation(flip7Api.resolveTargetAction);
+  const doubleDownMutation = useMutation(flip7Api.doubleDown);
 
   const [pendingAction, setPendingAction] = useState(false);
 
@@ -26,9 +27,13 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
   if (!board || board.gameType !== "flip7") return null;
   if (!myState || myState.gameType !== "flip7") return null;
 
+  const rules = (board as any).flip7Rules || {};
   const isMyTurnNow = board.phase === "ACTIVE_PLAY" && String(board.currentTurnPlayerId) === String(player._id) && myState.status === "ACTIVE";
   const faceUpCards = (myState.roundFaceUpCards as string[]) || [];
   const scoreInfo = calculateFlip7RoundScore(faceUpCards);
+
+  const isMinStayLocked = rules.minHitThreshold && scoreInfo.score < 10;
+  const canDoubleDown = rules.allowDoubleDown && isMyTurnNow && scoreInfo.uniqueNumbersCount >= 5 && !myState.isDoubledDown;
 
   const handleHit = async () => {
     if (pendingAction || !isMyTurnNow) return;
@@ -44,13 +49,26 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
   };
 
   const handleFreeze = async () => {
-    if (pendingAction || !isMyTurnNow) return;
+    if (pendingAction || !isMyTurnNow || isMinStayLocked) return;
     if (navigator.vibrate) navigator.vibrate(50);
     setPendingAction(true);
     try {
       await freeze({ playerId: player._id });
     } catch (err) {
       console.error("Failed to freeze:", err);
+    } finally {
+      setPendingAction(false);
+    }
+  };
+
+  const handleDoubleDown = async () => {
+    if (pendingAction || !canDoubleDown) return;
+    if (navigator.vibrate) navigator.vibrate(50);
+    setPendingAction(true);
+    try {
+      await doubleDownMutation({ playerId: player._id });
+    } catch (err) {
+      console.error("Failed to double down:", err);
     } finally {
       setPendingAction(false);
     }
@@ -106,12 +124,13 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
               {roomData.players
                 .filter(
                   (p) =>
-                    (p.state as any)?.status === "ACTIVE" &&
+                    (((p.state as any)?.status === "ACTIVE") || (rules.targetStayed && (p.state as any)?.status === "STAYED")) &&
                     (board.pendingTargetAction?.actionType !== "SECOND_CHANCE" ||
                       (!(p.state as any)?.hasSecondChance && String(p._id) !== String(player._id))),
                 )
                 .map((p) => {
                   const isMe = String(p._id) === String(player._id);
+                  const isStayedCandidate = (p.state as any)?.status === "STAYED";
                   return (
                     <button
                       key={p._id}
@@ -126,6 +145,7 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
                       <span className="flex items-center gap-2 truncate">
                         <span className="truncate">{isMe ? "👤 Yourself" : `🎯 ${p.name}`}</span>
                         {p.isBot && <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded text-amber-300 shrink-0">BOT</span>}
+                        {isStayedCandidate && <span className="text-[9px] bg-cyan-950 border border-cyan-400/40 text-cyan-300 px-1.5 py-0.5 rounded shrink-0">STAYED ✋</span>}
                       </span>
                       <span className="text-xs text-zinc-400 shrink-0">
                         {((p.state as any)?.roundScore || 0)} round pts
@@ -265,6 +285,28 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
                 <span>FLIP THREE MANDATORY: STAY IS LOCKED ({board.mustFlipCount} FLIPS REMAINING)</span>
               </div>
             )}
+            {isMinStayLocked && isMyTurnNow && (board.mustFlipCount || 0) === 0 && (
+              <div className="bg-rose-950/80 border border-rose-500/40 text-rose-300 px-3 py-1.5 rounded-xl text-xs font-mono font-bold text-center flex items-center justify-center gap-1.5">
+                <span>🔒</span>
+                <span>HOUSE RULE: MINIMUM 10 PTS REQUIRED TO STAY ({scoreInfo.score}/10)</span>
+              </div>
+            )}
+
+            {rules.allowDoubleDown && (
+              <button
+                disabled={!canDoubleDown || pendingAction}
+                onClick={handleDoubleDown}
+                className={`w-full py-3 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-wider transition-all border flex items-center justify-center gap-2 ${
+                  canDoubleDown && !pendingAction
+                    ? "bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 border-purple-300 text-white shadow-lg shadow-purple-500/30 animate-pulse active:scale-95"
+                    : "bg-zinc-800 border-white/5 text-zinc-600 cursor-not-allowed opacity-40"
+                }`}
+              >
+                <span>🎲</span>
+                <span>{myState.isDoubledDown ? "DOUBLED DOWN ✖️2" : "DOUBLE DOWN (5+ UNIQUE)"}</span>
+              </button>
+            )}
+
             <div className="w-full grid grid-cols-2 gap-4">
               {/* HIT Button */}
               <button
@@ -282,16 +324,16 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
 
               {/* STAY Button */}
               <button
-                disabled={!isMyTurnNow || pendingAction || (board.mustFlipCount || 0) > 0}
+                disabled={!isMyTurnNow || pendingAction || (board.mustFlipCount || 0) > 0 || isMinStayLocked}
                 onClick={handleFreeze}
                 className={`py-5 rounded-2xl font-black text-base uppercase tracking-wider transition-all border flex items-center justify-center gap-2 ${
-                  isMyTurnNow && !pendingAction && (board.mustFlipCount || 0) === 0
+                  isMyTurnNow && !pendingAction && (board.mustFlipCount || 0) === 0 && !isMinStayLocked
                     ? "bg-gradient-to-r from-emerald-600 to-teal-600 border-emerald-400 text-white shadow-lg shadow-emerald-500/20 active:scale-95"
                     : "bg-zinc-800 border-white/5 text-zinc-500 cursor-not-allowed opacity-40"
                 }`}
               >
                 <span>✋</span>
-                <span>{(board.mustFlipCount || 0) > 0 ? "LOCKED" : "STAY"}</span>
+                <span>{(board.mustFlipCount || 0) > 0 ? "LOCKED" : isMinStayLocked ? "<10 PTS" : "STAY"}</span>
               </button>
             </div>
           </div>

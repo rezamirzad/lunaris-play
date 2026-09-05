@@ -215,6 +215,34 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
               </div>
             </motion.div>
 
+            {/* Active House Rules Badges Bar */}
+            {(() => {
+              const f7Rules = (board as any).flip7Rules || {};
+              const activeRuleBadges: { icon: string; label: string }[] = [];
+              if (f7Rules.bustPenalty === "FLAT_10") activeRuleBadges.push({ icon: "💥", label: "Bust -10 Pts" });
+              if (f7Rules.bustPenalty === "HALF_HAND") activeRuleBadges.push({ icon: "💥", label: "Bust -50% Hand" });
+              if (f7Rules.minHitThreshold) activeRuleBadges.push({ icon: "🛑", label: "Min 10 Pts Stay" });
+              if (f7Rules.allowDoubleDown) activeRuleBadges.push({ icon: "🎲", label: "Double Down" });
+              if (f7Rules.targetStayed) activeRuleBadges.push({ icon: "🎯", label: "Target Stayed" });
+              if (f7Rules.shieldReflect) activeRuleBadges.push({ icon: "🛡️", label: "Shield Reflect" });
+              if (f7Rules.zeroHero) activeRuleBadges.push({ icon: "🦸", label: "Zero Hero" });
+              if (f7Rules.megaFlipBonus) activeRuleBadges.push({ icon: "🌟", label: "Mega Flip Bonus" });
+
+              if (activeRuleBadges.length === 0) return null;
+
+              return (
+                <div className="flex flex-wrap items-center gap-1.5 px-1 font-mono text-[9px]">
+                  <span className="text-amber-400 font-black uppercase tracking-wider">Active House Rules:</span>
+                  {activeRuleBadges.map((b, idx) => (
+                    <span key={idx} className="bg-amber-950/80 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm font-bold">
+                      <span>{b.icon}</span>
+                      <span>{b.label}</span>
+                    </span>
+                  ))}
+                </div>
+              );
+            })()}
+
             {/* Targeted Action Flying Trajectory Overlay */}
             {showActionOverlay &&
               board.lastAction.type === "ACTION_CARD" &&
@@ -289,6 +317,13 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                   const isStayed = st?.status === "STAYED";
                   const isFrozen = st?.status === "FROZEN";
                   const isBusted = st?.status === "BUSTED";
+                  const frozenByName =
+                    st?.frozenByName ||
+                    (board.lastAction &&
+                    String(board.lastAction.targetPlayerId) === String(p._id) &&
+                    board.lastAction.playerName
+                      ? board.lastAction.playerName
+                      : p.name);
                   const isFlipThreeSequence =
                     isCurrentTurn && (board.mustFlipCount || 0) > 0;
                   const isInitialDealing = board.phase === "INITIAL_DEAL";
@@ -369,7 +404,7 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                             <div className="bg-indigo-600 text-white font-mono font-black text-[9px] uppercase tracking-wider text-center py-0.5 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-2 rounded-t-[0.9rem] shadow-md flex items-center justify-center gap-1">
                               <span>❄️</span>
                               <span>
-                                FROZEN BY CARD (+{st?.roundScore || 0} PTS)
+                                FROZEN BY {frozenByName.toUpperCase()} (+{st?.roundScore || 0} PTS)
                               </span>
                             </div>
                           )}
@@ -427,6 +462,15 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                             >
                               <span>🛡️</span>
                               <span>SHIELD</span>
+                            </span>
+                          )}
+                          {st?.isDoubledDown && (
+                            <span
+                              className="text-[9px] font-mono font-black bg-purple-950/90 text-purple-300 border border-purple-400/40 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-[0_0_8px_rgba(168,85,247,0.3)] animate-pulse"
+                              title="Doubled Down"
+                            >
+                              <span>🎲</span>
+                              <span>DOUBLE DOWN</span>
                             </span>
                           )}
                           {scoreInfo.hasMultiplier && (
