@@ -396,7 +396,7 @@ export default defineSchema({
         roundScore: v.number(),
         roundFaceUpCards: v.array(v.string()),
         hasSecondChance: v.boolean(),
-        status: v.union(v.literal("ACTIVE"), v.literal("FROZEN"), v.literal("BUSTED")),
+        status: v.union(v.literal("ACTIVE"), v.literal("FROZEN"), v.literal("STAYED"), v.literal("BUSTED")),
       })
     ),
   }).index("by_room", ["roomId"]),

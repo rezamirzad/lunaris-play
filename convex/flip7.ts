@@ -142,7 +142,7 @@ export const dealNextInitialCard = internalMutation({
       faceUpCards.push(drawn);
 
       let hasSecondChance = (player.state as any).hasSecondChance || false;
-      let status: "ACTIVE" | "FROZEN" | "BUSTED" = "ACTIVE";
+      let status: "ACTIVE" | "FROZEN" | "STAYED" | "BUSTED" = "ACTIVE";
 
       if (parsed.type === "ACTION") {
         if (parsed.actionType === "SECOND_CHANCE") {
@@ -400,7 +400,7 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
 
   let faceUpCards = [...myState.roundFaceUpCards];
   let hasSecondChance = myState.hasSecondChance;
-  let status: "ACTIVE" | "FROZEN" | "BUSTED" = "ACTIVE";
+  let status: "ACTIVE" | "FROZEN" | "STAYED" | "BUSTED" = "ACTIVE";
   let lastActionType: "HIT" | "FREEZE" | "BUST" | "FLIP_7_BONUS" | "SECOND_CHANCE_USED" | "ACTION_CARD" = "HIT";
   let message = `${player.name} flipped ${parsedCard.label}`;
   let pendingTarget: any = undefined;
@@ -528,7 +528,7 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
     faceUpCards.push(drawnCardId);
   }
 
-  if (status === "FROZEN" || status === "BUSTED") {
+  if (status === "FROZEN" || (status as string) === "STAYED" || status === "BUSTED") {
     mustFlipCount = 0;
     if (status === "BUSTED") queuedActions = [];
   } else if (mustFlipCount === 0 && queuedActions.length > 0 && !pendingTarget && status === "ACTIVE") {
@@ -555,14 +555,14 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
 
   // Check for Flip 7 Bonus
   if (status === "ACTIVE" && scoreInfo.hasFlip7Bonus) {
-    status = "FROZEN";
+    status = "STAYED";
     mustFlipCount = 0;
     lastActionType = "FLIP_7_BONUS";
     message = `🌟 FLIP 7 BONUS! ${player.name} flipped 7 unique numbers and banked ${roundScore} pts!`;
   }
 
   // Save updated player state
-  const updatedBanked = status === "FROZEN" ? myState.bankedScore + roundScore : myState.bankedScore;
+  const updatedBanked = (status === "FROZEN" || (status as string) === "STAYED") ? myState.bankedScore + roundScore : myState.bankedScore;
 
   await ctx.db.patch(player._id, {
     state: {
@@ -701,7 +701,7 @@ async function handleFreezeInternal(ctx: GameMutationCtx, playerId: Id<"players"
       ...myState,
       bankedScore: newBankedScore,
       roundScore,
-      status: "FROZEN",
+      status: "STAYED",
     },
   });
 
@@ -719,7 +719,7 @@ async function handleFreezeInternal(ctx: GameMutationCtx, playerId: Id<"players"
             ...myState,
             bankedScore: newBankedScore,
             roundScore,
-            status: "FROZEN",
+            status: "STAYED",
           },
         }
       : p,
