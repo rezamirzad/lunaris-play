@@ -43,6 +43,39 @@ export default function LobbyInitialization({
   const dixitAction = useMutation(api.dixit.handleAction);
   const updateFlip7Rules = useMutation(api.flip7.updateFlip7HouseRules);
 
+  const [activeTooltipRule, setActiveTooltipRule] = useState<string | null>(null);
+
+  const HOUSE_RULE_TOOLTIPS: Record<string, { title: string; desc: string }> = {
+    bustPenalty: {
+      title: "💥 Bust Penalty",
+      desc: "Off: Standard rules (0 points lost). -10 Pts: Deducts 10 banked points when busting. -50% Hand: Deducts 50% of hand score from banked points.",
+    },
+    minHitThreshold: {
+      title: "🛑 Min 10 Pts to Stay",
+      desc: "Players must collect at least 10 round points before they are allowed to Stay.",
+    },
+    allowDoubleDown: {
+      title: "🎲 Double Down (5+ Unique)",
+      desc: "When holding 5+ unique numbers, players can double their round score risk.",
+    },
+    targetStayed: {
+      title: "🎯 Target Stayed Players",
+      desc: "Action cards (Freeze / Flip Three) can target players who have already Stayed for the round.",
+    },
+    shieldReflect: {
+      title: "🛡️ Shield Reflect",
+      desc: "Targeted action cards bounce back to the sender if target player has a Second Chance shield.",
+    },
+    zeroHero: {
+      title: "🦸 Zero Hero (0 Card Shield)",
+      desc: "Holding a 0 card acts as a single-use shield against low duplicates (1, 2, or 3).",
+    },
+    megaFlipBonus: {
+      title: "🌟 Mega Flip Bonus",
+      desc: "Collecting 8 unique numbers awards +25 bonus pts; 9+ unique numbers awards +40 bonus pts.",
+    },
+  };
+
   const handleToggleFlip7Rule = async (ruleKey: string, currentValue: any) => {
     let newValue: any;
     if (ruleKey === "bustPenalty") {
@@ -245,113 +278,260 @@ export default function LobbyInitialization({
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full text-left font-mono text-[10px]">
                 {/* Bust Penalty */}
-                <button
-                  onClick={() => handleToggleFlip7Rule("bustPenalty", f7Rules.bustPenalty)}
-                  className={`p-2.5 rounded-xl border flex items-center justify-between transition-all ${
-                    f7Rules.bustPenalty !== "NONE"
-                      ? "bg-amber-950/70 border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
-                      : "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10"
-                  }`}
-                >
-                  <span className="font-black">💥 Bust Penalty</span>
-                  <span className="font-bold uppercase bg-black/40 px-2 py-0.5 rounded text-[9px]">
-                    {f7Rules.bustPenalty === "FLAT_10"
-                      ? "-10 Pts"
-                      : f7Rules.bustPenalty === "HALF_HAND"
-                        ? "-50% Hand"
-                        : "Off (0)"}
-                  </span>
-                </button>
+                <div className="flex flex-col gap-1">
+                  <div
+                    onClick={() => handleToggleFlip7Rule("bustPenalty", f7Rules.bustPenalty)}
+                    className={`p-2.5 rounded-xl border flex items-center justify-between transition-all cursor-pointer select-none ${
+                      f7Rules.bustPenalty !== "NONE"
+                        ? "bg-amber-950/70 border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
+                        : "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10"
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-black">💥 Bust Penalty</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveTooltipRule(activeTooltipRule === "bustPenalty" ? null : "bustPenalty");
+                        }}
+                        className="text-[11px] text-amber-400/80 hover:text-amber-300 p-0.5 rounded-full hover:bg-white/10 transition-colors"
+                        title={HOUSE_RULE_TOOLTIPS.bustPenalty.desc}
+                      >
+                        ℹ️
+                      </button>
+                    </div>
+                    <span className="font-bold uppercase bg-black/40 px-2 py-0.5 rounded text-[9px]">
+                      {f7Rules.bustPenalty === "FLAT_10"
+                        ? "-10 Pts"
+                        : f7Rules.bustPenalty === "HALF_HAND"
+                          ? "-50% Hand"
+                          : "Off (0)"}
+                    </span>
+                  </div>
+                  {activeTooltipRule === "bustPenalty" && (
+                    <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="bg-amber-950/95 border border-amber-400/50 p-2.5 rounded-xl text-[9.5px] text-amber-200 leading-snug shadow-xl backdrop-blur-md">
+                      <div className="font-bold text-amber-300 mb-0.5">{HOUSE_RULE_TOOLTIPS.bustPenalty.title}</div>
+                      <div>{HOUSE_RULE_TOOLTIPS.bustPenalty.desc}</div>
+                    </motion.div>
+                  )}
+                </div>
 
                 {/* Min Hit Threshold */}
-                <button
-                  onClick={() => handleToggleFlip7Rule("minHitThreshold", f7Rules.minHitThreshold)}
-                  className={`p-2.5 rounded-xl border flex items-center justify-between transition-all ${
-                    f7Rules.minHitThreshold
-                      ? "bg-amber-950/70 border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
-                      : "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10"
-                  }`}
-                >
-                  <span className="font-black">🛑 Min 10 Pts to Stay</span>
-                  <span className="font-bold uppercase bg-black/40 px-2 py-0.5 rounded text-[9px]">
-                    {f7Rules.minHitThreshold ? "Active" : "Off"}
-                  </span>
-                </button>
+                <div className="flex flex-col gap-1">
+                  <div
+                    onClick={() => handleToggleFlip7Rule("minHitThreshold", f7Rules.minHitThreshold)}
+                    className={`p-2.5 rounded-xl border flex items-center justify-between transition-all cursor-pointer select-none ${
+                      f7Rules.minHitThreshold
+                        ? "bg-amber-950/70 border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
+                        : "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10"
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-black">🛑 Min 10 Pts to Stay</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveTooltipRule(activeTooltipRule === "minHitThreshold" ? null : "minHitThreshold");
+                        }}
+                        className="text-[11px] text-amber-400/80 hover:text-amber-300 p-0.5 rounded-full hover:bg-white/10 transition-colors"
+                        title={HOUSE_RULE_TOOLTIPS.minHitThreshold.desc}
+                      >
+                        ℹ️
+                      </button>
+                    </div>
+                    <span className="font-bold uppercase bg-black/40 px-2 py-0.5 rounded text-[9px]">
+                      {f7Rules.minHitThreshold ? "Active" : "Off"}
+                    </span>
+                  </div>
+                  {activeTooltipRule === "minHitThreshold" && (
+                    <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="bg-amber-950/95 border border-amber-400/50 p-2.5 rounded-xl text-[9.5px] text-amber-200 leading-snug shadow-xl backdrop-blur-md">
+                      <div className="font-bold text-amber-300 mb-0.5">{HOUSE_RULE_TOOLTIPS.minHitThreshold.title}</div>
+                      <div>{HOUSE_RULE_TOOLTIPS.minHitThreshold.desc}</div>
+                    </motion.div>
+                  )}
+                </div>
 
                 {/* Double Down */}
-                <button
-                  onClick={() => handleToggleFlip7Rule("allowDoubleDown", f7Rules.allowDoubleDown)}
-                  className={`p-2.5 rounded-xl border flex items-center justify-between transition-all ${
-                    f7Rules.allowDoubleDown
-                      ? "bg-amber-950/70 border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
-                      : "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10"
-                  }`}
-                >
-                  <span className="font-black">🎲 Double Down (5+ Unique)</span>
-                  <span className="font-bold uppercase bg-black/40 px-2 py-0.5 rounded text-[9px]">
-                    {f7Rules.allowDoubleDown ? "Active" : "Off"}
-                  </span>
-                </button>
+                <div className="flex flex-col gap-1">
+                  <div
+                    onClick={() => handleToggleFlip7Rule("allowDoubleDown", f7Rules.allowDoubleDown)}
+                    className={`p-2.5 rounded-xl border flex items-center justify-between transition-all cursor-pointer select-none ${
+                      f7Rules.allowDoubleDown
+                        ? "bg-amber-950/70 border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
+                        : "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10"
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-black">🎲 Double Down (5+ Unique)</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveTooltipRule(activeTooltipRule === "allowDoubleDown" ? null : "allowDoubleDown");
+                        }}
+                        className="text-[11px] text-amber-400/80 hover:text-amber-300 p-0.5 rounded-full hover:bg-white/10 transition-colors"
+                        title={HOUSE_RULE_TOOLTIPS.allowDoubleDown.desc}
+                      >
+                        ℹ️
+                      </button>
+                    </div>
+                    <span className="font-bold uppercase bg-black/40 px-2 py-0.5 rounded text-[9px]">
+                      {f7Rules.allowDoubleDown ? "Active" : "Off"}
+                    </span>
+                  </div>
+                  {activeTooltipRule === "allowDoubleDown" && (
+                    <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="bg-amber-950/95 border border-amber-400/50 p-2.5 rounded-xl text-[9.5px] text-amber-200 leading-snug shadow-xl backdrop-blur-md">
+                      <div className="font-bold text-amber-300 mb-0.5">{HOUSE_RULE_TOOLTIPS.allowDoubleDown.title}</div>
+                      <div>{HOUSE_RULE_TOOLTIPS.allowDoubleDown.desc}</div>
+                    </motion.div>
+                  )}
+                </div>
 
                 {/* Target Stayed Players */}
-                <button
-                  onClick={() => handleToggleFlip7Rule("targetStayed", f7Rules.targetStayed)}
-                  className={`p-2.5 rounded-xl border flex items-center justify-between transition-all ${
-                    f7Rules.targetStayed
-                      ? "bg-amber-950/70 border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
-                      : "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10"
-                  }`}
-                >
-                  <span className="font-black">🎯 Target Stayed Players</span>
-                  <span className="font-bold uppercase bg-black/40 px-2 py-0.5 rounded text-[9px]">
-                    {f7Rules.targetStayed ? "Active" : "Off"}
-                  </span>
-                </button>
+                <div className="flex flex-col gap-1">
+                  <div
+                    onClick={() => handleToggleFlip7Rule("targetStayed", f7Rules.targetStayed)}
+                    className={`p-2.5 rounded-xl border flex items-center justify-between transition-all cursor-pointer select-none ${
+                      f7Rules.targetStayed
+                        ? "bg-amber-950/70 border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
+                        : "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10"
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-black">🎯 Target Stayed Players</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveTooltipRule(activeTooltipRule === "targetStayed" ? null : "targetStayed");
+                        }}
+                        className="text-[11px] text-amber-400/80 hover:text-amber-300 p-0.5 rounded-full hover:bg-white/10 transition-colors"
+                        title={HOUSE_RULE_TOOLTIPS.targetStayed.desc}
+                      >
+                        ℹ️
+                      </button>
+                    </div>
+                    <span className="font-bold uppercase bg-black/40 px-2 py-0.5 rounded text-[9px]">
+                      {f7Rules.targetStayed ? "Active" : "Off"}
+                    </span>
+                  </div>
+                  {activeTooltipRule === "targetStayed" && (
+                    <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="bg-amber-950/95 border border-amber-400/50 p-2.5 rounded-xl text-[9.5px] text-amber-200 leading-snug shadow-xl backdrop-blur-md">
+                      <div className="font-bold text-amber-300 mb-0.5">{HOUSE_RULE_TOOLTIPS.targetStayed.title}</div>
+                      <div>{HOUSE_RULE_TOOLTIPS.targetStayed.desc}</div>
+                    </motion.div>
+                  )}
+                </div>
 
                 {/* Shield Reflect */}
-                <button
-                  onClick={() => handleToggleFlip7Rule("shieldReflect", f7Rules.shieldReflect)}
-                  className={`p-2.5 rounded-xl border flex items-center justify-between transition-all ${
-                    f7Rules.shieldReflect
-                      ? "bg-amber-950/70 border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
-                      : "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10"
-                  }`}
-                >
-                  <span className="font-black">🛡️ Shield Reflect</span>
-                  <span className="font-bold uppercase bg-black/40 px-2 py-0.5 rounded text-[9px]">
-                    {f7Rules.shieldReflect ? "Active" : "Off"}
-                  </span>
-                </button>
+                <div className="flex flex-col gap-1">
+                  <div
+                    onClick={() => handleToggleFlip7Rule("shieldReflect", f7Rules.shieldReflect)}
+                    className={`p-2.5 rounded-xl border flex items-center justify-between transition-all cursor-pointer select-none ${
+                      f7Rules.shieldReflect
+                        ? "bg-amber-950/70 border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
+                        : "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10"
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-black">🛡️ Shield Reflect</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveTooltipRule(activeTooltipRule === "shieldReflect" ? null : "shieldReflect");
+                        }}
+                        className="text-[11px] text-amber-400/80 hover:text-amber-300 p-0.5 rounded-full hover:bg-white/10 transition-colors"
+                        title={HOUSE_RULE_TOOLTIPS.shieldReflect.desc}
+                      >
+                        ℹ️
+                      </button>
+                    </div>
+                    <span className="font-bold uppercase bg-black/40 px-2 py-0.5 rounded text-[9px]">
+                      {f7Rules.shieldReflect ? "Active" : "Off"}
+                    </span>
+                  </div>
+                  {activeTooltipRule === "shieldReflect" && (
+                    <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="bg-amber-950/95 border border-amber-400/50 p-2.5 rounded-xl text-[9.5px] text-amber-200 leading-snug shadow-xl backdrop-blur-md">
+                      <div className="font-bold text-amber-300 mb-0.5">{HOUSE_RULE_TOOLTIPS.shieldReflect.title}</div>
+                      <div>{HOUSE_RULE_TOOLTIPS.shieldReflect.desc}</div>
+                    </motion.div>
+                  )}
+                </div>
 
                 {/* Zero Hero */}
-                <button
-                  onClick={() => handleToggleFlip7Rule("zeroHero", f7Rules.zeroHero)}
-                  className={`p-2.5 rounded-xl border flex items-center justify-between transition-all ${
-                    f7Rules.zeroHero
-                      ? "bg-amber-950/70 border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
-                      : "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10"
-                  }`}
-                >
-                  <span className="font-black">🦸 Zero Hero (0 Card Shield)</span>
-                  <span className="font-bold uppercase bg-black/40 px-2 py-0.5 rounded text-[9px]">
-                    {f7Rules.zeroHero ? "Active" : "Off"}
-                  </span>
-                </button>
+                <div className="flex flex-col gap-1">
+                  <div
+                    onClick={() => handleToggleFlip7Rule("zeroHero", f7Rules.zeroHero)}
+                    className={`p-2.5 rounded-xl border flex items-center justify-between transition-all cursor-pointer select-none ${
+                      f7Rules.zeroHero
+                        ? "bg-amber-950/70 border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
+                        : "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10"
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-black">🦸 Zero Hero (0 Card Shield)</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveTooltipRule(activeTooltipRule === "zeroHero" ? null : "zeroHero");
+                        }}
+                        className="text-[11px] text-amber-400/80 hover:text-amber-300 p-0.5 rounded-full hover:bg-white/10 transition-colors"
+                        title={HOUSE_RULE_TOOLTIPS.zeroHero.desc}
+                      >
+                        ℹ️
+                      </button>
+                    </div>
+                    <span className="font-bold uppercase bg-black/40 px-2 py-0.5 rounded text-[9px]">
+                      {f7Rules.zeroHero ? "Active" : "Off"}
+                    </span>
+                  </div>
+                  {activeTooltipRule === "zeroHero" && (
+                    <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="bg-amber-950/95 border border-amber-400/50 p-2.5 rounded-xl text-[9.5px] text-amber-200 leading-snug shadow-xl backdrop-blur-md">
+                      <div className="font-bold text-amber-300 mb-0.5">{HOUSE_RULE_TOOLTIPS.zeroHero.title}</div>
+                      <div>{HOUSE_RULE_TOOLTIPS.zeroHero.desc}</div>
+                    </motion.div>
+                  )}
+                </div>
 
                 {/* Mega Flip Bonus */}
-                <button
-                  onClick={() => handleToggleFlip7Rule("megaFlipBonus", f7Rules.megaFlipBonus)}
-                  className={`p-2.5 rounded-xl border flex items-center justify-between transition-all col-span-1 sm:col-span-2 ${
-                    f7Rules.megaFlipBonus
-                      ? "bg-amber-950/70 border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
-                      : "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10"
-                  }`}
-                >
-                  <span className="font-black">🌟 Mega Flip (8+ Unique Numbers Bonus)</span>
-                  <span className="font-bold uppercase bg-black/40 px-2 py-0.5 rounded text-[9px]">
-                    {f7Rules.megaFlipBonus ? "Active" : "Off"}
-                  </span>
-                </button>
+                <div className="flex flex-col gap-1 col-span-1 sm:col-span-2">
+                  <div
+                    onClick={() => handleToggleFlip7Rule("megaFlipBonus", f7Rules.megaFlipBonus)}
+                    className={`p-2.5 rounded-xl border flex items-center justify-between transition-all cursor-pointer select-none ${
+                      f7Rules.megaFlipBonus
+                        ? "bg-amber-950/70 border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
+                        : "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10"
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-black">🌟 Mega Flip (8+ Unique Numbers Bonus)</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveTooltipRule(activeTooltipRule === "megaFlipBonus" ? null : "megaFlipBonus");
+                        }}
+                        className="text-[11px] text-amber-400/80 hover:text-amber-300 p-0.5 rounded-full hover:bg-white/10 transition-colors"
+                        title={HOUSE_RULE_TOOLTIPS.megaFlipBonus.desc}
+                      >
+                        ℹ️
+                      </button>
+                    </div>
+                    <span className="font-bold uppercase bg-black/40 px-2 py-0.5 rounded text-[9px]">
+                      {f7Rules.megaFlipBonus ? "Active" : "Off"}
+                    </span>
+                  </div>
+                  {activeTooltipRule === "megaFlipBonus" && (
+                    <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="bg-amber-950/95 border border-amber-400/50 p-2.5 rounded-xl text-[9.5px] text-amber-200 leading-snug shadow-xl backdrop-blur-md">
+                      <div className="font-bold text-amber-300 mb-0.5">{HOUSE_RULE_TOOLTIPS.megaFlipBonus.title}</div>
+                      <div>{HOUSE_RULE_TOOLTIPS.megaFlipBonus.desc}</div>
+                    </motion.div>
+                  )}
+                </div>
               </div>
             </motion.div>
           );
