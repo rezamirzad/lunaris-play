@@ -6,6 +6,7 @@ import { api } from "convex/_generated/api";
 import { Doc } from "convex/_generated/dataModel";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toPersianDigits } from "@/lib/translations";
+import { DIXIT_GUIDE_TRANSLATIONS } from "@/lib/dixitGuideTranslations";
 import PlayerCard from "./PlayerCard";
 import { useState, useEffect } from "react";
 import { useAdmin } from "../../admin/AdminGateway";
@@ -220,15 +221,39 @@ export default function LobbyInitialization({
 
         {/* ⚙️ AUTOMATIC RULESET INDICATOR & BOT GUIDE BUTTON (DIXIT ONLY) */}
         {room.currentGame === "dixit" && (() => {
-          const activeRuleset = players.length > 6 ? "ODYSSEY" : "CLASSIC";
+          const activeRuleset = (room.gameBoard as any)?.ruleset || (players.length >= 7 ? "ODYSSEY" : "CLASSIC");
+          const guideT = DIXIT_GUIDE_TRANSLATIONS[lang as keyof typeof DIXIT_GUIDE_TRANSLATIONS] || DIXIT_GUIDE_TRANSLATIONS.en;
+
+          const PERSONA_THEMES: Record<string, { bg: string; border: string; text: string; subText: string; ptBorder: string }> = {
+            balanced: { bg: "bg-amber-950/40", border: "border-amber-500/30", text: "text-amber-300", subText: "text-amber-100/80", ptBorder: "border-amber-500/20" },
+            cautious: { bg: "bg-cyan-950/40", border: "border-cyan-500/30", text: "text-cyan-300", subText: "text-cyan-100/80", ptBorder: "border-cyan-500/20" },
+            aggressive: { bg: "bg-purple-950/40", border: "border-purple-500/30", text: "text-purple-300", subText: "text-purple-100/80", ptBorder: "border-purple-500/20" },
+            intuitive: { bg: "bg-emerald-950/40", border: "border-emerald-500/30", text: "text-emerald-300", subText: "text-emerald-100/80", ptBorder: "border-emerald-500/20" },
+            wild: { bg: "bg-rose-950/40", border: "border-rose-500/30", text: "text-rose-300", subText: "text-rose-100/80", ptBorder: "border-rose-500/20" },
+            storyteller: { bg: "bg-blue-950/40", border: "border-blue-500/30", text: "text-blue-300", subText: "text-blue-100/80", ptBorder: "border-blue-500/20" },
+            surrealist: { bg: "bg-violet-950/40", border: "border-violet-500/30", text: "text-violet-300", subText: "text-violet-100/80", ptBorder: "border-violet-500/20" },
+            cinephile: { bg: "bg-fuchsia-950/40", border: "border-fuchsia-500/30", text: "text-fuchsia-300", subText: "text-fuchsia-100/80", ptBorder: "border-fuchsia-500/20" },
+            virtuoso: { bg: "bg-amber-950/40", border: "border-amber-500/30", text: "text-amber-300", subText: "text-amber-100/80", ptBorder: "border-amber-500/20" },
+            alchemist: { bg: "bg-teal-950/40", border: "border-teal-500/30", text: "text-teal-300", subText: "text-teal-100/80", ptBorder: "border-teal-500/20" },
+            historian: { bg: "bg-yellow-950/40", border: "border-yellow-500/30", text: "text-yellow-300", subText: "text-yellow-100/80", ptBorder: "border-yellow-500/20" },
+            trickster: { bg: "bg-pink-950/40", border: "border-pink-500/30", text: "text-pink-300", subText: "text-pink-100/80", ptBorder: "border-pink-500/20" },
+          };
+
           return (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 flex flex-col items-center gap-2">
-              <div className="flex items-center gap-2.5 bg-gradient-to-r from-blue-950/80 to-purple-950/80 border border-blue-500/40 px-5 py-2 rounded-2xl backdrop-blur-xl shadow-lg">
-                <span className="text-sm">✨</span>
-                <div className="flex flex-col items-start text-left">
-                  <span className="text-[8px] font-black text-blue-400 uppercase tracking-widest">Active Ruleset (Auto-Switched)</span>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="w-full flex flex-col items-center mt-3"
+            >
+              {/* Active Ruleset Header Badge */}
+              <div className="flex items-center gap-2 bg-gradient-to-r from-blue-950/80 via-purple-950/80 to-blue-950/80 border border-blue-500/30 px-3.5 py-1.5 rounded-2xl shadow-lg backdrop-blur-md">
+                <span className="text-sm">🎭</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold text-blue-300 uppercase tracking-wider">
+                    {activeRuleset === "ODYSSEY" ? guideT.odysseyTitle : guideT.classicTitle}
+                  </span>
                   <span className="text-xs font-black uppercase text-white tracking-wider">
-                    {activeRuleset === "ODYSSEY" ? "Odyssey Ruleset (7–12 Players)" : "Classic Ruleset (3–6 Players)"}
+                    ({activeRuleset === "ODYSSEY" ? guideT.odysseyPlayers : guideT.classicPlayers})
                   </span>
                 </div>
                 <button
@@ -245,7 +270,8 @@ export default function LobbyInitialization({
                 <motion.div
                   initial={{ opacity: 0, y: -4, scale: 0.98 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  className="max-w-xl w-full bg-gradient-to-b from-zinc-950 via-blue-950/95 to-purple-950/95 border border-blue-400/50 p-4.5 rounded-3xl text-[10px] text-blue-100 leading-relaxed shadow-2xl backdrop-blur-2xl text-left space-y-3 mt-2 relative z-30"
+                  dir={isFA ? "rtl" : "ltr"}
+                  className={`max-w-xl w-full bg-gradient-to-b from-zinc-950 via-blue-950/95 to-purple-950/95 border border-blue-400/50 p-4.5 rounded-3xl text-[10px] text-blue-100 leading-relaxed shadow-2xl backdrop-blur-2xl ${isFA ? "text-right" : "text-left"} space-y-3 mt-2 relative z-30`}
                 >
                   {/* Header */}
                   <div className="flex items-center justify-between border-b border-blue-500/30 pb-2.5">
@@ -253,7 +279,7 @@ export default function LobbyInitialization({
                       <span className="text-xl">🎭</span>
                       <div>
                         <h4 className="text-xs font-black uppercase text-white tracking-wider flex items-center gap-2">
-                          Dixit Ruleset Guide
+                          {guideT.rulesetTitle}
                           <span className={`text-[8.5px] font-mono px-2 py-0.5 rounded-full border ${
                             activeRuleset === "ODYSSEY"
                               ? "bg-purple-500/20 text-purple-300 border-purple-500/40"
@@ -263,7 +289,7 @@ export default function LobbyInitialization({
                           </span>
                         </h4>
                         <span className="text-[9px] text-blue-300/80">
-                          Automatically switches based on room size ({players.length} connected player{players.length === 1 ? "" : "s"})
+                          ({isFA ? toPersianDigits(players.length) : players.length} connected)
                         </span>
                       </div>
                     </div>
@@ -278,14 +304,15 @@ export default function LobbyInitialization({
                   {/* Core Gameplay Summary */}
                   <div className="bg-blue-500/10 border border-blue-500/20 p-3 rounded-2xl space-y-1">
                     <div className="font-bold text-blue-200 text-[10.5px] flex items-center gap-1.5">
-                      <span>🃏</span> Core Gameplay & Objective (30 Points to Win)
+                      <span>🃏</span> {guideT.coreGameplayTitle}
                     </div>
                     <p className="text-blue-100/90 text-[9.5px]">
-                      1. <b>Storyteller Clue:</b> One player becomes Storyteller, picks a secret card from their hand, and speaks a subtle clue.
-                      <br />
-                      2. <b>Card Submissions:</b> All other players choose 1 card from their hand that best tricks opponents into guessing it.
-                      <br />
-                      3. <b>Voting:</b> All submitted cards are shuffled face up. Non-storytellers vote to identify the Storyteller&apos;s original card.
+                      {guideT.coreGameplayDesc.map((line, idx) => (
+                        <span key={idx}>
+                          {line}
+                          {idx < guideT.coreGameplayDesc.length - 1 && <br />}
+                        </span>
+                      ))}
                     </p>
                   </div>
 
@@ -299,16 +326,16 @@ export default function LobbyInitialization({
                     }`}>
                       <div className="flex items-center justify-between mb-1.5">
                         <span className="font-bold text-xs text-blue-300 flex items-center gap-1">
-                          <span>🔹</span> Classic Ruleset
+                          <span>🔹</span> {guideT.classicTitle}
                         </span>
                         <span className="text-[8px] font-bold uppercase px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                          3–6 Players
+                          {guideT.classicPlayers}
                         </span>
                       </div>
                       <ul className="space-y-1 text-[9.5px] list-disc list-inside">
-                        <li><b>Single Vote:</b> Each player casts 1 vote for the Storyteller&apos;s card.</li>
-                        <li><b>Focused Strategy:</b> Precise guessing for intimate table sizes.</li>
-                        <li><b>Scoring:</b> Storyteller gets 3 pts if <i>some</i> guess right (0 if all or none guess right). Guessers get 3 pts + 1 bonus pt per vote on their trap card.</li>
+                        {guideT.classicBullets.map((bullet, idx) => (
+                          <li key={idx}>{bullet}</li>
+                        ))}
                       </ul>
                     </div>
 
@@ -320,16 +347,16 @@ export default function LobbyInitialization({
                     }`}>
                       <div className="flex items-center justify-between mb-1.5">
                         <span className="font-bold text-xs text-purple-300 flex items-center gap-1">
-                          <span>🚀</span> Odyssey Ruleset
+                          <span>🚀</span> {guideT.odysseyTitle}
                         </span>
                         <span className="text-[8px] font-bold uppercase px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                          7–12 Players
+                          {guideT.odysseyPlayers}
                         </span>
                       </div>
                       <ul className="space-y-1 text-[9.5px] list-disc list-inside">
-                        <li><b>Dual Voting Option:</b> Players can cast <b>1 vote</b> (for 3 pts if correct) OR <b>2 votes</b> to hedge risk (for 2 pts if either card is correct!).</li>
-                        <li><b>Large Group Support:</b> Handles 7+ table cards smoothly.</li>
-                        <li><b>Strategic Hedging:</b> Stay competitive even with crowded choices.</li>
+                        {guideT.odysseyBullets.map((bullet, idx) => (
+                          <li key={idx}>{bullet}</li>
+                        ))}
                       </ul>
                     </div>
                   </div>
@@ -342,7 +369,7 @@ export default function LobbyInitialization({
                 onClick={() => setActiveTooltipRule(activeTooltipRule === "botGuide" ? null : "botGuide")}
                 className="mt-1 flex items-center gap-2 bg-purple-950/60 hover:bg-purple-900/80 border border-purple-500/40 text-purple-200 px-4 py-1.5 rounded-xl text-[10px] font-mono font-bold uppercase transition-all shadow-md"
               >
-                <span>🤖 AI Bot Personas & Age Guide</span>
+                <span>{guideT.botGuideButton}</span>
                 <span className="text-xs">ℹ️</span>
               </button>
 
@@ -350,12 +377,13 @@ export default function LobbyInitialization({
                 <motion.div
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="max-w-xl w-full bg-zinc-950/95 border border-purple-500/40 p-4 rounded-3xl text-[10px] text-zinc-200 leading-snug shadow-2xl backdrop-blur-xl text-left space-y-3 mt-1"
+                  dir={isFA ? "rtl" : "ltr"}
+                  className={`max-w-xl w-full bg-zinc-950/95 border border-purple-500/40 p-4 rounded-3xl text-[10px] text-zinc-200 leading-snug shadow-2xl backdrop-blur-xl ${isFA ? "text-right" : "text-left"} space-y-3 mt-1`}
                 >
                   <div className="font-bold text-purple-300 text-xs flex items-center justify-between border-b border-white/10 pb-2">
                     <div className="flex items-center gap-2">
                       <span className="text-base">🤖</span>
-                      <span>AI Bot Personas & Age Range Guide</span>
+                      <span>{guideT.botGuideHeader}</span>
                     </div>
                     <button
                       onClick={() => setActiveTooltipRule(null)}
@@ -369,27 +397,27 @@ export default function LobbyInitialization({
                   <div className="bg-purple-500/10 border border-purple-500/30 p-2.5 rounded-2xl flex items-center gap-2.5">
                     <span className="text-xl">🔑</span>
                     <div className="text-[9.5px]">
-                      <span className="font-bold text-purple-200 uppercase tracking-wider block text-[8.5px]">Benchmark Reference Card:</span>
-                      <span className="text-purple-100/90 italic">&quot;A glowing golden key floating above a misty clockwork tower at midnight.&quot;</span>
+                      <span className="font-bold text-purple-200 uppercase tracking-wider block text-[8.5px]">{guideT.benchmarkTitle}</span>
+                      <span className="text-purple-100/90 italic">{guideT.benchmarkText}</span>
                     </div>
                   </div>
 
                   {/* Age Ranges */}
                   <div className="space-y-1.5">
-                    <div className="text-[9px] font-black uppercase text-amber-400 tracking-wider">Age Ranges (Maturity)</div>
+                    <div className="text-[9px] font-black uppercase text-amber-400 tracking-wider">{guideT.ageSectionTitle}</div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[9.5px]">
                       <div className="bg-amber-500/10 border border-amber-500/30 p-2.5 rounded-xl space-y-1">
-                        <div className="font-bold text-amber-300">👶 Child (Age 7–12)</div>
-                        <div className="text-amber-100/80">Simpler, magical vocabulary & playful child imagination.</div>
+                        <div className="font-bold text-amber-300">{guideT.ages.child.name} ({guideT.ages.child.range})</div>
+                        <div className="text-amber-100/80">{guideT.ages.child.desc}</div>
                         <div className="text-[8.5px] font-mono text-amber-300/90 pt-0.5 border-t border-amber-500/20">
-                          <b>Clue Examples:</b> &quot;shining bedtime secret&quot;, &quot;golden magic at night&quot;, &quot;the rooftop prize&quot;
+                          <b>{isFA ? "نمونه‌های راهنمایی:" : "Clue Examples:"}</b> {guideT.ages.child.examples.map(ex => `"${ex}"`).join(", ")}
                         </div>
                       </div>
                       <div className="bg-blue-500/10 border border-blue-500/30 p-2.5 rounded-xl space-y-1">
-                        <div className="font-bold text-blue-300">👤 Adult (Age 18+)</div>
-                        <div className="text-blue-100/80">Nostalgic memories, cozy themes, and poetic depth.</div>
+                        <div className="font-bold text-blue-300">{guideT.ages.adult.name} ({guideT.ages.adult.range})</div>
+                        <div className="text-blue-100/80">{guideT.ages.adult.desc}</div>
                         <div className="text-[8.5px] font-mono text-blue-300/90 pt-0.5 border-t border-blue-500/20">
-                          <b>Clue Examples:</b> &quot;witching hour secret&quot;, &quot;turn of the century&quot;, &quot;silent guardian&quot;
+                          <b>{isFA ? "نمونه‌های راهنمایی:" : "Clue Examples:"}</b> {guideT.ages.adult.examples.map(ex => `"${ex}"`).join(", ")}
                         </div>
                       </div>
                     </div>
@@ -397,139 +425,23 @@ export default function LobbyInitialization({
 
                   {/* 12 Personas */}
                   <div className="space-y-1.5">
-                    <div className="text-[9px] font-black uppercase text-purple-400 tracking-wider">12 AI Personas</div>
+                    <div className="text-[9px] font-black uppercase text-purple-400 tracking-wider">{guideT.personaSectionTitle}</div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[9.5px]">
-                      <div className="bg-amber-950/40 border border-amber-500/30 p-2.5 rounded-xl space-y-1">
-                        <div className="font-bold text-amber-300 flex items-center justify-between">
-                          <span>✨ The Dreamer</span>
-                          <span className="text-[8px] opacity-60">Balanced</span>
-                        </div>
-                        <div className="text-amber-100/80 text-[9px]">Cozy & poetic storytelling strategy.</div>
-                        <div className="text-[8.5px] font-mono text-amber-300/90 pt-1 border-t border-amber-500/20">
-                          <b>Clue Examples:</b> &quot;forbidden attic secret&quot;, &quot;sleeping city view&quot;, &quot;golden hour at night&quot;
-                        </div>
-                      </div>
-
-                      <div className="bg-cyan-950/40 border border-cyan-500/30 p-2.5 rounded-xl space-y-1">
-                        <div className="font-bold text-cyan-300 flex items-center justify-between">
-                          <span>🦉 The Wise Owl</span>
-                          <span className="text-[8px] opacity-60">Cautious</span>
-                        </div>
-                        <div className="text-cyan-100/80 text-[9px]">Focuses on subtle card details & low-risk play.</div>
-                        <div className="text-[8.5px] font-mono text-cyan-300/90 pt-1 border-t border-cyan-500/20">
-                          <b>Clue Examples:</b> &quot;internal mechanics&quot;, &quot;precision machinery&quot;, &quot;brass geometry&quot;
-                        </div>
-                      </div>
-
-                      <div className="bg-purple-950/40 border border-purple-500/30 p-2.5 rounded-xl space-y-1">
-                        <div className="font-bold text-purple-300 flex items-center justify-between">
-                          <span>🎩 The Mad Hatter</span>
-                          <span className="text-[8px] opacity-60">Aggressive</span>
-                        </div>
-                        <div className="text-purple-100/80 text-[9px]">Playful paradoxes, eccentric clues & bold moves.</div>
-                        <div className="text-[8.5px] font-mono text-purple-300/90 pt-1 border-t border-purple-500/20">
-                          <b>Clue Examples:</b> &quot;twelve minus one&quot;, &quot;counterclockwise dream&quot;, &quot;upside-down chime&quot;
-                        </div>
-                      </div>
-
-                      <div className="bg-emerald-950/40 border border-emerald-500/30 p-2.5 rounded-xl space-y-1">
-                        <div className="font-bold text-emerald-300 flex items-center justify-between">
-                          <span>🔮 The Mystic</span>
-                          <span className="text-[8px] opacity-60">Intuitive</span>
-                        </div>
-                        <div className="text-emerald-100/80 text-[9px]">Pure intuition & fluid, adaptive storytelling.</div>
-                        <div className="text-[8.5px] font-mono text-emerald-300/90 pt-1 border-t border-emerald-500/20">
-                          <b>Clue Examples:</b> &quot;starlight alignment&quot;, &quot;beacon in the mist&quot;, &quot;hour of reckoning&quot;
-                        </div>
-                      </div>
-
-                      <div className="bg-rose-950/40 border border-rose-500/30 p-2.5 rounded-xl space-y-1">
-                        <div className="font-bold text-rose-300 flex items-center justify-between">
-                          <span>⚡ The Daredevil</span>
-                          <span className="text-[8px] opacity-60">Wild</span>
-                        </div>
-                        <div className="text-rose-100/80 text-[9px]">High-risk adventurous choices & unpredictable bluffs.</div>
-                        <div className="text-[8.5px] font-mono text-rose-300/90 pt-1 border-t border-rose-500/20">
-                          <b>Clue Examples:</b> &quot;midnight heist&quot;, &quot;heirloom in the sky&quot;, &quot;vault above clouds&quot;
-                        </div>
-                      </div>
-
-                      <div className="bg-blue-950/40 border border-blue-500/30 p-2.5 rounded-xl space-y-1">
-                        <div className="font-bold text-blue-300 flex items-center justify-between">
-                          <span>📖 The Storyteller</span>
-                          <span className="text-[8px] opacity-60">Literary</span>
-                        </div>
-                        <div className="text-blue-100/80 text-[9px]">Fairytale tropes, myths & classical folklore lore.</div>
-                        <div className="text-[8.5px] font-mono text-blue-300/90 pt-1 border-t border-blue-500/20">
-                          <b>Clue Examples:</b> &quot;pandora&apos;s curiosity&quot;, &quot;the bell tolls twelve&quot;, &quot;cinder&apos;s deadline&quot;
-                        </div>
-                      </div>
-
-                      <div className="bg-violet-950/40 border border-violet-500/30 p-2.5 rounded-xl space-y-1">
-                        <div className="font-bold text-violet-300 flex items-center justify-between">
-                          <span>🌀 The Surrealist</span>
-                          <span className="text-[8px] opacity-60">Abstract</span>
-                        </div>
-                        <div className="text-violet-100/80 text-[9px]">Abstract sensory moods, dream logic & liminal space.</div>
-                        <div className="text-[8.5px] font-mono text-violet-300/90 pt-1 border-t border-violet-500/20">
-                          <b>Clue Examples:</b> &quot;suspended moment&quot;, &quot;floating gravity&quot;, &quot;gilded fog&quot;
-                        </div>
-                      </div>
-
-                      <div className="bg-fuchsia-950/40 border border-fuchsia-500/30 p-2.5 rounded-xl space-y-1">
-                        <div className="font-bold text-fuchsia-300 flex items-center justify-between">
-                          <span>🎬 The Cinephile</span>
-                          <span className="text-[8px] opacity-60">Cinematic</span>
-                        </div>
-                        <div className="text-fuchsia-100/80 text-[9px]">Film tropes, noir lighting & cinematic drama.</div>
-                        <div className="text-[8.5px] font-mono text-fuchsia-300/90 pt-1 border-t border-fuchsia-500/20">
-                          <b>Clue Examples:</b> &quot;gothic skyline&quot;, &quot;steampunk prelude&quot;, &quot;dramatic countdown&quot;
-                        </div>
-                      </div>
-
-                      <div className="bg-amber-950/40 border border-amber-500/30 p-2.5 rounded-xl space-y-1">
-                        <div className="font-bold text-amber-300 flex items-center justify-between">
-                          <span>🎻 The Virtuoso</span>
-                          <span className="text-[8px] opacity-60">Musical</span>
-                        </div>
-                        <div className="text-amber-100/80 text-[9px]">Acoustic sensations, musical rhythms & soundscapes.</div>
-                        <div className="text-[8.5px] font-mono text-amber-300/90 pt-1 border-t border-amber-500/20">
-                          <b>Clue Examples:</b> &quot;midnight chime&quot;, &quot;resonating brass&quot;, &quot;crescendo at twelve&quot;
-                        </div>
-                      </div>
-
-                      <div className="bg-teal-950/40 border border-teal-500/30 p-2.5 rounded-xl space-y-1">
-                        <div className="font-bold text-teal-300 flex items-center justify-between">
-                          <span>🔬 The Alchemist</span>
-                          <span className="text-[8px] opacity-60">Cosmic</span>
-                        </div>
-                        <div className="text-teal-100/80 text-[9px]">Astronomy, elemental science & transformations.</div>
-                        <div className="text-[8.5px] font-mono text-teal-300/90 pt-1 border-t border-teal-500/20">
-                          <b>Clue Examples:</b> &quot;celestial gear&quot;, &quot;golden transmutation&quot;, &quot;astronomer&apos;s window&quot;
-                        </div>
-                      </div>
-
-                      <div className="bg-yellow-950/40 border border-yellow-500/30 p-2.5 rounded-xl space-y-1">
-                        <div className="font-bold text-yellow-300 flex items-center justify-between">
-                          <span>📜 The Historian</span>
-                          <span className="text-[8px] opacity-60">Relics</span>
-                        </div>
-                        <div className="text-yellow-100/80 text-[9px]">Historical eras, lost empires & antique relics.</div>
-                        <div className="text-[8.5px] font-mono text-yellow-300/90 pt-1 border-t border-yellow-500/20">
-                          <b>Clue Examples:</b> &quot;victorian spire&quot;, &quot;antique escapement&quot;, &quot;relic of the realm&quot;
-                        </div>
-                      </div>
-
-                      <div className="bg-pink-950/40 border border-pink-500/30 p-2.5 rounded-xl space-y-1">
-                        <div className="font-bold text-pink-300 flex items-center justify-between">
-                          <span>🎭 The Trickster</span>
-                          <span className="text-[8px] opacity-60">Riddles</span>
-                        </div>
-                        <div className="text-pink-100/80 text-[9px]">Clever wordplay, riddles, double entendres & illusions.</div>
-                        <div className="text-[8.5px] font-mono text-pink-300/90 pt-1 border-t border-pink-500/20">
-                          <b>Clue Examples:</b> &quot;teeth with no mouth&quot;, &quot;hands without fingers&quot;, &quot;spells twelve without talking&quot;
-                        </div>
-                      </div>
+                      {Object.entries(guideT.personas).map(([personaKey, personaInfo]) => {
+                        const theme = PERSONA_THEMES[personaKey] || PERSONA_THEMES.balanced;
+                        return (
+                          <div key={personaKey} className={`${theme.bg} border ${theme.border} p-2.5 rounded-xl space-y-1`}>
+                            <div className={`font-bold ${theme.text} flex items-center justify-between`}>
+                              <span>{personaInfo.name}</span>
+                              <span className="text-[8px] opacity-60">{personaInfo.tag}</span>
+                            </div>
+                            <div className={`${theme.subText} text-[9px]`}>{personaInfo.desc}</div>
+                            <div className={`text-[8.5px] font-mono ${theme.text} opacity-90 pt-1 border-t ${theme.ptBorder}`}>
+                              <b>{isFA ? "نمونه‌های راهنمایی:" : "Clue Examples:"}</b> {personaInfo.examples.map(ex => `"${ex}"`).join(", ")}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </motion.div>
