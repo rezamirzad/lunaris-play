@@ -44,6 +44,7 @@ export default function LobbyInitialization({
   const updateFlip7Rules = useMutation(api.flip7.updateFlip7HouseRules);
 
   const [activeTooltipRule, setActiveTooltipRule] = useState<string | null>(null);
+  const [activeBotTooltip, setActiveBotTooltip] = useState<{ id: string; type: "maturity" | "persona" } | null>(null);
 
   const HOUSE_RULE_TOOLTIPS: Record<string, { title: string; desc: string }> = {
     bustPenalty: {
@@ -104,7 +105,7 @@ export default function LobbyInitialization({
 
   const handleToggleBotPersona = async (playerId: string, currentPersona?: string) => {
     if (!isAdmin || !adminPassword) return;
-    const personas = ["balanced", "cautious", "aggressive"];
+    const personas = ["balanced", "cautious", "aggressive", "intuitive", "wild"];
     const currIdx = personas.indexOf(currentPersona || "balanced");
     const nextPersona = personas[(currIdx + 1) % personas.length];
     try {
@@ -169,23 +170,6 @@ export default function LobbyInitialization({
     }
   };
 
-  const handleToggleRuleset = async () => {
-    if (!isAdmin || room.currentGame !== "dixit" || !me) return;
-    const currentRuleset = (room.gameBoard as any).ruleset || (players.length > 6 ? "ODYSSEY" : "CLASSIC");
-    const nextRuleset = currentRuleset === "CLASSIC" ? "ODYSSEY" : "CLASSIC";
-    
-    try {
-      await dixitAction({
-        playerId: me._id,
-        actionType: "SET_RULESET",
-        ruleset: nextRuleset,
-        adminPin: adminPassword,
-      });
-    } catch (e) {
-      console.error("Ruleset toggle failed", e);
-    }
-  };
-
   const renderLanguageSelector = () => {
     const langs: { id: "en" | "fr" | "de" | "fa"; label: string }[] = [
       { id: "en", label: "English" },
@@ -208,8 +192,6 @@ export default function LobbyInitialization({
       </div>
     );
   };
-
-  const dixitRuleset = (room.gameBoard as any).ruleset || (players.length > 6 ? "ODYSSEY" : "CLASSIC");
 
   return (
     <div className="flex flex-col items-center gap-12 w-full transition-all duration-300">
@@ -237,25 +219,54 @@ export default function LobbyInitialization({
           {localizedGameTitle || room.currentGame}
         </h2>
 
-        {/* ⚙️ RULESET TOGGLE (DIXIT ONLY) */}
-        {isAdmin && room.currentGame === "dixit" && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 flex flex-col items-center gap-2">
-            <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Active Ruleset</span>
-            <button 
-                onClick={handleToggleRuleset}
-                className="group flex items-center gap-4 bg-black/40 border border-white/10 px-6 py-2 rounded-2xl hover:border-blue-500/50 transition-all"
-            >
-                <span className={`text-[10px] font-black uppercase tracking-tighter transition-colors ${dixitRuleset !== 'ODYSSEY' ? 'text-blue-400' : 'text-zinc-600'}`}>Classic (3-6)</span>
-                <div className="w-10 h-5 bg-zinc-800 rounded-full p-1 relative">
-                    <motion.div 
-                        animate={{ x: dixitRuleset === 'ODYSSEY' ? 20 : 0 }}
-                        className="w-3 h-3 bg-white rounded-full shadow-lg"
-                    />
+        {/* ⚙️ AUTOMATIC RULESET INDICATOR & TOOLTIP (DIXIT ONLY) */}
+        {room.currentGame === "dixit" && (() => {
+          const activeRuleset = players.length > 6 ? "ODYSSEY" : "CLASSIC";
+          return (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 flex flex-col items-center gap-2">
+              <div className="flex items-center gap-2.5 bg-gradient-to-r from-blue-950/80 to-purple-950/80 border border-blue-500/40 px-5 py-2 rounded-2xl backdrop-blur-xl shadow-lg">
+                <span className="text-sm">✨</span>
+                <div className="flex flex-col items-start text-left">
+                  <span className="text-[8px] font-black text-blue-400 uppercase tracking-widest">Active Ruleset (Auto-Switched)</span>
+                  <span className="text-xs font-black uppercase text-white tracking-wider">
+                    {activeRuleset === "ODYSSEY" ? "Odyssey Ruleset (7–12 Players)" : "Classic Ruleset (3–6 Players)"}
+                  </span>
                 </div>
-                <span className={`text-[10px] font-black uppercase tracking-tighter transition-colors ${dixitRuleset === 'ODYSSEY' ? 'text-blue-400' : 'text-zinc-600'}`}>Odyssey (7-12)</span>
-            </button>
-          </motion.div>
-        )}
+                <button
+                  type="button"
+                  onClick={() => setActiveTooltipRule(activeTooltipRule === "dixitRuleset" ? null : "dixitRuleset")}
+                  className="ml-2 text-xs text-blue-300 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors"
+                  title="Ruleset Details"
+                >
+                  ℹ️
+                </button>
+              </div>
+
+              {activeTooltipRule === "dixitRuleset" && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="max-w-md bg-blue-950/95 border border-blue-400/50 p-3.5 rounded-2xl text-[10px] text-blue-100 leading-snug shadow-2xl backdrop-blur-md text-left space-y-2 mt-1"
+                >
+                  <div className="font-bold text-blue-300 text-xs flex items-center gap-1.5">
+                    <span>🎭</span> Dixit Rulesets Explained
+                  </div>
+                  <div className="space-y-1.5">
+                    <div>
+                      <span className="font-bold text-blue-200">• Classic (3–6 Players):</span> Standard Dixit gameplay. Storyteller gives a clue; players submit 1 matching card; each non-storyteller casts 1 vote for the storyteller&apos;s card.
+                    </div>
+                    <div>
+                      <span className="font-bold text-purple-200">• Odyssey (7–12 Players):</span> Designed for larger groups. Players can cast up to 2 votes during voting to hedge risk when torn between cards!
+                    </div>
+                    <div className="text-[9px] text-blue-300/80 italic pt-1 border-t border-blue-500/20">
+                      ⚡ Ruleset automatically switches based on connected player count ({players.length} active players).
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </motion.div>
+          );
+        })()}
 
         {/* 🎰 HOUSE RULES TOGGLE PANEL (FLIP 7 ONLY) */}
         {room.currentGame === "flip7" && (() => {
@@ -672,42 +683,134 @@ export default function LobbyInitialization({
               >
                 <div className="flex flex-col gap-2 mt-3">
                   {player.isBot && (
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      {room.currentGame === "dixit" && (
-                        <button
-                          disabled={!isAdmin}
-                          onClick={() => handleToggleBotMaturity(player._id, player.maturity)}
-                          className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-md border transition-all ${
-                            player.maturity === "CHILD"
-                              ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
-                              : "bg-blue-500/20 text-blue-300 border-blue-500/40 hover:bg-blue-500/30"
-                          } ${!isAdmin ? "cursor-default" : "cursor-pointer"}`}
-                          title={isAdmin ? "Click to toggle Age Range" : "Age Range"}
-                        >
-                          {player.maturity === "CHILD" ? "👶 AGE 7–12" : "👤 AGE 18+"}
-                        </button>
-                      )}
+                    <div className="flex flex-col gap-1.5 w-full">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {room.currentGame === "dixit" && (
+                          <div className="relative">
+                            <div
+                              onClick={() => {
+                                if (isAdmin) handleToggleBotMaturity(player._id, player.maturity);
+                              }}
+                              className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-md border transition-all flex items-center gap-1 ${
+                                player.maturity === "CHILD"
+                                  ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
+                                  : "bg-blue-500/20 text-blue-300 border-blue-500/40 hover:bg-blue-500/30"
+                              } ${!isAdmin ? "cursor-default" : "cursor-pointer"}`}
+                              title={isAdmin ? "Click badge to toggle Age Range" : "Age Range"}
+                            >
+                              <span>{player.maturity === "CHILD" ? "👶 AGE 7–12" : "👤 AGE 18+"}</span>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setActiveBotTooltip(
+                                    activeBotTooltip?.id === player._id && activeBotTooltip?.type === "maturity"
+                                      ? null
+                                      : { id: player._id, type: "maturity" }
+                                  );
+                                }}
+                                className="text-[10px] text-amber-300/80 hover:text-white p-0.5 rounded hover:bg-white/10"
+                                title="Age Range Tooltip"
+                              >
+                                ℹ️
+                              </button>
+                            </div>
+                            {activeBotTooltip?.id === player._id && activeBotTooltip?.type === "maturity" && (
+                              <motion.div
+                                initial={{ opacity: 0, y: -4 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="absolute left-0 top-full mt-1 z-30 w-52 bg-zinc-950 border border-amber-400/50 p-2.5 rounded-xl text-[9.5px] text-zinc-200 leading-snug shadow-2xl backdrop-blur-xl text-left"
+                              >
+                                <div className="font-bold text-amber-300 mb-0.5 flex items-center gap-1">
+                                  <span>{player.maturity === "CHILD" ? "👶 Child Bot (Age 7–12)" : "👤 Adult Bot (Age 18+)"}</span>
+                                </div>
+                                <div className="text-zinc-300">
+                                  {player.maturity === "CHILD"
+                                    ? "Child persona: Uses warm, magical, simpler vocabulary and playful child imagination for Dixit story clues and guessing logic."
+                                    : "Adult persona: Uses nostalgic memories, cozy themes, and nuanced poetic storytelling depth."}
+                                </div>
+                              </motion.div>
+                            )}
+                          </div>
+                        )}
 
-                      <button
-                        disabled={!isAdmin}
-                        onClick={() => handleToggleBotPersona(player._id, player.persona)}
-                        className={`text-[9px] font-mono font-black px-2 py-0.5 rounded-md border flex items-center gap-1 transition-all ${
-                          player.persona === "aggressive" || player.persona === "wild"
-                            ? "bg-purple-950/80 text-purple-300 border-purple-500/40 hover:bg-purple-900/80"
-                            : player.persona === "cautious"
-                              ? "bg-cyan-950/80 text-cyan-300 border-cyan-500/40 hover:bg-cyan-900/80"
-                              : "bg-amber-950/80 text-amber-300 border-amber-500/40 hover:bg-amber-900/80"
-                        } ${!isAdmin ? "cursor-default" : "cursor-pointer"}`}
-                        title={isAdmin ? "Click to toggle Persona" : "Persona"}
-                      >
-                        <span>
-                          {player.persona === "aggressive" || player.persona === "wild"
-                            ? "🎩 The Mad Hatter"
-                            : player.persona === "cautious"
-                              ? "🦉 The Wise Owl"
-                              : "✨ The Dreamer"}
-                        </span>
-                      </button>
+                        <div className="relative">
+                          <div
+                            onClick={() => {
+                              if (isAdmin) handleToggleBotPersona(player._id, player.persona);
+                            }}
+                            className={`text-[9px] font-mono font-black px-2 py-0.5 rounded-md border flex items-center gap-1 transition-all ${
+                              player.persona === "aggressive"
+                                ? "bg-purple-950/80 text-purple-300 border-purple-500/40 hover:bg-purple-900/80"
+                                : player.persona === "wild"
+                                  ? "bg-rose-950/80 text-rose-300 border-rose-500/40 hover:bg-rose-900/80"
+                                  : player.persona === "cautious"
+                                    ? "bg-cyan-950/80 text-cyan-300 border-cyan-500/40 hover:bg-cyan-900/80"
+                                    : player.persona === "intuitive"
+                                      ? "bg-emerald-950/80 text-emerald-300 border-emerald-500/40 hover:bg-emerald-900/80"
+                                      : "bg-amber-950/80 text-amber-300 border-amber-500/40 hover:bg-amber-900/80"
+                            } ${!isAdmin ? "cursor-default" : "cursor-pointer"}`}
+                            title={isAdmin ? "Click badge to cycle Persona" : "Persona"}
+                          >
+                            <span>
+                              {player.persona === "aggressive"
+                                ? "🎩 The Mad Hatter"
+                                : player.persona === "wild"
+                                  ? "⚡ The Daredevil"
+                                  : player.persona === "cautious"
+                                    ? "🦉 The Wise Owl"
+                                    : player.persona === "intuitive"
+                                      ? "🔮 The Mystic"
+                                      : "✨ The Dreamer"}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveBotTooltip(
+                                  activeBotTooltip?.id === player._id && activeBotTooltip?.type === "persona"
+                                    ? null
+                                    : { id: player._id, type: "persona" }
+                                );
+                              }}
+                              className="text-[10px] text-purple-300/80 hover:text-white p-0.5 rounded hover:bg-white/10"
+                              title="Persona Tooltip"
+                            >
+                              ℹ️
+                            </button>
+                          </div>
+                          {activeBotTooltip?.id === player._id && activeBotTooltip?.type === "persona" && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -4 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="absolute left-0 top-full mt-1 z-30 w-56 bg-zinc-950 border border-purple-400/50 p-2.5 rounded-xl text-[9.5px] text-zinc-200 leading-snug shadow-2xl backdrop-blur-xl text-left"
+                            >
+                              <div className="font-bold text-purple-300 mb-0.5">
+                                {player.persona === "aggressive"
+                                  ? "🎩 The Mad Hatter (Aggressive)"
+                                  : player.persona === "wild"
+                                    ? "⚡ The Daredevil (Wild)"
+                                    : player.persona === "cautious"
+                                      ? "🦉 The Wise Owl (Cautious)"
+                                      : player.persona === "intuitive"
+                                        ? "🔮 The Mystic (Intuitive)"
+                                        : "✨ The Dreamer (Balanced)"}
+                              </div>
+                              <div className="text-zinc-300">
+                                {player.persona === "aggressive"
+                                  ? "Playful paradoxes, eccentric clues, and bold attacks."
+                                  : player.persona === "wild"
+                                    ? "High-risk, adventurous decision making and surprise moves."
+                                    : player.persona === "cautious"
+                                      ? "Observant & careful. Focuses on subtle card details and low-risk plays."
+                                      : player.persona === "intuitive"
+                                        ? "Pure intuition and fluid, adaptive storytelling."
+                                        : "Creative, cozy storytelling and balanced game strategy."}
+                              </div>
+                            </motion.div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   )}
 

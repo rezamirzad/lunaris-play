@@ -399,7 +399,7 @@ export const addBot = mutation({
         "Hunter", "Maverick", "Outlaw", "Flint"
       ],
       dixit: [
-        "Dreamer", "Aura", "Luna", "Echo", "Mirage", 
+        "Dreamer", "Aura", "Starlight", "Echo", "Mirage", 
         "Orion", "Celeste", "Vesper", "Solstice", "Fable", 
         "Poet", "Vision", "Nova", "Zephyr"
       ],
@@ -430,15 +430,29 @@ export const addBot = mutation({
       "Spectra", "Aria", "Zephyr", "Apex", "Vesper"
     ];
 
+    const existingNames = new Set(players.map((p) => p.name.trim().toLowerCase()));
     const namePool = themedNames[room.currentGame.toLowerCase()] || fallbackNames;
-    let botName = namePool.find((n) => !players.some((p) => p.name === n));
 
-    if (!botName) {
-      const unusedFallback = fallbackNames.find((f) => !players.some((p) => p.name.includes(f)));
-      if (unusedFallback) {
-        botName = `Agent ${unusedFallback}`;
+    const availableThemed = namePool.filter(
+      (n) => n.toUpperCase() !== "LUNA" && !existingNames.has(n.toLowerCase())
+    );
+
+    let botName: string;
+    if (availableThemed.length > 0) {
+      botName = availableThemed[Math.floor(Math.random() * availableThemed.length)];
+    } else {
+      const availableFallback = fallbackNames.filter(
+        (f) => f.toUpperCase() !== "LUNA" && !existingNames.has(f.toLowerCase()) && !existingNames.has(`agent ${f.toLowerCase()}`)
+      );
+      if (availableFallback.length > 0) {
+        const randomFallback = availableFallback[Math.floor(Math.random() * availableFallback.length)];
+        botName = `Agent ${randomFallback}`;
       } else {
-        botName = `Agent ${players.length + 1}`;
+        let index = players.length + 1;
+        while (existingNames.has(`agent ${index}`)) {
+          index++;
+        }
+        botName = `Agent ${index}`;
       }
     }
     const plugin = getGamePlugin(room.currentGame);
@@ -446,12 +460,17 @@ export const addBot = mutation({
       "LOBBY",
       room,
     );
+    const personas = ["balanced", "cautious", "aggressive", "intuitive", "wild"] as const;
+    const maturities = ["CHILD", "ADULT"] as const;
+    const randomPersona = personas[Math.floor(Math.random() * personas.length)];
+    const randomMaturity = maturities[Math.floor(Math.random() * maturities.length)];
+
     await ctx.db.insert("players", {
       roomId: room._id,
       name: botName,
       isBot: true,
-      persona: "balanced",
-      maturity: "ADULT",
+      persona: randomPersona,
+      maturity: randomMaturity,
       gameHand: initialHand,
       state: initialState,
       isReady: true,
