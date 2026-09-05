@@ -41,7 +41,7 @@ function calculateCrashProbability(board: any) {
 }
 
 const DIXIT_PROMPT_REQUIREMENTS = "IMPORTANT: You MUST return a VALID JSON object and nothing else. NO MARKDOWN CODE BLOCKS. Return only the JSON.";
-const DIXIT_GLOBAL_CONSTRAINT = "HUMAN STORYTELLER RULE: You are playing Dixit with human friends in a cozy game night setting. Your clues must feel natural, poetic, and genuinely human. AVOID literal object lists (e.g. 'a boy and a dog' or 'red house'). AVOID single generic words ('life', 'sad', 'blue'). Instead, express shared human feelings, nostalgic memories, film/book tropes, idioms, or evocative moods (e.g. 'the day before summer ends', 'forbidden library', 'second thoughts', 'whispers in the attic'). Keep clues concise (1-4 words).";
+const DIXIT_GLOBAL_CONSTRAINT = "HUMAN STORYTELLER RULE: You are playing Dixit with human friends in a cozy game night setting. Your clues must feel natural, poetic, and genuinely human. NEVER use literal names of main objects visible in the card (e.g. if the image contains a key, clock, or cat, DO NOT use the words 'key', 'clock', or 'cat'). AVOID literal object lists (e.g. 'a boy and a dog' or 'red house'). AVOID single generic words ('life', 'sad', 'blue'). Instead, express shared human feelings, nostalgic memories, film/book tropes, idioms, soundscapes, or evocative moods (e.g. 'the day before summer ends', 'open sesame', 'second thoughts', 'whispers in the attic'). Keep clues concise (1-4 words).";
 
 export const PERSONAS: Record<string, BotPersona> = {
   balanced: {
@@ -232,7 +232,7 @@ export const PERSONAS: Record<string, BotPersona> = {
     },
     generateDixitPrompt(phase, maturity, clue, ruleset) {
       const maturityConstraint = maturity === "CHILD" 
-        ? "You are a quiet, observant 10-year-old. Use simple words about specific details like 'tiny spark', 'long path', 'golden key'." 
+        ? "You are a quiet, observant 10-year-old. Use simple words about specific details like 'tiny spark', 'long path', 'brass gear'." 
         : "You are an observant adult. Use clues focused on subtle details, symbolism, or quiet themes.";
 
       if (phase === "CLUE") {
@@ -322,7 +322,7 @@ export const PERSONAS: Record<string, BotPersona> = {
     generateDixitPrompt(phase, maturity, clue, ruleset) {
       const maturityConstraint = maturity === "CHILD"
         ? "YOU ARE PLAYING AS A STORYTELLING CHILD (Age 7-12). Use classic fairytale and legend tropes (e.g. 'glass slipper', 'dragon cave', 'magic wand', 'hidden treasure')."
-        : "YOU ARE PLAYING AS A LITERARY STORYTELLER (Age 18+). Focus on classical myths, folklore, or epic story tropes (e.g. 'pandora\\'s box', 'icarus flight', 'the odyssey home', 'labyrinth key').";
+        : "YOU ARE PLAYING AS A LITERARY STORYTELLER (Age 18+). Focus on classical myths, folklore, or epic story tropes (e.g. 'pandora\\'s box', 'icarus flight', 'the odyssey home', 'labyrinth exit').";
 
       if (phase === "CLUE") {
         return `${DIXIT_GLOBAL_CONSTRAINT} ${maturityConstraint} You are THE STORYTELLER persona.
@@ -439,7 +439,7 @@ export const PERSONAS: Record<string, BotPersona> = {
     generateDixitPrompt(phase, maturity, clue, ruleset) {
       const maturityConstraint = maturity === "CHILD"
         ? "YOU ARE A MUSICAL CHILD (Age 7-12). Use fun sound and music words (e.g. 'happy piano', 'drum roll', 'singing bird')."
-        : "YOU ARE A MUSICAL VIRTUOSO (Age 18+). Focus on acoustic sensations, musical rhythms, and soundscapes (e.g. 'staccato heartbeat', 'crying violin', 'silent symphony', 'minor key').";
+        : "YOU ARE A MUSICAL VIRTUOSO (Age 18+). Focus on acoustic sensations, musical rhythms, and soundscapes (e.g. 'staccato heartbeat', 'crying violin', 'silent symphony', 'minor chord').";
 
       if (phase === "CLUE") {
         return `${DIXIT_GLOBAL_CONSTRAINT} ${maturityConstraint} You are THE VIRTUOSO persona.

@@ -365,15 +365,32 @@ export default function LobbyInitialization({
                     </button>
                   </div>
 
+                  {/* Benchmark Card Context */}
+                  <div className="bg-purple-500/10 border border-purple-500/30 p-2.5 rounded-2xl flex items-center gap-2.5">
+                    <span className="text-xl">🔑</span>
+                    <div className="text-[9.5px]">
+                      <span className="font-bold text-purple-200 uppercase tracking-wider block text-[8.5px]">Benchmark Reference Card:</span>
+                      <span className="text-purple-100/90 italic">&quot;A glowing golden key floating above a misty clockwork tower at midnight.&quot;</span>
+                    </div>
+                  </div>
+
                   {/* Age Ranges */}
                   <div className="space-y-1.5">
                     <div className="text-[9px] font-black uppercase text-amber-400 tracking-wider">Age Ranges (Maturity)</div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[9.5px]">
-                      <div className="bg-amber-500/10 border border-amber-500/30 p-2 rounded-xl">
-                        <span className="font-bold text-amber-300">👶 Child (Age 7–12):</span> Uses warm, magical, simpler vocabulary and playful child imagination for story clues and guessing logic.
+                      <div className="bg-amber-500/10 border border-amber-500/30 p-2.5 rounded-xl space-y-1">
+                        <div className="font-bold text-amber-300">👶 Child (Age 7–12)</div>
+                        <div className="text-amber-100/80">Simpler, magical vocabulary & playful child imagination.</div>
+                        <div className="text-[8.5px] font-mono text-amber-300/90 pt-0.5 border-t border-amber-500/20">
+                          <b>Clue Examples:</b> &quot;shining bedtime secret&quot;, &quot;golden magic at night&quot;, &quot;the rooftop prize&quot;
+                        </div>
                       </div>
-                      <div className="bg-blue-500/10 border border-blue-500/30 p-2 rounded-xl">
-                        <span className="font-bold text-blue-300">👤 Adult (Age 18+):</span> Uses nostalgic memories, cozy themes, and nuanced poetic storytelling depth.
+                      <div className="bg-blue-500/10 border border-blue-500/30 p-2.5 rounded-xl space-y-1">
+                        <div className="font-bold text-blue-300">👤 Adult (Age 18+)</div>
+                        <div className="text-blue-100/80">Nostalgic memories, cozy themes, and poetic depth.</div>
+                        <div className="text-[8.5px] font-mono text-blue-300/90 pt-0.5 border-t border-blue-500/20">
+                          <b>Clue Examples:</b> &quot;witching hour secret&quot;, &quot;turn of the century&quot;, &quot;silent guardian&quot;
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -382,41 +399,136 @@ export default function LobbyInitialization({
                   <div className="space-y-1.5">
                     <div className="text-[9px] font-black uppercase text-purple-400 tracking-wider">12 AI Personas</div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[9.5px]">
-                      <div className="bg-amber-950/40 border border-amber-500/30 p-2 rounded-xl">
-                        <span className="font-bold text-amber-300">✨ The Dreamer (Balanced):</span> Cozy, creative & balanced storytelling strategy.
+                      <div className="bg-amber-950/40 border border-amber-500/30 p-2.5 rounded-xl space-y-1">
+                        <div className="font-bold text-amber-300 flex items-center justify-between">
+                          <span>✨ The Dreamer</span>
+                          <span className="text-[8px] opacity-60">Balanced</span>
+                        </div>
+                        <div className="text-amber-100/80 text-[9px]">Cozy & poetic storytelling strategy.</div>
+                        <div className="text-[8.5px] font-mono text-amber-300/90 pt-1 border-t border-amber-500/20">
+                          <b>Clue Examples:</b> &quot;forbidden attic secret&quot;, &quot;sleeping city view&quot;, &quot;golden hour at night&quot;
+                        </div>
                       </div>
-                      <div className="bg-cyan-950/40 border border-cyan-500/30 p-2 rounded-xl">
-                        <span className="font-bold text-cyan-300">🦉 The Wise Owl (Cautious):</span> Focuses on subtle card details & low-risk play.
+
+                      <div className="bg-cyan-950/40 border border-cyan-500/30 p-2.5 rounded-xl space-y-1">
+                        <div className="font-bold text-cyan-300 flex items-center justify-between">
+                          <span>🦉 The Wise Owl</span>
+                          <span className="text-[8px] opacity-60">Cautious</span>
+                        </div>
+                        <div className="text-cyan-100/80 text-[9px]">Focuses on subtle card details & low-risk play.</div>
+                        <div className="text-[8.5px] font-mono text-cyan-300/90 pt-1 border-t border-cyan-500/20">
+                          <b>Clue Examples:</b> &quot;internal mechanics&quot;, &quot;precision machinery&quot;, &quot;brass geometry&quot;
+                        </div>
                       </div>
-                      <div className="bg-purple-950/40 border border-purple-500/30 p-2 rounded-xl">
-                        <span className="font-bold text-purple-300">🎩 The Mad Hatter (Aggressive):</span> Playful paradoxes, eccentric clues, and bold moves.
+
+                      <div className="bg-purple-950/40 border border-purple-500/30 p-2.5 rounded-xl space-y-1">
+                        <div className="font-bold text-purple-300 flex items-center justify-between">
+                          <span>🎩 The Mad Hatter</span>
+                          <span className="text-[8px] opacity-60">Aggressive</span>
+                        </div>
+                        <div className="text-purple-100/80 text-[9px]">Playful paradoxes, eccentric clues & bold moves.</div>
+                        <div className="text-[8.5px] font-mono text-purple-300/90 pt-1 border-t border-purple-500/20">
+                          <b>Clue Examples:</b> &quot;twelve minus one&quot;, &quot;counterclockwise dream&quot;, &quot;upside-down chime&quot;
+                        </div>
                       </div>
-                      <div className="bg-emerald-950/40 border border-emerald-500/30 p-2 rounded-xl">
-                        <span className="font-bold text-emerald-300">🔮 The Mystic (Intuitive):</span> Pure intuition and fluid, adaptive storytelling.
+
+                      <div className="bg-emerald-950/40 border border-emerald-500/30 p-2.5 rounded-xl space-y-1">
+                        <div className="font-bold text-emerald-300 flex items-center justify-between">
+                          <span>🔮 The Mystic</span>
+                          <span className="text-[8px] opacity-60">Intuitive</span>
+                        </div>
+                        <div className="text-emerald-100/80 text-[9px]">Pure intuition & fluid, adaptive storytelling.</div>
+                        <div className="text-[8.5px] font-mono text-emerald-300/90 pt-1 border-t border-emerald-500/20">
+                          <b>Clue Examples:</b> &quot;starlight alignment&quot;, &quot;beacon in the mist&quot;, &quot;hour of reckoning&quot;
+                        </div>
                       </div>
-                      <div className="bg-rose-950/40 border border-rose-500/30 p-2 rounded-xl">
-                        <span className="font-bold text-rose-300">⚡ The Daredevil (Wild):</span> High-risk, adventurous choices & unpredictable bluffs.
+
+                      <div className="bg-rose-950/40 border border-rose-500/30 p-2.5 rounded-xl space-y-1">
+                        <div className="font-bold text-rose-300 flex items-center justify-between">
+                          <span>⚡ The Daredevil</span>
+                          <span className="text-[8px] opacity-60">Wild</span>
+                        </div>
+                        <div className="text-rose-100/80 text-[9px]">High-risk adventurous choices & unpredictable bluffs.</div>
+                        <div className="text-[8.5px] font-mono text-rose-300/90 pt-1 border-t border-rose-500/20">
+                          <b>Clue Examples:</b> &quot;midnight heist&quot;, &quot;heirloom in the sky&quot;, &quot;vault above clouds&quot;
+                        </div>
                       </div>
-                      <div className="bg-blue-950/40 border border-blue-500/30 p-2 rounded-xl">
-                        <span className="font-bold text-blue-300">📖 The Storyteller (Literary):</span> Fairytale tropes, myths, and classical storytelling lore.
+
+                      <div className="bg-blue-950/40 border border-blue-500/30 p-2.5 rounded-xl space-y-1">
+                        <div className="font-bold text-blue-300 flex items-center justify-between">
+                          <span>📖 The Storyteller</span>
+                          <span className="text-[8px] opacity-60">Literary</span>
+                        </div>
+                        <div className="text-blue-100/80 text-[9px]">Fairytale tropes, myths & classical folklore lore.</div>
+                        <div className="text-[8.5px] font-mono text-blue-300/90 pt-1 border-t border-blue-500/20">
+                          <b>Clue Examples:</b> &quot;pandora&apos;s curiosity&quot;, &quot;the bell tolls twelve&quot;, &quot;cinder&apos;s deadline&quot;
+                        </div>
                       </div>
-                      <div className="bg-violet-950/40 border border-violet-500/30 p-2 rounded-xl">
-                        <span className="font-bold text-violet-300">🌀 The Surrealist (Abstract):</span> Abstract sensory moods, dream logic, and liminal whispers.
+
+                      <div className="bg-violet-950/40 border border-violet-500/30 p-2.5 rounded-xl space-y-1">
+                        <div className="font-bold text-violet-300 flex items-center justify-between">
+                          <span>🌀 The Surrealist</span>
+                          <span className="text-[8px] opacity-60">Abstract</span>
+                        </div>
+                        <div className="text-violet-100/80 text-[9px]">Abstract sensory moods, dream logic & liminal space.</div>
+                        <div className="text-[8.5px] font-mono text-violet-300/90 pt-1 border-t border-violet-500/20">
+                          <b>Clue Examples:</b> &quot;suspended moment&quot;, &quot;floating gravity&quot;, &quot;gilded fog&quot;
+                        </div>
                       </div>
-                      <div className="bg-fuchsia-950/40 border border-fuchsia-500/30 p-2 rounded-xl">
-                        <span className="font-bold text-fuchsia-300">🎬 The Cinephile (Cinematic):</span> Cinematic tropes, film noir lighting, and dramatic flair.
+
+                      <div className="bg-fuchsia-950/40 border border-fuchsia-500/30 p-2.5 rounded-xl space-y-1">
+                        <div className="font-bold text-fuchsia-300 flex items-center justify-between">
+                          <span>🎬 The Cinephile</span>
+                          <span className="text-[8px] opacity-60">Cinematic</span>
+                        </div>
+                        <div className="text-fuchsia-100/80 text-[9px]">Film tropes, noir lighting & cinematic drama.</div>
+                        <div className="text-[8.5px] font-mono text-fuchsia-300/90 pt-1 border-t border-fuchsia-500/20">
+                          <b>Clue Examples:</b> &quot;gothic skyline&quot;, &quot;steampunk prelude&quot;, &quot;dramatic countdown&quot;
+                        </div>
                       </div>
-                      <div className="bg-amber-950/40 border border-amber-500/30 p-2 rounded-xl">
-                        <span className="font-bold text-amber-300">🎻 The Virtuoso (Musical):</span> Acoustic sensations, musical rhythms, and soundscapes.
+
+                      <div className="bg-amber-950/40 border border-amber-500/30 p-2.5 rounded-xl space-y-1">
+                        <div className="font-bold text-amber-300 flex items-center justify-between">
+                          <span>🎻 The Virtuoso</span>
+                          <span className="text-[8px] opacity-60">Musical</span>
+                        </div>
+                        <div className="text-amber-100/80 text-[9px]">Acoustic sensations, musical rhythms & soundscapes.</div>
+                        <div className="text-[8.5px] font-mono text-amber-300/90 pt-1 border-t border-amber-500/20">
+                          <b>Clue Examples:</b> &quot;midnight chime&quot;, &quot;resonating brass&quot;, &quot;crescendo at twelve&quot;
+                        </div>
                       </div>
-                      <div className="bg-teal-950/40 border border-teal-500/30 p-2 rounded-xl">
-                        <span className="font-bold text-teal-300">🔬 The Alchemist (Cosmic):</span> Astronomy, elemental science, and transformations.
+
+                      <div className="bg-teal-950/40 border border-teal-500/30 p-2.5 rounded-xl space-y-1">
+                        <div className="font-bold text-teal-300 flex items-center justify-between">
+                          <span>🔬 The Alchemist</span>
+                          <span className="text-[8px] opacity-60">Cosmic</span>
+                        </div>
+                        <div className="text-teal-100/80 text-[9px]">Astronomy, elemental science & transformations.</div>
+                        <div className="text-[8.5px] font-mono text-teal-300/90 pt-1 border-t border-teal-500/20">
+                          <b>Clue Examples:</b> &quot;celestial gear&quot;, &quot;golden transmutation&quot;, &quot;astronomer&apos;s window&quot;
+                        </div>
                       </div>
-                      <div className="bg-yellow-950/40 border border-yellow-500/30 p-2 rounded-xl">
-                        <span className="font-bold text-yellow-300">📜 The Historian (Eras & Relics):</span> Historical eras, lost empires, and antique relics.
+
+                      <div className="bg-yellow-950/40 border border-yellow-500/30 p-2.5 rounded-xl space-y-1">
+                        <div className="font-bold text-yellow-300 flex items-center justify-between">
+                          <span>📜 The Historian</span>
+                          <span className="text-[8px] opacity-60">Relics</span>
+                        </div>
+                        <div className="text-yellow-100/80 text-[9px]">Historical eras, lost empires & antique relics.</div>
+                        <div className="text-[8.5px] font-mono text-yellow-300/90 pt-1 border-t border-yellow-500/20">
+                          <b>Clue Examples:</b> &quot;victorian spire&quot;, &quot;antique escapement&quot;, &quot;relic of the realm&quot;
+                        </div>
                       </div>
-                      <div className="bg-pink-950/40 border border-pink-500/30 p-2 rounded-xl">
-                        <span className="font-bold text-pink-300">🎭 The Trickster (Riddles):</span> Clever wordplay, riddles, double entendres, and illusions.
+
+                      <div className="bg-pink-950/40 border border-pink-500/30 p-2.5 rounded-xl space-y-1">
+                        <div className="font-bold text-pink-300 flex items-center justify-between">
+                          <span>🎭 The Trickster</span>
+                          <span className="text-[8px] opacity-60">Riddles</span>
+                        </div>
+                        <div className="text-pink-100/80 text-[9px]">Clever wordplay, riddles, double entendres & illusions.</div>
+                        <div className="text-[8.5px] font-mono text-pink-300/90 pt-1 border-t border-pink-500/20">
+                          <b>Clue Examples:</b> &quot;teeth with no mouth&quot;, &quot;hands without fingers&quot;, &quot;spells twelve without talking&quot;
+                        </div>
                       </div>
                     </div>
                   </div>
