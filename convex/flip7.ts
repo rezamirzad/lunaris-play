@@ -546,12 +546,19 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
         faceUpCards.splice(zeroCardIdx, 1);
         discardPile.push("N_0_1");
         faceUpCards.push(drawnCardId);
+        mustFlipCount = 0;
         lastActionType = "SECOND_CHANCE_USED";
         message = `🦸 ZERO HERO! ${player.name}'s 0 card absorbed duplicate ${parsedCard.numberValue}!`;
       } else if (hasSecondChance) {
         // Second Chance shield consumes and protects player!
         hasSecondChance = false;
         discardPile.push(drawnCardId);
+        mustFlipCount = 0;
+        const scIdx = faceUpCards.findIndex((cId) => cId.startsWith("ACT_SECOND_CHANCE"));
+        if (scIdx !== -1) {
+          const scCardId = faceUpCards.splice(scIdx, 1)[0];
+          discardPile.push(scCardId);
+        }
         lastActionType = "SECOND_CHANCE_USED";
         message = `${player.name} flipped duplicate ${parsedCard.numberValue}, but 🛡️ Second Chance saved them!`;
       } else {
