@@ -342,7 +342,7 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
 
                       {/* Second Chance Saved Shield Banner */}
                       {isJustSavedByShield && (
-                        <div className="bg-cyan-400 text-black font-mono font-black text-[10px] uppercase tracking-widest text-center py-1 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-3 shadow-[0_0_20px_rgba(6,182,212,0.8)] flex items-center justify-center gap-1.5 animate-pulse">
+                        <div className="bg-cyan-400 text-black font-mono font-black text-[9px] uppercase tracking-wider text-center py-0.5 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-2 shadow-[0_0_20px_rgba(6,182,212,0.8)] flex items-center justify-center gap-1 animate-pulse">
                           <span>🛡️</span>
                           <span>SECOND CHANCE SAVED YOU FROM BUST!</span>
                         </div>
@@ -350,7 +350,7 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
 
                       {/* Stayed Upper Blue Badge */}
                       {isStayed && !isJustSavedByShield && (
-                        <div className="bg-cyan-500 text-black font-mono font-black text-[10px] uppercase tracking-widest text-center py-1 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-3 shadow-md flex items-center justify-center gap-1.5">
+                        <div className="bg-cyan-500 text-black font-mono font-black text-[9px] uppercase tracking-wider text-center py-0.5 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-2 shadow-md flex items-center justify-center gap-1">
                           <span>✋</span>
                           <span>
                             STAYED & BANKED +{st?.roundScore || 0} PTS
@@ -360,7 +360,7 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
 
                       {/* Busted Upper Red Badge */}
                       {isBusted && (
-                        <div className="bg-rose-600 text-white font-mono font-black text-[10px] uppercase tracking-widest text-center py-1 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-3 shadow-md flex items-center justify-center gap-1.5">
+                        <div className="bg-rose-600 text-white font-mono font-black text-[9px] uppercase tracking-wider text-center py-0.5 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-2 shadow-md flex items-center justify-center gap-1">
                           <span>💥</span>
                           <span>BUSTED (0 PTS BANKED)</span>
                         </div>
@@ -368,7 +368,7 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
 
                       {/* Flip Three Active Banner */}
                       {isFlipThreeSequence && !isStayed && !isBusted && (
-                        <div className="bg-yellow-400 text-black font-mono font-black text-[10px] uppercase tracking-widest text-center py-1 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-3 shadow-md flex items-center justify-center gap-1.5 animate-bounce">
+                        <div className="bg-yellow-400 text-black font-mono font-black text-[9px] uppercase tracking-wider text-center py-0.5 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-2 shadow-md flex items-center justify-center gap-1 animate-bounce">
                           <span>⚡</span>
                           <span>FLIP THREE: {board.mustFlipCount} LEFT</span>
                         </div>
@@ -505,17 +505,17 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                       </div>
 
                       {/* Footer Stats & Status */}
-                      <div className="flex items-center justify-between border-t border-white/10 pt-3 text-xs font-mono">
-                        <span className="text-zinc-400">
+                      <div className="flex items-center justify-between border-t border-white/10 pt-2 text-[10px] sm:text-xs font-mono gap-1 w-full">
+                        <span className="text-zinc-400 whitespace-nowrap shrink-0">
                           Round:{" "}
                           <strong className="text-emerald-400 font-black">
                             +{st?.roundScore || 0} pts
                           </strong>
                         </span>
                         <span
-                          className={`font-black uppercase text-[10px] px-2.5 py-0.5 rounded-full ${
+                          className={`font-black uppercase text-[8px] sm:text-[9px] px-1.5 py-0.5 rounded-full shrink-0 tracking-tighter ${
                             isStayed
-                              ? "bg-cyan-400 text-black border border-cyan-300 font-black shadow-[0_0_10px_rgba(6,182,212,0.4)]"
+                              ? "bg-cyan-400 text-black border border-cyan-300 font-black shadow-[0_0_8px_rgba(6,182,212,0.4)]"
                               : isBusted
                                 ? "bg-rose-950 text-rose-400 border border-rose-500/40"
                                 : "bg-emerald-950 text-emerald-400 border border-emerald-500/40"
