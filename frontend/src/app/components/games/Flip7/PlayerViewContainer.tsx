@@ -20,6 +20,7 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
   const doubleDownMutation = useMutation(flip7Api.doubleDown);
 
   const [pendingAction, setPendingAction] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const board = roomData.gameBoard;
   const myState = player.state as any;
@@ -28,7 +29,10 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
   if (!myState || myState.gameType !== "flip7") return null;
 
   const rules = (board as any).flip7Rules || {};
-  const isMyTurnNow = board.phase === "ACTIVE_PLAY" && String(board.currentTurnPlayerId) === String(player._id) && myState.status === "ACTIVE";
+  const isMyTurnNow =
+    board.phase === "ACTIVE_PLAY" &&
+    (isMyTurn || String(board.currentTurnPlayerId) === String(player._id)) &&
+    myState.status === "ACTIVE";
   const faceUpCards = (myState.roundFaceUpCards as string[]) || [];
   const scoreInfo = calculateFlip7RoundScore(faceUpCards);
 
@@ -46,26 +50,50 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
   };
 
   const handleHit = async () => {
-    if (pendingAction || !isMyTurnNow) return;
+    if (pendingAction) return;
+    if (!isMyTurnNow) {
+      setErrorMessage("Not your turn!");
+      setTimeout(() => setErrorMessage(null), 2500);
+      return;
+    }
     triggerVibration();
     setPendingAction(true);
     try {
       await hitCard({ playerId: player._id });
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to hit card:", err);
+      setErrorMessage(err?.message || "Failed to hit card");
+      setTimeout(() => setErrorMessage(null), 2500);
     } finally {
       setPendingAction(false);
     }
   };
 
   const handleFreeze = async () => {
-    if (pendingAction || !isMyTurnNow || isMinStayLocked || (board.mustFlipCount || 0) > 0) return;
+    if (pendingAction) return;
+    if (!isMyTurnNow) {
+      setErrorMessage("Not your turn!");
+      setTimeout(() => setErrorMessage(null), 2500);
+      return;
+    }
+    if ((board.mustFlipCount || 0) > 0) {
+      setErrorMessage("Cannot stay during Flip Three!");
+      setTimeout(() => setErrorMessage(null), 2500);
+      return;
+    }
+    if (isMinStayLocked) {
+      setErrorMessage("Minimum 10 round points required to stay!");
+      setTimeout(() => setErrorMessage(null), 2500);
+      return;
+    }
     triggerVibration();
     setPendingAction(true);
     try {
       await freeze({ playerId: player._id });
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to freeze:", err);
+      setErrorMessage(err?.message || "Failed to stay");
+      setTimeout(() => setErrorMessage(null), 2500);
     } finally {
       setPendingAction(false);
     }
@@ -77,8 +105,10 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
     setPendingAction(true);
     try {
       await doubleDownMutation({ playerId: player._id });
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to double down:", err);
+      setErrorMessage(err?.message || "Failed to double down");
+      setTimeout(() => setErrorMessage(null), 2500);
     } finally {
       setPendingAction(false);
     }
@@ -289,6 +319,11 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
         }
         actionsSlot={
           <div className="w-full flex flex-col gap-2 pt-2">
+            {errorMessage && (
+              <div className="bg-rose-950 border border-rose-500 text-rose-200 px-4 py-2 rounded-xl text-xs font-mono font-bold text-center shadow-lg animate-bounce">
+                ⚠️ {errorMessage}
+              </div>
+            )}
             {(board.mustFlipCount || 0) > 0 && isMyTurnNow && (
               <div className="bg-yellow-400/20 border border-yellow-400/40 text-yellow-300 px-3 py-1.5 rounded-xl text-xs font-mono font-bold text-center flex items-center justify-center gap-1.5 animate-pulse">
                 <span>⚡</span>
@@ -304,11 +339,12 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
 
             {rules.allowDoubleDown && (
               <button
+                type="button"
                 disabled={!canDoubleDown || pendingAction}
                 onClick={handleDoubleDown}
-                className={`w-full py-3 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-wider transition-all border flex items-center justify-center gap-2 ${
+                className={`w-full py-3 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-wider transition-all border flex items-center justify-center gap-2 select-none touch-manipulation ${
                   canDoubleDown && !pendingAction
-                    ? "bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 border-purple-300 text-white shadow-lg shadow-purple-500/30 animate-pulse active:scale-95"
+                    ? "bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 border-purple-300 text-white shadow-lg shadow-purple-500/30 animate-pulse active:scale-95 cursor-pointer"
                     : "bg-zinc-800 border-white/5 text-zinc-600 cursor-not-allowed opacity-40"
                 }`}
               >
@@ -320,11 +356,12 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
             <div className="w-full grid grid-cols-2 gap-4">
               {/* HIT Button */}
               <button
+                type="button"
                 disabled={!isMyTurnNow || pendingAction}
                 onClick={handleHit}
-                className={`py-5 rounded-2xl font-black text-base uppercase tracking-wider transition-all border flex items-center justify-center gap-2 ${
+                className={`py-5 rounded-2xl font-black text-base uppercase tracking-wider transition-all border flex items-center justify-center gap-2 select-none touch-manipulation ${
                   isMyTurnNow && !pendingAction
-                    ? "bg-gradient-to-r from-amber-500 to-amber-600 border-amber-300 text-black shadow-lg shadow-amber-500/20 active:scale-95"
+                    ? "bg-gradient-to-r from-amber-500 to-amber-600 border-amber-300 text-black shadow-lg shadow-amber-500/20 active:scale-95 cursor-pointer"
                     : "bg-zinc-800 border-white/5 text-zinc-500 cursor-not-allowed opacity-50"
                 }`}
               >
@@ -334,11 +371,12 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
 
               {/* STAY Button */}
               <button
+                type="button"
                 disabled={!isMyTurnNow || pendingAction || (board.mustFlipCount || 0) > 0 || isMinStayLocked}
                 onClick={handleFreeze}
-                className={`py-5 rounded-2xl font-black text-base uppercase tracking-wider transition-all border flex items-center justify-center gap-2 ${
+                className={`py-5 rounded-2xl font-black text-base uppercase tracking-wider transition-all border flex items-center justify-center gap-2 select-none touch-manipulation ${
                   isMyTurnNow && !pendingAction && (board.mustFlipCount || 0) === 0 && !isMinStayLocked
-                    ? "bg-gradient-to-r from-emerald-600 to-teal-600 border-emerald-400 text-white shadow-lg shadow-emerald-500/20 active:scale-95"
+                    ? "bg-gradient-to-r from-emerald-600 to-teal-600 border-emerald-400 text-white shadow-lg shadow-emerald-500/20 active:scale-95 cursor-pointer"
                     : "bg-zinc-800 border-white/5 text-zinc-500 cursor-not-allowed opacity-40"
                 }`}
               >
