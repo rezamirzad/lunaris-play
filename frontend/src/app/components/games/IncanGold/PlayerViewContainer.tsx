@@ -143,9 +143,11 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData }) => {
 
   const handleDecision = async (decision: "STAY" | "LEAVE") => {
     if (pendingDecision) return;
-    if (navigator.vibrate) {
-      navigator.vibrate(50);
-    }
+    try {
+      if (typeof window !== "undefined" && typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+        navigator.vibrate(50);
+      }
+    } catch (_) {}
     if (decision === "STAY") {
       try {
         const audio = new Audio("/assets/games/incangold/audio/splashing-footsteps-shallow-water.wav");

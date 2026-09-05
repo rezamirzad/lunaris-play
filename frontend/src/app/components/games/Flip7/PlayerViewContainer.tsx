@@ -35,9 +35,19 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
   const isMinStayLocked = rules.minHitThreshold && scoreInfo.score < 10;
   const canDoubleDown = rules.allowDoubleDown && isMyTurnNow && scoreInfo.uniqueNumbersCount >= 5 && !myState.isDoubledDown;
 
+  const triggerVibration = () => {
+    try {
+      if (typeof window !== "undefined" && typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+        navigator.vibrate(50);
+      }
+    } catch (_) {
+      // Ignore haptic feedback errors on unsupported or restricted mobile webviews
+    }
+  };
+
   const handleHit = async () => {
     if (pendingAction || !isMyTurnNow) return;
-    if (navigator.vibrate) navigator.vibrate(50);
+    triggerVibration();
     setPendingAction(true);
     try {
       await hitCard({ playerId: player._id });
@@ -49,8 +59,8 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
   };
 
   const handleFreeze = async () => {
-    if (pendingAction || !isMyTurnNow || isMinStayLocked) return;
-    if (navigator.vibrate) navigator.vibrate(50);
+    if (pendingAction || !isMyTurnNow || isMinStayLocked || (board.mustFlipCount || 0) > 0) return;
+    triggerVibration();
     setPendingAction(true);
     try {
       await freeze({ playerId: player._id });
@@ -63,7 +73,7 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
 
   const handleDoubleDown = async () => {
     if (pendingAction || !canDoubleDown) return;
-    if (navigator.vibrate) navigator.vibrate(50);
+    triggerVibration();
     setPendingAction(true);
     try {
       await doubleDownMutation({ playerId: player._id });
