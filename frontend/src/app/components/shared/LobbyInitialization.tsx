@@ -343,18 +343,20 @@ export default function LobbyInitialization({
                 <div className="flex flex-col gap-2 mt-3">
                   {player.isBot && (
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <button
-                        disabled={!isAdmin}
-                        onClick={() => handleToggleBotMaturity(player._id, player.maturity)}
-                        className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-md border transition-all ${
-                          player.maturity === "CHILD"
-                            ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
-                            : "bg-blue-500/20 text-blue-300 border-blue-500/40 hover:bg-blue-500/30"
-                        } ${!isAdmin ? "cursor-default" : "cursor-pointer"}`}
-                        title={isAdmin ? "Click to toggle Age Range" : "Age Range"}
-                      >
-                        {player.maturity === "CHILD" ? "👶 AGE 7–12" : "👤 AGE 18+"}
-                      </button>
+                      {room.currentGame === "dixit" && (
+                        <button
+                          disabled={!isAdmin}
+                          onClick={() => handleToggleBotMaturity(player._id, player.maturity)}
+                          className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-md border transition-all ${
+                            player.maturity === "CHILD"
+                              ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
+                              : "bg-blue-500/20 text-blue-300 border-blue-500/40 hover:bg-blue-500/30"
+                          } ${!isAdmin ? "cursor-default" : "cursor-pointer"}`}
+                          title={isAdmin ? "Click to toggle Age Range" : "Age Range"}
+                        >
+                          {player.maturity === "CHILD" ? "👶 AGE 7–12" : "👤 AGE 18+"}
+                        </button>
+                      )}
 
                       <button
                         disabled={!isAdmin}

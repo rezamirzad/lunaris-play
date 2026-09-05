@@ -301,18 +301,11 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                             {st?.bankedScore || 0} pts
                           </span>
                         </div>
-                        {/* Personality & Age Badge on a Separate Line */}
+                        {/* Personality Badge on a Separate Line */}
                         {p.isBot && (
-                          <div className="flex items-center gap-1.5 flex-wrap">
+                          <div>
                             <span className="inline-block text-[9px] font-mono font-bold bg-amber-950/90 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                              🤖 {p.persona ? p.persona.toUpperCase() : "BOT"}
-                            </span>
-                            <span className={`inline-block text-[9px] font-mono font-bold px-2 py-0.5 rounded-md border ${
-                              p.maturity === "CHILD"
-                                ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                                : "bg-blue-500/20 text-blue-300 border-blue-500/40"
-                            }`}>
-                              {p.maturity === "CHILD" ? "👶 AGE 7–12" : "👤 AGE 18+"}
+                              🤖 {p.persona ? p.persona.toUpperCase() : "BOT"} PERSONA
                             </span>
                           </div>
                         )}
