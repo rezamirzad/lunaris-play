@@ -7,7 +7,6 @@ import { useMutation } from "convex/react";
 import { api } from "convex/_generated/api";
 import { useTranslation } from "@/hooks/useTranslation";
 import PlayerController from "../../shared/PlayerController";
-import BackgroundAudioPlayer from "../../shared/BackgroundAudioPlayer";
 import Flip7Card from "./Flip7Card";
 import { parseFlip7Card, calculateFlip7RoundScore } from "../../../../../../convex/flip7_deck";
 
@@ -142,8 +141,37 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <BackgroundAudioPlayer src="/assets/games/incangold/audio/ambience_cave_00.wav" />
-                <div className="bg-white/5 px-3 py-1 rounded-full border border-white/10 text-[9px] font-mono font-black text-amber-400">
+                {/* Live Bust Risk Calculation Badge */}
+                {(() => {
+                  const deck = board.deck || [];
+                  const existingNumbers = new Set(
+                    faceUpCards.map((cId) => parseFlip7Card(cId).numberValue).filter((n) => n !== undefined),
+                  );
+                  let matchingDuplicates = 0;
+                  deck.forEach((cardId: string) => {
+                    const parsed = parseFlip7Card(cardId);
+                    if (parsed.type === "NUMBER" && parsed.numberValue !== undefined && existingNumbers.has(parsed.numberValue)) {
+                      matchingDuplicates++;
+                    }
+                  });
+                  const rawBustPct = deck.length > 0 ? (matchingDuplicates / deck.length) * 100 : 0;
+                  const isShielded = myState.hasSecondChance;
+                  const badgeStyle = isShielded
+                    ? "bg-cyan-950/90 text-cyan-300 border-cyan-400/50"
+                    : rawBustPct > 40
+                      ? "bg-rose-950/90 text-rose-300 border-rose-500/50"
+                      : rawBustPct > 22
+                        ? "bg-amber-950/90 text-amber-300 border-amber-500/50"
+                        : "bg-emerald-950/90 text-emerald-300 border-emerald-500/40";
+
+                  return (
+                    <span className={`text-[10px] font-mono font-black px-2.5 py-1 rounded-full border flex items-center gap-1 shadow-sm ${badgeStyle}`} title="Live Bust Odds">
+                      <span>📊</span>
+                      <span>{isShielded ? "0.0% (Shield 🛡️)" : `${rawBustPct.toFixed(1)}% BUST`}</span>
+                    </span>
+                  );
+                })()}
+                <div className="bg-white/5 px-3 py-1 rounded-full border border-white/10 text-[10px] font-mono font-black text-amber-400">
                   {myState.bankedScore || 0} PTS
                 </div>
               </div>
