@@ -598,12 +598,12 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                                 ? "🔵"
                                 : "🟢"}
                           </span>
-                          <div className="flex items-center gap-1 shrink-0">
-                            <span className="text-amber-400 font-black">
-                              {st?.bankedScore || 0}
+                          <div className="flex items-center gap-1 shrink-0 font-mono">
+                            <span className="text-amber-400 font-black whitespace-pre">
+                              {String(st?.bankedScore || 0).padStart(3, "\u00A0")}
                             </span>
-                            <span className="text-emerald-400 text-[10px] font-bold">
-                              (+{st?.roundScore || 0})
+                            <span className="text-emerald-400 text-[10px] font-bold whitespace-pre">
+                              {`(+${String(st?.roundScore || 0).padStart(3, "\u00A0")})`}
                             </span>
                           </div>
                         </div>

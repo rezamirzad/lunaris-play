@@ -116,6 +116,26 @@ export default function RoomPage() {
     gameMetadata?.title_fa
   );
 
+  const board = room?.gameBoard as any;
+  const currentTurnPlayerId =
+    board?.currentTurnPlayerId ||
+    board?.activePlayerId ||
+    (room?.turnOrder && room.turnOrder[room.currentTurnIndex]);
+  const currentTurnPlayer = (players as any[]).find(
+    (p) => String(p._id) === String(currentTurnPlayerId),
+  );
+
+  const isMyTurn =
+    board?.currentTurnPlayerId
+      ? String(board.currentTurnPlayerId) === String(me?._id)
+      : String(room?.turnOrder?.[room?.currentTurnIndex || 0]) === String(me?._id);
+
+  const isRoundEnded =
+    room?.status === "FINISHED" ||
+    board?.phase === "RESULTS" ||
+    board?.phase === "ROUND_OVER" ||
+    board?.phase === "GAME_OVER";
+
   const renderContent = () => {
     // 1. Boot Sequence: Only once when moving LOBBY -> PLAYING (Board View Only for Dixit)
     if (isBooting && (isBoardView || room.currentGame !== "dixit")) {
@@ -152,11 +172,7 @@ export default function RoomPage() {
         roomId={room._id} 
         roomData={room as any} 
         player={me as any} 
-        isMyTurn={
-          (room.gameBoard as any)?.currentTurnPlayerId
-            ? String((room.gameBoard as any).currentTurnPlayerId) === String(me?._id)
-            : String(room.turnOrder[room.currentTurnIndex]) === String(me?._id)
-        }
+        isMyTurn={isMyTurn}
         history={history}
         submissions={submissions}
       />
@@ -174,6 +190,11 @@ export default function RoomPage() {
           gameTitle={localizedGameTitle} 
           roomCode={room.roomCode} 
           status={room.status}
+          playerName={me?.name}
+          currentTurnPlayerName={currentTurnPlayer?.name}
+          isMyTurn={isMyTurn}
+          isRoundEnded={isRoundEnded}
+          isBoardView={isBoardView}
         />
       </div>
 
