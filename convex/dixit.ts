@@ -386,7 +386,7 @@ async function calculateScores(
         // Correct Guess
         if (isOdyssey) {
           const myVotesCount = votes.filter(v => v.voterId === p._id).length;
-          scoreGain = myVotesCount === 1 ? 4 : 3; // Risk Bonus (+1 if only 1 vote cast)
+          scoreGain = myVotesCount === 1 ? 4 : 2; // 4 pts if 1 vote (3 + 1 extra for single vote), 2 pts if 2 votes
         } else {
           scoreGain = 3;
         }
