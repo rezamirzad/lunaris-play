@@ -383,12 +383,17 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                           )}
 
                           {/* Flip Three Active Banner */}
-                          {isFlipThreeSequence && !isStayed && !isFrozen && !isBusted && (
-                            <div className="bg-yellow-400 text-black font-mono font-black text-[9px] uppercase tracking-wider text-center py-0.5 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-2 rounded-t-[0.9rem] shadow-md flex items-center justify-center gap-1 animate-bounce">
-                              <span>⚡</span>
-                              <span>FLIP THREE: {board.mustFlipCount} LEFT</span>
-                            </div>
-                          )}
+                          {isFlipThreeSequence &&
+                            !isStayed &&
+                            !isFrozen &&
+                            !isBusted && (
+                              <div className="bg-yellow-400 text-black font-mono font-black text-[9px] uppercase tracking-wider text-center py-0.5 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-2 rounded-t-[0.9rem] shadow-md flex items-center justify-center gap-1 animate-bounce">
+                                <span>⚡</span>
+                                <span>
+                                  FLIP THREE: {board.mustFlipCount} LEFT
+                                </span>
+                              </div>
+                            )}
 
                           {/* Player Header with Personality on Separate Line */}
                           <div className="flex flex-col border-b border-white/10 pb-2 gap-1">
@@ -404,7 +409,8 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                             {p.isBot && (
                               <div>
                                 <span className="inline-block text-[9px] font-mono font-bold bg-amber-950/90 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                                  🤖 {p.persona ? p.persona.toUpperCase() : "BOT"}{" "}
+                                  🤖{" "}
+                                  {p.persona ? p.persona.toUpperCase() : "BOT"}{" "}
                                   PERSONA
                                 </span>
                               </div>
@@ -618,16 +624,19 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                             title={st?.status || "ACTIVE"}
                           >
                             {st?.status === "BUSTED"
-                              ? "🔴 BUSTED"
+                              ? "🔴"
                               : st?.status === "FROZEN"
-                                ? "❄️ FROZEN"
+                                ? "❄️"
                                 : st?.status === "STAYED"
-                                  ? "✋ STAYED"
-                                  : "🟢 ACTIVE"}
+                                  ? "✋"
+                                  : "🟢"}
                           </span>
                           <div className="flex items-center gap-1 shrink-0 font-mono">
                             <span className="text-amber-400 font-black whitespace-pre">
-                              {String(st?.bankedScore || 0).padStart(3, "\u00A0")}
+                              {String(st?.bankedScore || 0).padStart(
+                                3,
+                                "\u00A0",
+                              )}
                             </span>
                             <span className="text-emerald-400 text-[10px] font-bold whitespace-pre">
                               {`(+${String(st?.roundScore || 0).padStart(3, "\u00A0")})`}
