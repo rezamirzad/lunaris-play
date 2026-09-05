@@ -20,12 +20,14 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
 
   const nextRound = useMutation(flip7Api.nextRound);
   const toggleHaltMutation = useMutation(api.engine.toggleBotsHalt);
+  const toggleBustOddsMutation = useMutation(flip7Api.toggleBustOdds);
 
   const [showRules, setShowRules] = useState(false);
-  const [showBustOdds, setShowBustOdds] = useState(false);
 
   const board = roomData.gameBoard;
   if (!board || board.gameType !== "flip7") return null;
+
+  const showBustOdds = !!board.showBustOdds;
 
   const isLobby = roomData.status?.toUpperCase() === "LOBBY";
   if (isLobby) {
@@ -66,50 +68,84 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
 
       {/* Main Game Stage */}
       <div className="flex-1 p-3 md:p-6 flex flex-col justify-between max-w-7xl mx-auto w-full gap-4 overflow-hidden">
-        {/* Banner Action Notification */}
+        {/* Banner Action Notification & Flying Action Card Trajectory */}
         {board.lastAction && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`w-full p-3.5 rounded-2xl border backdrop-blur-md shadow-2xl flex items-center justify-between ${
-              board.lastAction.type === "BUST"
-                ? "bg-rose-950/80 border-rose-500/40 text-rose-300"
-                : board.lastAction.type === "SECOND_CHANCE_USED"
-                  ? "bg-gradient-to-r from-cyan-950 via-rose-950 to-zinc-900 border-cyan-400/60 text-cyan-200"
-                  : board.lastAction.type === "FLIP_7_BONUS"
-                    ? "bg-amber-950/80 border-amber-400 text-amber-300"
-                    : board.lastAction.type === "FREEZE"
-                      ? "bg-cyan-950/80 border-cyan-500/40 text-cyan-300"
-                      : "bg-zinc-900/80 border-white/10 text-zinc-200"
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">
-                {board.lastAction.type === "BUST"
-                  ? "💥"
+          <div className="relative w-full flex flex-col gap-2">
+            <motion.div
+              key={board.lastAction.cardId + (board.lastAction.message || "")}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`w-full p-3.5 rounded-2xl border backdrop-blur-md shadow-2xl flex items-center justify-between ${
+                board.lastAction.type === "BUST"
+                  ? "bg-rose-950/80 border-rose-500/40 text-rose-300"
                   : board.lastAction.type === "SECOND_CHANCE_USED"
-                    ? "🛡️"
+                    ? "bg-gradient-to-r from-cyan-950 via-rose-950 to-zinc-900 border-cyan-400/60 text-cyan-200"
                     : board.lastAction.type === "FLIP_7_BONUS"
-                      ? "🌟"
+                      ? "bg-amber-950/80 border-amber-400 text-amber-300"
                       : board.lastAction.type === "FREEZE"
-                        ? "❄️"
-                        : "🃏"}
-              </span>
-              <span className="font-bold text-sm md:text-base">{board.lastAction.message}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              {board.lastAction.type === "SECOND_CHANCE_USED" && board.lastAction.cardId && (
-                <div className="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-xl border border-white/10">
-                  <span className="text-[10px] font-mono text-cyan-300 uppercase font-black">DISCARDED:</span>
-                  <Flip7Card cardId="ACT_SECOND_CHANCE_1" size="sm" isCrossedOut={true} />
-                  <Flip7Card cardId={board.lastAction.cardId} size="sm" isCrossedOut={true} />
-                </div>
-              )}
-              <div className="text-xs font-mono font-black opacity-70">
-                Deck: {board.deck?.length || 0} cards left
+                        ? "bg-cyan-950/80 border-cyan-500/40 text-cyan-300"
+                        : "bg-zinc-900/80 border-white/10 text-zinc-200"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">
+                  {board.lastAction.type === "BUST"
+                    ? "💥"
+                    : board.lastAction.type === "SECOND_CHANCE_USED"
+                      ? "🛡️"
+                      : board.lastAction.type === "FLIP_7_BONUS"
+                        ? "🌟"
+                        : board.lastAction.type === "FREEZE"
+                          ? "❄️"
+                          : "🃏"}
+                </span>
+                <span className="font-bold text-sm md:text-base">{board.lastAction.message}</span>
               </div>
-            </div>
-          </motion.div>
+              <div className="flex items-center gap-3">
+                {board.lastAction.type === "SECOND_CHANCE_USED" && board.lastAction.cardId && (
+                  <div className="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-xl border border-white/10">
+                    <span className="text-[10px] font-mono text-cyan-300 uppercase font-black">DISCARDED:</span>
+                    <Flip7Card cardId="ACT_SECOND_CHANCE_1" size="sm" isCrossedOut={true} />
+                    <Flip7Card cardId={board.lastAction.cardId} size="sm" isCrossedOut={true} />
+                  </div>
+                )}
+                <div className="text-xs font-mono font-black opacity-70">
+                  Deck: {board.deck?.length || 0} cards left
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Targeted Action Flying Trajectory Overlay */}
+            {board.lastAction.type === "ACTION_CARD" && board.lastAction.cardId && (
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={board.lastAction.cardId + board.lastAction.playerName}
+                  initial={{ scale: 0.2, opacity: 0, y: -40, rotate: -20 }}
+                  animate={{
+                    scale: [0.3, 1.4, 1],
+                    opacity: [0, 1, 1, 0.9],
+                    y: [0, -15, 0],
+                    rotate: [0, 15, -15, 0],
+                  }}
+                  transition={{ duration: 1.2, ease: "easeInOut" }}
+                  className="fixed inset-0 z-[150] pointer-events-none flex items-center justify-center"
+                >
+                  <div className="relative flex flex-col items-center gap-3 bg-black/80 backdrop-blur-xl border-2 border-amber-400 p-6 rounded-3xl shadow-[0_0_60px_rgba(245,158,11,0.6)] animate-pulse">
+                    <div className="flex items-center gap-2 text-xs font-mono font-black text-amber-300 uppercase tracking-widest bg-amber-950/80 px-3 py-1 rounded-full border border-amber-400/40">
+                      <span>⚡ ACTION CARD LAUNCHED</span>
+                    </div>
+                    <div className="flex items-center gap-4 py-2">
+                      <span className="text-base font-bold text-white">{board.lastAction.playerName}</span>
+                      <span className="text-xl">➔</span>
+                      <Flip7Card cardId={board.lastAction.cardId} size="lg" />
+                      <span className="text-xl">➔</span>
+                      <span className="text-base font-bold text-amber-300">{board.lastAction.targetPlayerName || "Target"}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            )}
+          </div>
         )}
 
         {/* Main Stage Layout: Left Players Grid + Right Vertical Standings Sidebar */}
@@ -342,7 +378,7 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
             {/* Bust Odds Toggle Button in Standings Sidebar */}
             <div className="border-t border-white/10 pt-3">
               <button
-                onClick={() => setShowBustOdds(!showBustOdds)}
+                onClick={() => toggleBustOddsMutation({ roomId: roomId as any })}
                 className={`w-full py-2.5 rounded-xl text-xs font-mono font-black border transition-all flex items-center justify-center gap-2 active:scale-95 ${
                   showBustOdds
                     ? "bg-amber-400 text-black border-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.4)]"

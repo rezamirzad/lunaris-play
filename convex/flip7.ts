@@ -882,6 +882,8 @@ async function handleResolveTargetActionInternal(
         type: "ACTION_CARD",
         playerId: sourcePlayer._id,
         playerName: sourcePlayer.name,
+        targetPlayerId: targetPlayer._id,
+        targetPlayerName: targetPlayer.name,
         cardId: pending.cardId,
         message,
       },
@@ -896,3 +898,23 @@ async function handleResolveTargetActionInternal(
 
   return { success: true };
 }
+
+export const toggleBustOdds = mutation({
+  args: {
+    roomId: v.id("rooms"),
+  },
+  handler: async (ctx, args) => {
+    const room = await ctx.db.get(args.roomId);
+    if (!room || room.gameBoard.gameType !== "flip7") {
+      throw new Error("Invalid room");
+    }
+    const board = room.gameBoard;
+    await ctx.db.patch(room._id, {
+      gameBoard: {
+        ...board,
+        showBustOdds: !board.showBustOdds,
+      } as any,
+    });
+    return { success: true };
+  },
+});

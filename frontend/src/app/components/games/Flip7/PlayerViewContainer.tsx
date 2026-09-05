@@ -142,7 +142,7 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
               </div>
               <div className="flex items-center gap-3">
                 {/* Live Bust Risk Calculation Badge */}
-                {(() => {
+                {board.showBustOdds && (() => {
                   const deck = board.deck || [];
                   const existingNumbers = new Set(
                     faceUpCards.map((cId) => parseFlip7Card(cId).numberValue).filter((n) => n !== undefined),

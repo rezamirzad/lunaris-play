@@ -71,7 +71,22 @@ export const Flip7Card: React.FC<Flip7CardProps> = ({
     } else if (card.actionType === "FLIP_THREE") {
       themeGradient = "from-amber-300 via-orange-500 to-red-900 border-yellow-300 text-black shadow-[0_0_25px_rgba(245,158,11,0.5)]";
       badgeIcon = "⚡";
-      subLabel = "FLIP x3";
+    }
+  }
+
+  // Tooltip Text Description
+  let tooltipText = `${card.label} Card`;
+  if (card.type === "NUMBER") {
+    tooltipText = `${card.numberValue} Number Card (+${card.numberValue} pts)`;
+  } else if (card.type === "MODIFIER") {
+    tooltipText = `${card.label} Modifier Card (${card.label === 'x2' ? 'Doubles round score' : '+' + card.numberValue + ' bonus pts'})`;
+  } else if (card.type === "ACTION") {
+    if (card.actionType === "SECOND_CHANCE") {
+      tooltipText = "Second Chance Shield - Absorbs one duplicate number bust";
+    } else if (card.actionType === "FREEZE") {
+      tooltipText = "Freeze Card - Forces target player to freeze and bank points";
+    } else if (card.actionType === "FLIP_THREE") {
+      tooltipText = "Flip Three Card - Forces target player to flip 3 cards sequentially";
     }
   }
 
@@ -82,18 +97,13 @@ export const Flip7Card: React.FC<Flip7CardProps> = ({
       exit={{ scale: 0.5, opacity: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 22 }}
       whileHover={{ y: -6, scale: 1.08, zIndex: 30 }}
-      className={`bg-gradient-to-br ${themeGradient} ${sizeClasses} flex flex-col justify-between p-1.5 select-none relative overflow-hidden font-black transition-all backdrop-blur-md ${
+      title={tooltipText}
+      className={`bg-gradient-to-br ${themeGradient} ${sizeClasses} aspect-[2/3] flex flex-col justify-between items-center p-1.5 select-none relative overflow-hidden font-black transition-all backdrop-blur-md shadow-md ${
         isGrayedOut ? "grayscale opacity-45 mix-blend-luminosity border-zinc-600/50" : ""
       } ${className}`}
     >
       {/* Background Texture Detail */}
       <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(circle_at_top,_white_0%,_transparent_70%)]" />
-
-      {/* Top Corner Identifier */}
-      <div className="flex justify-between items-center w-full z-10 opacity-80">
-        <span className="text-[10px] font-mono leading-none">{card.label}</span>
-        {badgeIcon && <span className="text-xs leading-none">{badgeIcon}</span>}
-      </div>
 
       {/* Center Big Symbol */}
       <div className="flex-1 flex flex-col items-center justify-center z-10 leading-none">
@@ -130,8 +140,8 @@ export const Flip7Card: React.FC<Flip7CardProps> = ({
 
       {/* Bottom Sublabel */}
       <div className="w-full text-center z-10">
-        <span className="text-[8px] font-mono uppercase tracking-widest opacity-70 block leading-none">
-          {subLabel}
+        <span className="text-[8px] font-mono uppercase tracking-widest opacity-70 block leading-none truncate">
+          {subLabel || card.label}
         </span>
       </div>
     </motion.div>

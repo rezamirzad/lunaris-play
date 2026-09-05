@@ -309,6 +309,8 @@ export default defineSchema({
             ),
             playerId: v.id("players"),
             playerName: v.string(),
+            targetPlayerId: v.optional(v.id("players")),
+            targetPlayerName: v.optional(v.string()),
             cardId: v.optional(v.string()),
             scoreGained: v.optional(v.number()),
             message: v.optional(v.string()),
@@ -327,6 +329,7 @@ export default defineSchema({
         ),
         winner: v.optional(v.string()),
         winnerId: v.optional(v.id("players")),
+        showBustOdds: v.optional(v.boolean()),
       })
     ),
   }).index("by_roomCode", ["roomCode"]),
