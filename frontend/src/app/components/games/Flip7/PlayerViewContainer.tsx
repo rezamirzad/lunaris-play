@@ -74,13 +74,13 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
     <>
       {/* Target Selector Modal Overlay */}
       {isPendingTargetForMe && (
-        <div className="fixed inset-0 z-[110] bg-black/80 backdrop-blur-md flex items-center justify-center p-6 select-none font-mono">
+        <div className="fixed inset-0 z-[110] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 select-none font-mono overflow-hidden">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-zinc-900 border-2 border-amber-400/50 rounded-3xl p-6 max-w-md w-full flex flex-col gap-4 text-center shadow-2xl"
+            className="bg-zinc-900 border-2 border-amber-400/50 rounded-3xl p-5 sm:p-6 max-w-md w-full max-h-[85vh] flex flex-col gap-4 text-center shadow-2xl overflow-hidden"
           >
-            <div className="flex flex-col items-center gap-1">
+            <div className="flex flex-col items-center gap-1 shrink-0">
               <span className="text-3xl">
                 {board.pendingTargetAction?.actionType === "FREEZE"
                   ? "❄️"
@@ -88,21 +88,21 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
                     ? "🛡️"
                     : "⚡"}
               </span>
-              <h3 className="text-lg font-black text-amber-300 italic uppercase">
+              <h3 className="text-lg font-black text-amber-300 italic uppercase tracking-wider">
                 {board.pendingTargetAction?.actionType === "FREEZE"
                   ? "TARGET FREEZE"
                   : board.pendingTargetAction?.actionType === "SECOND_CHANCE"
                     ? "PASS SECOND CHANCE"
                     : "TARGET FLIP THREE"}
               </h3>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-zinc-400 leading-snug">
                 {board.pendingTargetAction?.actionType === "SECOND_CHANCE"
                   ? "You already have a shield! Choose an active player without a shield to receive this extra shield."
                   : "Choose yourself or an opponent to receive this action card!"}
               </p>
             </div>
 
-            <div className="flex flex-col gap-2 pt-2">
+            <div className="flex flex-col gap-2 pt-1 overflow-y-auto max-h-[55vh] pr-1 font-mono">
               {roomData.players
                 .filter(
                   (p) =>
@@ -117,17 +117,17 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
                       key={p._id}
                       disabled={pendingAction}
                       onClick={() => handleSelectTarget(p._id)}
-                      className={`p-3 rounded-xl font-black text-sm uppercase tracking-wider border flex items-center justify-between transition-all ${
+                      className={`p-3 rounded-xl font-black text-xs sm:text-sm uppercase tracking-wider border flex items-center justify-between transition-all shrink-0 active:scale-98 ${
                         isMe
                           ? "bg-amber-950/60 border-amber-400 text-amber-300 hover:bg-amber-900/80"
                           : "bg-zinc-800 border-white/10 text-white hover:bg-zinc-700"
                       }`}
                     >
-                      <span className="flex items-center gap-2">
-                        <span>{isMe ? "👤 Yourself" : `🎯 ${p.name}`}</span>
-                        {p.isBot && <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded text-amber-300">BOT</span>}
+                      <span className="flex items-center gap-2 truncate">
+                        <span className="truncate">{isMe ? "👤 Yourself" : `🎯 ${p.name}`}</span>
+                        {p.isBot && <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded text-amber-300 shrink-0">BOT</span>}
                       </span>
-                      <span className="text-xs text-zinc-400">
+                      <span className="text-xs text-zinc-400 shrink-0">
                         {((p.state as any)?.roundScore || 0)} round pts
                       </span>
                     </button>

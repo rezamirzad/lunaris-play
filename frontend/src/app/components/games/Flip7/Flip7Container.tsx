@@ -307,7 +307,7 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                         stiffness: 260,
                         damping: 20,
                       }}
-                      className={`p-4 md:p-5 rounded-2xl border flex flex-col justify-between transition-all relative overflow-hidden min-h-[220px] ${
+                      className={`p-4 md:p-5 rounded-2xl border flex flex-col justify-between transition-all relative min-h-[220px] ${
                         isJustSavedByShield
                           ? "bg-gradient-to-br from-cyan-950 via-cyan-900/50 to-slate-950 border-2 border-cyan-400 shadow-[0_0_35px_rgba(6,182,212,0.8)] animate-pulse"
                           : isStayed
@@ -326,7 +326,7 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                         (isCurrentTurn ||
                           String(board.lastAction?.playerId) ===
                             String(p._id)) && (
-                          <div className="absolute -top-3.5 right-4 z-40 bg-amber-400 text-black text-[10px] font-mono font-black px-2.5 py-1 rounded-full border border-amber-300 shadow-xl flex items-center gap-1.5 animate-bounce">
+                          <div className="absolute -top-3.5 right-4 z-50 bg-amber-400 text-black text-[10px] font-mono font-black px-2.5 py-1 rounded-full border border-amber-300 shadow-xl flex items-center gap-1.5 animate-bounce">
                             <span>💬</span>
                             <span>
                               {getBotDialogue(
@@ -342,7 +342,7 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
 
                       {/* Second Chance Saved Shield Banner */}
                       {isJustSavedByShield && (
-                        <div className="bg-cyan-400 text-black font-mono font-black text-[9px] uppercase tracking-wider text-center py-0.5 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-2 shadow-[0_0_20px_rgba(6,182,212,0.8)] flex items-center justify-center gap-1 animate-pulse">
+                        <div className="bg-cyan-400 text-black font-mono font-black text-[9px] uppercase tracking-wider text-center py-0.5 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-2 rounded-t-[0.9rem] shadow-[0_0_20px_rgba(6,182,212,0.8)] flex items-center justify-center gap-1 animate-pulse">
                           <span>🛡️</span>
                           <span>SECOND CHANCE SAVED YOU FROM BUST!</span>
                         </div>
@@ -350,7 +350,7 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
 
                       {/* Stayed Upper Blue Badge */}
                       {isStayed && !isJustSavedByShield && (
-                        <div className="bg-cyan-500 text-black font-mono font-black text-[9px] uppercase tracking-wider text-center py-0.5 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-2 shadow-md flex items-center justify-center gap-1">
+                        <div className="bg-cyan-500 text-black font-mono font-black text-[9px] uppercase tracking-wider text-center py-0.5 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-2 rounded-t-[0.9rem] shadow-md flex items-center justify-center gap-1">
                           <span>✋</span>
                           <span>
                             STAYED & BANKED +{st?.roundScore || 0} PTS
@@ -360,7 +360,7 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
 
                       {/* Busted Upper Red Badge */}
                       {isBusted && (
-                        <div className="bg-rose-600 text-white font-mono font-black text-[9px] uppercase tracking-wider text-center py-0.5 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-2 shadow-md flex items-center justify-center gap-1">
+                        <div className="bg-rose-600 text-white font-mono font-black text-[9px] uppercase tracking-wider text-center py-0.5 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-2 rounded-t-[0.9rem] shadow-md flex items-center justify-center gap-1">
                           <span>💥</span>
                           <span>BUSTED (0 PTS BANKED)</span>
                         </div>
@@ -368,7 +368,7 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
 
                       {/* Flip Three Active Banner */}
                       {isFlipThreeSequence && !isStayed && !isBusted && (
-                        <div className="bg-yellow-400 text-black font-mono font-black text-[9px] uppercase tracking-wider text-center py-0.5 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-2 shadow-md flex items-center justify-center gap-1 animate-bounce">
+                        <div className="bg-yellow-400 text-black font-mono font-black text-[9px] uppercase tracking-wider text-center py-0.5 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-2 rounded-t-[0.9rem] shadow-md flex items-center justify-center gap-1 animate-bounce">
                           <span>⚡</span>
                           <span>FLIP THREE: {board.mustFlipCount} LEFT</span>
                         </div>
