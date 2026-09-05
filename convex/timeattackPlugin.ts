@@ -8,7 +8,7 @@ export const ROUNDS_CONFIG: Record<
     targetRange?: [number, number]; // [min, max]
     targetMs: number; // Default if not randomized
     interaction: "TAP" | "PRESS_RELEASE";
-    scoring: "PRECISION" | "COOP" | "SURVIVAL";
+    scoring: "PRECISION" | "SURVIVAL";
     visuals: "FULL" | "BLIND" | "DISTRACTED";
   }
 > = {
@@ -18,20 +18,20 @@ export const ROUNDS_CONFIG: Record<
     targetMs: 5000,
     interaction: "TAP",
     scoring: "PRECISION",
-    visuals: "BLIND",
+    visuals: "FULL",
   },
   2: {
     nameKey: "timeattack_round_2_name",
     descKey: "timeattack_round_2_desc",
-    targetMs: 880,
-    interaction: "TAP",
+    targetMs: 1500,
+    interaction: "PRESS_RELEASE",
     scoring: "PRECISION",
     visuals: "BLIND",
   },
   3: {
     nameKey: "timeattack_round_3_name",
     descKey: "timeattack_round_3_desc",
-    targetMs: 500,
+    targetMs: 3333,
     interaction: "TAP",
     scoring: "PRECISION",
     visuals: "DISTRACTED",
@@ -39,33 +39,32 @@ export const ROUNDS_CONFIG: Record<
   4: {
     nameKey: "timeattack_round_4_name",
     descKey: "timeattack_round_4_desc",
-    targetMs: 3333,
-    interaction: "TAP",
+    targetMs: 750,
+    interaction: "PRESS_RELEASE",
     scoring: "PRECISION",
-    visuals: "BLIND",
+    visuals: "FULL",
   },
   5: {
     nameKey: "timeattack_round_5_name",
     descKey: "timeattack_round_5_desc",
-    targetRange: [7000, 12000],
-    targetMs: 10000,
+    targetRange: [6000, 9000],
+    targetMs: 7500,
     interaction: "TAP",
-    scoring: "PRECISION",
+    scoring: "SURVIVAL",
     visuals: "BLIND",
   },
   6: {
     nameKey: "timeattack_round_6_name",
     descKey: "timeattack_round_6_desc",
-    targetRange: [4000, 6000],
-    targetMs: 5000,
+    targetMs: 10000,
     interaction: "PRESS_RELEASE",
-    scoring: "SURVIVAL",
+    scoring: "PRECISION",
     visuals: "BLIND",
   },
   7: {
     nameKey: "timeattack_round_7_name",
     descKey: "timeattack_round_7_desc",
-    targetMs: 1010,
+    targetMs: 2500,
     interaction: "TAP",
     scoring: "PRECISION",
     visuals: "DISTRACTED",
@@ -73,23 +72,24 @@ export const ROUNDS_CONFIG: Record<
   8: {
     nameKey: "timeattack_round_8_name",
     descKey: "timeattack_round_8_desc",
-    targetMs: 100,
-    interaction: "TAP",
+    targetMs: 1200,
+    interaction: "PRESS_RELEASE",
     scoring: "PRECISION",
-    visuals: "FULL",
+    visuals: "BLIND",
   },
   9: {
     nameKey: "timeattack_round_9_name",
     descKey: "timeattack_round_9_desc",
-    targetMs: 12000,
+    targetMs: 4000,
     interaction: "TAP",
-    scoring: "PRECISION",
+    scoring: "SURVIVAL",
     visuals: "DISTRACTED",
   },
   10: {
     nameKey: "timeattack_round_10_name",
     descKey: "timeattack_round_10_desc",
-    targetMs: 4444,
+    targetRange: [7770, 12340],
+    targetMs: 9990,
     interaction: "PRESS_RELEASE",
     scoring: "SURVIVAL",
     visuals: "DISTRACTED",
