@@ -156,157 +156,181 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
           </div>
         </div>
 
-        {/* Players Grid / Table */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 flex-1 overflow-y-auto">
-          {roomData.players.map((p) => {
-            const st = p.state as any;
-            const isCurrentTurn = String(p._id) === String(board.currentTurnPlayerId);
-            const faceUpCards = (st?.roundFaceUpCards as string[]) || [];
-            const scoreInfo = calculateFlip7RoundScore(faceUpCards);
-            const isStayed = st?.status === "FROZEN";
-            const isBusted = st?.status === "BUSTED";
-            const isFlipThreeSequence = isCurrentTurn && (board.mustFlipCount || 0) > 0;
+        {/* Players Grid / Table - Responsive sizing based on player count */}
+        {(() => {
+          const playerCount = roomData.players.length;
+          // Determine compact grid column classes based on player count
+          const gridColsClass =
+            playerCount > 6
+              ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
+              : playerCount > 4
+                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+                : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
 
-            return (
-              <motion.div
-                key={p._id}
-                layout
-                className={`p-4 rounded-2xl border flex flex-col justify-between transition-all relative overflow-hidden ${
-                  isStayed
-                    ? "bg-gradient-to-br from-cyan-950 via-cyan-900/40 to-slate-950 border-2 border-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.35)]"
-                    : isCurrentTurn
-                      ? isFlipThreeSequence
-                        ? "bg-gradient-to-br from-yellow-950/60 via-amber-900/40 to-black border-2 border-yellow-400 shadow-[0_0_30px_rgba(234,179,8,0.4)] animate-pulse"
-                        : "bg-amber-950/30 border-amber-500/60 shadow-[0_0_25px_rgba(245,158,11,0.2)]"
-                      : isBusted
-                        ? "bg-gradient-to-br from-rose-950/40 via-red-950/20 to-black border-rose-600/30 opacity-60"
-                        : "bg-zinc-900/60 border-white/5"
-                }`}
-              >
-                {/* Stayed Ice Glow Banner */}
-                {isStayed && (
-                  <div className="bg-cyan-500 text-black font-mono font-black text-[10px] uppercase tracking-widest text-center py-1 -mx-4 -mt-4 mb-3 shadow-md flex items-center justify-center gap-1.5">
-                    <span>✋</span>
-                    <span>STAYED & BANKED +{st?.roundScore || 0} PTS</span>
-                  </div>
-                )}
+          // Card size scales dynamically so large player counts don't overflow the screen
+          const cardSize: "xs" | "sm" | "md" = playerCount > 6 ? "xs" : playerCount > 4 ? "sm" : "sm";
 
-                {/* Flip Three Active Banner */}
-                {isFlipThreeSequence && (
-                  <div className="bg-yellow-400 text-black font-mono font-black text-[10px] uppercase tracking-widest text-center py-1 -mx-4 -mt-4 mb-3 shadow-md flex items-center justify-center gap-1.5 animate-bounce">
-                    <span>⚡</span>
-                    <span>FLIP THREE: {board.mustFlipCount} FLIPS LEFT</span>
-                  </div>
-                )}
+          return (
+            <div className={`grid ${gridColsClass} gap-3 md:gap-4 flex-1 overflow-y-auto pr-1`}>
+              {roomData.players.map((p) => {
+                const st = p.state as any;
+                const isCurrentTurn = String(p._id) === String(board.currentTurnPlayerId);
+                const faceUpCards = (st?.roundFaceUpCards as string[]) || [];
+                const scoreInfo = calculateFlip7RoundScore(faceUpCards);
+                const isStayed = st?.status === "FROZEN";
+                const isBusted = st?.status === "BUSTED";
+                const isFlipThreeSequence = isCurrentTurn && (board.mustFlipCount || 0) > 0;
+                const isInitialDealing = board.phase === "INITIAL_DEAL";
 
-                {/* Player Header */}
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="font-black text-sm text-zinc-100">{p.name}</span>
-                    {p.isBot && <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded text-amber-300">BOT</span>}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-black text-amber-400">
-                      {st?.bankedScore || 0} pts
-                    </span>
-                  </div>
-                </div>
-
-                {/* Special Active Status Badges */}
-                <div className="flex flex-wrap items-center gap-1.5 pt-2">
-                  {st?.hasSecondChance && (
-                    <span className="text-[9px] font-mono font-black bg-cyan-950/90 text-cyan-300 border border-cyan-400/40 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-[0_0_8px_rgba(6,182,212,0.3)] animate-pulse" title="Second Chance Shield Active">
-                      <span>🛡️</span>
-                      <span>SHIELD</span>
-                    </span>
-                  )}
-                  {scoreInfo.hasMultiplier && (
-                    <span className="text-[9px] font-mono font-black bg-amber-950/90 text-amber-300 border border-amber-400/40 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-[0_0_8px_rgba(245,158,11,0.3)]" title="x2 Multiplier Active">
-                      <span>✖️2</span>
-                      <span>MULT</span>
-                    </span>
-                  )}
-                  <span className="text-[9px] font-mono font-bold bg-white/5 text-zinc-300 px-2 py-0.5 rounded-full border border-white/5">
-                    {scoreInfo.uniqueNumbersCount}/7 Unique
-                  </span>
-
-                  {/* Optional Live Bust Risk Badge */}
-                  {showBustOdds && !isBusted && !isStayed && (() => {
-                    const deck = board.deck || [];
-                    const existingNumbers = new Set(
-                      faceUpCards.map((cId) => parseFlip7Card(cId).numberValue).filter((n) => n !== undefined),
-                    );
-                    let matchingDuplicates = 0;
-                    deck.forEach((cardId: string) => {
-                      const parsed = parseFlip7Card(cardId);
-                      if (parsed.type === "NUMBER" && parsed.numberValue !== undefined && existingNumbers.has(parsed.numberValue)) {
-                        matchingDuplicates++;
-                      }
-                    });
-                    const rawBustPct = deck.length > 0 ? (matchingDuplicates / deck.length) * 100 : 0;
-                    const isShielded = st?.hasSecondChance;
-                    const badgeStyle = isShielded
-                      ? "bg-cyan-950/90 text-cyan-300 border-cyan-400/50"
-                      : rawBustPct > 40
-                        ? "bg-rose-950/90 text-rose-300 border-rose-500/50"
-                        : rawBustPct > 22
-                          ? "bg-amber-950/90 text-amber-300 border-amber-500/50"
-                          : "bg-emerald-950/90 text-emerald-300 border-emerald-500/40";
-
-                    return (
-                      <span className={`text-[9px] font-mono font-black px-2 py-0.5 rounded-full border flex items-center gap-1 shadow-sm ${badgeStyle}`} title="Exact Bust Odds">
-                        <span>📊</span>
-                        <span>{isShielded ? "0.0% (Shield 🛡️)" : `${rawBustPct.toFixed(1)}% BUST`}</span>
-                      </span>
-                    );
-                  })()}
-                </div>
-
-                {/* Face-up Cards Grid */}
-                <div className={`py-4 flex flex-wrap gap-2 min-h-[100px] items-center rounded-xl p-2 transition-all ${
-                  isFlipThreeSequence ? "border border-yellow-400/50 bg-yellow-950/20" : ""
-                }`}>
-                  <AnimatePresence>
-                    {faceUpCards.map((cId, idx) => {
-                      const isAssignedAction = cId.startsWith("ACT_FLIP3") || cId.startsWith("ACT_FREEZE");
-                      const isUsedSecondChance = cId.startsWith("ACT_SECOND_CHANCE") && !st?.hasSecondChance;
-                      return (
-                        <Flip7Card
-                          key={cId + idx}
-                          cardId={cId}
-                          size="md"
-                          isGrayedOut={isAssignedAction}
-                          isCrossedOut={isUsedSecondChance}
-                        />
-                      );
-                    })}
-                  </AnimatePresence>
-                  {faceUpCards.length === 0 && (
-                    <span className="text-xs text-zinc-600 italic">No cards flipped yet</span>
-                  )}
-                </div>
-
-                {/* Footer Stats & Status */}
-                <div className="flex items-center justify-between border-t border-white/10 pt-3 text-xs font-mono">
-                  <span className="text-zinc-400">
-                    Round: <strong className="text-emerald-400 font-black">+{st?.roundScore || 0} pts</strong>
-                  </span>
-                  <span
-                    className={`font-black uppercase text-[10px] px-2.5 py-0.5 rounded-full ${
+                return (
+                  <motion.div
+                    key={p._id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                    className={`p-3 md:p-4 rounded-2xl border flex flex-col justify-between transition-all relative overflow-hidden ${
                       isStayed
-                        ? "bg-cyan-400 text-black border border-cyan-300 font-black shadow-[0_0_10px_rgba(6,182,212,0.4)]"
-                        : isBusted
-                          ? "bg-rose-950 text-rose-400 border border-rose-500/40"
-                          : "bg-emerald-950 text-emerald-400 border border-emerald-500/40"
+                        ? "bg-gradient-to-br from-cyan-950 via-cyan-900/40 to-slate-950 border-2 border-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.35)]"
+                        : isCurrentTurn && !isInitialDealing
+                          ? isFlipThreeSequence
+                            ? "bg-gradient-to-br from-yellow-950/60 via-amber-900/40 to-black border-2 border-yellow-400 shadow-[0_0_30px_rgba(234,179,8,0.4)] animate-pulse"
+                            : "bg-amber-950/30 border-amber-500/60 shadow-[0_0_25px_rgba(245,158,11,0.2)]"
+                          : isBusted
+                            ? "bg-gradient-to-br from-rose-950/40 via-red-950/20 to-black border-rose-600/30 opacity-60"
+                            : "bg-zinc-900/60 border-white/5"
                     }`}
                   >
-                    {isStayed ? "STAYED ✋" : isBusted ? "BUSTED 💥" : "ACTIVE 🃏"}
-                  </span>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+                    {/* Stayed Ice Glow Banner */}
+                    {isStayed && (
+                      <div className="bg-cyan-500 text-black font-mono font-black text-[9px] uppercase tracking-widest text-center py-0.5 -mx-4 -mt-4 mb-2 shadow-md flex items-center justify-center gap-1">
+                        <span>✋</span>
+                        <span>STAYED +{st?.roundScore || 0} PTS</span>
+                      </div>
+                    )}
+
+                    {/* Flip Three Active Banner */}
+                    {isFlipThreeSequence && (
+                      <div className="bg-yellow-400 text-black font-mono font-black text-[9px] uppercase tracking-widest text-center py-0.5 -mx-4 -mt-4 mb-2 shadow-md flex items-center justify-center gap-1 animate-bounce">
+                        <span>⚡</span>
+                        <span>FLIP THREE: {board.mustFlipCount} LEFT</span>
+                      </div>
+                    )}
+
+                    {/* Player Header */}
+                    <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span className="font-black text-xs md:text-sm text-zinc-100 truncate">{p.name}</span>
+                        {p.isBot && (
+                          <span className="text-[9px] font-mono bg-amber-950/80 border border-amber-500/40 px-1.5 py-0.2 rounded text-amber-300 shrink-0">
+                            {p.persona ? p.persona.toUpperCase() : "BOT"}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span className="text-xs font-mono font-black text-amber-400">
+                          {st?.bankedScore || 0} pts
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Special Active Status Badges */}
+                    <div className="flex flex-wrap items-center gap-1 pt-1.5">
+                      {st?.hasSecondChance && (
+                        <span className="text-[8px] font-mono font-black bg-cyan-950/90 text-cyan-300 border border-cyan-400/40 px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shadow-[0_0_8px_rgba(6,182,212,0.3)] animate-pulse" title="Second Chance Shield Active">
+                          <span>🛡️</span>
+                          <span>SHIELD</span>
+                        </span>
+                      )}
+                      {scoreInfo.hasMultiplier && (
+                        <span className="text-[8px] font-mono font-black bg-amber-950/90 text-amber-300 border border-amber-400/40 px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shadow-[0_0_8px_rgba(245,158,11,0.3)]" title="x2 Multiplier Active">
+                          <span>✖️2</span>
+                          <span>MULT</span>
+                        </span>
+                      )}
+                      <span className="text-[8px] font-mono font-bold bg-white/5 text-zinc-300 px-1.5 py-0.5 rounded-full border border-white/5">
+                        {scoreInfo.uniqueNumbersCount}/7 Unique
+                      </span>
+
+                      {/* Optional Live Bust Risk Badge */}
+                      {showBustOdds && !isBusted && !isStayed && (() => {
+                        const deck = board.deck || [];
+                        const existingNumbers = new Set(
+                          faceUpCards.map((cId) => parseFlip7Card(cId).numberValue).filter((n) => n !== undefined),
+                        );
+                        let matchingDuplicates = 0;
+                        deck.forEach((cardId: string) => {
+                          const parsed = parseFlip7Card(cardId);
+                          if (parsed.type === "NUMBER" && parsed.numberValue !== undefined && existingNumbers.has(parsed.numberValue)) {
+                            matchingDuplicates++;
+                          }
+                        });
+                        const rawBustPct = deck.length > 0 ? (matchingDuplicates / deck.length) * 100 : 0;
+                        const isShielded = st?.hasSecondChance;
+                        const badgeStyle = isShielded
+                          ? "bg-cyan-950/90 text-cyan-300 border-cyan-400/50"
+                          : rawBustPct > 40
+                            ? "bg-rose-950/90 text-rose-300 border-rose-500/50"
+                            : rawBustPct > 22
+                              ? "bg-amber-950/90 text-amber-300 border-amber-500/50"
+                              : "bg-emerald-950/90 text-emerald-300 border-emerald-500/40";
+
+                        return (
+                          <span className={`text-[8px] font-mono font-black px-1.5 py-0.5 rounded-full border flex items-center gap-0.5 shadow-sm ${badgeStyle}`} title="Exact Bust Odds">
+                            <span>📊</span>
+                            <span>{isShielded ? "0.0% (Shield 🛡️)" : `${rawBustPct.toFixed(1)}% BUST`}</span>
+                          </span>
+                        );
+                      })()}
+                    </div>
+
+                    {/* Face-up Cards Grid with compact flex layout */}
+                    <div className={`py-3 flex flex-wrap gap-1.5 min-h-[75px] items-center rounded-xl p-1.5 transition-all ${
+                      isFlipThreeSequence ? "border border-yellow-400/50 bg-yellow-950/20" : ""
+                    }`}>
+                      <AnimatePresence mode="popLayout">
+                        {faceUpCards.map((cId, idx) => {
+                          const isAssignedAction = cId.startsWith("ACT_FLIP3") || cId.startsWith("ACT_FREEZE");
+                          const isUsedSecondChance = cId.startsWith("ACT_SECOND_CHANCE") && !st?.hasSecondChance;
+                          return (
+                            <Flip7Card
+                              key={cId + idx}
+                              cardId={cId}
+                              size={cardSize}
+                              isGrayedOut={isAssignedAction}
+                              isCrossedOut={isUsedSecondChance}
+                            />
+                          );
+                        })}
+                      </AnimatePresence>
+                      {faceUpCards.length === 0 && (
+                        <span className="text-[10px] text-zinc-600 italic">Flipping 1 by 1...</span>
+                      )}
+                    </div>
+
+                    {/* Footer Stats & Status */}
+                    <div className="flex items-center justify-between border-t border-white/10 pt-2 text-xs font-mono">
+                      <span className="text-zinc-400 text-[10px]">
+                        Round: <strong className="text-emerald-400 font-black">+{st?.roundScore || 0}</strong>
+                      </span>
+                      <span
+                        className={`font-black uppercase text-[9px] px-2 py-0.5 rounded-full ${
+                          isStayed
+                            ? "bg-cyan-400 text-black border border-cyan-300 font-black shadow-[0_0_10px_rgba(6,182,212,0.4)]"
+                            : isBusted
+                              ? "bg-rose-950 text-rose-400 border border-rose-500/40"
+                              : "bg-emerald-950 text-emerald-400 border border-emerald-500/40"
+                        }`}
+                      >
+                        {isStayed ? "STAYED ✋" : isBusted ? "BUSTED 💥" : "ACTIVE 🃏"}
+                      </span>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          );
+        })()}
 
         {/* End-of-Round Pop-up Scoreboard Modal */}
         {board.phase === "ROUND_RESULTS" && !isFinished && (

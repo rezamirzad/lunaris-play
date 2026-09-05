@@ -17,7 +17,7 @@ export interface BotPersona {
   // Game-specific decision logic
   decidePiouPiou(myId: string, hand: string[], eggs: number, chicks: number, players: Doc<"players">[], board: any): BotMove;
   decideIncanGold(myId: string, currentGems: number, players: Doc<"players">[], board: any): "STAY" | "LEAVE";
-  decideFlip7(myId: string, faceUpCards: string[], board: any): "HIT" | "FREEZE";
+  decideFlip7(myId: string, faceUpCards: string[], hasSecondChance: boolean, bankedScore: number, board: any): "HIT" | "FREEZE";
   generateDixitPrompt(phase: string, maturity: "CHILD" | "ADULT", clue?: string, ruleset?: string): string;
 }
 
@@ -75,12 +75,12 @@ export const PERSONAS: Record<string, BotPersona> = {
       if (board.artifactsOnPath.length > 0 && currentGems > 10) return "LEAVE";
       return "STAY";
     },
-    decideFlip7(myId, faceUpCards, board) {
+    decideFlip7(myId, faceUpCards, hasSecondChance, bankedScore, board) {
       return decideFlip7Action({
         myId,
         faceUpCards,
-        hasSecondChance: false,
-        bankedScore: 0,
+        hasSecondChance,
+        bankedScore,
         persona: "balanced",
         board,
       });
@@ -147,12 +147,12 @@ export const PERSONAS: Record<string, BotPersona> = {
       if (crashProb > 0.25 || currentGems >= 25) return "LEAVE";
       return "STAY";
     },
-    decideFlip7(myId, faceUpCards, board) {
+    decideFlip7(myId, faceUpCards, hasSecondChance, bankedScore, board) {
       return decideFlip7Action({
         myId,
         faceUpCards,
-        hasSecondChance: false,
-        bankedScore: 0,
+        hasSecondChance,
+        bankedScore,
         persona: "aggressive",
         board,
       });
@@ -220,12 +220,12 @@ export const PERSONAS: Record<string, BotPersona> = {
       if (crashProb > 0.08 || currentGems >= 10) return "LEAVE";
       return "STAY";
     },
-    decideFlip7(myId, faceUpCards, board) {
+    decideFlip7(myId, faceUpCards, hasSecondChance, bankedScore, board) {
       return decideFlip7Action({
         myId,
         faceUpCards,
-        hasSecondChance: false,
-        bankedScore: 0,
+        hasSecondChance,
+        bankedScore,
         persona: "cautious",
         board,
       });
@@ -262,6 +262,50 @@ export const PERSONAS: Record<string, BotPersona> = {
         ${DIXIT_PROMPT_REQUIREMENTS}`;
       }
       return "";
+    }
+  },
+  intuitive: {
+    name: "The Mystic",
+    decidePiouPiou(myId, hand, eggs, chicks, players, board) {
+      return PERSONAS.balanced.decidePiouPiou(myId, hand, eggs, chicks, players, board);
+    },
+    decideIncanGold(myId, currentGems, players, board) {
+      return currentGems >= 12 ? "LEAVE" : "STAY";
+    },
+    decideFlip7(myId, faceUpCards, hasSecondChance, bankedScore, board) {
+      return decideFlip7Action({
+        myId,
+        faceUpCards,
+        hasSecondChance,
+        bankedScore,
+        persona: "intuitive",
+        board,
+      });
+    },
+    generateDixitPrompt(phase, maturity, clue, ruleset) {
+      return PERSONAS.balanced.generateDixitPrompt(phase, maturity, clue, ruleset);
+    }
+  },
+  wild: {
+    name: "The Daredevil",
+    decidePiouPiou(myId, hand, eggs, chicks, players, board) {
+      return PERSONAS.aggressive.decidePiouPiou(myId, hand, eggs, chicks, players, board);
+    },
+    decideIncanGold(myId, currentGems, players, board) {
+      return currentGems >= 20 ? "LEAVE" : "STAY";
+    },
+    decideFlip7(myId, faceUpCards, hasSecondChance, bankedScore, board) {
+      return decideFlip7Action({
+        myId,
+        faceUpCards,
+        hasSecondChance,
+        bankedScore,
+        persona: "wild",
+        board,
+      });
+    },
+    generateDixitPrompt(phase, maturity, clue, ruleset) {
+      return PERSONAS.aggressive.generateDixitPrompt(phase, maturity, clue, ruleset);
     }
   }
 };

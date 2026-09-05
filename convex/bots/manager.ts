@@ -202,7 +202,9 @@ export const executeMove = internalMutation({
       } else {
         const state = player.state as any;
         const mustFlip = (board.mustFlipCount || 0) > 0;
-        const action = mustFlip ? "HIT" : ((persona as any).decideFlip7 ? (persona as any).decideFlip7(player._id, state.roundFaceUpCards || [], board) : "HIT");
+        const hasSecondChance = !!state.hasSecondChance;
+        const bankedScore = state.bankedScore || 0;
+        const action = mustFlip ? "HIT" : ((persona as any).decideFlip7 ? (persona as any).decideFlip7(player._id, state.roundFaceUpCards || [], hasSecondChance, bankedScore, board) : "HIT");
         await ctx.scheduler.runAfter(delayMs, (internal as any).flip7.performBotTurn, { playerId: player._id, action });
       }
     }

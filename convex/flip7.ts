@@ -42,48 +42,19 @@ export const flip7Plugin: GamePlugin = {
 
     let pendingInitialTarget: any = undefined;
 
+    // Initialize all players with empty hands for 1-by-1 initial deal
     for (let i = 0; i < players.length; i++) {
       const player = players[i];
-      let faceUpCards: string[] = [];
-      let hasSecondChance = false;
-      let status: "ACTIVE" | "FROZEN" | "BUSTED" = "ACTIVE";
-
-      if (deck.length > 0) {
-        const drawn = deck.pop()!;
-        faceUpCards.push(drawn);
-        const parsed = parseFlip7Card(drawn);
-
-        if (parsed.type === "ACTION") {
-          if (parsed.actionType === "SECOND_CHANCE") {
-            hasSecondChance = true;
-          } else if (parsed.actionType === "FREEZE" || parsed.actionType === "FLIP_THREE") {
-            if (players.length > 1) {
-              if (!pendingInitialTarget) {
-                pendingInitialTarget = {
-                  cardId: drawn,
-                  actionType: parsed.actionType,
-                  sourcePlayerId: player._id,
-                  sourcePlayerName: player.name,
-                };
-              }
-            } else {
-              if (parsed.actionType === "FREEZE") status = "FROZEN";
-            }
-          }
-        }
-      }
-
-      const scoreInfo = calculateFlip7RoundScore(faceUpCards);
       await ctx.db.patch(player._id, {
         gameHand: [],
         persona: personas[i % personas.length],
         state: {
           gameType: "flip7",
           bankedScore: 0,
-          roundScore: scoreInfo.score,
-          roundFaceUpCards: faceUpCards,
-          hasSecondChance,
-          status,
+          roundScore: 0,
+          roundFaceUpCards: [],
+          hasSecondChance: false,
+          status: "ACTIVE",
         },
       });
     }
@@ -93,24 +64,167 @@ export const flip7Plugin: GamePlugin = {
     await ctx.db.patch(roomId, {
       gameBoard: {
         gameType: "flip7",
-        phase: "ACTIVE_PLAY",
+        phase: "INITIAL_DEAL",
         currentRound: 1,
         targetScore: 200,
         currentTurnPlayerId: firstPlayerId,
         mustFlipCount: 0,
-        pendingTargetAction: pendingInitialTarget,
+        pendingTargetAction: undefined,
         deck,
         discardPile: [],
+        lastAction: {
+          type: "HIT",
+          playerId: firstPlayerId,
+          playerName: players[0]?.name || "Player",
+          message: "🎴 Dealing initial cards 1 by 1...",
+        },
       } as any,
     });
 
-    if (firstPlayerId) {
-      await ctx.scheduler.runAfter(0, (internal as any).bots.manager.dispatchBotTurn, {
-        roomId,
-      });
-    }
+    // Start 1-by-1 initial card deal
+    await ctx.scheduler.runAfter(400, (internal as any).flip7.dealNextInitialCard, {
+      roomId,
+      playerIndex: 0,
+    });
   },
 };
+
+export const dealNextInitialCard = internalMutation({
+  args: {
+    roomId: v.id("rooms"),
+    playerIndex: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const room = await ctx.db.get(args.roomId);
+    if (!room || room.gameBoard.gameType !== "flip7") return;
+    const board = room.gameBoard;
+    if (board.phase !== "INITIAL_DEAL") return;
+
+    const players = await ctx.db
+      .query("players")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .collect();
+
+    if (args.playerIndex >= players.length) {
+      // Initial deal finished! Move to ACTIVE_PLAY
+      const firstPlayerId = room.turnOrder[0] || players[0]?._id;
+      await ctx.db.patch(room._id, {
+        gameBoard: {
+          ...board,
+          phase: "ACTIVE_PLAY",
+          currentTurnPlayerId: firstPlayerId,
+          lastAction: {
+            type: "HIT",
+            playerId: firstPlayerId,
+            playerName: players[0]?.name || "Player",
+            message: "🎮 All initial cards dealt! Play begins!",
+          },
+        } as any,
+      });
+
+      if (firstPlayerId) {
+        await ctx.scheduler.runAfter(200, (internal as any).bots.manager.dispatchBotTurn, {
+          roomId: room._id,
+        });
+      }
+      return;
+    }
+
+    const player = players[args.playerIndex];
+    let deck = [...board.deck];
+    let discardPile = [...board.discardPile];
+    let pendingTarget = board.pendingTargetAction;
+
+    if (deck.length > 0) {
+      const drawn = deck.pop()!;
+      const parsed = parseFlip7Card(drawn);
+      let faceUpCards = [...((player.state as any).roundFaceUpCards || [])];
+      faceUpCards.push(drawn);
+
+      let hasSecondChance = (player.state as any).hasSecondChance || false;
+      let status: "ACTIVE" | "FROZEN" | "BUSTED" = "ACTIVE";
+
+      if (parsed.type === "ACTION") {
+        if (parsed.actionType === "SECOND_CHANCE") {
+          hasSecondChance = true;
+        } else if (parsed.actionType === "FREEZE" || parsed.actionType === "FLIP_THREE") {
+          if (players.length > 1) {
+            if (!pendingTarget) {
+              pendingTarget = {
+                cardId: drawn,
+                actionType: parsed.actionType,
+                sourcePlayerId: player._id,
+                sourcePlayerName: player.name,
+              };
+            }
+          } else {
+            if (parsed.actionType === "FREEZE") status = "FROZEN";
+          }
+        }
+      }
+
+      const scoreInfo = calculateFlip7RoundScore(faceUpCards);
+      await ctx.db.patch(player._id, {
+        state: {
+          ...(player.state as any),
+          roundScore: scoreInfo.score,
+          roundFaceUpCards: faceUpCards,
+          hasSecondChance,
+          status,
+        },
+      });
+
+      await ctx.db.patch(room._id, {
+        gameBoard: {
+          ...board,
+          deck,
+          discardPile,
+          pendingTargetAction: pendingTarget,
+          lastAction: {
+            type: "HIT",
+            playerId: player._id,
+            playerName: player.name,
+            cardId: drawn,
+            message: `🎴 ${player.name} received initial card: ${parsed.label}`,
+          },
+        } as any,
+      });
+    }
+
+    // Schedule next player's initial card after 600ms delay for smooth 1-by-1 reveal
+    if (args.playerIndex + 1 < players.length) {
+      await ctx.scheduler.runAfter(600, (internal as any).flip7.dealNextInitialCard, {
+        roomId: room._id,
+        playerIndex: args.playerIndex + 1,
+      });
+    } else {
+      // Completed last player! Transition to ACTIVE_PLAY
+      const firstPlayerId = room.turnOrder[0] || players[0]?._id;
+      await ctx.db.patch(room._id, {
+        gameBoard: {
+          ...board,
+          deck,
+          discardPile,
+          pendingTargetAction: pendingTarget,
+          phase: "ACTIVE_PLAY",
+          currentTurnPlayerId: firstPlayerId,
+          lastAction: {
+            type: "HIT",
+            playerId: firstPlayerId,
+            playerName: players[0]?.name || "Player",
+            message: "🎮 All initial cards dealt! Active round started!",
+          },
+        } as any,
+      });
+
+      if (firstPlayerId) {
+        await ctx.scheduler.runAfter(300, (internal as any).bots.manager.dispatchBotTurn, {
+          roomId: room._id,
+        });
+      }
+    }
+  },
+});
 
 export const hitCard = mutation({
   args: {
@@ -195,48 +309,17 @@ export const nextRound = mutation({
     // Reset for next round
     const deck = getFlip7Deck();
     const currentRound = board.currentRound + 1;
-    let pendingInitialTarget: any = undefined;
 
-    // Reset player round state and deal 1 initial card
+    // Reset player round state for 1-by-1 deal
     for (const p of players) {
-      let faceUpCards: string[] = [];
-      let hasSecondChance = false;
-      let status: "ACTIVE" | "FROZEN" | "BUSTED" = "ACTIVE";
-
-      if (deck.length > 0) {
-        const drawn = deck.pop()!;
-        faceUpCards.push(drawn);
-        const parsed = parseFlip7Card(drawn);
-
-        if (parsed.type === "ACTION") {
-          if (parsed.actionType === "SECOND_CHANCE") {
-            hasSecondChance = true;
-          } else if (parsed.actionType === "FREEZE" || parsed.actionType === "FLIP_THREE") {
-            if (players.length > 1) {
-              if (!pendingInitialTarget) {
-                pendingInitialTarget = {
-                  cardId: drawn,
-                  actionType: parsed.actionType,
-                  sourcePlayerId: p._id,
-                  sourcePlayerName: p.name,
-                };
-              }
-            } else {
-              if (parsed.actionType === "FREEZE") status = "FROZEN";
-            }
-          }
-        }
-      }
-
-      const scoreInfo = calculateFlip7RoundScore(faceUpCards);
       await ctx.db.patch(p._id, {
         state: {
           gameType: "flip7",
           bankedScore: (p.state as any).bankedScore || 0,
-          roundScore: scoreInfo.score,
-          roundFaceUpCards: faceUpCards,
-          hasSecondChance,
-          status,
+          roundScore: 0,
+          roundFaceUpCards: [],
+          hasSecondChance: false,
+          status: "ACTIVE",
         },
       });
     }
@@ -246,22 +329,28 @@ export const nextRound = mutation({
     await ctx.db.patch(room._id, {
       gameBoard: {
         ...board,
-        phase: "ACTIVE_PLAY",
+        phase: "INITIAL_DEAL",
         currentRound,
         deck,
         discardPile: [],
         currentTurnPlayerId: firstPlayerId,
         mustFlipCount: 0,
-        pendingTargetAction: pendingInitialTarget,
+        pendingTargetAction: undefined,
         queuedTargetActions: [],
-        lastAction: undefined,
+        lastAction: {
+          type: "HIT",
+          playerId: firstPlayerId,
+          playerName: room.turnOrder[0] ? (players.find((p) => String(p._id) === String(room.turnOrder[0]))?.name || "Player") : players[0].name,
+          message: `🎴 Round ${currentRound} starting! Dealing initial cards 1 by 1...`,
+        },
         roundResults: undefined,
       } as any,
     });
 
-    // Dispatch bot turn if first player is bot
-    await ctx.scheduler.runAfter(0, (internal as any).bots.manager.dispatchBotTurn, {
+    // Start 1-by-1 initial deal for next round
+    await ctx.scheduler.runAfter(400, (internal as any).flip7.dealNextInitialCard, {
       roomId: room._id,
+      playerIndex: 0,
     });
 
     return { success: true };
@@ -471,7 +560,7 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
   const activeRemaining = updatedPlayers.filter((p) => (p.state as any).status === "ACTIVE");
 
   let nextTurnPlayerId = board.currentTurnPlayerId;
-  let phase: "ACTIVE_PLAY" | "ROUND_RESULTS" | "FINAL_LEADERBOARD" = "ACTIVE_PLAY";
+  let phase: "INITIAL_DEAL" | "ACTIVE_PLAY" | "ROUND_RESULTS" | "FINAL_LEADERBOARD" = "ACTIVE_PLAY";
 
   if (activeRemaining.length === 0) {
     // All players frozen or busted! Round ends!
@@ -601,7 +690,7 @@ async function handleFreezeInternal(ctx: GameMutationCtx, playerId: Id<"players"
   const activeRemaining = updatedPlayers.filter((p) => (p.state as any).status === "ACTIVE");
 
   let nextTurnPlayerId = board.currentTurnPlayerId;
-  let phase: "ACTIVE_PLAY" | "ROUND_RESULTS" | "FINAL_LEADERBOARD" = "ACTIVE_PLAY";
+  let phase: "INITIAL_DEAL" | "ACTIVE_PLAY" | "ROUND_RESULTS" | "FINAL_LEADERBOARD" = "ACTIVE_PLAY";
 
   if (activeRemaining.length === 0) {
     phase = "ROUND_RESULTS";
@@ -737,7 +826,7 @@ async function handleResolveTargetActionInternal(
     .collect();
 
   const activeRemaining = updatedPlayers.filter((p) => (p.state as any).status === "ACTIVE");
-  let phase: "ACTIVE_PLAY" | "ROUND_RESULTS" | "FINAL_LEADERBOARD" = "ACTIVE_PLAY";
+  let phase: "INITIAL_DEAL" | "ACTIVE_PLAY" | "ROUND_RESULTS" | "FINAL_LEADERBOARD" = "ACTIVE_PLAY";
 
   if (activeRemaining.length === 0) {
     phase = "ROUND_RESULTS";

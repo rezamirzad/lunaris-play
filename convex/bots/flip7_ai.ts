@@ -5,7 +5,7 @@ export interface Flip7BotContext {
   faceUpCards: string[];
   hasSecondChance: boolean;
   bankedScore: number;
-  persona: "cautious" | "balanced" | "aggressive";
+  persona: "cautious" | "balanced" | "aggressive" | "intuitive" | "wild";
   board: any;
 }
 
@@ -13,7 +13,7 @@ export interface Flip7BotContext {
  * Calculates exact bust probability for a given hand against remaining deck
  */
 export function calculateBustProbability(faceUpCards: string[], deck: string[]): number {
-  if (deck.length === 0) return 0;
+  if (!deck || deck.length === 0) return 0;
 
   const existingNumbers = new Set(
     faceUpCards.map((cId) => parseFlip7Card(cId).numberValue).filter((n) => n !== undefined),
@@ -36,26 +36,32 @@ export function calculateBustProbability(faceUpCards: string[], deck: string[]):
  * Executes persona-based Flip 7 decision
  */
 export function decideFlip7Action(ctx: Flip7BotContext): "HIT" | "FREEZE" {
-  const { faceUpCards, hasSecondChance, persona, board } = ctx;
+  const { faceUpCards, hasSecondChance, bankedScore, persona, board } = ctx;
 
-  // Mandatory Flip 3 sequence forces HIT
+  // 1. Mandatory Flip 3 sequence forces HIT
   if ((board.mustFlipCount || 0) > 0) return "HIT";
 
-  // First card of round is always a HIT
+  // 2. First card of round is always a HIT
   if (faceUpCards.length === 0) return "HIT";
 
-  // WIN CONDITION CHECK: If current round score + banked score >= 200 (target score), FREEZE immediately to win!
+  // 3. Calculate current round score and projected total score
   const scoreInfo = calculateFlip7RoundScore(faceUpCards);
   const targetScore = board.targetScore || 200;
-  const projectedTotalScore = (ctx.bankedScore || 0) + scoreInfo.score;
+  const projectedTotalScore = (bankedScore || 0) + scoreInfo.score;
 
-  if (projectedTotalScore >= targetScore) {
-    return "FREEZE";
-  }
-
-  // SHIELD NO-RISK RULE: An AI player holding a Second Chance shield NEVER STAYS (always HITs), since duplicates are absorbed risk-free!
+  // 4. SECOND CHANCE SHIELD NO-RISK RULE:
+  // AI bots holding a Second Chance shield ALWAYS continue to flip (HIT),
+  // because they do not risk losing points even if a duplicate is drawn!
+  // (As per rule: "ai bots should continue to flip as long as they have an active second chance card because they do not risk to lose")
   if (hasSecondChance) {
     return "HIT";
+  }
+
+  // 5. TARGET SCORE 200+ CHECK:
+  // If current active hand points + total previous points >= 200, consideration for staying (FREEZE)!
+  // (unless they have a second chance card, which was checked above!)
+  if (projectedTotalScore >= targetScore) {
+    return "FREEZE";
   }
 
   const existingNumbers = new Set(
@@ -63,31 +69,50 @@ export function decideFlip7Action(ctx: Flip7BotContext): "HIT" | "FREEZE" {
   );
   const uniqueCount = existingNumbers.size;
 
-  // If player already achieved Flip 7 (7 unique numbers), they freeze automatically
+  // 6. If player already achieved Flip 7 (7 unique numbers), they freeze automatically
   if (uniqueCount >= 7) return "FREEZE";
 
+  // 7. NON-PROBABILISTIC / FEELING-BASED BOT PERSONAS:
+  // Some bots do NOT have access to probabilities and base decisions purely on feeling/instinct.
+  if (persona === "intuitive") {
+    // "Intuitive" (The Mystic): Feels the room and hand size.
+    // If round points are high (>= 22), feels a strong instinct to bank.
+    if (scoreInfo.score >= 22) return "FREEZE";
+    // With 4+ cards, feeling says stay 60% of the time.
+    if (uniqueCount >= 4 && Math.random() < 0.6) return "FREEZE";
+    // With 5+ cards, feeling says stay 85% of the time.
+    if (uniqueCount >= 5 && Math.random() < 0.85) return "FREEZE";
+    return "HIT";
+  }
+
+  if (persona === "wild") {
+    // "Wild" (The Daredevil): High adrenaline, purely impulse-driven feeling!
+    // Pushes hard for big hands, only freezes if round points >= 35 or 6 unique numbers!
+    if (scoreInfo.score >= 35) return "FREEZE";
+    if (uniqueCount >= 6 && Math.random() < 0.7) return "FREEZE";
+    if (uniqueCount >= 5 && Math.random() < 0.3) return "FREEZE";
+    return "HIT";
+  }
+
+  // 8. PROBABILISTIC BOT PERSONAS (Access to exact deck probabilities):
   const deck = board.deck || [];
   const bustProb = calculateBustProbability(faceUpCards, deck);
 
-  // Persona strategy thresholds
   if (persona === "cautious") {
-    // Cautious: Freezes at 3 or 4 unique numbers or if bust probability exceeds 20%
-    if (hasSecondChance && bustProb < 0.35) return "HIT";
-    if (uniqueCount >= 3 && bustProb > 0.18) return "FREEZE";
+    // Cautious (The Owl): Risk-averse. Freezes if bust probability > 18% or 4 unique numbers
+    if (uniqueCount >= 3 && bustProb > 0.16) return "FREEZE";
     if (uniqueCount >= 4) return "FREEZE";
     return "HIT";
   }
 
   if (persona === "aggressive") {
-    // Aggressive: Pushes for Flip 7 bonus (7 unique numbers), hits unless bust prob > 40%
-    if (hasSecondChance) return "HIT";
+    // Aggressive (The Mad Hatter): High risk tolerance, aims for bonus. Freezes only if bust probability > 42% or 6 unique numbers
     if (uniqueCount >= 6 && bustProb > 0.35) return "FREEZE";
-    if (bustProb > 0.45) return "FREEZE";
+    if (bustProb > 0.42) return "FREEZE";
     return "HIT";
   }
 
-  // Balanced (Default): Freezes at 5 unique numbers or if bust prob > 30%
-  if (hasSecondChance && bustProb < 0.4) return "HIT";
+  // Balanced (The Dreamer): Standard probabilistic balance. Freezes at 5 unique numbers or bust prob > 28%
   if (uniqueCount >= 5) return "FREEZE";
   if (uniqueCount >= 4 && bustProb > 0.28) return "FREEZE";
   return "HIT";

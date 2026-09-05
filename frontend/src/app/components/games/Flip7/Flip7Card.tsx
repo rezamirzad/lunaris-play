@@ -6,7 +6,7 @@ import { parseFlip7Card, Flip7CardInfo } from "../../../../../../convex/flip7_de
 
 interface Flip7CardProps {
   cardId: string;
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
   className?: string;
   isFlipped?: boolean;
   isCrossedOut?: boolean;
@@ -25,11 +25,13 @@ export const Flip7Card: React.FC<Flip7CardProps> = ({
 
   // Determine size dimensions
   const sizeClasses =
-    size === "sm"
-      ? "w-12 h-16 text-xs rounded-xl border-2"
-      : size === "lg"
-        ? "w-36 h-52 text-4xl rounded-3xl border-4"
-        : "w-20 h-28 text-xl rounded-2xl border-2";
+    size === "xs"
+      ? "w-8 h-12 text-[10px] rounded-lg border"
+      : size === "sm"
+        ? "w-11 h-15 text-xs rounded-xl border-2"
+        : size === "lg"
+          ? "w-24 h-36 text-2xl rounded-2xl border-3"
+          : "w-14 h-20 text-sm rounded-xl border-2";
 
   // Color Theme & Styling Mapping
   let themeGradient = "from-zinc-800 to-zinc-950 border-white/10 text-white";
@@ -75,10 +77,12 @@ export const Flip7Card: React.FC<Flip7CardProps> = ({
 
   return (
     <motion.div
-      initial={{ scale: 0.8, rotateY: 90 }}
-      animate={{ scale: 1, rotateY: 0 }}
-      whileHover={{ y: -5, scale: 1.05 }}
-      className={`bg-gradient-to-br ${themeGradient} ${sizeClasses} flex flex-col justify-between p-2 select-none relative overflow-hidden font-black transition-all backdrop-blur-md ${
+      initial={{ scale: 0.5, rotateY: 180, opacity: 0, y: -20 }}
+      animate={{ scale: 1, rotateY: 0, opacity: 1, y: 0 }}
+      exit={{ scale: 0.5, opacity: 0 }}
+      transition={{ type: "spring", stiffness: 300, damping: 22 }}
+      whileHover={{ y: -6, scale: 1.08, zIndex: 30 }}
+      className={`bg-gradient-to-br ${themeGradient} ${sizeClasses} flex flex-col justify-between p-1.5 select-none relative overflow-hidden font-black transition-all backdrop-blur-md ${
         isGrayedOut ? "grayscale opacity-45 mix-blend-luminosity border-zinc-600/50" : ""
       } ${className}`}
     >

@@ -266,6 +266,7 @@ export default defineSchema({
       v.object({
         gameType: v.literal("flip7"),
         phase: v.union(
+          v.literal("INITIAL_DEAL"),
           v.literal("ROUND_INTRO"),
           v.literal("ACTIVE_PLAY"),
           v.literal("BUST_REVEAL"),
@@ -344,7 +345,7 @@ export default defineSchema({
     botStatus: v.optional(v.string()),
     aiError: v.optional(v.boolean()),
     maturity: v.optional(v.union(v.literal("CHILD"), v.literal("ADULT"))),
-    persona: v.optional(v.union(v.literal("balanced"), v.literal("aggressive"), v.literal("cautious"))),
+    persona: v.optional(v.union(v.literal("balanced"), v.literal("aggressive"), v.literal("cautious"), v.literal("intuitive"), v.literal("wild"))),
     gameHand: v.array(v.string()),
     isReady: v.boolean(),
     state: v.union(
