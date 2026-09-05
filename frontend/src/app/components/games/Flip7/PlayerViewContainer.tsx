@@ -82,19 +82,34 @@ const PlayerViewContainer: React.FC<PlayerProps> = ({ player, roomData, isMyTurn
           >
             <div className="flex flex-col items-center gap-1">
               <span className="text-3xl">
-                {board.pendingTargetAction?.actionType === "FREEZE" ? "❄️" : "⚡"}
+                {board.pendingTargetAction?.actionType === "FREEZE"
+                  ? "❄️"
+                  : board.pendingTargetAction?.actionType === "SECOND_CHANCE"
+                    ? "🛡️"
+                    : "⚡"}
               </span>
               <h3 className="text-lg font-black text-amber-300 italic uppercase">
-                {board.pendingTargetAction?.actionType === "FREEZE" ? "TARGET FREEZE" : "TARGET FLIP THREE"}
+                {board.pendingTargetAction?.actionType === "FREEZE"
+                  ? "TARGET FREEZE"
+                  : board.pendingTargetAction?.actionType === "SECOND_CHANCE"
+                    ? "PASS SECOND CHANCE"
+                    : "TARGET FLIP THREE"}
               </h3>
               <p className="text-xs text-zinc-400">
-                Choose yourself or an opponent to receive this action card!
+                {board.pendingTargetAction?.actionType === "SECOND_CHANCE"
+                  ? "You already have a shield! Choose an active player without a shield to receive this extra shield."
+                  : "Choose yourself or an opponent to receive this action card!"}
               </p>
             </div>
 
             <div className="flex flex-col gap-2 pt-2">
               {roomData.players
-                .filter((p) => (p.state as any)?.status === "ACTIVE")
+                .filter(
+                  (p) =>
+                    (p.state as any)?.status === "ACTIVE" &&
+                    (board.pendingTargetAction?.actionType !== "SECOND_CHANCE" ||
+                      (!(p.state as any)?.hasSecondChance && String(p._id) !== String(player._id))),
+                )
                 .map((p) => {
                   const isMe = String(p._id) === String(player._id);
                   return (

@@ -23,11 +23,63 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
   const toggleBustOddsMutation = useMutation(flip7Api.toggleBustOdds);
 
   const [showRules, setShowRules] = useState(false);
+  const [dismissedActionKey, setDismissedActionKey] = useState<string | null>(null);
+  const [showRoundResultsModal, setShowRoundResultsModal] = useState(false);
 
   const board = roomData.gameBoard;
+
+  const actionKey =
+    board && board.gameType === "flip7" && board.lastAction?.type === "ACTION_CARD" && board.lastAction.cardId
+      ? board.lastAction.cardId + board.lastAction.playerName + (board.lastAction.targetPlayerName || "")
+      : null;
+
+  React.useEffect(() => {
+    if (actionKey) {
+      const timer = setTimeout(() => {
+        setDismissedActionKey(actionKey);
+      }, 2300);
+      return () => clearTimeout(timer);
+    }
+  }, [actionKey]);
+
+  React.useEffect(() => {
+    if (board && board.gameType === "flip7" && board.phase === "ROUND_RESULTS") {
+      const timer = setTimeout(() => {
+        setShowRoundResultsModal(true);
+      }, 3500);
+      return () => clearTimeout(timer);
+    } else {
+      setShowRoundResultsModal(false);
+    }
+  }, [(board as any)?.phase, (board as any)?.currentRound]);
+
   if (!board || board.gameType !== "flip7") return null;
 
   const showBustOdds = !!board.showBustOdds;
+  const showActionOverlay = !!(actionKey && dismissedActionKey !== actionKey);
+
+  const getBotDialogue = (persona?: string, isMyLastAction?: boolean, lastActionType?: string, status?: string) => {
+    if (status === "FROZEN") return "Banking my points! ✋";
+    if (status === "BUSTED") return "Ouch! Busted! 💥";
+    if (isMyLastAction && lastActionType === "SECOND_CHANCE_USED") return "Shield saved me! 🛡️";
+    if (isMyLastAction && lastActionType === "ACTION_CARD") return "Action card deployed! ⚡";
+
+    switch (persona) {
+      case "cautious":
+        return "Playing it safe!";
+      case "risktaker":
+        return "Never tell me the odds!";
+      case "mathematical":
+      case "probability":
+        return "EV is favorable! 📊";
+      case "intuitive":
+        return "Feeling a good card!";
+      case "wild":
+        return "Full speed ahead! 🎲";
+      default:
+        return "Thinking next move...";
+    }
+  };
 
   const isLobby = roomData.status?.toUpperCase() === "LOBBY";
   if (isLobby) {
@@ -116,23 +168,27 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
             </motion.div>
 
             {/* Targeted Action Flying Trajectory Overlay */}
-            {board.lastAction.type === "ACTION_CARD" && board.lastAction.cardId && (
+            {showActionOverlay && board.lastAction.type === "ACTION_CARD" && board.lastAction.cardId && (
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={board.lastAction.cardId + board.lastAction.playerName}
-                  initial={{ scale: 0.2, opacity: 0, y: -40, rotate: -20 }}
+                  key={board.lastAction.cardId + board.lastAction.playerName + (board.lastAction.targetPlayerName || "")}
+                  initial={{ scale: 0.2, opacity: 0, y: 30, rotate: -15 }}
                   animate={{
-                    scale: [0.3, 1.4, 1],
-                    opacity: [0, 1, 1, 0.9],
-                    y: [0, -15, 0],
-                    rotate: [0, 15, -15, 0],
+                    scale: [0.3, 1.3, 1, 1, 0.8],
+                    opacity: [0, 1, 1, 1, 0],
+                    y: [30, 0, -10, 0, -20],
+                    rotate: [-15, 10, -5, 0, 15],
                   }}
-                  transition={{ duration: 1.2, ease: "easeInOut" }}
+                  transition={{
+                    duration: 2.2,
+                    times: [0, 0.2, 0.5, 0.8, 1],
+                    ease: "easeInOut",
+                  }}
                   className="fixed inset-0 z-[150] pointer-events-none flex items-center justify-center"
                 >
-                  <div className="relative flex flex-col items-center gap-3 bg-black/80 backdrop-blur-xl border-2 border-amber-400 p-6 rounded-3xl shadow-[0_0_60px_rgba(245,158,11,0.6)] animate-pulse">
+                  <div className="relative flex flex-col items-center gap-3 bg-black/85 backdrop-blur-xl border-2 border-amber-400 p-6 rounded-3xl shadow-[0_0_60px_rgba(245,158,11,0.6)]">
                     <div className="flex items-center gap-2 text-xs font-mono font-black text-amber-300 uppercase tracking-widest bg-amber-950/80 px-3 py-1 rounded-full border border-amber-400/40">
-                      <span>⚡ ACTION CARD LAUNCHED</span>
+                      <span>⚡ ACTION CARD PLAYED</span>
                     </div>
                     <div className="flex items-center gap-4 py-2">
                       <span className="text-base font-bold text-white">{board.lastAction.playerName}</span>
@@ -174,6 +230,8 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                   const isFlipThreeSequence = isCurrentTurn && (board.mustFlipCount || 0) > 0;
                   const isInitialDealing = board.phase === "INITIAL_DEAL";
 
+                  const isJustSavedByShield = board.lastAction?.type === "SECOND_CHANCE_USED" && String(board.lastAction?.playerId) === String(p._id);
+
                   return (
                     <motion.div
                       key={p._id}
@@ -182,19 +240,37 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ type: "spring", stiffness: 260, damping: 20 }}
                       className={`p-4 md:p-5 rounded-2xl border flex flex-col justify-between transition-all relative overflow-hidden min-h-[220px] ${
-                        isStayed
-                          ? "bg-gradient-to-br from-cyan-950 via-cyan-900/40 to-slate-950 border-2 border-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.4)]"
-                          : isBusted
-                            ? "bg-gradient-to-br from-rose-950/60 via-red-950/40 to-slate-950 border-2 border-rose-500 shadow-[0_0_30px_rgba(244,63,94,0.4)]"
-                            : isCurrentTurn && !isInitialDealing
-                              ? isFlipThreeSequence
-                                ? "bg-gradient-to-br from-yellow-950/60 via-amber-900/40 to-black border-2 border-yellow-400 shadow-[0_0_30px_rgba(234,179,8,0.4)] animate-pulse"
-                                : "bg-amber-950/30 border-2 border-amber-500 shadow-[0_0_25px_rgba(245,158,11,0.25)]"
-                              : "bg-zinc-900/80 border-white/10"
+                        isJustSavedByShield
+                          ? "bg-gradient-to-br from-cyan-950 via-cyan-900/50 to-slate-950 border-2 border-cyan-400 shadow-[0_0_35px_rgba(6,182,212,0.8)] animate-pulse"
+                          : isStayed
+                            ? "bg-gradient-to-br from-cyan-950 via-cyan-900/40 to-slate-950 border-2 border-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.4)]"
+                            : isBusted
+                              ? "bg-gradient-to-br from-rose-950/60 via-red-950/40 to-slate-950 border-2 border-rose-500 shadow-[0_0_30px_rgba(244,63,94,0.4)]"
+                              : isCurrentTurn && !isInitialDealing
+                                ? isFlipThreeSequence
+                                  ? "bg-gradient-to-br from-yellow-950/60 via-amber-900/40 to-black border-2 border-yellow-400 shadow-[0_0_30px_rgba(234,179,8,0.4)] animate-pulse"
+                                  : "bg-amber-950/30 border-2 border-amber-500 shadow-[0_0_25px_rgba(245,158,11,0.25)]"
+                                : "bg-zinc-900/80 border-white/10"
                       }`}
                     >
+                      {/* Bot Reaction Dialogue Bubble */}
+                      {p.isBot && (isCurrentTurn || String(board.lastAction?.playerId) === String(p._id)) && (
+                        <div className="absolute -top-3.5 right-4 z-40 bg-amber-400 text-black text-[10px] font-mono font-black px-2.5 py-1 rounded-full border border-amber-300 shadow-xl flex items-center gap-1.5 animate-bounce">
+                          <span>💬</span>
+                          <span>{getBotDialogue(p.persona, String(board.lastAction?.playerId) === String(p._id), board.lastAction?.type, st?.status)}</span>
+                        </div>
+                      )}
+
+                      {/* Second Chance Saved Shield Banner */}
+                      {isJustSavedByShield && (
+                        <div className="bg-cyan-400 text-black font-mono font-black text-[10px] uppercase tracking-widest text-center py-1 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-3 shadow-[0_0_20px_rgba(6,182,212,0.8)] flex items-center justify-center gap-1.5 animate-pulse">
+                          <span>🛡️</span>
+                          <span>SECOND CHANCE SAVED YOU FROM BUST!</span>
+                        </div>
+                      )}
+
                       {/* Stayed Upper Blue Badge */}
-                      {isStayed && (
+                      {isStayed && !isJustSavedByShield && (
                         <div className="bg-cyan-500 text-black font-mono font-black text-[10px] uppercase tracking-widest text-center py-1 -mx-4 -mt-4 md:-mx-5 md:-mt-5 mb-3 shadow-md flex items-center justify-center gap-1.5">
                           <span>✋</span>
                           <span>STAYED & BANKED +{st?.roundScore || 0} PTS</span>
@@ -225,11 +301,18 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                             {st?.bankedScore || 0} pts
                           </span>
                         </div>
-                        {/* Personality Badge on a Separate Line */}
+                        {/* Personality & Age Badge on a Separate Line */}
                         {p.isBot && (
-                          <div>
+                          <div className="flex items-center gap-1.5 flex-wrap">
                             <span className="inline-block text-[9px] font-mono font-bold bg-amber-950/90 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                              🤖 {p.persona ? p.persona.toUpperCase() : "BOT"} PERSONA
+                              🤖 {p.persona ? p.persona.toUpperCase() : "BOT"}
+                            </span>
+                            <span className={`inline-block text-[9px] font-mono font-bold px-2 py-0.5 rounded-md border ${
+                              p.maturity === "CHILD"
+                                ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                                : "bg-blue-500/20 text-blue-300 border-blue-500/40"
+                            }`}>
+                              {p.maturity === "CHILD" ? "👶 AGE 7–12" : "👤 AGE 18+"}
                             </span>
                           </div>
                         )}
@@ -365,9 +448,22 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                           <span className="font-bold shrink-0">{medal}</span>
                           <span className="font-bold text-white truncate">{p.name}</span>
                         </div>
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <span className="text-amber-400 font-black">{st?.bankedScore || 0}</span>
-                          <span className="text-emerald-400 text-[10px] font-bold">(+{st?.roundScore || 0})</span>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span
+                            className={`text-[9px] font-mono font-black px-1.5 py-0.5 rounded border uppercase ${
+                              st?.status === "BUSTED"
+                                ? "bg-rose-950/80 text-rose-300 border-rose-500/40"
+                                : st?.status === "FROZEN"
+                                  ? "bg-blue-950/80 text-blue-300 border-blue-500/40"
+                                  : "bg-emerald-950/80 text-emerald-300 border-emerald-500/40"
+                            }`}
+                          >
+                            {st?.status === "BUSTED" ? "🔴 BUST" : st?.status === "FROZEN" ? "🔵 STAY" : "🟢 ACT"}
+                          </span>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <span className="text-amber-400 font-black">{st?.bankedScore || 0}</span>
+                            <span className="text-emerald-400 text-[10px] font-bold">(+{st?.roundScore || 0})</span>
+                          </div>
                         </div>
                       </div>
                     );
@@ -392,8 +488,48 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
           </div>
         </div>
 
-        {/* End-of-Round Pop-up Scoreboard Modal */}
+        {/* Last 5 Moves Activity Ticker */}
+        <div className="w-full bg-zinc-900/90 border border-white/10 rounded-2xl p-2.5 backdrop-blur-md flex items-center gap-3 overflow-hidden font-mono text-xs shadow-lg">
+          <div className="flex items-center gap-1.5 text-amber-400 font-black shrink-0 px-2.5 py-1 bg-amber-950/60 rounded-xl border border-amber-400/30">
+            <span>📜</span>
+            <span>LAST 5 MOVES:</span>
+          </div>
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-0.5 w-full">
+            {((board.actionLog && board.actionLog.length > 0)
+              ? board.actionLog.slice(-5)
+              : board.lastAction
+                ? [{ text: board.lastAction.message, type: board.lastAction.type, timestamp: Date.now() }]
+                : []
+            ).map((log: any, idx: number) => (
+              <span
+                key={(log.timestamp || idx) + log.text}
+                className="bg-white/5 border border-white/10 px-2.5 py-1 rounded-xl text-zinc-300 whitespace-nowrap flex items-center gap-1.5 shrink-0 text-[11px]"
+              >
+                <span>{log.type === "BUST" ? "💥" : log.type === "FREEZE" ? "❄️" : log.type === "SECOND_CHANCE_USED" ? "🛡️" : "🃏"}</span>
+                <span>{log.text}</span>
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Round End Review Banner (when modal is not open yet or minimized) */}
         {board.phase === "ROUND_RESULTS" && !isFinished && (
+          <div className="w-full bg-amber-950/80 border border-amber-400/50 p-3 rounded-2xl flex items-center justify-between shadow-xl backdrop-blur-md">
+            <div className="flex items-center gap-2 text-xs font-mono font-black text-amber-300">
+              <span>🏁</span>
+              <span>ROUND COMPLETE! Reviewing final board state...</span>
+            </div>
+            <button
+              onClick={() => setShowRoundResultsModal(!showRoundResultsModal)}
+              className="bg-amber-400 text-black px-3.5 py-1.5 rounded-xl text-xs font-mono font-black border border-amber-300 hover:bg-amber-300 active:scale-95 transition-all shadow-md"
+            >
+              {showRoundResultsModal ? "👁️ VIEW BOARD" : "🏆 OPEN SCOREBOARD"}
+            </button>
+          </div>
+        )}
+
+        {/* End-of-Round Pop-up Scoreboard Modal */}
+        {board.phase === "ROUND_RESULTS" && !isFinished && showRoundResultsModal && (
           <div className="fixed inset-0 z-[120] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 select-none font-mono">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -409,8 +545,8 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
               </div>
 
               <div className="w-full space-y-2 max-h-[60vh] overflow-y-auto pr-1">
-                {roomData.players
-                  .map((p) => {
+                {(() => {
+                  const mapped = roomData.players.map((p) => {
                     const st = p.state as any;
                     return {
                       playerId: p._id,
@@ -419,40 +555,65 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                       totalScore: st?.bankedScore || 0,
                       status: st?.status,
                     };
-                  })
-                  .sort((a, b) => b.totalScore - a.totalScore)
-                  .map((res: any, idx: number) => {
-                    const medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}.`;
-                    return (
-                      <div
-                        key={res.playerId}
-                        className={`flex justify-between items-center p-3.5 rounded-2xl border text-sm font-mono transition-all ${
-                          idx === 0
-                            ? "bg-amber-950/60 border-amber-400 text-amber-200 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
-                            : "bg-black/60 border-white/10 text-white"
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="text-base font-bold min-w-[28px]">{medal}</span>
-                          <span className="font-bold text-white text-base">{res.playerName}</span>
+                  });
+                  const maxRoundScore = Math.max(...mapped.map((m) => m.roundScore));
+
+                  return mapped
+                    .sort((a, b) => b.totalScore - a.totalScore)
+                    .map((res: any, idx: number) => {
+                      const medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}.`;
+                      const isTopRoundScorer = res.roundScore > 0 && res.roundScore === maxRoundScore;
+
+                      return (
+                        <div
+                          key={res.playerId}
+                          className={`flex justify-between items-center p-3.5 rounded-2xl border text-sm font-mono transition-all ${
+                            isTopRoundScorer
+                              ? "bg-gradient-to-r from-emerald-950/80 via-zinc-900 to-amber-950/40 border-emerald-400 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                              : idx === 0
+                                ? "bg-amber-950/60 border-amber-400 text-amber-200 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+                                : "bg-black/60 border-white/10 text-white"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="text-base font-bold min-w-[28px]">{medal}</span>
+                            <span className="font-bold text-white text-base">{res.playerName}</span>
+                            {isTopRoundScorer && (
+                              <span className="bg-emerald-950/90 text-emerald-300 border border-emerald-400/60 px-2 py-0.5 rounded-full text-[9px] font-mono font-black uppercase tracking-wider flex items-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.4)] animate-pulse">
+                                <span>🔥</span>
+                                <span>ROUND MVP (+{res.roundScore})</span>
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className={`font-bold text-xs ${isTopRoundScorer ? "text-emerald-300 font-black text-sm" : "text-emerald-400"}`}>
+                              +{res.roundScore} round
+                            </span>
+                            <span className="bg-white/10 px-3 py-1 rounded-full text-amber-400 font-black text-sm border border-amber-400/30">
+                              {res.totalScore} pts
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-3">
-                          <span className="text-emerald-400 font-bold text-xs">+{res.roundScore} round</span>
-                          <span className="bg-white/10 px-3 py-1 rounded-full text-amber-400 font-black text-sm border border-amber-400/30">
-                            {res.totalScore} pts
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    });
+                })()}
               </div>
 
-              <button
-                onClick={() => nextRound({ roomId: roomId as any })}
-                className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-black uppercase italic tracking-widest py-4 rounded-2xl shadow-xl transition-all text-base active:scale-95"
-              >
-                Start Next Round ➔
-              </button>
+              <div className="flex items-center gap-3 w-full pt-2">
+                <button
+                  onClick={() => setShowRoundResultsModal(false)}
+                  className="flex-1 py-3.5 rounded-2xl bg-zinc-800 border border-white/10 text-white font-black text-xs uppercase hover:bg-zinc-700 active:scale-95 transition-all flex items-center justify-center gap-2"
+                >
+                  <span>👁️</span>
+                  <span>MINIMIZE & INSPECT BOARD</span>
+                </button>
+                <button
+                  onClick={() => nextRound({ roomId: roomId as any })}
+                  className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-black uppercase italic tracking-widest py-3.5 rounded-2xl shadow-xl transition-all text-xs active:scale-95"
+                >
+                  Start Next Round ➔
+                </button>
+              </div>
             </motion.div>
           </div>
         )}

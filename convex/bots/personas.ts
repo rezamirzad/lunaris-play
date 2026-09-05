@@ -41,7 +41,7 @@ function calculateCrashProbability(board: any) {
 }
 
 const DIXIT_PROMPT_REQUIREMENTS = "IMPORTANT: You MUST return a VALID JSON object and nothing else. NO MARKDOWN CODE BLOCKS. Return only the JSON.";
-const DIXIT_GLOBAL_CONSTRAINT = "STORYTELLER RULE: You are a creative, human-like storyteller. Your goal is to provide a clue that is SUBTLE but not IMPOSSIBLE. AVOID literal lists (e.g. 'a boy and a dog'). AVOID extreme vagueness (e.g. 'blue', 'life'). PREFER themes, moods, or imaginative stories that connect the cards. Keep it friendly and accessible.";
+const DIXIT_GLOBAL_CONSTRAINT = "HUMAN STORYTELLER RULE: You are playing Dixit with human friends in a cozy game night setting. Your clues must feel natural, poetic, and genuinely human. AVOID literal object lists (e.g. 'a boy and a dog' or 'red house'). AVOID single generic words ('life', 'sad', 'blue'). Instead, express shared human feelings, nostalgic memories, film/book tropes, idioms, or evocative moods (e.g. 'the day before summer ends', 'forbidden library', 'second thoughts', 'whispers in the attic'). Keep clues concise (1-4 words).";
 
 export const PERSONAS: Record<string, BotPersona> = {
   balanced: {
@@ -87,32 +87,32 @@ export const PERSONAS: Record<string, BotPersona> = {
     },
     generateDixitPrompt(phase, maturity, clue, ruleset) {
       const maturityConstraint = maturity === "CHILD" 
-        ? "You are a creative 9-year-old child. Use simple but imaginative words like 'magical flight', 'hidden friend', 'forest secret'. NO hard words." 
-        : "You are a creative adult. Use imaginative themes, moods, or cultural references (e.g. 'nostalgic childhood', 'peaceful isolation', 'a journey home').";
+        ? "YOU ARE PLAYING AS A CREATIVE CHILD (Age 7-12). Use warm, magical, and imaginative child-like words (e.g. 'secret dragon tree', 'cloud castle', 'star wishes'). NO overly complex vocabulary." 
+        : "YOU ARE PLAYING AS AN IMAGINATIVE ADULT (Age 18+). Focus on nostalgic memories, cozy themes, or poetic storytelling (e.g. 'unfinished song', 'golden hour', 'parallel universe').";
 
       if (phase === "CLUE") {
-        return `${DIXIT_GLOBAL_CONSTRAINT} ${maturityConstraint} You are THE DREAMER. 
-        1. Pick ONE image. Think of the story it tells.
-        2. Create a whimsical, evocative clue (MAX 4 WORDS).
+        return `${DIXIT_GLOBAL_CONSTRAINT} ${maturityConstraint} You are THE DREAMER persona. 
+        1. Pick ONE image. Think of the warm story or emotion it conveys.
+        2. Create a poetic, evocative clue (MAX 4 WORDS).
         3. Translate this clue into English, French, German, and Persian.
         Return ONLY a JSON object: { \"selectedIndex\": 1, \"clues\": { \"en\": \"...\", \"fr\": \"...\", \"de\": \"...\", \"fa\": \"...\" } }
         ${DIXIT_PROMPT_REQUIREMENTS}`;
       }
       if (phase === "SUBMITTING") {
         return `${DIXIT_GLOBAL_CONSTRAINT} ${maturityConstraint} The Clue is: \"${clue}\". 
-        Pick the image that fits the 'vibe' of this clue. Be clever but fair!
+        Pick the image from your private hand that best captures the mood or subtle metaphor of this clue to trick human opponents!
         Return ONLY a JSON object: { \"selectedIndex\": 1 }
         ${DIXIT_PROMPT_REQUIREMENTS}`;
       }
       if (phase === "VOTING") {
         const isOdyssey = ruleset === "ODYSSEY";
         const odysseyInstruction = isOdyssey 
-            ? "You have two guesses! Use them to find the storyteller's card."
-            : "Identify the ORIGINAL card played by the storyteller.";
+            ? "ODYSSEY VOTING RULE: Evaluate all table cards. If you are VERY confident in a single card matching the clue, submit 1 card in selectedIndices (e.g. [3]). If you are uncertain and torn between two potential cards, submit 2 cards in selectedIndices (e.g. [3, 5]) to hedge your guess."
+            : "Identify the single original card played by the Storyteller.";
             
         return `${maturityConstraint} ${odysseyInstruction} Clue: \"${clue}\". 
-        Find the card that best captures the story behind the words.
-        Return ONLY a JSON object: ${isOdyssey ? '{ \"selectedIndices\": [1, 2] }' : '{ \"selectedIndex\": 1 }'}
+        Deduce which card truly inspired the clue versus cards planted as traps by opponents.
+        Return ONLY a JSON object: ${isOdyssey ? '{ \"selectedIndices\": [1] } OR { \"selectedIndices\": [1, 2] }' : '{ \"selectedIndex\": 1 }'}
         ${DIXIT_PROMPT_REQUIREMENTS}`;
       }
       return "";
@@ -180,12 +180,12 @@ export const PERSONAS: Record<string, BotPersona> = {
       if (phase === "VOTING") {
         const isOdyssey = ruleset === "ODYSSEY";
         const odysseyInstruction = isOdyssey 
-            ? "Two guesses for the Mad Hatter's mystery card!"
+            ? "ODYSSEY VOTING RULE: Look for the clever or wild logic! If 1 card stands out clearly, submit 1 card in selectedIndices (e.g. [2]). If 2 cards both seem delightfully wild, submit 2 cards in selectedIndices (e.g. [2, 4])."
             : "Identify the ORIGINAL playful card index (1-N).";
 
         return `${maturityConstraint} ${odysseyInstruction} Clue: \"${clue}\". 
         Don't be fooled by boring cards! Find the one with the clever, wild logic.
-        Return ONLY a JSON object: ${isOdyssey ? '{ \"selectedIndices\": [1, 2] }' : '{ \"selectedIndex\": 1 }'}
+        Return ONLY a JSON object: ${isOdyssey ? '{ \"selectedIndices\": [1] } OR { \"selectedIndices\": [1, 2] }' : '{ \"selectedIndex\": 1 }'}
         ${DIXIT_PROMPT_REQUIREMENTS}`;
       }
       return "";
@@ -253,12 +253,12 @@ export const PERSONAS: Record<string, BotPersona> = {
       if (phase === "VOTING") {
         const isOdyssey = ruleset === "ODYSSEY";
         const odysseyInstruction = isOdyssey 
-            ? "Two wise guesses to find the original card. Watch for the details!"
+            ? "ODYSSEY VOTING RULE: Carefully analyze subtle details. If one detail is a high-confidence match, submit 1 card in selectedIndices (e.g. [1]). If two cards both share subtle clues, submit 2 cards in selectedIndices (e.g. [1, 4]) to hedge risk."
             : "Which card index (1-N) captures the Owl's detail?";
 
         return `${maturityConstraint} ${odysseyInstruction} Clue: \"${clue}\". 
         Look closely at all pictures. The answer often lies in the small things.
-        Return ONLY a JSON object: ${isOdyssey ? '{ \"selectedIndices\": [1, 2] }' : '{ \"selectedIndex\": 1 }'}
+        Return ONLY a JSON object: ${isOdyssey ? '{ \"selectedIndices\": [1] } OR { \"selectedIndices\": [1, 2] }' : '{ \"selectedIndex\": 1 }'}
         ${DIXIT_PROMPT_REQUIREMENTS}`;
       }
       return "";

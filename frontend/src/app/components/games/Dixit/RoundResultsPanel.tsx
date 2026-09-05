@@ -120,13 +120,22 @@ export default function RoundResultsPanel({
                             {player.name} {isLeader && "👑"}
                             </span>
                             {player.isBot && (
-                                <Image
-                                    src="/assets/general/artificial-intelligence-design-png.webp" 
-                                    alt="AI" 
-                                    width={10}
-                                    height={10}
-                                    className="opacity-80" 
-                                />
+                                <div className="flex items-center gap-1.5">
+                                    <Image
+                                        src="/assets/general/artificial-intelligence-design-png.webp" 
+                                        alt="AI" 
+                                        width={10}
+                                        height={10}
+                                        className="opacity-80" 
+                                    />
+                                    <span className={`text-[8px] font-mono font-bold px-1.5 py-0.5 rounded border ${
+                                        player.maturity === "CHILD"
+                                            ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                                            : "bg-blue-500/20 text-blue-300 border-blue-500/40"
+                                    }`}>
+                                        {player.maturity === "CHILD" ? "👶 7–12" : "👤 18+"}
+                                    </span>
+                                </div>
                             )}
                         </div>
                     </div>

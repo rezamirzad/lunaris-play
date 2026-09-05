@@ -282,7 +282,7 @@ export default defineSchema({
         pendingTargetAction: v.optional(
           v.object({
             cardId: v.string(),
-            actionType: v.union(v.literal("FREEZE"), v.literal("FLIP_THREE")),
+            actionType: v.union(v.literal("FREEZE"), v.literal("FLIP_THREE"), v.literal("SECOND_CHANCE")),
             sourcePlayerId: v.id("players"),
             sourcePlayerName: v.string(),
           })
@@ -291,7 +291,7 @@ export default defineSchema({
           v.array(
             v.object({
               cardId: v.string(),
-              actionType: v.union(v.literal("FREEZE"), v.literal("FLIP_THREE")),
+              actionType: v.union(v.literal("FREEZE"), v.literal("FLIP_THREE"), v.literal("SECOND_CHANCE")),
               sourcePlayerId: v.id("players"),
               sourcePlayerName: v.string(),
             })
@@ -315,6 +315,15 @@ export default defineSchema({
             scoreGained: v.optional(v.number()),
             message: v.optional(v.string()),
           })
+        ),
+        actionLog: v.optional(
+          v.array(
+            v.object({
+              text: v.string(),
+              type: v.string(),
+              timestamp: v.number(),
+            })
+          )
         ),
         roundResults: v.optional(
           v.array(

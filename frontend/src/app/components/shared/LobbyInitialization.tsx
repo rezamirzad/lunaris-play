@@ -38,8 +38,31 @@ export default function LobbyInitialization({
   const startGame = useMutation(api.engine.startGame);
   const addBot = useMutation(api.engine.addBot);
   const removePlayer = useMutation(api.engine.removePlayer);
+  const setBotConfig = useMutation(api.engine.setBotConfig);
   const startJustOneMatch = useMutation(api.justone.startJustOneMatch);
   const dixitAction = useMutation(api.dixit.handleAction);
+
+  const handleToggleBotMaturity = async (playerId: string, currentMaturity?: string) => {
+    if (!isAdmin || !adminPassword) return;
+    const nextMaturity = currentMaturity === "CHILD" ? "ADULT" : "CHILD";
+    try {
+      await setBotConfig({ playerId: playerId as any, maturity: nextMaturity, adminPassword });
+    } catch (e) {
+      console.error("Toggle bot maturity failed", e);
+    }
+  };
+
+  const handleToggleBotPersona = async (playerId: string, currentPersona?: string) => {
+    if (!isAdmin || !adminPassword) return;
+    const personas = ["balanced", "cautious", "aggressive"];
+    const currIdx = personas.indexOf(currentPersona || "balanced");
+    const nextPersona = personas[(currIdx + 1) % personas.length];
+    try {
+      await setBotConfig({ playerId: playerId as any, persona: nextPersona, adminPassword });
+    } catch (e) {
+      console.error("Toggle bot persona failed", e);
+    }
+  };
 
   const [justoneLang, setJustOneLang] = useState<"en" | "fr" | "de" | "fa">(
     "en",
@@ -317,35 +340,75 @@ export default function LobbyInitialization({
                     : "border-zinc-800 bg-zinc-950/40"
                 }
               >
-                <div className="flex items-center justify-between mt-3">
-                  <div className="flex-1 h-1 bg-zinc-900 rounded-full overflow-hidden relative mr-2">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: player.isReady ? "100%" : "0%" }}
-                      className={`absolute inset-y-0 left-0 transition-all duration-700 ${player.isReady ? "bg-teal-400" : "bg-zinc-800"}`}
-                    />
-                  </div>
-                  {isAdmin && (
-                    <button
-                      onClick={() => handleKick(player._id)}
-                      className="p-1 hover:bg-rose-500/20 text-rose-500 rounded transition-colors"
-                      title="Kick Player"
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
+                <div className="flex flex-col gap-2 mt-3">
+                  {player.isBot && (
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <button
+                        disabled={!isAdmin}
+                        onClick={() => handleToggleBotMaturity(player._id, player.maturity)}
+                        className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-md border transition-all ${
+                          player.maturity === "CHILD"
+                            ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
+                            : "bg-blue-500/20 text-blue-300 border-blue-500/40 hover:bg-blue-500/30"
+                        } ${!isAdmin ? "cursor-default" : "cursor-pointer"}`}
+                        title={isAdmin ? "Click to toggle Age Range" : "Age Range"}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
+                        {player.maturity === "CHILD" ? "👶 AGE 7–12" : "👤 AGE 18+"}
+                      </button>
+
+                      <button
+                        disabled={!isAdmin}
+                        onClick={() => handleToggleBotPersona(player._id, player.persona)}
+                        className={`text-[9px] font-mono font-black px-2 py-0.5 rounded-md border flex items-center gap-1 transition-all ${
+                          player.persona === "aggressive" || player.persona === "wild"
+                            ? "bg-purple-950/80 text-purple-300 border-purple-500/40 hover:bg-purple-900/80"
+                            : player.persona === "cautious"
+                              ? "bg-cyan-950/80 text-cyan-300 border-cyan-500/40 hover:bg-cyan-900/80"
+                              : "bg-amber-950/80 text-amber-300 border-amber-500/40 hover:bg-amber-900/80"
+                        } ${!isAdmin ? "cursor-default" : "cursor-pointer"}`}
+                        title={isAdmin ? "Click to toggle Persona" : "Persona"}
+                      >
+                        <span>
+                          {player.persona === "aggressive" || player.persona === "wild"
+                            ? "🎩 The Mad Hatter"
+                            : player.persona === "cautious"
+                              ? "🦉 The Wise Owl"
+                              : "✨ The Dreamer"}
+                        </span>
+                      </button>
+                    </div>
                   )}
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1 h-1 bg-zinc-900 rounded-full overflow-hidden relative mr-2">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: player.isReady ? "100%" : "0%" }}
+                        className={`absolute inset-y-0 left-0 transition-all duration-700 ${player.isReady ? "bg-teal-400" : "bg-zinc-800"}`}
+                      />
+                    </div>
+                    {isAdmin && (
+                      <button
+                        onClick={() => handleKick(player._id)}
+                        className="p-1 hover:bg-rose-500/20 text-rose-500 rounded transition-colors"
+                        title="Kick Player"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
                 </div>
               </PlayerCard>
             </motion.div>

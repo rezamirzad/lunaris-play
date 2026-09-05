@@ -451,10 +451,31 @@ export const addBot = mutation({
       name: botName,
       isBot: true,
       persona: "balanced",
+      maturity: "ADULT",
       gameHand: initialHand,
       state: initialState,
       isReady: true,
     });
+  },
+});
+
+export const setBotConfig = mutation({
+  args: {
+    playerId: v.id("players"),
+    persona: v.optional(v.string()),
+    maturity: v.optional(v.union(v.literal("CHILD"), v.literal("ADULT"))),
+    adminPassword: v.string(),
+  },
+  handler: async (ctx, args) => {
+    if (!validateAdmin(args.adminPassword)) throw new Error("UNAUTHORIZED");
+    const player = await ctx.db.get(args.playerId);
+    if (!player || !player.isBot) throw new Error("Bot not found");
+
+    const patchData: any = {};
+    if (args.persona !== undefined) patchData.persona = args.persona;
+    if (args.maturity !== undefined) patchData.maturity = args.maturity;
+
+    await ctx.db.patch(args.playerId, patchData);
   },
 });
 

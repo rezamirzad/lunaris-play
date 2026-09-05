@@ -97,9 +97,11 @@ export const Flip7Card: React.FC<Flip7CardProps> = ({
       exit={{ scale: 0.5, opacity: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 22 }}
       whileHover={{ y: -6, scale: 1.08, zIndex: 30 }}
-      title={tooltipText}
+      title={tooltipText + (isGrayedOut || isCrossedOut ? " (Used/Spent)" : "")}
       className={`bg-gradient-to-br ${themeGradient} ${sizeClasses} aspect-[2/3] flex flex-col justify-between items-center p-1.5 select-none relative overflow-hidden font-black transition-all backdrop-blur-md shadow-md ${
-        isGrayedOut ? "grayscale opacity-45 mix-blend-luminosity border-zinc-600/50" : ""
+        isGrayedOut || isCrossedOut
+          ? "grayscale brightness-50 opacity-60 border-dashed border-zinc-500/70"
+          : ""
       } ${className}`}
     >
       {/* Background Texture Detail */}
@@ -117,26 +119,6 @@ export const Flip7Card: React.FC<Flip7CardProps> = ({
           <span className="text-2xl drop-shadow-md">{badgeIcon}</span>
         )}
       </div>
-
-      {/* Grayed Out Assigned Badge Overlay */}
-      {isGrayedOut && (
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px] flex flex-col items-center justify-center z-20 pointer-events-none rounded-[inherit]">
-          <span className="text-[9px] font-mono font-black uppercase text-zinc-300 tracking-wider bg-zinc-800/90 px-1.5 py-0.5 rounded border border-zinc-500/50">
-            USED
-          </span>
-        </div>
-      )}
-
-      {/* Crossed Out Overlay */}
-      {isCrossedOut && (
-        <div className="absolute inset-0 bg-black/75 backdrop-blur-[1px] flex items-center justify-center z-30 pointer-events-none rounded-[inherit]">
-          <div className="relative flex items-center justify-center">
-            <span className="text-3xl font-black text-rose-500 drop-shadow-[0_0_12px_rgba(244,63,94,0.9)] animate-pulse">❌</span>
-            <div className="absolute w-16 h-1 bg-rose-500 rotate-45 rounded-full shadow-[0_0_8px_rgba(244,63,94,0.9)]" />
-            <div className="absolute w-16 h-1 bg-rose-500 -rotate-45 rounded-full shadow-[0_0_8px_rgba(244,63,94,0.9)]" />
-          </div>
-        </div>
-      )}
 
       {/* Bottom Sublabel */}
       <div className="w-full text-center z-10">

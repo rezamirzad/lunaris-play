@@ -357,6 +357,13 @@ export const nextRound = mutation({
   },
 });
 
+function appendActionLog(existingLog: any[] | undefined, text: string, type: string) {
+  const current = existingLog ? [...existingLog] : [];
+  if (!text) return current;
+  current.push({ text, type, timestamp: Date.now() });
+  return current.slice(-10);
+}
+
 async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players">) {
   const player = await ctx.db.get(playerId);
   if (!player || player.state.gameType !== "flip7") throw new Error("Invalid player");
@@ -398,6 +405,8 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
   let message = `${player.name} flipped ${parsedCard.label}`;
   let pendingTarget: any = undefined;
   let queuedActions = [...(board.queuedTargetActions || [])];
+  let targetPlayerIdForAction: Id<"players"> | undefined = undefined;
+  let targetPlayerNameForAction: string | undefined = undefined;
 
   let mustFlipCount = board.mustFlipCount || 0;
 
@@ -405,23 +414,49 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
     faceUpCards.push(drawnCardId);
     if (parsedCard.actionType === "SECOND_CHANCE") {
       if (hasSecondChance) {
-        // Player already has Second Chance shield! Pass to opponent without shield.
-        const candidate = players.find(p => String(p._id) !== String(player._id) && (p.state as any).status === "ACTIVE" && !(p.state as any).hasSecondChance);
-        if (candidate) {
+        // Player already has Second Chance shield! Must pass extra shield to an unshielded active opponent.
+        const unshieldedCandidates = players.filter(
+          (p) => String(p._id) !== String(player._id) && (p.state as any).status === "ACTIVE" && !(p.state as any).hasSecondChance,
+        );
+
+        if (unshieldedCandidates.length === 0) {
+          lastActionType = "ACTION_CARD";
+          message = `🛡️ ${player.name} drew an extra Second Chance shield, but all active players already have shields!`;
+        } else if (player.isBot) {
+          // Bot strategic logic: Pass shield to active opponent with the LOWEST total score to avoid helping the leader!
+          const sortedCandidates = [...unshieldedCandidates].sort((a, b) => {
+            const scoreA = ((a.state as any).bankedScore || 0) + calculateFlip7RoundScore((a.state as any).roundFaceUpCards || []).score;
+            const scoreB = ((b.state as any).bankedScore || 0) + calculateFlip7RoundScore((b.state as any).roundFaceUpCards || []).score;
+            return scoreA - scoreB;
+          });
+          const candidate = sortedCandidates[0];
           await ctx.db.patch(candidate._id, {
             state: {
               ...(candidate.state as any),
               hasSecondChance: true,
             },
           });
-          message = `${player.name} drew an extra 🛡️ Second Chance shield and passed it to ${candidate.name}!`;
+          lastActionType = "ACTION_CARD";
+          targetPlayerIdForAction = candidate._id;
+          targetPlayerNameForAction = candidate.name;
+          message = `🛡️ ${player.name} drew an extra Second Chance shield and passed it to ${candidate.name}!`;
         } else {
-          message = `${player.name} drew an extra 🛡️ Second Chance shield!`;
+          // Human player: Prompt target selection to pass extra shield
+          pendingTarget = {
+            cardId: drawnCardId,
+            actionType: "SECOND_CHANCE",
+            sourcePlayerId: player._id,
+            sourcePlayerName: player.name,
+          };
+          lastActionType = "ACTION_CARD";
+          message = `🛡️ ${player.name} drew an extra Second Chance shield! Select a player without a shield...`;
         }
       } else {
         hasSecondChance = true;
         lastActionType = "ACTION_CARD";
-        message = `${player.name} drew a 🛡️ Second Chance shield!`;
+        targetPlayerIdForAction = player._id;
+        targetPlayerNameForAction = player.name;
+        message = `🛡️ ${player.name} obtained a Second Chance shield!`;
       }
     } else if (parsedCard.actionType === "FREEZE" || parsedCard.actionType === "FLIP_THREE") {
       let isChainedInFlipThree = mustFlipCount > 0;
@@ -622,10 +657,13 @@ async function handleHitCardInternal(ctx: GameMutationCtx, playerId: Id<"players
         type: lastActionType,
         playerId: player._id,
         playerName: player.name,
+        targetPlayerId: targetPlayerIdForAction,
+        targetPlayerName: targetPlayerNameForAction,
         cardId: drawnCardId,
         scoreGained: roundScore,
         message,
       },
+      actionLog: appendActionLog(board.actionLog, message, lastActionType),
       roundResults,
     } as any,
   });
@@ -744,6 +782,7 @@ async function handleFreezeInternal(ctx: GameMutationCtx, playerId: Id<"players"
         scoreGained: roundScore,
         message: `❄️ ${player.name} froze their hand and banked ${roundScore} pts!`,
       },
+      actionLog: appendActionLog(board.actionLog, `❄️ ${player.name} froze their hand and banked ${roundScore} pts!`, "FREEZE"),
       roundResults,
     } as any,
   });
@@ -818,6 +857,15 @@ async function handleResolveTargetActionInternal(
     mustFlipCount = 3;
     nextTurnPlayerId = targetPlayer._id;
     message = `⚡ ${sourcePlayer.name} played FLIP THREE on ${targetPlayer.name}! ${targetPlayer.name} must flip 3 cards!`;
+  } else if (pending.actionType === "SECOND_CHANCE") {
+    const targetState = targetPlayer.state as any;
+    await ctx.db.patch(targetPlayer._id, {
+      state: {
+        ...targetState,
+        hasSecondChance: true,
+      },
+    });
+    message = `🛡️ ${sourcePlayer.name} passed an extra Second Chance shield to ${targetPlayer.name}!`;
   }
 
   const updatedPlayers = await ctx.db
@@ -887,6 +935,7 @@ async function handleResolveTargetActionInternal(
         cardId: pending.cardId,
         message,
       },
+      actionLog: appendActionLog(board.actionLog, message, "ACTION_CARD"),
     } as any,
   });
 

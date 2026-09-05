@@ -190,6 +190,17 @@ export const executeMove = internalMutation({
             const sortedRivals = [...rivals].sort((a: any, b: any) => ((b.state as any).roundScore || 0) - ((a.state as any).roundScore || 0));
             targetId = sortedRivals[0]._id;
           }
+        } else if (board.pendingTargetAction.actionType === "SECOND_CHANCE") {
+          // SECOND_CHANCE: Pass extra shield to unshielded rival with LOWEST total score to avoid helping the leader!
+          const unshieldedRivals = rivals.filter((p: any) => !(p.state as any).hasSecondChance);
+          if (unshieldedRivals.length > 0) {
+            const sortedRivals = [...unshieldedRivals].sort((a: any, b: any) => {
+              const scoreA = ((a.state as any).bankedScore || 0) + ((a.state as any).roundScore || 0);
+              const scoreB = ((b.state as any).bankedScore || 0) + ((b.state as any).roundScore || 0);
+              return scoreA - scoreB;
+            });
+            targetId = sortedRivals[0]._id;
+          }
         } else {
           // FLIP_THREE: target top scoring rival
           if (rivals.length > 0) {

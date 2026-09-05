@@ -251,9 +251,16 @@ Below are the ${args.tableCards?.length} cards on the table:
             prompt += `- Player ${bot.playerId}: Their card is Image ${myIdx !== undefined ? myIdx + 1 : 'N/A'}. THEY ARE PROHIBITED FROM SELECTING THIS INDEX.\n`;
           });
 
-          prompt += `\nRETURN FORMAT:
+          const isOdyssey = args.ruleset === "ODYSSEY";
+          if (isOdyssey) {
+            prompt += `\nRETURN FORMAT (ODYSSEY RULESET - 1 OR 2 VOTES):
+Return a strict JSON object with a 'results' array. Each element must contain 'playerId' and 'selectedIndices' (an array of 1 integer if highly confident in a single guess, or 2 integers if hedging between two options, e.g. [2] or [2, 5]).
+Example: {"results": [{"playerId": "...", "selectedIndices": [2, 5]}, {"playerId": "...", "selectedIndices": [3]}]}`;
+          } else {
+            prompt += `\nRETURN FORMAT:
 Return a strict JSON object with a 'results' array. Each element must contain 'playerId' and 'selectedIndex' (the 1-based index of the table card).
 Example: {"results": [{"playerId": "...", "selectedIndex": 4}, ...]}`;
+          }
         }
 
         const imageParts = await Promise.all(
@@ -311,11 +318,33 @@ Example: {"results": [{"playerId": "...", "selectedIndex": 4}, ...]}`;
 
           let selectedCardId = "";
           if (isSubmitting && bot.hand) {
-             const safeIdx = Math.max(0, Math.min(res.selectedIndex - 1, bot.hand.length - 1));
+             const safeIdx = Math.max(0, Math.min((res.selectedIndex || 1) - 1, bot.hand.length - 1));
              selectedCardId = bot.hand[safeIdx].id;
           } else if (isVoting && args.tableCards) {
-             const safeIdx = Math.max(0, Math.min(res.selectedIndex - 1, args.tableCards.length - 1));
-             selectedCardId = args.tableCards[safeIdx].id;
+             const isOdyssey = args.ruleset === "ODYSSEY";
+             if (isOdyssey) {
+               let indices: number[] = [];
+               if (Array.isArray(res.selectedIndices) && res.selectedIndices.length > 0) {
+                 indices = res.selectedIndices.slice(0, 2);
+               } else if (res.selectedIndex) {
+                 indices = [res.selectedIndex];
+               }
+               const safeIndices = indices.map((idx: number) => Math.max(0, Math.min(idx - 1, args.tableCards!.length - 1)));
+               const voteCardIds = safeIndices.map(i => args.tableCards![i]?.id).filter(Boolean);
+               
+               if (voteCardIds.length > 0) {
+                 await ctx.runMutation((internal as any).bots.manager.applyAIResult, {
+                   roomId: args.roomId,
+                   playerId: bot.playerId,
+                   gameType: "dixit",
+                   result: { selectedIndices: safeIndices.map(i => i + 1) },
+                 });
+                 continue;
+               }
+             } else {
+               const safeIdx = Math.max(0, Math.min((res.selectedIndex || 1) - 1, args.tableCards.length - 1));
+               selectedCardId = args.tableCards[safeIdx].id;
+             }
           }
 
           if (selectedCardId) {

@@ -399,6 +399,8 @@ export default function DixitContainer({ roomId, roomData, history = [], submiss
                     totalPlayers={players.length}
                     isST={isST}
                     isBot={player.isBot}
+                    persona={player.persona}
+                    maturity={player.maturity}
                     isGameEnd={isFinished}
                   />
 
