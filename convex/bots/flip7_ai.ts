@@ -5,7 +5,7 @@ export interface Flip7BotContext {
   faceUpCards: string[];
   hasSecondChance: boolean;
   bankedScore: number;
-  persona: "cautious" | "balanced" | "aggressive" | "intuitive" | "wild";
+  persona: "cautious" | "balanced" | "aggressive" | "intuitive" | "wild" | "storyteller" | "surrealist" | "cinephile";
   board: any;
 }
 

@@ -44,7 +44,6 @@ export default function LobbyInitialization({
   const updateFlip7Rules = useMutation(api.flip7.updateFlip7HouseRules);
 
   const [activeTooltipRule, setActiveTooltipRule] = useState<string | null>(null);
-  const [activeBotTooltip, setActiveBotTooltip] = useState<{ id: string; type: "maturity" | "persona" } | null>(null);
 
   const HOUSE_RULE_TOOLTIPS: Record<string, { title: string; desc: string }> = {
     bustPenalty: {
@@ -105,7 +104,7 @@ export default function LobbyInitialization({
 
   const handleToggleBotPersona = async (playerId: string, currentPersona?: string) => {
     if (!isAdmin || !adminPassword) return;
-    const personas = ["balanced", "cautious", "aggressive", "intuitive", "wild"];
+    const personas = ["balanced", "cautious", "aggressive", "intuitive", "wild", "storyteller", "surrealist", "cinephile"];
     const currIdx = personas.indexOf(currentPersona || "balanced");
     const nextPersona = personas[(currIdx + 1) % personas.length];
     try {
@@ -219,7 +218,7 @@ export default function LobbyInitialization({
           {localizedGameTitle || room.currentGame}
         </h2>
 
-        {/* ⚙️ AUTOMATIC RULESET INDICATOR & TOOLTIP (DIXIT ONLY) */}
+        {/* ⚙️ AUTOMATIC RULESET INDICATOR & BOT GUIDE BUTTON (DIXIT ONLY) */}
         {room.currentGame === "dixit" && (() => {
           const activeRuleset = players.length > 6 ? "ODYSSEY" : "CLASSIC";
           return (
@@ -260,6 +259,81 @@ export default function LobbyInitialization({
                     </div>
                     <div className="text-[9px] text-blue-300/80 italic pt-1 border-t border-blue-500/20">
                       ⚡ Ruleset automatically switches based on connected player count ({players.length} active players).
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* 🤖 BOT PERSONA & AGE GUIDE BUTTON */}
+              <button
+                type="button"
+                onClick={() => setActiveTooltipRule(activeTooltipRule === "botGuide" ? null : "botGuide")}
+                className="mt-1 flex items-center gap-2 bg-purple-950/60 hover:bg-purple-900/80 border border-purple-500/40 text-purple-200 px-4 py-1.5 rounded-xl text-[10px] font-mono font-bold uppercase transition-all shadow-md"
+              >
+                <span>🤖 AI Bot Personas & Age Guide</span>
+                <span className="text-xs">ℹ️</span>
+              </button>
+
+              {activeTooltipRule === "botGuide" && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="max-w-xl w-full bg-zinc-950/95 border border-purple-500/40 p-4 rounded-3xl text-[10px] text-zinc-200 leading-snug shadow-2xl backdrop-blur-xl text-left space-y-3 mt-1"
+                >
+                  <div className="font-bold text-purple-300 text-xs flex items-center justify-between border-b border-white/10 pb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">🤖</span>
+                      <span>AI Bot Personas & Age Range Guide</span>
+                    </div>
+                    <button
+                      onClick={() => setActiveTooltipRule(null)}
+                      className="text-zinc-400 hover:text-white text-xs px-1.5 py-0.5 rounded hover:bg-white/10"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  {/* Age Ranges */}
+                  <div className="space-y-1.5">
+                    <div className="text-[9px] font-black uppercase text-amber-400 tracking-wider">Age Ranges (Maturity)</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[9.5px]">
+                      <div className="bg-amber-500/10 border border-amber-500/30 p-2 rounded-xl">
+                        <span className="font-bold text-amber-300">👶 Child (Age 7–12):</span> Uses warm, magical, simpler vocabulary and playful child imagination for story clues and guessing logic.
+                      </div>
+                      <div className="bg-blue-500/10 border border-blue-500/30 p-2 rounded-xl">
+                        <span className="font-bold text-blue-300">👤 Adult (Age 18+):</span> Uses nostalgic memories, cozy themes, and nuanced poetic storytelling depth.
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 8 Personas */}
+                  <div className="space-y-1.5">
+                    <div className="text-[9px] font-black uppercase text-purple-400 tracking-wider">8 AI Personas</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[9.5px]">
+                      <div className="bg-amber-950/40 border border-amber-500/30 p-2 rounded-xl">
+                        <span className="font-bold text-amber-300">✨ The Dreamer (Balanced):</span> Cozy, creative & balanced storytelling strategy.
+                      </div>
+                      <div className="bg-cyan-950/40 border border-cyan-500/30 p-2 rounded-xl">
+                        <span className="font-bold text-cyan-300">🦉 The Wise Owl (Cautious):</span> Focuses on subtle card details & low-risk play.
+                      </div>
+                      <div className="bg-purple-950/40 border border-purple-500/30 p-2 rounded-xl">
+                        <span className="font-bold text-purple-300">🎩 The Mad Hatter (Aggressive):</span> Playful paradoxes, eccentric clues, and bold moves.
+                      </div>
+                      <div className="bg-emerald-950/40 border border-emerald-500/30 p-2 rounded-xl">
+                        <span className="font-bold text-emerald-300">🔮 The Mystic (Intuitive):</span> Pure intuition and fluid, adaptive storytelling.
+                      </div>
+                      <div className="bg-rose-950/40 border border-rose-500/30 p-2 rounded-xl">
+                        <span className="font-bold text-rose-300">⚡ The Daredevil (Wild):</span> High-risk, adventurous choices & unpredictable bluffs.
+                      </div>
+                      <div className="bg-blue-950/40 border border-blue-500/30 p-2 rounded-xl">
+                        <span className="font-bold text-blue-300">📖 The Storyteller (Literary):</span> Fairytale tropes, myths, and classical storytelling lore.
+                      </div>
+                      <div className="bg-violet-950/40 border border-violet-500/30 p-2 rounded-xl">
+                        <span className="font-bold text-violet-300">🌀 The Surrealist (Abstract):</span> Abstract sensory moods, dream logic, and liminal whispers.
+                      </div>
+                      <div className="bg-fuchsia-950/40 border border-fuchsia-500/30 p-2 rounded-xl">
+                        <span className="font-bold text-fuchsia-300">🎬 The Cinephile (Cinematic):</span> Cinematic tropes, film noir lighting, and dramatic flair.
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -683,134 +757,62 @@ export default function LobbyInitialization({
               >
                 <div className="flex flex-col gap-2 mt-3">
                   {player.isBot && (
-                    <div className="flex flex-col gap-1.5 w-full">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        {room.currentGame === "dixit" && (
-                          <div className="relative">
-                            <div
-                              onClick={() => {
-                                if (isAdmin) handleToggleBotMaturity(player._id, player.maturity);
-                              }}
-                              className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-md border transition-all flex items-center gap-1 ${
-                                player.maturity === "CHILD"
-                                  ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
-                                  : "bg-blue-500/20 text-blue-300 border-blue-500/40 hover:bg-blue-500/30"
-                              } ${!isAdmin ? "cursor-default" : "cursor-pointer"}`}
-                              title={isAdmin ? "Click badge to toggle Age Range" : "Age Range"}
-                            >
-                              <span>{player.maturity === "CHILD" ? "👶 AGE 7–12" : "👤 AGE 18+"}</span>
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setActiveBotTooltip(
-                                    activeBotTooltip?.id === player._id && activeBotTooltip?.type === "maturity"
-                                      ? null
-                                      : { id: player._id, type: "maturity" }
-                                  );
-                                }}
-                                className="text-[10px] text-amber-300/80 hover:text-white p-0.5 rounded hover:bg-white/10"
-                                title="Age Range Tooltip"
-                              >
-                                ℹ️
-                              </button>
-                            </div>
-                            {activeBotTooltip?.id === player._id && activeBotTooltip?.type === "maturity" && (
-                              <motion.div
-                                initial={{ opacity: 0, y: -4 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="absolute left-0 top-full mt-1 z-30 w-52 bg-zinc-950 border border-amber-400/50 p-2.5 rounded-xl text-[9.5px] text-zinc-200 leading-snug shadow-2xl backdrop-blur-xl text-left"
-                              >
-                                <div className="font-bold text-amber-300 mb-0.5 flex items-center gap-1">
-                                  <span>{player.maturity === "CHILD" ? "👶 Child Bot (Age 7–12)" : "👤 Adult Bot (Age 18+)"}</span>
-                                </div>
-                                <div className="text-zinc-300">
-                                  {player.maturity === "CHILD"
-                                    ? "Child persona: Uses warm, magical, simpler vocabulary and playful child imagination for Dixit story clues and guessing logic."
-                                    : "Adult persona: Uses nostalgic memories, cozy themes, and nuanced poetic storytelling depth."}
-                                </div>
-                              </motion.div>
-                            )}
-                          </div>
-                        )}
+                    <div className="flex items-center gap-1.5 w-full flex-nowrap min-w-0 overflow-hidden">
+                      {room.currentGame === "dixit" && (
+                        <button
+                          disabled={!isAdmin}
+                          onClick={() => handleToggleBotMaturity(player._id, player.maturity)}
+                          className={`text-[8.5px] font-mono font-bold px-1.5 py-0.5 rounded-md border transition-all shrink-0 whitespace-nowrap ${
+                            player.maturity === "CHILD"
+                              ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
+                              : "bg-blue-500/20 text-blue-300 border-blue-500/40 hover:bg-blue-500/30"
+                          } ${!isAdmin ? "cursor-default" : "cursor-pointer"}`}
+                          title={isAdmin ? "Click to toggle Age Range" : "Age Range"}
+                        >
+                          {player.maturity === "CHILD" ? "👶 7–12" : "👤 18+"}
+                        </button>
+                      )}
 
-                        <div className="relative">
-                          <div
-                            onClick={() => {
-                              if (isAdmin) handleToggleBotPersona(player._id, player.persona);
-                            }}
-                            className={`text-[9px] font-mono font-black px-2 py-0.5 rounded-md border flex items-center gap-1 transition-all ${
-                              player.persona === "aggressive"
-                                ? "bg-purple-950/80 text-purple-300 border-purple-500/40 hover:bg-purple-900/80"
-                                : player.persona === "wild"
-                                  ? "bg-rose-950/80 text-rose-300 border-rose-500/40 hover:bg-rose-900/80"
-                                  : player.persona === "cautious"
-                                    ? "bg-cyan-950/80 text-cyan-300 border-cyan-500/40 hover:bg-cyan-900/80"
-                                    : player.persona === "intuitive"
-                                      ? "bg-emerald-950/80 text-emerald-300 border-emerald-500/40 hover:bg-emerald-900/80"
-                                      : "bg-amber-950/80 text-amber-300 border-amber-500/40 hover:bg-amber-900/80"
-                            } ${!isAdmin ? "cursor-default" : "cursor-pointer"}`}
-                            title={isAdmin ? "Click badge to cycle Persona" : "Persona"}
-                          >
-                            <span>
-                              {player.persona === "aggressive"
-                                ? "🎩 The Mad Hatter"
-                                : player.persona === "wild"
-                                  ? "⚡ The Daredevil"
-                                  : player.persona === "cautious"
-                                    ? "🦉 The Wise Owl"
-                                    : player.persona === "intuitive"
-                                      ? "🔮 The Mystic"
-                                      : "✨ The Dreamer"}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setActiveBotTooltip(
-                                  activeBotTooltip?.id === player._id && activeBotTooltip?.type === "persona"
-                                    ? null
-                                    : { id: player._id, type: "persona" }
-                                );
-                              }}
-                              className="text-[10px] text-purple-300/80 hover:text-white p-0.5 rounded hover:bg-white/10"
-                              title="Persona Tooltip"
-                            >
-                              ℹ️
-                            </button>
-                          </div>
-                          {activeBotTooltip?.id === player._id && activeBotTooltip?.type === "persona" && (
-                            <motion.div
-                              initial={{ opacity: 0, y: -4 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              className="absolute left-0 top-full mt-1 z-30 w-56 bg-zinc-950 border border-purple-400/50 p-2.5 rounded-xl text-[9.5px] text-zinc-200 leading-snug shadow-2xl backdrop-blur-xl text-left"
-                            >
-                              <div className="font-bold text-purple-300 mb-0.5">
-                                {player.persona === "aggressive"
-                                  ? "🎩 The Mad Hatter (Aggressive)"
-                                  : player.persona === "wild"
-                                    ? "⚡ The Daredevil (Wild)"
-                                    : player.persona === "cautious"
-                                      ? "🦉 The Wise Owl (Cautious)"
-                                      : player.persona === "intuitive"
-                                        ? "🔮 The Mystic (Intuitive)"
-                                        : "✨ The Dreamer (Balanced)"}
-                              </div>
-                              <div className="text-zinc-300">
-                                {player.persona === "aggressive"
-                                  ? "Playful paradoxes, eccentric clues, and bold attacks."
-                                  : player.persona === "wild"
-                                    ? "High-risk, adventurous decision making and surprise moves."
-                                    : player.persona === "cautious"
-                                      ? "Observant & careful. Focuses on subtle card details and low-risk plays."
-                                      : player.persona === "intuitive"
-                                        ? "Pure intuition and fluid, adaptive storytelling."
-                                        : "Creative, cozy storytelling and balanced game strategy."}
-                              </div>
-                            </motion.div>
-                          )}
-                        </div>
-                      </div>
+                      <button
+                        disabled={!isAdmin}
+                        onClick={() => handleToggleBotPersona(player._id, player.persona)}
+                        className={`text-[8.5px] font-mono font-black px-1.5 py-0.5 rounded-md border flex items-center gap-1 transition-all shrink min-w-0 whitespace-nowrap overflow-hidden ${
+                          player.persona === "aggressive"
+                            ? "bg-purple-950/80 text-purple-300 border-purple-500/40 hover:bg-purple-900/80"
+                            : player.persona === "wild"
+                              ? "bg-rose-950/80 text-rose-300 border-rose-500/40 hover:bg-rose-900/80"
+                              : player.persona === "cautious"
+                                ? "bg-cyan-950/80 text-cyan-300 border-cyan-500/40 hover:bg-cyan-900/80"
+                                : player.persona === "intuitive"
+                                  ? "bg-emerald-950/80 text-emerald-300 border-emerald-500/40 hover:bg-emerald-900/80"
+                                  : player.persona === "storyteller"
+                                    ? "bg-blue-950/80 text-blue-300 border-blue-500/40 hover:bg-blue-900/80"
+                                    : player.persona === "surrealist"
+                                      ? "bg-violet-950/80 text-violet-300 border-violet-500/40 hover:bg-violet-900/80"
+                                      : player.persona === "cinephile"
+                                        ? "bg-fuchsia-950/80 text-fuchsia-300 border-fuchsia-500/40 hover:bg-fuchsia-900/80"
+                                        : "bg-amber-950/80 text-amber-300 border-amber-500/40 hover:bg-amber-900/80"
+                        } ${!isAdmin ? "cursor-default" : "cursor-pointer"}`}
+                        title={isAdmin ? "Click to cycle Persona" : "Persona"}
+                      >
+                        <span className="truncate">
+                          {player.persona === "aggressive"
+                            ? "🎩 Mad Hatter"
+                            : player.persona === "wild"
+                              ? "⚡ Daredevil"
+                              : player.persona === "cautious"
+                                ? "🦉 Wise Owl"
+                                : player.persona === "intuitive"
+                                  ? "🔮 Mystic"
+                                  : player.persona === "storyteller"
+                                    ? "📖 Storyteller"
+                                    : player.persona === "surrealist"
+                                      ? "🌀 Surrealist"
+                                      : player.persona === "cinephile"
+                                        ? "🎬 Cinephile"
+                                        : "✨ Dreamer"}
+                        </span>
+                      </button>
                     </div>
                   )}
 

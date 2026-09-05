@@ -307,5 +307,122 @@ export const PERSONAS: Record<string, BotPersona> = {
     generateDixitPrompt(phase, maturity, clue, ruleset) {
       return PERSONAS.aggressive.generateDixitPrompt(phase, maturity, clue, ruleset);
     }
+  },
+  storyteller: {
+    name: "The Storyteller",
+    decidePiouPiou(myId, hand, eggs, chicks, players, board) {
+      return PERSONAS.balanced.decidePiouPiou(myId, hand, eggs, chicks, players, board);
+    },
+    decideIncanGold(myId, currentGems, players, board) {
+      return currentGems >= 14 ? "LEAVE" : "STAY";
+    },
+    decideFlip7(myId, faceUpCards, hasSecondChance, bankedScore, board) {
+      return decideFlip7Action({ myId, faceUpCards, hasSecondChance, bankedScore, persona: "storyteller", board });
+    },
+    generateDixitPrompt(phase, maturity, clue, ruleset) {
+      const maturityConstraint = maturity === "CHILD"
+        ? "YOU ARE PLAYING AS A STORYTELLING CHILD (Age 7-12). Use classic fairytale and legend tropes (e.g. 'glass slipper', 'dragon cave', 'magic wand', 'hidden treasure')."
+        : "YOU ARE PLAYING AS A LITERARY STORYTELLER (Age 18+). Focus on classical myths, folklore, or epic story tropes (e.g. 'pandora\\'s box', 'icarus flight', 'the odyssey home', 'labyrinth key').";
+
+      if (phase === "CLUE") {
+        return `${DIXIT_GLOBAL_CONSTRAINT} ${maturityConstraint} You are THE STORYTELLER persona.
+        1. Pick ONE image. Connect it to a famous myth, fairytale, or legendary tale.
+        2. Create an evocative clue (1-4 words) referencing storytelling lore.
+        3. Translate this clue into English, French, German, and Persian.
+        Return ONLY a JSON object: { \"selectedIndex\": 1, \"clues\": { \"en\": \"...\", \"fr\": \"...\", \"de\": \"...\", \"fa\": \"...\" } }
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      if (phase === "SUBMITTING") {
+        return `${DIXIT_GLOBAL_CONSTRAINT} ${maturityConstraint} The Clue is: \"${clue}\".
+        Pick a card from your hand that best matches legendary tales or fairytale tropes.
+        Return ONLY a JSON object: { \"selectedIndex\": 1 }
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      if (phase === "VOTING") {
+        const isOdyssey = ruleset === "ODYSSEY";
+        return `${maturityConstraint} Find the original card that fits the story trope clue! Clue: \"${clue}\".
+        Return ONLY a JSON object: ${isOdyssey ? '{ \"selectedIndices\": [1] } OR { \"selectedIndices\": [1, 2] }' : '{ \"selectedIndex\": 1 }'}
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      return "";
+    }
+  },
+  surrealist: {
+    name: "The Surrealist",
+    decidePiouPiou(myId, hand, eggs, chicks, players, board) {
+      return PERSONAS.balanced.decidePiouPiou(myId, hand, eggs, chicks, players, board);
+    },
+    decideIncanGold(myId, currentGems, players, board) {
+      return currentGems >= 16 ? "LEAVE" : "STAY";
+    },
+    decideFlip7(myId, faceUpCards, hasSecondChance, bankedScore, board) {
+      return decideFlip7Action({ myId, faceUpCards, hasSecondChance, bankedScore, persona: "surrealist", board });
+    },
+    generateDixitPrompt(phase, maturity, clue, ruleset) {
+      const maturityConstraint = maturity === "CHILD"
+        ? "YOU ARE A SURREALIST CHILD (Age 7-12). Use strange, dreamy sensory words (e.g. 'dancing shadow', 'whispering cloud', 'floating clock')."
+        : "YOU ARE A SURREALIST ARTIST (Age 18+). Use abstract sensory moods, dream logic, or liminal space concepts (e.g. 'liminal hallway', 'fractured echo', 'melting time', 'velvet silence').";
+
+      if (phase === "CLUE") {
+        return `${DIXIT_GLOBAL_CONSTRAINT} ${maturityConstraint} You are THE SURREALIST persona.
+        1. Pick ONE image. Focus on its abstract mood, dream logic, or sensory feeling.
+        2. Create a deeply abstract, surreal clue (1-3 words).
+        3. Translate this clue into English, French, German, and Persian.
+        Return ONLY a JSON object: { \"selectedIndex\": 1, \"clues\": { \"en\": \"...\", \"fr\": \"...\", \"de\": \"...\", \"fa\": \"...\" } }
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      if (phase === "SUBMITTING") {
+        return `${DIXIT_GLOBAL_CONSTRAINT} ${maturityConstraint} The Clue is: \"${clue}\".
+        Pick the most abstract, dream-like image that captures the mood of this clue.
+        Return ONLY a JSON object: { \"selectedIndex\": 1 }
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      if (phase === "VOTING") {
+        const isOdyssey = ruleset === "ODYSSEY";
+        return `${maturityConstraint} Trust your dream intuition to find the original surreal card matching: \"${clue}\".
+        Return ONLY a JSON object: ${isOdyssey ? '{ \"selectedIndices\": [1] } OR { \"selectedIndices\": [1, 2] }' : '{ \"selectedIndex\": 1 }'}
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      return "";
+    }
+  },
+  cinephile: {
+    name: "The Cinephile",
+    decidePiouPiou(myId, hand, eggs, chicks, players, board) {
+      return PERSONAS.aggressive.decidePiouPiou(myId, hand, eggs, chicks, players, board);
+    },
+    decideIncanGold(myId, currentGems, players, board) {
+      return currentGems >= 18 ? "LEAVE" : "STAY";
+    },
+    decideFlip7(myId, faceUpCards, hasSecondChance, bankedScore, board) {
+      return decideFlip7Action({ myId, faceUpCards, hasSecondChance, bankedScore, persona: "cinephile", board });
+    },
+    generateDixitPrompt(phase, maturity, clue, ruleset) {
+      const maturityConstraint = maturity === "CHILD"
+        ? "YOU ARE A MOVIE-LOVING CHILD (Age 7-12). Use cinematic cartoon/hero tropes (e.g. 'superhero landing', 'laser chase', 'cosmic rocket')."
+        : "YOU ARE A CINEPHILE (Age 18+). Use dramatic film visual tropes, noir lighting, or cinematic moods (e.g. 'film noir rain', 'neon midnight', 'fade to black', 'director\\'s cut').";
+
+      if (phase === "CLUE") {
+        return `${DIXIT_GLOBAL_CONSTRAINT} ${maturityConstraint} You are THE CINEPHILE persona.
+        1. Pick ONE image. Imagine it as a dramatic frame in a movie.
+        2. Create a cinematic, visual clue (1-4 words).
+        3. Translate this clue into English, French, German, and Persian.
+        Return ONLY a JSON object: { \"selectedIndex\": 1, \"clues\": { \"en\": \"...\", \"fr\": \"...\", \"de\": \"...\", \"fa\": \"...\" } }
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      if (phase === "SUBMITTING") {
+        return `${DIXIT_GLOBAL_CONSTRAINT} ${maturityConstraint} The Clue is: \"${clue}\".
+        Pick a card that looks like a cinematic movie frame matching the clue.
+        Return ONLY a JSON object: { \"selectedIndex\": 1 }
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      if (phase === "VOTING") {
+        const isOdyssey = ruleset === "ODYSSEY";
+        return `${maturityConstraint} Find the cinematic card that inspired the clue: \"${clue}\".
+        Return ONLY a JSON object: ${isOdyssey ? '{ \"selectedIndices\": [1] } OR { \"selectedIndices\": [1, 2] }' : '{ \"selectedIndex\": 1 }'}
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      return "";
+    }
   }
 };

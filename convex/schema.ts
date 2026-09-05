@@ -379,7 +379,7 @@ export default defineSchema({
     botStatus: v.optional(v.string()),
     aiError: v.optional(v.boolean()),
     maturity: v.optional(v.union(v.literal("CHILD"), v.literal("ADULT"))),
-    persona: v.optional(v.union(v.literal("balanced"), v.literal("aggressive"), v.literal("cautious"), v.literal("intuitive"), v.literal("wild"))),
+    persona: v.optional(v.union(v.literal("balanced"), v.literal("aggressive"), v.literal("cautious"), v.literal("intuitive"), v.literal("wild"), v.literal("storyteller"), v.literal("surrealist"), v.literal("cinephile"))),
     gameHand: v.array(v.string()),
     isReady: v.boolean(),
     state: v.union(
