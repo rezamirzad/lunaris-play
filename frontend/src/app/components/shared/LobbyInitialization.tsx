@@ -104,7 +104,7 @@ export default function LobbyInitialization({
 
   const handleToggleBotPersona = async (playerId: string, currentPersona?: string) => {
     if (!isAdmin || !adminPassword) return;
-    const personas = ["balanced", "cautious", "aggressive", "intuitive", "wild", "storyteller", "surrealist", "cinephile"];
+    const personas = ["balanced", "cautious", "aggressive", "intuitive", "wild", "storyteller", "surrealist", "cinephile", "virtuoso", "alchemist", "historian", "trickster"];
     const currIdx = personas.indexOf(currentPersona || "balanced");
     const nextPersona = personas[(currIdx + 1) % personas.length];
     try {
@@ -243,22 +243,94 @@ export default function LobbyInitialization({
 
               {activeTooltipRule === "dixitRuleset" && (
                 <motion.div
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="max-w-md bg-blue-950/95 border border-blue-400/50 p-3.5 rounded-2xl text-[10px] text-blue-100 leading-snug shadow-2xl backdrop-blur-md text-left space-y-2 mt-1"
+                  initial={{ opacity: 0, y: -4, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  className="max-w-xl w-full bg-gradient-to-b from-zinc-950 via-blue-950/95 to-purple-950/95 border border-blue-400/50 p-4.5 rounded-3xl text-[10px] text-blue-100 leading-relaxed shadow-2xl backdrop-blur-2xl text-left space-y-3 mt-2 relative z-30"
                 >
-                  <div className="font-bold text-blue-300 text-xs flex items-center gap-1.5">
-                    <span>🎭</span> Dixit Rulesets Explained
+                  {/* Header */}
+                  <div className="flex items-center justify-between border-b border-blue-500/30 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">🎭</span>
+                      <div>
+                        <h4 className="text-xs font-black uppercase text-white tracking-wider flex items-center gap-2">
+                          Dixit Ruleset Guide
+                          <span className={`text-[8.5px] font-mono px-2 py-0.5 rounded-full border ${
+                            activeRuleset === "ODYSSEY"
+                              ? "bg-purple-500/20 text-purple-300 border-purple-500/40"
+                              : "bg-blue-500/20 text-blue-300 border-blue-500/40"
+                          }`}>
+                            {activeRuleset === "ODYSSEY" ? "ODYSSEY ACTIVE" : "CLASSIC ACTIVE"}
+                          </span>
+                        </h4>
+                        <span className="text-[9px] text-blue-300/80">
+                          Automatically switches based on room size ({players.length} connected player{players.length === 1 ? "" : "s"})
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setActiveTooltipRule(null)}
+                      className="text-blue-300 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors"
+                    >
+                      ✕
+                    </button>
                   </div>
-                  <div className="space-y-1.5">
-                    <div>
-                      <span className="font-bold text-blue-200">• Classic (3–6 Players):</span> Standard Dixit gameplay. Storyteller gives a clue; players submit 1 matching card; each non-storyteller casts 1 vote for the storyteller&apos;s card.
+
+                  {/* Core Gameplay Summary */}
+                  <div className="bg-blue-500/10 border border-blue-500/20 p-3 rounded-2xl space-y-1">
+                    <div className="font-bold text-blue-200 text-[10.5px] flex items-center gap-1.5">
+                      <span>🃏</span> Core Gameplay & Objective (30 Points to Win)
                     </div>
-                    <div>
-                      <span className="font-bold text-purple-200">• Odyssey (7–12 Players):</span> Designed for larger groups. Players can cast up to 2 votes during voting to hedge risk when torn between cards!
+                    <p className="text-blue-100/90 text-[9.5px]">
+                      1. <b>Storyteller Clue:</b> One player becomes Storyteller, picks a secret card from their hand, and speaks a subtle clue.
+                      <br />
+                      2. <b>Card Submissions:</b> All other players choose 1 card from their hand that best tricks opponents into guessing it.
+                      <br />
+                      3. <b>Voting:</b> All submitted cards are shuffled face up. Non-storytellers vote to identify the Storyteller&apos;s original card.
+                    </p>
+                  </div>
+
+                  {/* Mode Comparison Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {/* Classic Card */}
+                    <div className={`p-3 rounded-2xl border transition-all ${
+                      activeRuleset === "CLASSIC"
+                        ? "bg-blue-950/80 border-blue-400 text-blue-100 shadow-[0_0_15px_rgba(59,130,246,0.2)]"
+                        : "bg-white/5 border-white/10 text-zinc-400 opacity-70"
+                    }`}>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="font-bold text-xs text-blue-300 flex items-center gap-1">
+                          <span>🔹</span> Classic Ruleset
+                        </span>
+                        <span className="text-[8px] font-bold uppercase px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                          3–6 Players
+                        </span>
+                      </div>
+                      <ul className="space-y-1 text-[9.5px] list-disc list-inside">
+                        <li><b>Single Vote:</b> Each player casts 1 vote for the Storyteller&apos;s card.</li>
+                        <li><b>Focused Strategy:</b> Precise guessing for intimate table sizes.</li>
+                        <li><b>Scoring:</b> Storyteller gets 3 pts if <i>some</i> guess right (0 if all or none guess right). Guessers get 3 pts + 1 bonus pt per vote on their trap card.</li>
+                      </ul>
                     </div>
-                    <div className="text-[9px] text-blue-300/80 italic pt-1 border-t border-blue-500/20">
-                      ⚡ Ruleset automatically switches based on connected player count ({players.length} active players).
+
+                    {/* Odyssey Card */}
+                    <div className={`p-3 rounded-2xl border transition-all ${
+                      activeRuleset === "ODYSSEY"
+                        ? "bg-purple-950/80 border-purple-400 text-purple-100 shadow-[0_0_15px_rgba(168,85,247,0.2)]"
+                        : "bg-white/5 border-white/10 text-zinc-400 opacity-70"
+                    }`}>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="font-bold text-xs text-purple-300 flex items-center gap-1">
+                          <span>🚀</span> Odyssey Ruleset
+                        </span>
+                        <span className="text-[8px] font-bold uppercase px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                          7–12 Players
+                        </span>
+                      </div>
+                      <ul className="space-y-1 text-[9.5px] list-disc list-inside">
+                        <li><b>Dual Voting Option:</b> Players can cast <b>1 vote</b> (for 3 pts if correct) OR <b>2 votes</b> to hedge risk (for 2 pts if either card is correct!).</li>
+                        <li><b>Large Group Support:</b> Handles 7+ table cards smoothly.</li>
+                        <li><b>Strategic Hedging:</b> Stay competitive even with crowded choices.</li>
+                      </ul>
                     </div>
                   </div>
                 </motion.div>
@@ -306,9 +378,9 @@ export default function LobbyInitialization({
                     </div>
                   </div>
 
-                  {/* 8 Personas */}
+                  {/* 12 Personas */}
                   <div className="space-y-1.5">
-                    <div className="text-[9px] font-black uppercase text-purple-400 tracking-wider">8 AI Personas</div>
+                    <div className="text-[9px] font-black uppercase text-purple-400 tracking-wider">12 AI Personas</div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[9.5px]">
                       <div className="bg-amber-950/40 border border-amber-500/30 p-2 rounded-xl">
                         <span className="font-bold text-amber-300">✨ The Dreamer (Balanced):</span> Cozy, creative & balanced storytelling strategy.
@@ -333,6 +405,18 @@ export default function LobbyInitialization({
                       </div>
                       <div className="bg-fuchsia-950/40 border border-fuchsia-500/30 p-2 rounded-xl">
                         <span className="font-bold text-fuchsia-300">🎬 The Cinephile (Cinematic):</span> Cinematic tropes, film noir lighting, and dramatic flair.
+                      </div>
+                      <div className="bg-amber-950/40 border border-amber-500/30 p-2 rounded-xl">
+                        <span className="font-bold text-amber-300">🎻 The Virtuoso (Musical):</span> Acoustic sensations, musical rhythms, and soundscapes.
+                      </div>
+                      <div className="bg-teal-950/40 border border-teal-500/30 p-2 rounded-xl">
+                        <span className="font-bold text-teal-300">🔬 The Alchemist (Cosmic):</span> Astronomy, elemental science, and transformations.
+                      </div>
+                      <div className="bg-yellow-950/40 border border-yellow-500/30 p-2 rounded-xl">
+                        <span className="font-bold text-yellow-300">📜 The Historian (Eras & Relics):</span> Historical eras, lost empires, and antique relics.
+                      </div>
+                      <div className="bg-pink-950/40 border border-pink-500/30 p-2 rounded-xl">
+                        <span className="font-bold text-pink-300">🎭 The Trickster (Riddles):</span> Clever wordplay, riddles, double entendres, and illusions.
                       </div>
                     </div>
                   </div>
@@ -767,7 +851,6 @@ export default function LobbyInitialization({
                               ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
                               : "bg-blue-500/20 text-blue-300 border-blue-500/40 hover:bg-blue-500/30"
                           } ${!isAdmin ? "cursor-default" : "cursor-pointer"}`}
-                          title={isAdmin ? "Click to toggle Age Range" : "Age Range"}
                         >
                           {player.maturity === "CHILD" ? "👶 7–12" : "👤 18+"}
                         </button>
@@ -791,9 +874,16 @@ export default function LobbyInitialization({
                                       ? "bg-violet-950/80 text-violet-300 border-violet-500/40 hover:bg-violet-900/80"
                                       : player.persona === "cinephile"
                                         ? "bg-fuchsia-950/80 text-fuchsia-300 border-fuchsia-500/40 hover:bg-fuchsia-900/80"
-                                        : "bg-amber-950/80 text-amber-300 border-amber-500/40 hover:bg-amber-900/80"
+                                        : player.persona === "virtuoso"
+                                          ? "bg-amber-950/80 text-amber-300 border-amber-500/40 hover:bg-amber-900/80"
+                                          : player.persona === "alchemist"
+                                            ? "bg-teal-950/80 text-teal-300 border-teal-500/40 hover:bg-teal-900/80"
+                                            : player.persona === "historian"
+                                              ? "bg-yellow-950/80 text-yellow-300 border-yellow-500/40 hover:bg-yellow-900/80"
+                                              : player.persona === "trickster"
+                                                ? "bg-pink-950/80 text-pink-300 border-pink-500/40 hover:bg-pink-900/80"
+                                                : "bg-amber-950/80 text-amber-300 border-amber-500/40 hover:bg-amber-900/80"
                         } ${!isAdmin ? "cursor-default" : "cursor-pointer"}`}
-                        title={isAdmin ? "Click to cycle Persona" : "Persona"}
                       >
                         <span className="truncate">
                           {player.persona === "aggressive"
@@ -810,7 +900,15 @@ export default function LobbyInitialization({
                                       ? "🌀 Surrealist"
                                       : player.persona === "cinephile"
                                         ? "🎬 Cinephile"
-                                        : "✨ Dreamer"}
+                                        : player.persona === "virtuoso"
+                                          ? "🎻 Virtuoso"
+                                          : player.persona === "alchemist"
+                                            ? "🔬 Alchemist"
+                                            : player.persona === "historian"
+                                              ? "📜 Historian"
+                                              : player.persona === "trickster"
+                                                ? "🎭 Trickster"
+                                                : "✨ Dreamer"}
                         </span>
                       </button>
                     </div>

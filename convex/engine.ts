@@ -460,7 +460,7 @@ export const addBot = mutation({
       "LOBBY",
       room,
     );
-    const personas = ["balanced", "cautious", "aggressive", "intuitive", "wild"] as const;
+    const personas = ["balanced", "cautious", "aggressive", "intuitive", "wild", "storyteller", "surrealist", "cinephile", "virtuoso", "alchemist", "historian", "trickster"] as const;
     const maturities = ["CHILD", "ADULT"] as const;
     const randomPersona = personas[Math.floor(Math.random() * personas.length)];
     const randomMaturity = maturities[Math.floor(Math.random() * maturities.length)];

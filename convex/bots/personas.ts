@@ -424,5 +424,161 @@ export const PERSONAS: Record<string, BotPersona> = {
       }
       return "";
     }
+  },
+  virtuoso: {
+    name: "The Virtuoso",
+    decidePiouPiou(myId, hand, eggs, chicks, players, board) {
+      return PERSONAS.balanced.decidePiouPiou(myId, hand, eggs, chicks, players, board);
+    },
+    decideIncanGold(myId, currentGems, players, board) {
+      return currentGems >= 15 ? "LEAVE" : "STAY";
+    },
+    decideFlip7(myId, faceUpCards, hasSecondChance, bankedScore, board) {
+      return decideFlip7Action({ myId, faceUpCards, hasSecondChance, bankedScore, persona: "virtuoso", board });
+    },
+    generateDixitPrompt(phase, maturity, clue, ruleset) {
+      const maturityConstraint = maturity === "CHILD"
+        ? "YOU ARE A MUSICAL CHILD (Age 7-12). Use fun sound and music words (e.g. 'happy piano', 'drum roll', 'singing bird')."
+        : "YOU ARE A MUSICAL VIRTUOSO (Age 18+). Focus on acoustic sensations, musical rhythms, and soundscapes (e.g. 'staccato heartbeat', 'crying violin', 'silent symphony', 'minor key').";
+
+      if (phase === "CLUE") {
+        return `${DIXIT_GLOBAL_CONSTRAINT} ${maturityConstraint} You are THE VIRTUOSO persona.
+        1. Pick ONE image. Think of the musical melody or rhythm it evokes.
+        2. Create a musical soundscape clue (1-4 words).
+        3. Translate this clue into English, French, German, and Persian.
+        Return ONLY a JSON object: { \"selectedIndex\": 1, \"clues\": { \"en\": \"...\", \"fr\": \"...\", \"de\": \"...\", \"fa\": \"...\" } }
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      if (phase === "SUBMITTING") {
+        return `${DIXIT_GLOBAL_CONSTRAINT} ${maturityConstraint} The Clue is: \"${clue}\".
+        Pick a card matching the musical mood or rhythm of this clue.
+        Return ONLY a JSON object: { \"selectedIndex\": 1 }
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      if (phase === "VOTING") {
+        const isOdyssey = ruleset === "ODYSSEY";
+        return `${maturityConstraint} Listen for the musical card matching clue: \"${clue}\".
+        Return ONLY a JSON object: ${isOdyssey ? '{ \"selectedIndices\": [1] } OR { \"selectedIndices\": [1, 2] }' : '{ \"selectedIndex\": 1 }'}
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      return "";
+    }
+  },
+  alchemist: {
+    name: "The Alchemist",
+    decidePiouPiou(myId, hand, eggs, chicks, players, board) {
+      return PERSONAS.balanced.decidePiouPiou(myId, hand, eggs, chicks, players, board);
+    },
+    decideIncanGold(myId, currentGems, players, board) {
+      return currentGems >= 17 ? "LEAVE" : "STAY";
+    },
+    decideFlip7(myId, faceUpCards, hasSecondChance, bankedScore, board) {
+      return decideFlip7Action({ myId, faceUpCards, hasSecondChance, bankedScore, persona: "alchemist", board });
+    },
+    generateDixitPrompt(phase, maturity, clue, ruleset) {
+      const maturityConstraint = maturity === "CHILD"
+        ? "YOU ARE A SPACE/SCIENCE CHILD (Age 7-12). Use star and potion words (e.g. 'magic potion', 'shooting star', 'alien galaxy')."
+        : "YOU ARE AN ALCHEMIST & COSMOLOGIST (Age 18+). Focus on astronomy, elements, and transformations (e.g. 'supernova memory', 'quantum entanglement', 'gilded mercury', 'starlight reaction').";
+
+      if (phase === "CLUE") {
+        return `${DIXIT_GLOBAL_CONSTRAINT} ${maturityConstraint} You are THE ALCHEMIST persona.
+        1. Pick ONE image. Connect it to cosmic elements, astronomy, or transformation.
+        2. Create an elemental, cosmic clue (1-4 words).
+        3. Translate this clue into English, French, German, and Persian.
+        Return ONLY a JSON object: { \"selectedIndex\": 1, \"clues\": { \"en\": \"...\", \"fr\": \"...\", \"de\": \"...\", \"fa\": \"...\" } }
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      if (phase === "SUBMITTING") {
+        return `${DIXIT_GLOBAL_CONSTRAINT} ${maturityConstraint} The Clue is: \"${clue}\".
+        Pick a card representing elemental or cosmic themes matching the clue.
+        Return ONLY a JSON object: { \"selectedIndex\": 1 }
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      if (phase === "VOTING") {
+        const isOdyssey = ruleset === "ODYSSEY";
+        return `${maturityConstraint} Find the cosmic/elemental card matching clue: \"${clue}\".
+        Return ONLY a JSON object: ${isOdyssey ? '{ \"selectedIndices\": [1] } OR { \"selectedIndices\": [1, 2] }' : '{ \"selectedIndex\": 1 }'}
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      return "";
+    }
+  },
+  historian: {
+    name: "The Historian",
+    decidePiouPiou(myId, hand, eggs, chicks, players, board) {
+      return PERSONAS.cautious.decidePiouPiou(myId, hand, eggs, chicks, players, board);
+    },
+    decideIncanGold(myId, currentGems, players, board) {
+      return currentGems >= 13 ? "LEAVE" : "STAY";
+    },
+    decideFlip7(myId, faceUpCards, hasSecondChance, bankedScore, board) {
+      return decideFlip7Action({ myId, faceUpCards, hasSecondChance, bankedScore, persona: "historian", board });
+    },
+    generateDixitPrompt(phase, maturity, clue, ruleset) {
+      const maturityConstraint = maturity === "CHILD"
+        ? "YOU ARE A HISTORY-LOVING CHILD (Age 7-12). Use castle, pirate, and ancient knight words (e.g. 'old castle', 'pirate ship', 'knight armor')."
+        : "YOU ARE A HISTORIAN (Age 18+). Focus on historical eras, lost empires, and antique relics (e.g. 'victorian shadow', 'forgotten kingdom', 'ancient parchment', 'gilded age').";
+
+      if (phase === "CLUE") {
+        return `${DIXIT_GLOBAL_CONSTRAINT} ${maturityConstraint} You are THE HISTORIAN persona.
+        1. Pick ONE image. Connect it to an era of history, an antique relic, or a lost kingdom.
+        2. Create a historical, nostalgic clue (1-4 words).
+        3. Translate this clue into English, French, German, and Persian.
+        Return ONLY a JSON object: { \"selectedIndex\": 1, \"clues\": { \"en\": \"...\", \"fr\": \"...\", \"de\": \"...\", \"fa\": \"...\" } }
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      if (phase === "SUBMITTING") {
+        return `${DIXIT_GLOBAL_CONSTRAINT} ${maturityConstraint} The Clue is: \"${clue}\".
+        Pick an antique or historically evocative card matching the clue.
+        Return ONLY a JSON object: { \"selectedIndex\": 1 }
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      if (phase === "VOTING") {
+        const isOdyssey = ruleset === "ODYSSEY";
+        return `${maturityConstraint} Deduce the historical card matching clue: \"${clue}\".
+        Return ONLY a JSON object: ${isOdyssey ? '{ \"selectedIndices\": [1] } OR { \"selectedIndices\": [1, 2] }' : '{ \"selectedIndex\": 1 }'}
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      return "";
+    }
+  },
+  trickster: {
+    name: "The Trickster",
+    decidePiouPiou(myId, hand, eggs, chicks, players, board) {
+      return PERSONAS.aggressive.decidePiouPiou(myId, hand, eggs, chicks, players, board);
+    },
+    decideIncanGold(myId, currentGems, players, board) {
+      return currentGems >= 21 ? "LEAVE" : "STAY";
+    },
+    decideFlip7(myId, faceUpCards, hasSecondChance, bankedScore, board) {
+      return decideFlip7Action({ myId, faceUpCards, hasSecondChance, bankedScore, persona: "trickster", board });
+    },
+    generateDixitPrompt(phase, maturity, clue, ruleset) {
+      const maturityConstraint = maturity === "CHILD"
+        ? "YOU ARE A SILLY TRICKSTER CHILD (Age 7-12). Use riddle and funny joke words (e.g. 'magic trick', 'funny face', 'hidden door')."
+        : "YOU ARE A TRICKSTER (Age 18+). Focus on clever wordplay, riddles, double entendres, or illusions (e.g. 'mirror lying', 'catching shadows', 'second glance', 'illusionist trap').";
+
+      if (phase === "CLUE") {
+        return `${DIXIT_GLOBAL_CONSTRAINT} ${maturityConstraint} You are THE TRICKSTER persona.
+        1. Pick ONE image. Craft a clever riddle clue or double entendre.
+        2. Create a tricky, riddle-like clue (1-4 words).
+        3. Translate this clue into English, French, German, and Persian.
+        Return ONLY a JSON object: { \"selectedIndex\": 1, \"clues\": { \"en\": \"...\", \"fr\": \"...\", \"de\": \"...\", \"fa\": \"...\" } }
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      if (phase === "SUBMITTING") {
+        return `${DIXIT_GLOBAL_CONSTRAINT} ${maturityConstraint} The Clue is: \"${clue}\".
+        Pick a card with double meanings or tricky visual elements matching the clue.
+        Return ONLY a JSON object: { \"selectedIndex\": 1 }
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      if (phase === "VOTING") {
+        const isOdyssey = ruleset === "ODYSSEY";
+        return `${maturityConstraint} Outsmart the trickster clue! Clue: \"${clue}\".
+        Return ONLY a JSON object: ${isOdyssey ? '{ \"selectedIndices\": [1] } OR { \"selectedIndices\": [1, 2] }' : '{ \"selectedIndex\": 1 }'}
+        ${DIXIT_PROMPT_REQUIREMENTS}`;
+      }
+      return "";
+    }
   }
 };
