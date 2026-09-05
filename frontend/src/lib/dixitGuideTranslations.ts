@@ -64,7 +64,7 @@ export const DIXIT_GUIDE_TRANSLATIONS: Record<Language, DixitGuideTranslation> =
     odysseyPlayers: "7–12 Players",
     odysseyBullets: [
       "All or None Rule: If everyone or no one guesses the Storyteller, Storyteller gets 0 pts and all other players score 2 pts.",
-      "Voting & Single-Vote Extra: Correct guess with 1 vote scores 4 pts (3 base + 1 extra); correct guess with 2 votes scores 2 pts. Storyteller scores 3 pts.",
+      "Voting & Single-Vote Extra: Correct guess with 1 vote scores 4 pts (3 base + 1 extra); correct guess with 2 votes scores 3 pts. Storyteller scores 3 pts.",
       "Trap Bonus Cap: +1 bonus pt per vote on your card, capped at 3 bonus pts maximum."
     ],
     botGuideButton: "🤖 AI Bot Personas & Age Guide",
@@ -182,7 +182,7 @@ export const DIXIT_GUIDE_TRANSLATIONS: Record<Language, DixitGuideTranslation> =
     odysseyPlayers: "7–12 Joueurs",
     odysseyBullets: [
       "Règle Tous ou Aucun: Si tout le monde ou personne ne trouve le Conteur, le Conteur marque 0 pt et tous les autres joueurs marquent 2 pts.",
-      "Bonus Vote Unique: Trouver la carte avec 1 vote donne 4 pts (3 de base + 1 extra) ; avec 2 votes donne 2 pts. Le Conteur réussi marque 3 pts.",
+      "Bonus Vote Unique: Trouver la carte avec 1 vote donne 4 pts (3 de base + 1 extra) ; avec 2 votes donne 3 pts. Le Conteur réussi marque 3 pts.",
       "Plafond de Pièges: +1 pt bonus par vote sur sa propre carte, limité à 3 pts bonus maximum."
     ],
     botGuideButton: "🤖 Personnalités & Âges des Bots IA",
@@ -300,7 +300,7 @@ export const DIXIT_GUIDE_TRANSLATIONS: Record<Language, DixitGuideTranslation> =
     odysseyPlayers: "7–12 Spieler",
     odysseyBullets: [
       "Alle-oder-Keiner-Regel: Raten alle oder niemand richtig, erhält der Erzähler 0 Pkt. und alle anderen Spieler je 2 Pkt.",
-      "Einzelstimmen-Bonus: Richtiger Tipp mit 1 Stimme bringt 4 Pkt. (3 Basis + 1 Extra); mit 2 Stimmen bringt 2 Pkt. Der Erzähler erhält 3 Pkt.",
+      "Einzelstimmen-Bonus: Richtiger Tipp mit 1 Stimme bringt 4 Pkt. (3 Basis + 1 Extra); mit 2 Stimmen bringt 3 Pkt. Der Erzähler erhält 3 Pkt.",
       "Fallen-Obergrenze: +1 Bonuspunkt pro Stimme auf die eigene Karte, begrenzt auf maximal 3 Bonuspunkte."
     ],
     botGuideButton: "🤖 KI-Bot-Personas & Alters-Guide",
@@ -418,7 +418,7 @@ export const DIXIT_GUIDE_TRANSLATIONS: Record<Language, DixitGuideTranslation> =
     odysseyPlayers: "۷ تا ۱۲ نفره",
     odysseyBullets: [
       "قانون همه یا هیچ: اگر همه یا هیچ‌کس کارت راوی را حدس نزند، راوی ۰ امتیاز و تمامی سایر بازیکنان ۲ امتیاز می‌گیرند.",
-      "پاداش تک‌رأی: حدس درست با ۱ رأی ۴ امتیاز (۳ پایه + ۱ پاداش)؛ با ۲ رأی ۲ امتیاز دارد. راوی موفق ۳ امتیاز می‌گیرد.",
+      "پاداش تک‌رأی: حدس درست با ۱ رأی ۴ امتیاز (۳ پایه + ۱ پاداش)؛ با ۲ رأی ۳ امتیاز دارد. راوی موفق ۳ امتیاز می‌گیرد.",
       "سقف امتیاز تله: ۱ امتیاز پاداش به ازای هر رأی به کارت شما، حداکثر تا سقف ۳ امتیاز پاداش."
     ],
     botGuideButton: "🤖 راهنمای هوش مصنوعی و رده‌های سنی ربات‌ها",
