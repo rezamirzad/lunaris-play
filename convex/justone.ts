@@ -5,6 +5,7 @@ import { GamePlugin, GameMutationCtx } from "./types";
 import { logHistoryEvent, updateLeaderboardAtGameEnd } from "./transitions";
 import { justoneDictionary, NexusWord } from "./justone_words";
 import { internal } from "./_generated/api";
+import { validateAdmin } from "./engine";
 
 // ... (helper functions for picking words updated below)
 
@@ -96,7 +97,7 @@ export const startJustOneMatch = mutation({
   },
   handler: async (ctx, args) => {
     // 1. Verify Admin Access
-    if (args.adminPassword !== process.env.ADMIN_PASSWORD) {
+    if (!validateAdmin(args.adminPassword)) {
       throw new Error("UNAUTHORIZED");
     }
 

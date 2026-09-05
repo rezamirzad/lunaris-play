@@ -5,6 +5,7 @@ import { GamePlugin, GameMutationCtx } from "./types";
 import { finishTurn, logHistoryEvent } from "./transitions";
 import { DIXIT_DECK } from "./dixit_deck";
 import { internal } from "./_generated/api";
+import { validateAdmin } from "./engine";
 
 /**
  * Standard Fisher-Yates Shuffle
@@ -171,7 +172,7 @@ export async function handleActionInternal(ctx: GameMutationCtx, args: {
 
     // Allow SET_RULESET in lobby even if state is 'none'
     if (args.actionType === "SET_RULESET" && room.status === "LOBBY") {
-        if (args.adminPin !== process.env.ADMIN_PASSWORD) {
+        if (!validateAdmin(args.adminPin || "")) {
             throw new Error("UNAUTHORIZED");
         }
         

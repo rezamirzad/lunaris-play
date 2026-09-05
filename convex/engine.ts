@@ -18,7 +18,7 @@ const shuffle = <T>(array: T[]) => {
 /**
  * Internal helper to validate admin access
  */
-const validateAdmin = (password: string) => {
+export const validateAdmin = (password: string) => {
   const adminPass = process.env.ADMIN_PASSWORD || "LUNARIS2026";
   return password === adminPass;
 };

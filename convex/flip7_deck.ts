@@ -14,43 +14,48 @@ export interface Flip7CardInfo {
  * - 6 Modifier Cards (+2, +4, +6, +8, +10, x2)
  * - 9 Action Cards (3x FREEZE, 3x FLIP_THREE, 3x SECOND_CHANCE)
  */
-export function getFlip7Deck(): string[] {
-  const deck: string[] = [];
+/**
+ * Generates the official Flip 7 deck:
+ * - Standard 1 Deck (94 cards) for 1 to 18 players
+ * - 2 Decks combined (188 cards) for 19+ players (per official Flip 7 rulebook)
+ */
+export function getFlip7Deck(playerCount: number = 1): string[] {
+  const decksNeeded = playerCount > 18 ? Math.ceil(playerCount / 18) : 1;
+  const fullDeck: string[] = [];
 
-  // 1. Number Cards 0 to 12 (79 cards)
-  // 0 has 1 copy
-  deck.push("N_0_1");
+  for (let d = 1; d <= decksNeeded; d++) {
+    const deckSuffix = decksNeeded > 1 ? `_d${d}` : "";
 
-  // 1 to 12 have N copies each
-  for (let num = 1; num <= 12; num++) {
-    for (let copy = 1; copy <= num; copy++) {
-      deck.push(`N_${num}_${copy}`);
+    // 1. Number Cards 0 to 12 (79 cards per deck)
+    fullDeck.push(`N_0_1${deckSuffix}`);
+
+    for (let num = 1; num <= 12; num++) {
+      for (let copy = 1; copy <= num; copy++) {
+        fullDeck.push(`N_${num}_${copy}${deckSuffix}`);
+      }
     }
+
+    // 2. Modifier Cards (6 cards per deck)
+    fullDeck.push(`M_PLUS_2_1${deckSuffix}`);
+    fullDeck.push(`M_PLUS_4_1${deckSuffix}`);
+    fullDeck.push(`M_PLUS_6_1${deckSuffix}`);
+    fullDeck.push(`M_PLUS_8_1${deckSuffix}`);
+    fullDeck.push(`M_PLUS_10_1${deckSuffix}`);
+    fullDeck.push(`M_MULT_2_1${deckSuffix}`);
+
+    // 3. Action Cards (9 cards per deck)
+    fullDeck.push(`ACT_SECOND_CHANCE_1${deckSuffix}`, `ACT_SECOND_CHANCE_2${deckSuffix}`, `ACT_SECOND_CHANCE_3${deckSuffix}`);
+    fullDeck.push(`ACT_FREEZE_1${deckSuffix}`, `ACT_FREEZE_2${deckSuffix}`, `ACT_FREEZE_3${deckSuffix}`);
+    fullDeck.push(`ACT_FLIP3_1${deckSuffix}`, `ACT_FLIP3_2${deckSuffix}`, `ACT_FLIP3_3${deckSuffix}`);
   }
-
-  // 2. Modifier Cards (6 cards)
-  deck.push("M_PLUS_2_1");
-  deck.push("M_PLUS_4_1");
-  deck.push("M_PLUS_6_1");
-  deck.push("M_PLUS_8_1");
-  deck.push("M_PLUS_10_1");
-  deck.push("M_MULT_2_1");
-
-  // 3. Action Cards (9 cards)
-  // SECOND_CHANCE (3 copies)
-  deck.push("ACT_SECOND_CHANCE_1", "ACT_SECOND_CHANCE_2", "ACT_SECOND_CHANCE_3");
-  // FREEZE (3 copies)
-  deck.push("ACT_FREEZE_1", "ACT_FREEZE_2", "ACT_FREEZE_3");
-  // FLIP_THREE (3 copies)
-  deck.push("ACT_FLIP3_1", "ACT_FLIP3_2", "ACT_FLIP3_3");
 
   // Fisher-Yates Shuffle
-  for (let i = deck.length - 1; i > 0; i--) {
+  for (let i = fullDeck.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [deck[i], deck[j]] = [deck[j], deck[i]];
+    [fullDeck[i], fullDeck[j]] = [fullDeck[j], fullDeck[i]];
   }
 
-  return deck;
+  return fullDeck;
 }
 
 export function parseFlip7Card(cardId: string): Flip7CardInfo {

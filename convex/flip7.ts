@@ -64,7 +64,7 @@ export const flip7Plugin: GamePlugin = {
     const room = await ctx.db.get(roomId);
     const existingRules = (room?.gameBoard as any)?.flip7Rules || { ...DEFAULT_FLIP7_RULES };
 
-    const deck = getFlip7Deck();
+    const deck = getFlip7Deck(players.length);
     const personas: ("balanced" | "aggressive" | "cautious")[] = [
       "balanced",
       "aggressive",
@@ -341,7 +341,7 @@ export const nextRound = mutation({
     }
 
     // Reset for next round
-    const deck = getFlip7Deck();
+    const deck = getFlip7Deck(players.length);
     const currentRound = board.currentRound + 1;
 
     // Reset player round state for 1-by-1 deal

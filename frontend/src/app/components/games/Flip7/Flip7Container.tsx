@@ -72,36 +72,6 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
   const showBustOdds = !!board.showBustOdds;
   const showActionOverlay = !!(actionKey && dismissedActionKey !== actionKey);
 
-  const getBotDialogue = (
-    persona?: string,
-    isMyLastAction?: boolean,
-    lastActionType?: string,
-    status?: string,
-  ) => {
-    if (status === "FROZEN") return "Banking my points! ✋";
-    if (status === "BUSTED") return "Ouch! Busted! 💥";
-    if (isMyLastAction && lastActionType === "SECOND_CHANCE_USED")
-      return "Shield saved me! 🛡️";
-    if (isMyLastAction && lastActionType === "ACTION_CARD")
-      return "Action card deployed! ⚡";
-
-    switch (persona) {
-      case "cautious":
-        return "Playing it safe!";
-      case "risktaker":
-        return "Never tell me the odds!";
-      case "mathematical":
-      case "probability":
-        return "EV is favorable! 📊";
-      case "intuitive":
-        return "Feeling a good card!";
-      case "wild":
-        return "Full speed ahead! 🎲";
-      default:
-        return "Thinking next move...";
-    }
-  };
-
   const isLobby = roomData.status?.toUpperCase() === "LOBBY";
   if (isLobby) {
     return (
@@ -219,6 +189,7 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
             {(() => {
               const f7Rules = (board as any).flip7Rules || {};
               const activeRuleBadges: { icon: string; label: string }[] = [];
+              if (roomData.players.length > 18) activeRuleBadges.push({ icon: "🃏", label: `2 Decks Combined (${roomData.players.length} Players)` });
               if (f7Rules.bustPenalty === "FLAT_10") activeRuleBadges.push({ icon: "💥", label: "Bust -10 Pts" });
               if (f7Rules.bustPenalty === "HALF_HAND") activeRuleBadges.push({ icon: "💥", label: "Bust -50% Hand" });
               if (f7Rules.minHitThreshold) activeRuleBadges.push({ icon: "🛑", label: "Min 10 Pts Stay" });
@@ -359,25 +330,6 @@ const Flip7Board: React.FC<BoardProps> = ({ roomId, roomData }) => {
                                   : "bg-zinc-900/80 border-white/10"
                       }`}
                     >
-                      {/* Bot Reaction Dialogue Bubble */}
-                      {p.isBot &&
-                        (isCurrentTurn ||
-                          String(board.lastAction?.playerId) ===
-                            String(p._id)) && (
-                          <div className="absolute -top-3.5 right-4 z-50 bg-amber-400 text-black text-[10px] font-mono font-black px-2.5 py-1 rounded-full border border-amber-300 shadow-xl flex items-center gap-1.5 animate-bounce">
-                            <span>💬</span>
-                            <span>
-                              {getBotDialogue(
-                                p.persona,
-                                String(board.lastAction?.playerId) ===
-                                  String(p._id),
-                                board.lastAction?.type,
-                                st?.status,
-                              )}
-                            </span>
-                          </div>
-                        )}
-
                       {/* Top Fixed-Height Header Section */}
                       <div className="shrink-0 min-h-[115px] flex flex-col justify-between">
                         <div>
